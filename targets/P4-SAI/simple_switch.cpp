@@ -55,13 +55,22 @@ struct bmv2_hash {
   }
 };
 
+struct xor8 {
+  uint32_t operator()(const char *buf, size_t s) const {
+    int result = 0;
+    for (size_t i = 0; i<s; i++)
+      result = result ^ buf[i];
+    return result;
+  }
+};
+
 }  // namespace
 
 // if REGISTER_HASH calls placed in the anonymous namespace, some compiler can
 // give an unused variable warning
 REGISTER_HASH(hash_ex);
 REGISTER_HASH(bmv2_hash);
-
+REGISTER_HASH(xor8);
 extern int import_primitives();
 
 SimpleSwitch::SimpleSwitch(int max_port, bool enable_swap)
@@ -454,7 +463,7 @@ SimpleSwitch::egress_thread(size_t worker_id) {
     phv->get_field("standard_metadata.egress_port").set(port);
 
     Field &f_egress_spec = phv->get_field("standard_metadata.egress_spec");
-    f_egress_spec.set(0);
+    f_egress_spec.set(510);
 
     phv->get_field("standard_metadata.packet_length").set(
         packet->get_register(PACKET_LENGTH_REG_IDX));
@@ -491,6 +500,12 @@ SimpleSwitch::egress_thread(size_t worker_id) {
       BMLOG_DEBUG_PKT(*packet, "Dropping packet at the end of egress");
       continue;
     }
+
+    //yonatanp:  if egress_spec changed in egress pipeline, update egress port. in the future, maybe don't set output port in ingress
+    if (egress_spec != 510) {
+      packet->set_egress_port(egress_spec);
+      BMLOG_DEBUG_PKT(*packet, "Chnaged egress port at egress pipeline to {}", egress_spec);
+    } 
 
     deparser->deparse(packet.get());
 
