@@ -1922,6 +1922,36 @@ class RuntimeAPI(cmd.Cmd):
             0, table_name, match_key, BmAddEntryOptions(priority = priority))
         self.dump_one_entry(table, entry)
 
+    @handle_bad_input
+    def do_table_delete_entry_from_key(self, line):
+        "Display some information about a table entry: table_dump_entry_from_key <table name> <match fields> [priority]"
+        args = line.split()
+        self.at_least_n_args(args, 1)
+        table_name = args[0]
+
+        table = self.get_res("table", table_name, TABLES)
+
+        if table.match_type in {MatchType.TERNARY, MatchType.RANGE}:
+            try:
+                priority = int(args.pop(-1))
+            except:
+                raise UIn_Error(
+                    "Table is ternary, but could not extract a valid priority from args"
+                )
+        else:
+            priority = 0
+
+        match_key = args[1:]
+        if len(match_key) != table.num_key_fields():
+            raise UIn_Error(
+                "Table %s needs %d key fields" % (table_name, table.num_key_fields())
+            )
+        match_key = parse_match_key(table, match_key)
+
+        entry = self.client.bm_mt_get_entry_from_key(
+            0, table_name, match_key, BmAddEntryOptions(priority = priority))
+        self.client.bm_mt_delete_entry(0, table_name, entry.entry_handle)
+
     def complete_table_dump_entry_from_key(self, text, line, start_index, end_index):
         return self._complete_tables(text)
 

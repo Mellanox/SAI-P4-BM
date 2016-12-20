@@ -27,7 +27,7 @@ class SaiHandler:
   def __init__(self):
     self.log = {}
     print "connecting to cli thrift"
-    self.cli_client = SwitchThriftClient(json='../../sai.json')
+    self.cli_client = SwitchThriftClient(json='../sai.json')
     self.active_vlans = {}
     self.bridge_ports = []
     self.bridge_id = 0

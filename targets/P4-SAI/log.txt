@@ -1,0 +1,2507 @@
+[13:01:15.175] [bmv2] [D] [thread 21085] Adding interface veth0 as port 0
+[13:01:15.179] [bmv2] [D] [thread 21085] Adding interface veth2 as port 1
+[13:01:15.181] [bmv2] [D] [thread 21085] Adding interface veth4 as port 2
+[13:01:15.189] [bmv2] [D] [thread 21085] Adding interface veth6 as port 3
+[13:01:15.190] [bmv2] [D] [thread 21085] Adding interface veth8 as port 4
+[13:01:15.192] [bmv2] [D] [thread 21085] Adding interface veth10 as port 5
+[13:02:00.497] [bmv2] [D] [thread 21105] [0.0] [cxt 0] Processing packet received on port 2
+[13:02:00.498] [bmv2] [D] [thread 21105] [0.0] [cxt 0] Parser 'parser': start
+[13:02:00.498] [bmv2] [D] [thread 21105] [0.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:02:00.498] [bmv2] [T] [thread 21105] [0.0] [cxt 0] Bytes parsed: 0
+[13:02:00.498] [bmv2] [D] [thread 21105] [0.0] [cxt 0] Extracting header 'ethernet'
+[13:02:00.498] [bmv2] [D] [thread 21105] [0.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:02:00.498] [bmv2] [T] [thread 21105] [0.0] [cxt 0] Bytes parsed: 14
+[13:02:00.498] [bmv2] [D] [thread 21105] [0.0] [cxt 0] Parser 'parser': end
+[13:02:00.498] [bmv2] [D] [thread 21105] [0.0] [cxt 0] Pipeline 'ingress': start
+[13:02:00.498] [bmv2] [T] [thread 21105] [0.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:02:00.498] [bmv2] [D] [thread 21105] [0.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0002
+
+[13:02:00.498] [bmv2] [D] [thread 21105] [0.0] [cxt 0] Table 'table_ingress_lag': miss
+[13:02:00.498] [bmv2] [D] [thread 21105] [0.0] [cxt 0] Action entry is NULL
+[13:02:00.498] [bmv2] [T] [thread 21105] [0.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:02:00.498] [bmv2] [D] [thread 21105] [0.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:02:00.498] [bmv2] [D] [thread 21105] [0.0] [cxt 0] Table 'table_accepted_frame_type': miss
+[13:02:00.498] [bmv2] [D] [thread 21105] [0.0] [cxt 0] Action entry is NULL
+[13:02:00.498] [bmv2] [T] [thread 21105] [0.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:02:00.498] [bmv2] [D] [thread 21105] [0.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 0000
+
+[13:02:00.498] [bmv2] [D] [thread 21105] [0.0] [cxt 0] Table 'table_ingress_l2_interface_type': miss
+[13:02:00.498] [bmv2] [D] [thread 21105] [0.0] [cxt 0] Action entry is NULL
+[13:02:00.498] [bmv2] [D] [thread 21105] [0.0] [cxt 0] Pipeline 'ingress': end
+[13:02:00.498] [bmv2] [D] [thread 21105] [0.0] [cxt 0] Egress port is 0
+[13:02:00.498] [bmv2] [D] [thread 21106] [0.0] [cxt 0] Pipeline 'egress': start
+[13:02:00.498] [bmv2] [D] [thread 21106] [0.0] [cxt 0] Pipeline 'egress': end
+[13:02:00.498] [bmv2] [D] [thread 21106] [0.0] [cxt 0] Deparser 'deparser': start
+[13:02:00.498] [bmv2] [D] [thread 21106] [0.0] [cxt 0] Deparsing header 'ethernet'
+[13:02:00.498] [bmv2] [D] [thread 21106] [0.0] [cxt 0] Deparser 'deparser': end
+[13:02:00.498] [bmv2] [D] [thread 21110] [0.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:02:00.530] [bmv2] [D] [thread 21105] [1.0] [cxt 0] Processing packet received on port 4
+[13:02:00.530] [bmv2] [D] [thread 21105] [1.0] [cxt 0] Parser 'parser': start
+[13:02:00.530] [bmv2] [D] [thread 21105] [1.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:02:00.530] [bmv2] [T] [thread 21105] [1.0] [cxt 0] Bytes parsed: 0
+[13:02:00.530] [bmv2] [D] [thread 21105] [1.0] [cxt 0] Extracting header 'ethernet'
+[13:02:00.530] [bmv2] [D] [thread 21105] [1.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:02:00.530] [bmv2] [T] [thread 21105] [1.0] [cxt 0] Bytes parsed: 14
+[13:02:00.530] [bmv2] [D] [thread 21105] [1.0] [cxt 0] Parser 'parser': end
+[13:02:00.530] [bmv2] [D] [thread 21105] [1.0] [cxt 0] Pipeline 'ingress': start
+[13:02:00.530] [bmv2] [T] [thread 21105] [1.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:02:00.530] [bmv2] [D] [thread 21105] [1.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0004
+
+[13:02:00.530] [bmv2] [D] [thread 21105] [1.0] [cxt 0] Table 'table_ingress_lag': miss
+[13:02:00.530] [bmv2] [D] [thread 21105] [1.0] [cxt 0] Action entry is NULL
+[13:02:00.530] [bmv2] [T] [thread 21105] [1.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:02:00.530] [bmv2] [D] [thread 21105] [1.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:02:00.530] [bmv2] [D] [thread 21105] [1.0] [cxt 0] Table 'table_accepted_frame_type': miss
+[13:02:00.530] [bmv2] [D] [thread 21105] [1.0] [cxt 0] Action entry is NULL
+[13:02:00.530] [bmv2] [T] [thread 21105] [1.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:02:00.530] [bmv2] [D] [thread 21105] [1.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 0000
+
+[13:02:00.530] [bmv2] [D] [thread 21105] [1.0] [cxt 0] Table 'table_ingress_l2_interface_type': miss
+[13:02:00.530] [bmv2] [D] [thread 21105] [1.0] [cxt 0] Action entry is NULL
+[13:02:00.530] [bmv2] [D] [thread 21105] [1.0] [cxt 0] Pipeline 'ingress': end
+[13:02:00.530] [bmv2] [D] [thread 21105] [1.0] [cxt 0] Egress port is 0
+[13:02:00.530] [bmv2] [D] [thread 21106] [1.0] [cxt 0] Pipeline 'egress': start
+[13:02:00.530] [bmv2] [D] [thread 21106] [1.0] [cxt 0] Pipeline 'egress': end
+[13:02:00.530] [bmv2] [D] [thread 21106] [1.0] [cxt 0] Deparser 'deparser': start
+[13:02:00.530] [bmv2] [D] [thread 21106] [1.0] [cxt 0] Deparsing header 'ethernet'
+[13:02:00.530] [bmv2] [D] [thread 21106] [1.0] [cxt 0] Deparser 'deparser': end
+[13:02:00.530] [bmv2] [D] [thread 21110] [1.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:02:00.601] [bmv2] [D] [thread 21105] [2.0] [cxt 0] Processing packet received on port 5
+[13:02:00.601] [bmv2] [D] [thread 21105] [2.0] [cxt 0] Parser 'parser': start
+[13:02:00.601] [bmv2] [D] [thread 21105] [2.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:02:00.601] [bmv2] [T] [thread 21105] [2.0] [cxt 0] Bytes parsed: 0
+[13:02:00.601] [bmv2] [D] [thread 21105] [2.0] [cxt 0] Extracting header 'ethernet'
+[13:02:00.601] [bmv2] [D] [thread 21105] [2.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:02:00.601] [bmv2] [T] [thread 21105] [2.0] [cxt 0] Bytes parsed: 14
+[13:02:00.601] [bmv2] [D] [thread 21105] [2.0] [cxt 0] Parser 'parser': end
+[13:02:00.601] [bmv2] [D] [thread 21105] [2.0] [cxt 0] Pipeline 'ingress': start
+[13:02:00.601] [bmv2] [T] [thread 21105] [2.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:02:00.601] [bmv2] [D] [thread 21105] [2.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0005
+
+[13:02:00.601] [bmv2] [D] [thread 21105] [2.0] [cxt 0] Table 'table_ingress_lag': miss
+[13:02:00.601] [bmv2] [D] [thread 21105] [2.0] [cxt 0] Action entry is NULL
+[13:02:00.601] [bmv2] [T] [thread 21105] [2.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:02:00.601] [bmv2] [D] [thread 21105] [2.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:02:00.601] [bmv2] [D] [thread 21105] [2.0] [cxt 0] Table 'table_accepted_frame_type': miss
+[13:02:00.601] [bmv2] [D] [thread 21105] [2.0] [cxt 0] Action entry is NULL
+[13:02:00.601] [bmv2] [T] [thread 21105] [2.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:02:00.601] [bmv2] [D] [thread 21105] [2.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 0000
+
+[13:02:00.602] [bmv2] [D] [thread 21105] [2.0] [cxt 0] Table 'table_ingress_l2_interface_type': miss
+[13:02:00.602] [bmv2] [D] [thread 21105] [2.0] [cxt 0] Action entry is NULL
+[13:02:00.602] [bmv2] [D] [thread 21105] [2.0] [cxt 0] Pipeline 'ingress': end
+[13:02:00.602] [bmv2] [D] [thread 21105] [2.0] [cxt 0] Egress port is 0
+[13:02:00.602] [bmv2] [D] [thread 21106] [2.0] [cxt 0] Pipeline 'egress': start
+[13:02:00.602] [bmv2] [D] [thread 21106] [2.0] [cxt 0] Pipeline 'egress': end
+[13:02:00.602] [bmv2] [D] [thread 21106] [2.0] [cxt 0] Deparser 'deparser': start
+[13:02:00.602] [bmv2] [D] [thread 21106] [2.0] [cxt 0] Deparsing header 'ethernet'
+[13:02:00.602] [bmv2] [D] [thread 21106] [2.0] [cxt 0] Deparser 'deparser': end
+[13:02:00.602] [bmv2] [D] [thread 21110] [2.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:02:00.685] [bmv2] [D] [thread 21105] [3.0] [cxt 0] Processing packet received on port 3
+[13:02:00.685] [bmv2] [D] [thread 21105] [3.0] [cxt 0] Parser 'parser': start
+[13:02:00.685] [bmv2] [D] [thread 21105] [3.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:02:00.685] [bmv2] [T] [thread 21105] [3.0] [cxt 0] Bytes parsed: 0
+[13:02:00.685] [bmv2] [D] [thread 21105] [3.0] [cxt 0] Extracting header 'ethernet'
+[13:02:00.685] [bmv2] [D] [thread 21105] [3.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:02:00.685] [bmv2] [T] [thread 21105] [3.0] [cxt 0] Bytes parsed: 14
+[13:02:00.685] [bmv2] [D] [thread 21105] [3.0] [cxt 0] Parser 'parser': end
+[13:02:00.685] [bmv2] [D] [thread 21105] [3.0] [cxt 0] Pipeline 'ingress': start
+[13:02:00.685] [bmv2] [T] [thread 21105] [3.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:02:00.685] [bmv2] [D] [thread 21105] [3.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0003
+
+[13:02:00.685] [bmv2] [D] [thread 21105] [3.0] [cxt 0] Table 'table_ingress_lag': miss
+[13:02:00.685] [bmv2] [D] [thread 21105] [3.0] [cxt 0] Action entry is NULL
+[13:02:00.685] [bmv2] [T] [thread 21105] [3.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:02:00.685] [bmv2] [D] [thread 21105] [3.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:02:00.685] [bmv2] [D] [thread 21105] [3.0] [cxt 0] Table 'table_accepted_frame_type': miss
+[13:02:00.685] [bmv2] [D] [thread 21105] [3.0] [cxt 0] Action entry is NULL
+[13:02:00.685] [bmv2] [T] [thread 21105] [3.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:02:00.685] [bmv2] [D] [thread 21105] [3.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 0000
+
+[13:02:00.685] [bmv2] [D] [thread 21105] [3.0] [cxt 0] Table 'table_ingress_l2_interface_type': miss
+[13:02:00.685] [bmv2] [D] [thread 21105] [3.0] [cxt 0] Action entry is NULL
+[13:02:00.685] [bmv2] [D] [thread 21105] [3.0] [cxt 0] Pipeline 'ingress': end
+[13:02:00.685] [bmv2] [D] [thread 21105] [3.0] [cxt 0] Egress port is 0
+[13:02:00.685] [bmv2] [D] [thread 21106] [3.0] [cxt 0] Pipeline 'egress': start
+[13:02:00.685] [bmv2] [D] [thread 21106] [3.0] [cxt 0] Pipeline 'egress': end
+[13:02:00.685] [bmv2] [D] [thread 21106] [3.0] [cxt 0] Deparser 'deparser': start
+[13:02:00.685] [bmv2] [D] [thread 21106] [3.0] [cxt 0] Deparsing header 'ethernet'
+[13:02:00.685] [bmv2] [D] [thread 21106] [3.0] [cxt 0] Deparser 'deparser': end
+[13:02:00.685] [bmv2] [D] [thread 21110] [3.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:02:00.692] [bmv2] [D] [thread 21105] [4.0] [cxt 0] Processing packet received on port 0
+[13:02:00.692] [bmv2] [D] [thread 21105] [4.0] [cxt 0] Parser 'parser': start
+[13:02:00.692] [bmv2] [D] [thread 21105] [4.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:02:00.692] [bmv2] [T] [thread 21105] [4.0] [cxt 0] Bytes parsed: 0
+[13:02:00.692] [bmv2] [D] [thread 21105] [4.0] [cxt 0] Extracting header 'ethernet'
+[13:02:00.692] [bmv2] [D] [thread 21105] [4.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:02:00.692] [bmv2] [T] [thread 21105] [4.0] [cxt 0] Bytes parsed: 14
+[13:02:00.692] [bmv2] [D] [thread 21105] [4.0] [cxt 0] Parser 'parser': end
+[13:02:00.692] [bmv2] [D] [thread 21105] [4.0] [cxt 0] Pipeline 'ingress': start
+[13:02:00.692] [bmv2] [T] [thread 21105] [4.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:02:00.692] [bmv2] [D] [thread 21105] [4.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0000
+
+[13:02:00.692] [bmv2] [D] [thread 21105] [4.0] [cxt 0] Table 'table_ingress_lag': miss
+[13:02:00.692] [bmv2] [D] [thread 21105] [4.0] [cxt 0] Action entry is NULL
+[13:02:00.692] [bmv2] [T] [thread 21105] [4.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:02:00.692] [bmv2] [D] [thread 21105] [4.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:02:00.692] [bmv2] [D] [thread 21105] [4.0] [cxt 0] Table 'table_accepted_frame_type': miss
+[13:02:00.692] [bmv2] [D] [thread 21105] [4.0] [cxt 0] Action entry is NULL
+[13:02:00.692] [bmv2] [T] [thread 21105] [4.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:02:00.692] [bmv2] [D] [thread 21105] [4.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 0000
+
+[13:02:00.692] [bmv2] [D] [thread 21105] [4.0] [cxt 0] Table 'table_ingress_l2_interface_type': miss
+[13:02:00.692] [bmv2] [D] [thread 21105] [4.0] [cxt 0] Action entry is NULL
+[13:02:00.692] [bmv2] [D] [thread 21105] [4.0] [cxt 0] Pipeline 'ingress': end
+[13:02:00.692] [bmv2] [D] [thread 21105] [4.0] [cxt 0] Egress port is 0
+[13:02:00.692] [bmv2] [D] [thread 21106] [4.0] [cxt 0] Pipeline 'egress': start
+[13:02:00.692] [bmv2] [D] [thread 21106] [4.0] [cxt 0] Pipeline 'egress': end
+[13:02:00.692] [bmv2] [D] [thread 21106] [4.0] [cxt 0] Deparser 'deparser': start
+[13:02:00.692] [bmv2] [D] [thread 21106] [4.0] [cxt 0] Deparsing header 'ethernet'
+[13:02:00.692] [bmv2] [D] [thread 21106] [4.0] [cxt 0] Deparser 'deparser': end
+[13:02:00.692] [bmv2] [D] [thread 21110] [4.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:02:00.803] [bmv2] [D] [thread 21105] [5.0] [cxt 0] Processing packet received on port 1
+[13:02:00.803] [bmv2] [D] [thread 21105] [5.0] [cxt 0] Parser 'parser': start
+[13:02:00.803] [bmv2] [D] [thread 21105] [5.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:02:00.803] [bmv2] [T] [thread 21105] [5.0] [cxt 0] Bytes parsed: 0
+[13:02:00.803] [bmv2] [D] [thread 21105] [5.0] [cxt 0] Extracting header 'ethernet'
+[13:02:00.803] [bmv2] [D] [thread 21105] [5.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:02:00.803] [bmv2] [T] [thread 21105] [5.0] [cxt 0] Bytes parsed: 14
+[13:02:00.803] [bmv2] [D] [thread 21105] [5.0] [cxt 0] Parser 'parser': end
+[13:02:00.803] [bmv2] [D] [thread 21105] [5.0] [cxt 0] Pipeline 'ingress': start
+[13:02:00.803] [bmv2] [T] [thread 21105] [5.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:02:00.803] [bmv2] [D] [thread 21105] [5.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0001
+
+[13:02:00.803] [bmv2] [D] [thread 21105] [5.0] [cxt 0] Table 'table_ingress_lag': miss
+[13:02:00.803] [bmv2] [D] [thread 21105] [5.0] [cxt 0] Action entry is NULL
+[13:02:00.803] [bmv2] [T] [thread 21105] [5.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:02:00.803] [bmv2] [D] [thread 21105] [5.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:02:00.803] [bmv2] [D] [thread 21105] [5.0] [cxt 0] Table 'table_accepted_frame_type': miss
+[13:02:00.804] [bmv2] [D] [thread 21105] [5.0] [cxt 0] Action entry is NULL
+[13:02:00.804] [bmv2] [T] [thread 21105] [5.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:02:00.804] [bmv2] [D] [thread 21105] [5.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 0000
+
+[13:02:00.804] [bmv2] [D] [thread 21105] [5.0] [cxt 0] Table 'table_ingress_l2_interface_type': miss
+[13:02:00.804] [bmv2] [D] [thread 21105] [5.0] [cxt 0] Action entry is NULL
+[13:02:00.804] [bmv2] [D] [thread 21105] [5.0] [cxt 0] Pipeline 'ingress': end
+[13:02:00.804] [bmv2] [D] [thread 21105] [5.0] [cxt 0] Egress port is 0
+[13:02:00.804] [bmv2] [D] [thread 21106] [5.0] [cxt 0] Pipeline 'egress': start
+[13:02:00.804] [bmv2] [D] [thread 21106] [5.0] [cxt 0] Pipeline 'egress': end
+[13:02:00.804] [bmv2] [D] [thread 21106] [5.0] [cxt 0] Deparser 'deparser': start
+[13:02:00.804] [bmv2] [D] [thread 21106] [5.0] [cxt 0] Deparsing header 'ethernet'
+[13:02:00.804] [bmv2] [D] [thread 21106] [5.0] [cxt 0] Deparser 'deparser': end
+[13:02:00.804] [bmv2] [D] [thread 21110] [5.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:02:00.978] [bmv2] [D] [thread 21105] [6.0] [cxt 0] Processing packet received on port 2
+[13:02:00.978] [bmv2] [D] [thread 21105] [6.0] [cxt 0] Parser 'parser': start
+[13:02:00.978] [bmv2] [D] [thread 21105] [6.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:02:00.978] [bmv2] [T] [thread 21105] [6.0] [cxt 0] Bytes parsed: 0
+[13:02:00.978] [bmv2] [D] [thread 21105] [6.0] [cxt 0] Extracting header 'ethernet'
+[13:02:00.978] [bmv2] [D] [thread 21105] [6.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:02:00.978] [bmv2] [T] [thread 21105] [6.0] [cxt 0] Bytes parsed: 14
+[13:02:00.978] [bmv2] [D] [thread 21105] [6.0] [cxt 0] Parser 'parser': end
+[13:02:00.978] [bmv2] [D] [thread 21105] [6.0] [cxt 0] Pipeline 'ingress': start
+[13:02:00.978] [bmv2] [T] [thread 21105] [6.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:02:00.978] [bmv2] [D] [thread 21105] [6.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0002
+
+[13:02:00.978] [bmv2] [D] [thread 21105] [6.0] [cxt 0] Table 'table_ingress_lag': miss
+[13:02:00.978] [bmv2] [D] [thread 21105] [6.0] [cxt 0] Action entry is NULL
+[13:02:00.978] [bmv2] [T] [thread 21105] [6.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:02:00.978] [bmv2] [D] [thread 21105] [6.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:02:00.978] [bmv2] [D] [thread 21105] [6.0] [cxt 0] Table 'table_accepted_frame_type': miss
+[13:02:00.978] [bmv2] [D] [thread 21105] [6.0] [cxt 0] Action entry is NULL
+[13:02:00.978] [bmv2] [T] [thread 21105] [6.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:02:00.978] [bmv2] [D] [thread 21105] [6.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 0000
+
+[13:02:00.978] [bmv2] [D] [thread 21105] [6.0] [cxt 0] Table 'table_ingress_l2_interface_type': miss
+[13:02:00.978] [bmv2] [D] [thread 21105] [6.0] [cxt 0] Action entry is NULL
+[13:02:00.978] [bmv2] [D] [thread 21105] [6.0] [cxt 0] Pipeline 'ingress': end
+[13:02:00.978] [bmv2] [D] [thread 21105] [6.0] [cxt 0] Egress port is 0
+[13:02:00.978] [bmv2] [D] [thread 21106] [6.0] [cxt 0] Pipeline 'egress': start
+[13:02:00.978] [bmv2] [D] [thread 21106] [6.0] [cxt 0] Pipeline 'egress': end
+[13:02:00.978] [bmv2] [D] [thread 21106] [6.0] [cxt 0] Deparser 'deparser': start
+[13:02:00.978] [bmv2] [D] [thread 21106] [6.0] [cxt 0] Deparsing header 'ethernet'
+[13:02:00.978] [bmv2] [D] [thread 21106] [6.0] [cxt 0] Deparser 'deparser': end
+[13:02:00.978] [bmv2] [D] [thread 21110] [6.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:02:01.015] [bmv2] [D] [thread 21105] [7.0] [cxt 0] Processing packet received on port 0
+[13:02:01.015] [bmv2] [D] [thread 21105] [7.0] [cxt 0] Parser 'parser': start
+[13:02:01.015] [bmv2] [D] [thread 21105] [7.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:02:01.015] [bmv2] [T] [thread 21105] [7.0] [cxt 0] Bytes parsed: 0
+[13:02:01.015] [bmv2] [D] [thread 21105] [7.0] [cxt 0] Extracting header 'ethernet'
+[13:02:01.015] [bmv2] [D] [thread 21105] [7.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:02:01.015] [bmv2] [T] [thread 21105] [7.0] [cxt 0] Bytes parsed: 14
+[13:02:01.015] [bmv2] [D] [thread 21105] [7.0] [cxt 0] Parser 'parser': end
+[13:02:01.015] [bmv2] [D] [thread 21105] [7.0] [cxt 0] Pipeline 'ingress': start
+[13:02:01.015] [bmv2] [T] [thread 21105] [7.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:02:01.015] [bmv2] [D] [thread 21105] [7.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0000
+
+[13:02:01.015] [bmv2] [D] [thread 21105] [7.0] [cxt 0] Table 'table_ingress_lag': miss
+[13:02:01.015] [bmv2] [D] [thread 21105] [7.0] [cxt 0] Action entry is NULL
+[13:02:01.015] [bmv2] [T] [thread 21105] [7.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:02:01.015] [bmv2] [D] [thread 21105] [7.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:02:01.015] [bmv2] [D] [thread 21105] [7.0] [cxt 0] Table 'table_accepted_frame_type': miss
+[13:02:01.015] [bmv2] [D] [thread 21105] [7.0] [cxt 0] Action entry is NULL
+[13:02:01.015] [bmv2] [T] [thread 21105] [7.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:02:01.015] [bmv2] [D] [thread 21105] [7.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 0000
+
+[13:02:01.015] [bmv2] [D] [thread 21105] [7.0] [cxt 0] Table 'table_ingress_l2_interface_type': miss
+[13:02:01.015] [bmv2] [D] [thread 21105] [7.0] [cxt 0] Action entry is NULL
+[13:02:01.015] [bmv2] [D] [thread 21105] [7.0] [cxt 0] Pipeline 'ingress': end
+[13:02:01.015] [bmv2] [D] [thread 21105] [7.0] [cxt 0] Egress port is 0
+[13:02:01.015] [bmv2] [D] [thread 21106] [7.0] [cxt 0] Pipeline 'egress': start
+[13:02:01.015] [bmv2] [D] [thread 21106] [7.0] [cxt 0] Pipeline 'egress': end
+[13:02:01.015] [bmv2] [D] [thread 21106] [7.0] [cxt 0] Deparser 'deparser': start
+[13:02:01.015] [bmv2] [D] [thread 21106] [7.0] [cxt 0] Deparsing header 'ethernet'
+[13:02:01.015] [bmv2] [D] [thread 21106] [7.0] [cxt 0] Deparser 'deparser': end
+[13:02:01.015] [bmv2] [D] [thread 21110] [7.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:02:01.203] [bmv2] [D] [thread 21105] [8.0] [cxt 0] Processing packet received on port 4
+[13:02:01.203] [bmv2] [D] [thread 21105] [8.0] [cxt 0] Parser 'parser': start
+[13:02:01.203] [bmv2] [D] [thread 21105] [8.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:02:01.203] [bmv2] [T] [thread 21105] [8.0] [cxt 0] Bytes parsed: 0
+[13:02:01.203] [bmv2] [D] [thread 21105] [8.0] [cxt 0] Extracting header 'ethernet'
+[13:02:01.203] [bmv2] [D] [thread 21105] [8.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:02:01.203] [bmv2] [T] [thread 21105] [8.0] [cxt 0] Bytes parsed: 14
+[13:02:01.203] [bmv2] [D] [thread 21105] [8.0] [cxt 0] Parser 'parser': end
+[13:02:01.203] [bmv2] [D] [thread 21105] [8.0] [cxt 0] Pipeline 'ingress': start
+[13:02:01.203] [bmv2] [T] [thread 21105] [8.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:02:01.203] [bmv2] [D] [thread 21105] [8.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0004
+
+[13:02:01.203] [bmv2] [D] [thread 21105] [8.0] [cxt 0] Table 'table_ingress_lag': miss
+[13:02:01.203] [bmv2] [D] [thread 21105] [8.0] [cxt 0] Action entry is NULL
+[13:02:01.203] [bmv2] [T] [thread 21105] [8.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:02:01.203] [bmv2] [D] [thread 21105] [8.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:02:01.203] [bmv2] [D] [thread 21105] [8.0] [cxt 0] Table 'table_accepted_frame_type': miss
+[13:02:01.203] [bmv2] [D] [thread 21105] [8.0] [cxt 0] Action entry is NULL
+[13:02:01.203] [bmv2] [T] [thread 21105] [8.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:02:01.203] [bmv2] [D] [thread 21105] [8.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 0000
+
+[13:02:01.203] [bmv2] [D] [thread 21105] [8.0] [cxt 0] Table 'table_ingress_l2_interface_type': miss
+[13:02:01.203] [bmv2] [D] [thread 21105] [8.0] [cxt 0] Action entry is NULL
+[13:02:01.203] [bmv2] [D] [thread 21105] [8.0] [cxt 0] Pipeline 'ingress': end
+[13:02:01.203] [bmv2] [D] [thread 21105] [8.0] [cxt 0] Egress port is 0
+[13:02:01.203] [bmv2] [D] [thread 21106] [8.0] [cxt 0] Pipeline 'egress': start
+[13:02:01.203] [bmv2] [D] [thread 21106] [8.0] [cxt 0] Pipeline 'egress': end
+[13:02:01.203] [bmv2] [D] [thread 21106] [8.0] [cxt 0] Deparser 'deparser': start
+[13:02:01.203] [bmv2] [D] [thread 21106] [8.0] [cxt 0] Deparsing header 'ethernet'
+[13:02:01.203] [bmv2] [D] [thread 21106] [8.0] [cxt 0] Deparser 'deparser': end
+[13:02:01.203] [bmv2] [D] [thread 21110] [8.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:02:01.235] [bmv2] [D] [thread 21105] [9.0] [cxt 0] Processing packet received on port 3
+[13:02:01.235] [bmv2] [D] [thread 21105] [9.0] [cxt 0] Parser 'parser': start
+[13:02:01.235] [bmv2] [D] [thread 21105] [9.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:02:01.235] [bmv2] [T] [thread 21105] [9.0] [cxt 0] Bytes parsed: 0
+[13:02:01.235] [bmv2] [D] [thread 21105] [9.0] [cxt 0] Extracting header 'ethernet'
+[13:02:01.235] [bmv2] [D] [thread 21105] [9.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:02:01.235] [bmv2] [T] [thread 21105] [9.0] [cxt 0] Bytes parsed: 14
+[13:02:01.235] [bmv2] [D] [thread 21105] [9.0] [cxt 0] Parser 'parser': end
+[13:02:01.235] [bmv2] [D] [thread 21105] [9.0] [cxt 0] Pipeline 'ingress': start
+[13:02:01.235] [bmv2] [T] [thread 21105] [9.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:02:01.235] [bmv2] [D] [thread 21105] [9.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0003
+
+[13:02:01.235] [bmv2] [D] [thread 21105] [9.0] [cxt 0] Table 'table_ingress_lag': miss
+[13:02:01.235] [bmv2] [D] [thread 21105] [9.0] [cxt 0] Action entry is NULL
+[13:02:01.235] [bmv2] [T] [thread 21105] [9.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:02:01.235] [bmv2] [D] [thread 21105] [9.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:02:01.235] [bmv2] [D] [thread 21105] [9.0] [cxt 0] Table 'table_accepted_frame_type': miss
+[13:02:01.235] [bmv2] [D] [thread 21105] [9.0] [cxt 0] Action entry is NULL
+[13:02:01.235] [bmv2] [T] [thread 21105] [9.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:02:01.235] [bmv2] [D] [thread 21105] [9.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 0000
+
+[13:02:01.235] [bmv2] [D] [thread 21105] [9.0] [cxt 0] Table 'table_ingress_l2_interface_type': miss
+[13:02:01.235] [bmv2] [D] [thread 21105] [9.0] [cxt 0] Action entry is NULL
+[13:02:01.235] [bmv2] [D] [thread 21105] [9.0] [cxt 0] Pipeline 'ingress': end
+[13:02:01.235] [bmv2] [D] [thread 21105] [9.0] [cxt 0] Egress port is 0
+[13:02:01.235] [bmv2] [D] [thread 21106] [9.0] [cxt 0] Pipeline 'egress': start
+[13:02:01.235] [bmv2] [D] [thread 21106] [9.0] [cxt 0] Pipeline 'egress': end
+[13:02:01.235] [bmv2] [D] [thread 21106] [9.0] [cxt 0] Deparser 'deparser': start
+[13:02:01.235] [bmv2] [D] [thread 21106] [9.0] [cxt 0] Deparsing header 'ethernet'
+[13:02:01.235] [bmv2] [D] [thread 21106] [9.0] [cxt 0] Deparser 'deparser': end
+[13:02:01.235] [bmv2] [D] [thread 21110] [9.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:02:01.299] [bmv2] [D] [thread 21105] [10.0] [cxt 0] Processing packet received on port 5
+[13:02:01.299] [bmv2] [D] [thread 21105] [10.0] [cxt 0] Parser 'parser': start
+[13:02:01.299] [bmv2] [D] [thread 21105] [10.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:02:01.299] [bmv2] [T] [thread 21105] [10.0] [cxt 0] Bytes parsed: 0
+[13:02:01.299] [bmv2] [D] [thread 21105] [10.0] [cxt 0] Extracting header 'ethernet'
+[13:02:01.299] [bmv2] [D] [thread 21105] [10.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:02:01.299] [bmv2] [T] [thread 21105] [10.0] [cxt 0] Bytes parsed: 14
+[13:02:01.299] [bmv2] [D] [thread 21105] [10.0] [cxt 0] Parser 'parser': end
+[13:02:01.299] [bmv2] [D] [thread 21105] [10.0] [cxt 0] Pipeline 'ingress': start
+[13:02:01.299] [bmv2] [T] [thread 21105] [10.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:02:01.299] [bmv2] [D] [thread 21105] [10.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0005
+
+[13:02:01.299] [bmv2] [D] [thread 21105] [10.0] [cxt 0] Table 'table_ingress_lag': miss
+[13:02:01.299] [bmv2] [D] [thread 21105] [10.0] [cxt 0] Action entry is NULL
+[13:02:01.299] [bmv2] [T] [thread 21105] [10.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:02:01.299] [bmv2] [D] [thread 21105] [10.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:02:01.299] [bmv2] [D] [thread 21105] [10.0] [cxt 0] Table 'table_accepted_frame_type': miss
+[13:02:01.299] [bmv2] [D] [thread 21105] [10.0] [cxt 0] Action entry is NULL
+[13:02:01.299] [bmv2] [T] [thread 21105] [10.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:02:01.299] [bmv2] [D] [thread 21105] [10.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 0000
+
+[13:02:01.299] [bmv2] [D] [thread 21105] [10.0] [cxt 0] Table 'table_ingress_l2_interface_type': miss
+[13:02:01.299] [bmv2] [D] [thread 21105] [10.0] [cxt 0] Action entry is NULL
+[13:02:01.299] [bmv2] [D] [thread 21105] [10.0] [cxt 0] Pipeline 'ingress': end
+[13:02:01.299] [bmv2] [D] [thread 21105] [10.0] [cxt 0] Egress port is 0
+[13:02:01.299] [bmv2] [D] [thread 21106] [10.0] [cxt 0] Pipeline 'egress': start
+[13:02:01.299] [bmv2] [D] [thread 21106] [10.0] [cxt 0] Pipeline 'egress': end
+[13:02:01.299] [bmv2] [D] [thread 21106] [10.0] [cxt 0] Deparser 'deparser': start
+[13:02:01.299] [bmv2] [D] [thread 21106] [10.0] [cxt 0] Deparsing header 'ethernet'
+[13:02:01.299] [bmv2] [D] [thread 21106] [10.0] [cxt 0] Deparser 'deparser': end
+[13:02:01.299] [bmv2] [D] [thread 21110] [10.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:02:23.851] [bmv2] [T] [thread 21139] bm_get_config_md5
+[13:02:28.376] [bmv2] [T] [thread 21139] bm_table_add_entry
+[13:02:28.376] [bmv2] [D] [thread 21139] Entry 0 added to table 'table_ingress_vlan_filtering'
+[13:02:28.376] [bmv2] [D] [thread 21139] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: _nop - 
+
+[13:02:28.377] [bmv2] [T] [thread 21139] bm_table_add_entry
+[13:02:28.377] [bmv2] [D] [thread 21139] Entry 0 added to table 'table_ingress_l2_interface_type'
+[13:02:28.377] [bmv2] [D] [thread 21139] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: action_set_l2_if_type - 3,0,
+
+[13:02:28.377] [bmv2] [T] [thread 21139] bm_table_add_entry
+[13:02:28.377] [bmv2] [D] [thread 21139] Entry 0 added to table 'table_vbridge'
+[13:02:28.377] [bmv2] [D] [thread 21139] Dumping entry 0
+Match key:
+* ingress_metadata.bridge_port: EXACT     00
+Action entry: action_set_bridge_id - 0,
+
+[13:02:28.381] [bmv2] [T] [thread 21139] bm_table_add_entry
+[13:02:28.381] [bmv2] [D] [thread 21139] Entry 1 added to table 'table_ingress_vlan_filtering'
+[13:02:28.381] [bmv2] [D] [thread 21139] Dumping entry 1
+Match key:
+* ingress_metadata.l2_if: EXACT     01
+* ingress_metadata.vid  : EXACT     000a
+Action entry: _nop - 
+
+[13:02:28.381] [bmv2] [T] [thread 21139] bm_table_add_entry
+[13:02:28.381] [bmv2] [D] [thread 21139] Entry 1 added to table 'table_ingress_l2_interface_type'
+[13:02:28.381] [bmv2] [D] [thread 21139] Dumping entry 1
+Match key:
+* ingress_metadata.l2_if: EXACT     01
+* ingress_metadata.vid  : EXACT     000a
+Action entry: action_set_l2_if_type - 3,1,
+
+[13:02:28.382] [bmv2] [T] [thread 21139] bm_table_add_entry
+[13:02:28.382] [bmv2] [D] [thread 21139] Entry 1 added to table 'table_vbridge'
+[13:02:28.382] [bmv2] [D] [thread 21139] Dumping entry 1
+Match key:
+* ingress_metadata.bridge_port: EXACT     01
+Action entry: action_set_bridge_id - 0,
+
+[13:02:28.382] [bmv2] [T] [thread 21139] bm_table_add_entry
+[13:02:28.382] [bmv2] [D] [thread 21139] Entry 0 added to table 'table_ingress_lag'
+[13:02:28.382] [bmv2] [D] [thread 21139] Dumping entry 0
+Match key:
+* standard_metadata.ingress_port: EXACT     0000
+Action entry: action_set_lag_l2if - 0,0,0,
+
+[13:02:28.383] [bmv2] [T] [thread 21139] bm_table_add_entry
+[13:02:28.383] [bmv2] [D] [thread 21139] Entry 0 added to table 'table_accepted_frame_type'
+[13:02:28.383] [bmv2] [D] [thread 21139] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* vlan                  : VALID     00
+Action entry: action_set_pvid - a,
+
+[13:02:28.383] [bmv2] [T] [thread 21139] bm_table_add_entry
+[13:02:28.383] [bmv2] [D] [thread 21139] Entry 1 added to table 'table_ingress_lag'
+[13:02:28.383] [bmv2] [D] [thread 21139] Dumping entry 1
+Match key:
+* standard_metadata.ingress_port: EXACT     0001
+Action entry: action_set_lag_l2if - 0,0,1,
+
+[13:02:28.384] [bmv2] [T] [thread 21139] bm_table_add_entry
+[13:02:28.384] [bmv2] [D] [thread 21139] Entry 1 added to table 'table_accepted_frame_type'
+[13:02:28.384] [bmv2] [D] [thread 21139] Dumping entry 1
+Match key:
+* ingress_metadata.l2_if: EXACT     01
+* vlan                  : VALID     00
+Action entry: action_set_pvid - a,
+
+[13:02:28.387] [bmv2] [T] [thread 21139] bm_table_add_entry
+[13:02:28.387] [bmv2] [D] [thread 21139] Entry 0 added to table 'table_fdb'
+[13:02:28.387] [bmv2] [D] [thread 21139] Dumping entry 0
+Match key:
+* ethernet.dstAddr          : EXACT     001111111111
+* ingress_metadata.bridge_id: EXACT     00
+Action entry: action_forward_set_outIfType - 0,0,
+
+[13:02:28.388] [bmv2] [T] [thread 21139] bm_table_add_entry
+[13:02:28.388] [bmv2] [D] [thread 21139] Entry 1 added to table 'table_fdb'
+[13:02:28.388] [bmv2] [D] [thread 21139] Dumping entry 1
+Match key:
+* ethernet.dstAddr          : EXACT     002222222222
+* ingress_metadata.bridge_id: EXACT     00
+Action entry: action_forward_set_outIfType - 1,0,
+
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Processing packet received on port 0
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Parser 'parser': start
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:02:28.392] [bmv2] [T] [thread 21105] [11.0] [cxt 0] Bytes parsed: 0
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Extracting header 'ethernet'
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Parser state 'parse_ethernet': key is 0800
+[13:02:28.392] [bmv2] [T] [thread 21105] [11.0] [cxt 0] Bytes parsed: 14
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Extracting header 'ipv4'
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Parser state 'parse_ipv4': key is 06
+[13:02:28.392] [bmv2] [T] [thread 21105] [11.0] [cxt 0] Bytes parsed: 34
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Extracting header 'tcp'
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Parser state 'parse_tcp' has no switch, going to default next state
+[13:02:28.392] [bmv2] [T] [thread 21105] [11.0] [cxt 0] Bytes parsed: 54
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Parser 'parser': end
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Pipeline 'ingress': start
+[13:02:28.392] [bmv2] [T] [thread 21105] [11.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0000
+
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Table 'table_ingress_lag': hit with handle 0
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Dumping entry 0
+Match key:
+* standard_metadata.ingress_port: EXACT     0000
+Action entry: action_set_lag_l2if - 0,0,0,
+
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Action entry is action_set_lag_l2if - 0,0,0,
+[13:02:28.392] [bmv2] [T] [thread 21105] [11.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Table 'table_accepted_frame_type': hit with handle 0
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* vlan                  : VALID     00
+Action entry: action_set_pvid - a,
+
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Action entry is action_set_pvid - a,
+[13:02:28.392] [bmv2] [T] [thread 21105] [11.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Table 'table_ingress_l2_interface_type': hit with handle 0
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: action_set_l2_if_type - 3,0,
+
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Action entry is action_set_l2_if_type - 3,0,
+[13:02:28.392] [bmv2] [T] [thread 21105] [11.0] [cxt 0] Applying table 'table_ingress_vlan_filtering'
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Table 'table_ingress_vlan_filtering': hit with handle 0
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: _nop - 
+
+[13:02:28.392] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Action entry is _nop - 
+[13:02:28.392] [bmv2] [T] [thread 21105] [11.0] [cxt 0] Applying table 'table_ingress_vlan'
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Table 'table_ingress_vlan': miss
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Action entry is NULL
+[13:02:28.393] [bmv2] [T] [thread 21105] [11.0] [cxt 0] Applying table 'table_xSTP_instance'
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Table 'table_xSTP_instance': miss
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Action entry is NULL
+[13:02:28.393] [bmv2] [T] [thread 21105] [11.0] [cxt 0] Applying table 'table_xSTP'
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+* ingress_metadata.stp_id     : 00
+
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Table 'table_xSTP': miss
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Action entry is NULL
+[13:02:28.393] [bmv2] [T] [thread 21105] [11.0] [cxt 0] Applying table 'table_vbridge'
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Table 'table_vbridge': hit with handle 0
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.bridge_port: EXACT     00
+Action entry: action_set_bridge_id - 0,
+
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Action entry is action_set_bridge_id - 0,
+[13:02:28.393] [bmv2] [T] [thread 21105] [11.0] [cxt 0] Applying table 'table_learn_fdb'
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Looking up key:
+* ethernet.srcAddr          : 001111111111
+* ingress_metadata.bridge_id: 00
+
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Table 'table_learn_fdb': miss
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Action entry is NULL
+[13:02:28.393] [bmv2] [T] [thread 21105] [11.0] [cxt 0] Applying table 'table_l3_interface'
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 002222222222
+* ingress_metadata.bridge_id: 00
+
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Table 'table_l3_interface': miss
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Action entry is NULL
+[13:02:28.393] [bmv2] [T] [thread 21105] [11.0] [cxt 0] Applying table 'table_fdb'
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 002222222222
+* ingress_metadata.bridge_id: 00
+
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Table 'table_fdb': hit with handle 1
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Dumping entry 1
+Match key:
+* ethernet.dstAddr          : EXACT     002222222222
+* ingress_metadata.bridge_id: EXACT     00
+Action entry: action_forward_set_outIfType - 1,0,
+
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Action entry is action_forward_set_outIfType - 1,0,
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Pipeline 'ingress': end
+[13:02:28.393] [bmv2] [D] [thread 21105] [11.0] [cxt 0] Egress port is 1
+[13:02:28.393] [bmv2] [D] [thread 21107] [11.0] [cxt 0] Pipeline 'egress': start
+[13:02:28.393] [bmv2] [T] [thread 21107] [11.0] [cxt 0] Applying table 'table_egress_xSTP'
+[13:02:28.393] [bmv2] [D] [thread 21107] [11.0] [cxt 0] Looking up key:
+* egress_metadata.out_if : 01
+* ingress_metadata.stp_id: 00
+
+[13:02:28.393] [bmv2] [D] [thread 21107] [11.0] [cxt 0] Table 'table_egress_xSTP': miss
+[13:02:28.393] [bmv2] [D] [thread 21107] [11.0] [cxt 0] Action entry is NULL
+[13:02:28.393] [bmv2] [T] [thread 21107] [11.0] [cxt 0] Applying table 'table_egress_vlan_filtering'
+[13:02:28.393] [bmv2] [D] [thread 21107] [11.0] [cxt 0] Looking up key:
+* egress_metadata.out_if: 01
+* ingress_metadata.vid  : 000a
+
+[13:02:28.393] [bmv2] [D] [thread 21107] [11.0] [cxt 0] Table 'table_egress_vlan_filtering': miss
+[13:02:28.393] [bmv2] [D] [thread 21107] [11.0] [cxt 0] Action entry is NULL
+[13:02:28.393] [bmv2] [D] [thread 21107] [11.0] [cxt 0] Pipeline 'egress': end
+[13:02:28.393] [bmv2] [D] [thread 21107] [11.0] [cxt 0] Deparser 'deparser': start
+[13:02:28.393] [bmv2] [D] [thread 21107] [11.0] [cxt 0] Deparsing header 'ethernet'
+[13:02:28.393] [bmv2] [D] [thread 21107] [11.0] [cxt 0] Deparsing header 'ipv4'
+[13:02:28.393] [bmv2] [D] [thread 21107] [11.0] [cxt 0] Deparsing header 'tcp'
+[13:02:28.393] [bmv2] [D] [thread 21107] [11.0] [cxt 0] Deparser 'deparser': end
+[13:02:28.393] [bmv2] [D] [thread 21110] [11.0] [cxt 0] Transmitting packet of size 100 out of port 1
+[13:02:29.313] [bmv2] [T] [thread 21139] bm_mt_get_entry_from_key
+[13:02:29.314] [bmv2] [T] [thread 21139] bm_table_delete_entry
+[13:02:29.314] [bmv2] [D] [thread 21139] Removed entry 0 from table 'table_fdb'
+[13:02:29.314] [bmv2] [T] [thread 21139] bm_mt_get_entry_from_key
+[13:02:29.315] [bmv2] [T] [thread 21139] bm_table_delete_entry
+[13:02:29.315] [bmv2] [D] [thread 21139] Removed entry 1 from table 'table_fdb'
+[13:02:29.315] [bmv2] [T] [thread 21139] bm_table_add_entry
+[13:02:29.315] [bmv2] [E] [thread 21139] Error when trying to add entry to table 'table_ingress_lag'
+[13:02:29.316] [bmv2] [T] [thread 21139] bm_table_add_entry
+[13:02:29.316] [bmv2] [E] [thread 21139] Error when trying to add entry to table 'table_accepted_frame_type'
+[13:02:29.317] [bmv2] [T] [thread 21139] bm_table_add_entry
+[13:02:29.317] [bmv2] [E] [thread 21139] Error when trying to add entry to table 'table_ingress_lag'
+[13:02:29.317] [bmv2] [T] [thread 21139] bm_table_add_entry
+[13:02:29.317] [bmv2] [E] [thread 21139] Error when trying to add entry to table 'table_accepted_frame_type'
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Processing packet received on port 2
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Parser 'parser': start
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:06:16.598] [bmv2] [T] [thread 21105] [12.0] [cxt 0] Bytes parsed: 0
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Extracting header 'ethernet'
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:06:16.598] [bmv2] [T] [thread 21105] [12.0] [cxt 0] Bytes parsed: 14
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Parser 'parser': end
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Pipeline 'ingress': start
+[13:06:16.598] [bmv2] [T] [thread 21105] [12.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0002
+
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Table 'table_ingress_lag': miss
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Action entry is NULL
+[13:06:16.598] [bmv2] [T] [thread 21105] [12.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Table 'table_accepted_frame_type': hit with handle 0
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* vlan                  : VALID     00
+Action entry: action_set_pvid - a,
+
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Action entry is action_set_pvid - a,
+[13:06:16.598] [bmv2] [T] [thread 21105] [12.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Table 'table_ingress_l2_interface_type': hit with handle 0
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: action_set_l2_if_type - 3,0,
+
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Action entry is action_set_l2_if_type - 3,0,
+[13:06:16.598] [bmv2] [T] [thread 21105] [12.0] [cxt 0] Applying table 'table_ingress_vlan_filtering'
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Table 'table_ingress_vlan_filtering': hit with handle 0
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: _nop - 
+
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Action entry is _nop - 
+[13:06:16.598] [bmv2] [T] [thread 21105] [12.0] [cxt 0] Applying table 'table_ingress_vlan'
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Table 'table_ingress_vlan': miss
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Action entry is NULL
+[13:06:16.598] [bmv2] [T] [thread 21105] [12.0] [cxt 0] Applying table 'table_xSTP_instance'
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Table 'table_xSTP_instance': miss
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Action entry is NULL
+[13:06:16.598] [bmv2] [T] [thread 21105] [12.0] [cxt 0] Applying table 'table_xSTP'
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+* ingress_metadata.stp_id     : 00
+
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Table 'table_xSTP': miss
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Action entry is NULL
+[13:06:16.598] [bmv2] [T] [thread 21105] [12.0] [cxt 0] Applying table 'table_vbridge'
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Table 'table_vbridge': hit with handle 0
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.bridge_port: EXACT     00
+Action entry: action_set_bridge_id - 0,
+
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Action entry is action_set_bridge_id - 0,
+[13:06:16.598] [bmv2] [T] [thread 21105] [12.0] [cxt 0] Applying table 'table_learn_fdb'
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Looking up key:
+* ethernet.srcAddr          : ca27f7c7d11b
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Table 'table_learn_fdb': miss
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Action entry is NULL
+[13:06:16.598] [bmv2] [T] [thread 21105] [12.0] [cxt 0] Applying table 'table_l3_interface'
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 3333000000fb
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Table 'table_l3_interface': miss
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Action entry is NULL
+[13:06:16.598] [bmv2] [T] [thread 21105] [12.0] [cxt 0] Applying table 'table_mc_fdb'
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 3333000000fb
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Table 'table_mc_fdb': miss
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Action entry is NULL
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Pipeline 'ingress': end
+[13:06:16.598] [bmv2] [D] [thread 21105] [12.0] [cxt 0] Egress port is 0
+[13:06:16.598] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Processing packet received on port 4
+[13:06:16.598] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Parser 'parser': start
+[13:06:16.598] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:06:16.598] [bmv2] [T] [thread 21105] [13.0] [cxt 0] Bytes parsed: 0
+[13:06:16.598] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Extracting header 'ethernet'
+[13:06:16.598] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:06:16.598] [bmv2] [T] [thread 21105] [13.0] [cxt 0] Bytes parsed: 14
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Parser 'parser': end
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Pipeline 'ingress': start
+[13:06:16.599] [bmv2] [T] [thread 21105] [13.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0004
+
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Table 'table_ingress_lag': miss
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Action entry is NULL
+[13:06:16.599] [bmv2] [T] [thread 21105] [13.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Table 'table_accepted_frame_type': hit with handle 0
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* vlan                  : VALID     00
+Action entry: action_set_pvid - a,
+
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Action entry is action_set_pvid - a,
+[13:06:16.599] [bmv2] [T] [thread 21105] [13.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Table 'table_ingress_l2_interface_type': hit with handle 0
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: action_set_l2_if_type - 3,0,
+
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Action entry is action_set_l2_if_type - 3,0,
+[13:06:16.599] [bmv2] [T] [thread 21105] [13.0] [cxt 0] Applying table 'table_ingress_vlan_filtering'
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Table 'table_ingress_vlan_filtering': hit with handle 0
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: _nop - 
+
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Action entry is _nop - 
+[13:06:16.599] [bmv2] [T] [thread 21105] [13.0] [cxt 0] Applying table 'table_ingress_vlan'
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Table 'table_ingress_vlan': miss
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Action entry is NULL
+[13:06:16.599] [bmv2] [T] [thread 21105] [13.0] [cxt 0] Applying table 'table_xSTP_instance'
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Table 'table_xSTP_instance': miss
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Action entry is NULL
+[13:06:16.599] [bmv2] [T] [thread 21105] [13.0] [cxt 0] Applying table 'table_xSTP'
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+* ingress_metadata.stp_id     : 00
+
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Table 'table_xSTP': miss
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Action entry is NULL
+[13:06:16.599] [bmv2] [T] [thread 21105] [13.0] [cxt 0] Applying table 'table_vbridge'
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Table 'table_vbridge': hit with handle 0
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.bridge_port: EXACT     00
+Action entry: action_set_bridge_id - 0,
+
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Action entry is action_set_bridge_id - 0,
+[13:06:16.599] [bmv2] [T] [thread 21105] [13.0] [cxt 0] Applying table 'table_learn_fdb'
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Looking up key:
+* ethernet.srcAddr          : d27fee07bb44
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Table 'table_learn_fdb': miss
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Action entry is NULL
+[13:06:16.599] [bmv2] [T] [thread 21105] [13.0] [cxt 0] Applying table 'table_l3_interface'
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 3333000000fb
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Table 'table_l3_interface': miss
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Action entry is NULL
+[13:06:16.599] [bmv2] [T] [thread 21105] [13.0] [cxt 0] Applying table 'table_mc_l2_sg_g'
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_id: 00
+* ipv4.srcAddr              : 00000000
+* ipv4.dstAddr              : 00000000
+
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Table 'table_mc_l2_sg_g': miss
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Action entry is NULL
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Pipeline 'ingress': end
+[13:06:16.599] [bmv2] [D] [thread 21105] [13.0] [cxt 0] Egress port is 0
+[13:06:16.599] [bmv2] [D] [thread 21106] [12.0] [cxt 0] Pipeline 'egress': start
+[13:06:16.599] [bmv2] [T] [thread 21106] [12.0] [cxt 0] Applying table 'table_egress_xSTP'
+[13:06:16.599] [bmv2] [D] [thread 21106] [12.0] [cxt 0] Looking up key:
+* egress_metadata.out_if : 00
+* ingress_metadata.stp_id: 00
+
+[13:06:16.599] [bmv2] [D] [thread 21106] [12.0] [cxt 0] Table 'table_egress_xSTP': miss
+[13:06:16.599] [bmv2] [D] [thread 21106] [12.0] [cxt 0] Action entry is NULL
+[13:06:16.599] [bmv2] [T] [thread 21106] [12.0] [cxt 0] Applying table 'table_egress_vlan_filtering'
+[13:06:16.599] [bmv2] [D] [thread 21106] [12.0] [cxt 0] Looking up key:
+* egress_metadata.out_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:16.599] [bmv2] [D] [thread 21106] [12.0] [cxt 0] Table 'table_egress_vlan_filtering': miss
+[13:06:16.599] [bmv2] [D] [thread 21106] [12.0] [cxt 0] Action entry is NULL
+[13:06:16.599] [bmv2] [D] [thread 21106] [12.0] [cxt 0] Pipeline 'egress': end
+[13:06:16.599] [bmv2] [D] [thread 21106] [12.0] [cxt 0] Deparser 'deparser': start
+[13:06:16.599] [bmv2] [D] [thread 21106] [12.0] [cxt 0] Deparsing header 'ethernet'
+[13:06:16.599] [bmv2] [D] [thread 21106] [12.0] [cxt 0] Deparser 'deparser': end
+[13:06:16.599] [bmv2] [D] [thread 21106] [13.0] [cxt 0] Pipeline 'egress': start
+[13:06:16.599] [bmv2] [T] [thread 21106] [13.0] [cxt 0] Applying table 'table_egress_xSTP'
+[13:06:16.599] [bmv2] [D] [thread 21106] [13.0] [cxt 0] Looking up key:
+* egress_metadata.out_if : 00
+* ingress_metadata.stp_id: 00
+
+[13:06:16.599] [bmv2] [D] [thread 21106] [13.0] [cxt 0] Table 'table_egress_xSTP': miss
+[13:06:16.599] [bmv2] [D] [thread 21106] [13.0] [cxt 0] Action entry is NULL
+[13:06:16.599] [bmv2] [T] [thread 21106] [13.0] [cxt 0] Applying table 'table_egress_vlan_filtering'
+[13:06:16.599] [bmv2] [D] [thread 21106] [13.0] [cxt 0] Looking up key:
+* egress_metadata.out_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:16.599] [bmv2] [D] [thread 21106] [13.0] [cxt 0] Table 'table_egress_vlan_filtering': miss
+[13:06:16.599] [bmv2] [D] [thread 21106] [13.0] [cxt 0] Action entry is NULL
+[13:06:16.599] [bmv2] [D] [thread 21106] [13.0] [cxt 0] Pipeline 'egress': end
+[13:06:16.599] [bmv2] [D] [thread 21106] [13.0] [cxt 0] Deparser 'deparser': start
+[13:06:16.599] [bmv2] [D] [thread 21106] [13.0] [cxt 0] Deparsing header 'ethernet'
+[13:06:16.599] [bmv2] [D] [thread 21106] [13.0] [cxt 0] Deparser 'deparser': end
+[13:06:16.599] [bmv2] [D] [thread 21110] [12.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:06:16.599] [bmv2] [D] [thread 21110] [13.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Processing packet received on port 5
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Parser 'parser': start
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:06:16.602] [bmv2] [T] [thread 21105] [14.0] [cxt 0] Bytes parsed: 0
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Extracting header 'ethernet'
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:06:16.602] [bmv2] [T] [thread 21105] [14.0] [cxt 0] Bytes parsed: 14
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Parser 'parser': end
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Pipeline 'ingress': start
+[13:06:16.602] [bmv2] [T] [thread 21105] [14.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0005
+
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Table 'table_ingress_lag': miss
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Action entry is NULL
+[13:06:16.602] [bmv2] [T] [thread 21105] [14.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Table 'table_accepted_frame_type': hit with handle 0
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* vlan                  : VALID     00
+Action entry: action_set_pvid - a,
+
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Action entry is action_set_pvid - a,
+[13:06:16.602] [bmv2] [T] [thread 21105] [14.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Table 'table_ingress_l2_interface_type': hit with handle 0
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: action_set_l2_if_type - 3,0,
+
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Action entry is action_set_l2_if_type - 3,0,
+[13:06:16.602] [bmv2] [T] [thread 21105] [14.0] [cxt 0] Applying table 'table_ingress_vlan_filtering'
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Table 'table_ingress_vlan_filtering': hit with handle 0
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: _nop - 
+
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Action entry is _nop - 
+[13:06:16.602] [bmv2] [T] [thread 21105] [14.0] [cxt 0] Applying table 'table_ingress_vlan'
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Table 'table_ingress_vlan': miss
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Action entry is NULL
+[13:06:16.602] [bmv2] [T] [thread 21105] [14.0] [cxt 0] Applying table 'table_xSTP_instance'
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Table 'table_xSTP_instance': miss
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Action entry is NULL
+[13:06:16.602] [bmv2] [T] [thread 21105] [14.0] [cxt 0] Applying table 'table_xSTP'
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+* ingress_metadata.stp_id     : 00
+
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Table 'table_xSTP': miss
+[13:06:16.602] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Action entry is NULL
+[13:06:16.602] [bmv2] [T] [thread 21105] [14.0] [cxt 0] Applying table 'table_vbridge'
+[13:06:16.603] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+
+[13:06:16.603] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Table 'table_vbridge': hit with handle 0
+[13:06:16.603] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.bridge_port: EXACT     00
+Action entry: action_set_bridge_id - 0,
+
+[13:06:16.603] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Action entry is action_set_bridge_id - 0,
+[13:06:16.603] [bmv2] [T] [thread 21105] [14.0] [cxt 0] Applying table 'table_learn_fdb'
+[13:06:16.603] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Looking up key:
+* ethernet.srcAddr          : 62065c20916c
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.603] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Table 'table_learn_fdb': miss
+[13:06:16.603] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Action entry is NULL
+[13:06:16.603] [bmv2] [T] [thread 21105] [14.0] [cxt 0] Applying table 'table_l3_interface'
+[13:06:16.603] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 3333000000fb
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.603] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Table 'table_l3_interface': miss
+[13:06:16.603] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Action entry is NULL
+[13:06:16.603] [bmv2] [T] [thread 21105] [14.0] [cxt 0] Applying table 'table_fdb'
+[13:06:16.603] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 3333000000fb
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.603] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Table 'table_fdb': miss
+[13:06:16.603] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Action entry is NULL
+[13:06:16.603] [bmv2] [T] [thread 21105] [14.0] [cxt 0] Applying table 'table_unknown_unicast'
+[13:06:16.603] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.603] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Table 'table_unknown_unicast': miss
+[13:06:16.603] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Action entry is NULL
+[13:06:16.603] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Pipeline 'ingress': end
+[13:06:16.603] [bmv2] [D] [thread 21105] [14.0] [cxt 0] Egress port is 0
+[13:06:16.603] [bmv2] [D] [thread 21106] [14.0] [cxt 0] Pipeline 'egress': start
+[13:06:16.603] [bmv2] [T] [thread 21106] [14.0] [cxt 0] Applying table 'table_egress_xSTP'
+[13:06:16.603] [bmv2] [D] [thread 21106] [14.0] [cxt 0] Looking up key:
+* egress_metadata.out_if : 00
+* ingress_metadata.stp_id: 00
+
+[13:06:16.603] [bmv2] [D] [thread 21106] [14.0] [cxt 0] Table 'table_egress_xSTP': miss
+[13:06:16.603] [bmv2] [D] [thread 21106] [14.0] [cxt 0] Action entry is NULL
+[13:06:16.603] [bmv2] [T] [thread 21106] [14.0] [cxt 0] Applying table 'table_egress_vlan_filtering'
+[13:06:16.603] [bmv2] [D] [thread 21106] [14.0] [cxt 0] Looking up key:
+* egress_metadata.out_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:16.603] [bmv2] [D] [thread 21106] [14.0] [cxt 0] Table 'table_egress_vlan_filtering': miss
+[13:06:16.603] [bmv2] [D] [thread 21106] [14.0] [cxt 0] Action entry is NULL
+[13:06:16.603] [bmv2] [D] [thread 21106] [14.0] [cxt 0] Pipeline 'egress': end
+[13:06:16.603] [bmv2] [D] [thread 21106] [14.0] [cxt 0] Deparser 'deparser': start
+[13:06:16.603] [bmv2] [D] [thread 21106] [14.0] [cxt 0] Deparsing header 'ethernet'
+[13:06:16.603] [bmv2] [D] [thread 21106] [14.0] [cxt 0] Deparser 'deparser': end
+[13:06:16.603] [bmv2] [D] [thread 21110] [14.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Processing packet received on port 3
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Parser 'parser': start
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:06:16.687] [bmv2] [T] [thread 21105] [15.0] [cxt 0] Bytes parsed: 0
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Extracting header 'ethernet'
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:06:16.687] [bmv2] [T] [thread 21105] [15.0] [cxt 0] Bytes parsed: 14
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Parser 'parser': end
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Pipeline 'ingress': start
+[13:06:16.687] [bmv2] [T] [thread 21105] [15.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0003
+
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Table 'table_ingress_lag': miss
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Action entry is NULL
+[13:06:16.687] [bmv2] [T] [thread 21105] [15.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Table 'table_accepted_frame_type': hit with handle 0
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* vlan                  : VALID     00
+Action entry: action_set_pvid - a,
+
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Action entry is action_set_pvid - a,
+[13:06:16.687] [bmv2] [T] [thread 21105] [15.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Table 'table_ingress_l2_interface_type': hit with handle 0
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: action_set_l2_if_type - 3,0,
+
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Action entry is action_set_l2_if_type - 3,0,
+[13:06:16.687] [bmv2] [T] [thread 21105] [15.0] [cxt 0] Applying table 'table_ingress_vlan_filtering'
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Table 'table_ingress_vlan_filtering': hit with handle 0
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: _nop - 
+
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Action entry is _nop - 
+[13:06:16.687] [bmv2] [T] [thread 21105] [15.0] [cxt 0] Applying table 'table_ingress_vlan'
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Table 'table_ingress_vlan': miss
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Action entry is NULL
+[13:06:16.687] [bmv2] [T] [thread 21105] [15.0] [cxt 0] Applying table 'table_xSTP_instance'
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Table 'table_xSTP_instance': miss
+[13:06:16.687] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Action entry is NULL
+[13:06:16.688] [bmv2] [T] [thread 21105] [15.0] [cxt 0] Applying table 'table_xSTP'
+[13:06:16.688] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+* ingress_metadata.stp_id     : 00
+
+[13:06:16.688] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Table 'table_xSTP': miss
+[13:06:16.688] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Action entry is NULL
+[13:06:16.688] [bmv2] [T] [thread 21105] [15.0] [cxt 0] Applying table 'table_vbridge'
+[13:06:16.688] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+
+[13:06:16.688] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Table 'table_vbridge': hit with handle 0
+[13:06:16.688] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.bridge_port: EXACT     00
+Action entry: action_set_bridge_id - 0,
+
+[13:06:16.688] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Action entry is action_set_bridge_id - 0,
+[13:06:16.688] [bmv2] [T] [thread 21105] [15.0] [cxt 0] Applying table 'table_learn_fdb'
+[13:06:16.688] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Looking up key:
+* ethernet.srcAddr          : c2b502f2026f
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.688] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Table 'table_learn_fdb': miss
+[13:06:16.688] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Action entry is NULL
+[13:06:16.688] [bmv2] [T] [thread 21105] [15.0] [cxt 0] Applying table 'table_l3_interface'
+[13:06:16.688] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 3333000000fb
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.688] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Table 'table_l3_interface': miss
+[13:06:16.688] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Action entry is NULL
+[13:06:16.688] [bmv2] [T] [thread 21105] [15.0] [cxt 0] Applying table 'table_mc_l2_sg_g'
+[13:06:16.688] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_id: 00
+* ipv4.srcAddr              : 00000000
+* ipv4.dstAddr              : 00000000
+
+[13:06:16.688] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Table 'table_mc_l2_sg_g': miss
+[13:06:16.688] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Action entry is NULL
+[13:06:16.688] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Pipeline 'ingress': end
+[13:06:16.688] [bmv2] [D] [thread 21105] [15.0] [cxt 0] Egress port is 0
+[13:06:16.688] [bmv2] [D] [thread 21106] [15.0] [cxt 0] Pipeline 'egress': start
+[13:06:16.688] [bmv2] [T] [thread 21106] [15.0] [cxt 0] Applying table 'table_egress_xSTP'
+[13:06:16.688] [bmv2] [D] [thread 21106] [15.0] [cxt 0] Looking up key:
+* egress_metadata.out_if : 00
+* ingress_metadata.stp_id: 00
+
+[13:06:16.688] [bmv2] [D] [thread 21106] [15.0] [cxt 0] Table 'table_egress_xSTP': miss
+[13:06:16.688] [bmv2] [D] [thread 21106] [15.0] [cxt 0] Action entry is NULL
+[13:06:16.688] [bmv2] [T] [thread 21106] [15.0] [cxt 0] Applying table 'table_egress_vlan_filtering'
+[13:06:16.688] [bmv2] [D] [thread 21106] [15.0] [cxt 0] Looking up key:
+* egress_metadata.out_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:16.688] [bmv2] [D] [thread 21106] [15.0] [cxt 0] Table 'table_egress_vlan_filtering': miss
+[13:06:16.688] [bmv2] [D] [thread 21106] [15.0] [cxt 0] Action entry is NULL
+[13:06:16.688] [bmv2] [D] [thread 21106] [15.0] [cxt 0] Pipeline 'egress': end
+[13:06:16.688] [bmv2] [D] [thread 21106] [15.0] [cxt 0] Deparser 'deparser': start
+[13:06:16.688] [bmv2] [D] [thread 21106] [15.0] [cxt 0] Deparsing header 'ethernet'
+[13:06:16.688] [bmv2] [D] [thread 21106] [15.0] [cxt 0] Deparser 'deparser': end
+[13:06:16.688] [bmv2] [D] [thread 21110] [15.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Processing packet received on port 0
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Parser 'parser': start
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:06:16.693] [bmv2] [T] [thread 21105] [16.0] [cxt 0] Bytes parsed: 0
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Extracting header 'ethernet'
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:06:16.693] [bmv2] [T] [thread 21105] [16.0] [cxt 0] Bytes parsed: 14
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Parser 'parser': end
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Pipeline 'ingress': start
+[13:06:16.693] [bmv2] [T] [thread 21105] [16.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0000
+
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Table 'table_ingress_lag': hit with handle 0
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Dumping entry 0
+Match key:
+* standard_metadata.ingress_port: EXACT     0000
+Action entry: action_set_lag_l2if - 0,0,0,
+
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Action entry is action_set_lag_l2if - 0,0,0,
+[13:06:16.693] [bmv2] [T] [thread 21105] [16.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Table 'table_accepted_frame_type': hit with handle 0
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* vlan                  : VALID     00
+Action entry: action_set_pvid - a,
+
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Action entry is action_set_pvid - a,
+[13:06:16.693] [bmv2] [T] [thread 21105] [16.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Table 'table_ingress_l2_interface_type': hit with handle 0
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: action_set_l2_if_type - 3,0,
+
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Action entry is action_set_l2_if_type - 3,0,
+[13:06:16.693] [bmv2] [T] [thread 21105] [16.0] [cxt 0] Applying table 'table_ingress_vlan_filtering'
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Table 'table_ingress_vlan_filtering': hit with handle 0
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: _nop - 
+
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Action entry is _nop - 
+[13:06:16.693] [bmv2] [T] [thread 21105] [16.0] [cxt 0] Applying table 'table_ingress_vlan'
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Table 'table_ingress_vlan': miss
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Action entry is NULL
+[13:06:16.693] [bmv2] [T] [thread 21105] [16.0] [cxt 0] Applying table 'table_xSTP_instance'
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Table 'table_xSTP_instance': miss
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Action entry is NULL
+[13:06:16.693] [bmv2] [T] [thread 21105] [16.0] [cxt 0] Applying table 'table_xSTP'
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+* ingress_metadata.stp_id     : 00
+
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Table 'table_xSTP': miss
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Action entry is NULL
+[13:06:16.693] [bmv2] [T] [thread 21105] [16.0] [cxt 0] Applying table 'table_vbridge'
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Table 'table_vbridge': hit with handle 0
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.bridge_port: EXACT     00
+Action entry: action_set_bridge_id - 0,
+
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Action entry is action_set_bridge_id - 0,
+[13:06:16.693] [bmv2] [T] [thread 21105] [16.0] [cxt 0] Applying table 'table_learn_fdb'
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Looking up key:
+* ethernet.srcAddr          : 3695540d4897
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Table 'table_learn_fdb': miss
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Action entry is NULL
+[13:06:16.693] [bmv2] [T] [thread 21105] [16.0] [cxt 0] Applying table 'table_l3_interface'
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 3333000000fb
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Table 'table_l3_interface': miss
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Action entry is NULL
+[13:06:16.693] [bmv2] [T] [thread 21105] [16.0] [cxt 0] Applying table 'table_fdb'
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 3333000000fb
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Table 'table_fdb': miss
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Action entry is NULL
+[13:06:16.693] [bmv2] [T] [thread 21105] [16.0] [cxt 0] Applying table 'table_unknown_unicast'
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Table 'table_unknown_unicast': miss
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Action entry is NULL
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Pipeline 'ingress': end
+[13:06:16.693] [bmv2] [D] [thread 21105] [16.0] [cxt 0] Egress port is 0
+[13:06:16.693] [bmv2] [D] [thread 21106] [16.0] [cxt 0] Pipeline 'egress': start
+[13:06:16.693] [bmv2] [T] [thread 21106] [16.0] [cxt 0] Applying table 'table_egress_xSTP'
+[13:06:16.694] [bmv2] [D] [thread 21106] [16.0] [cxt 0] Looking up key:
+* egress_metadata.out_if : 00
+* ingress_metadata.stp_id: 00
+
+[13:06:16.694] [bmv2] [D] [thread 21106] [16.0] [cxt 0] Table 'table_egress_xSTP': miss
+[13:06:16.694] [bmv2] [D] [thread 21106] [16.0] [cxt 0] Action entry is NULL
+[13:06:16.694] [bmv2] [T] [thread 21106] [16.0] [cxt 0] Applying table 'table_egress_vlan_filtering'
+[13:06:16.694] [bmv2] [D] [thread 21106] [16.0] [cxt 0] Looking up key:
+* egress_metadata.out_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:16.694] [bmv2] [D] [thread 21106] [16.0] [cxt 0] Table 'table_egress_vlan_filtering': miss
+[13:06:16.694] [bmv2] [D] [thread 21106] [16.0] [cxt 0] Action entry is NULL
+[13:06:16.694] [bmv2] [D] [thread 21106] [16.0] [cxt 0] Pipeline 'egress': end
+[13:06:16.694] [bmv2] [D] [thread 21106] [16.0] [cxt 0] Deparser 'deparser': start
+[13:06:16.694] [bmv2] [D] [thread 21106] [16.0] [cxt 0] Deparsing header 'ethernet'
+[13:06:16.694] [bmv2] [D] [thread 21106] [16.0] [cxt 0] Deparser 'deparser': end
+[13:06:16.694] [bmv2] [D] [thread 21110] [16.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Processing packet received on port 1
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Parser 'parser': start
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:06:16.805] [bmv2] [T] [thread 21105] [17.0] [cxt 0] Bytes parsed: 0
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Extracting header 'ethernet'
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:06:16.805] [bmv2] [T] [thread 21105] [17.0] [cxt 0] Bytes parsed: 14
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Parser 'parser': end
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Pipeline 'ingress': start
+[13:06:16.805] [bmv2] [T] [thread 21105] [17.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0001
+
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Table 'table_ingress_lag': hit with handle 1
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Dumping entry 1
+Match key:
+* standard_metadata.ingress_port: EXACT     0001
+Action entry: action_set_lag_l2if - 0,0,1,
+
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Action entry is action_set_lag_l2if - 0,0,1,
+[13:06:16.805] [bmv2] [T] [thread 21105] [17.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 01
+* vlan                  : 00
+
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Table 'table_accepted_frame_type': hit with handle 1
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Dumping entry 1
+Match key:
+* ingress_metadata.l2_if: EXACT     01
+* vlan                  : VALID     00
+Action entry: action_set_pvid - a,
+
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Action entry is action_set_pvid - a,
+[13:06:16.805] [bmv2] [T] [thread 21105] [17.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 01
+* ingress_metadata.vid  : 000a
+
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Table 'table_ingress_l2_interface_type': hit with handle 1
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Dumping entry 1
+Match key:
+* ingress_metadata.l2_if: EXACT     01
+* ingress_metadata.vid  : EXACT     000a
+Action entry: action_set_l2_if_type - 3,1,
+
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Action entry is action_set_l2_if_type - 3,1,
+[13:06:16.805] [bmv2] [T] [thread 21105] [17.0] [cxt 0] Applying table 'table_ingress_vlan_filtering'
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 01
+* ingress_metadata.vid  : 000a
+
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Table 'table_ingress_vlan_filtering': hit with handle 1
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Dumping entry 1
+Match key:
+* ingress_metadata.l2_if: EXACT     01
+* ingress_metadata.vid  : EXACT     000a
+Action entry: _nop - 
+
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Action entry is _nop - 
+[13:06:16.805] [bmv2] [T] [thread 21105] [17.0] [cxt 0] Applying table 'table_ingress_vlan'
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Table 'table_ingress_vlan': miss
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Action entry is NULL
+[13:06:16.805] [bmv2] [T] [thread 21105] [17.0] [cxt 0] Applying table 'table_xSTP_instance'
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Table 'table_xSTP_instance': miss
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Action entry is NULL
+[13:06:16.805] [bmv2] [T] [thread 21105] [17.0] [cxt 0] Applying table 'table_xSTP'
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 01
+* ingress_metadata.stp_id     : 00
+
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Table 'table_xSTP': miss
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Action entry is NULL
+[13:06:16.805] [bmv2] [T] [thread 21105] [17.0] [cxt 0] Applying table 'table_vbridge'
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 01
+
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Table 'table_vbridge': hit with handle 1
+[13:06:16.805] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Dumping entry 1
+Match key:
+* ingress_metadata.bridge_port: EXACT     01
+Action entry: action_set_bridge_id - 0,
+
+[13:06:16.806] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Action entry is action_set_bridge_id - 0,
+[13:06:16.806] [bmv2] [T] [thread 21105] [17.0] [cxt 0] Applying table 'table_learn_fdb'
+[13:06:16.806] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Looking up key:
+* ethernet.srcAddr          : 420be747aed1
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.806] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Table 'table_learn_fdb': miss
+[13:06:16.806] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Action entry is NULL
+[13:06:16.806] [bmv2] [T] [thread 21105] [17.0] [cxt 0] Applying table 'table_l3_interface'
+[13:06:16.806] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 3333000000fb
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.806] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Table 'table_l3_interface': miss
+[13:06:16.806] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Action entry is NULL
+[13:06:16.806] [bmv2] [T] [thread 21105] [17.0] [cxt 0] Applying table 'table_fdb'
+[13:06:16.806] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 3333000000fb
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.806] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Table 'table_fdb': miss
+[13:06:16.806] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Action entry is NULL
+[13:06:16.806] [bmv2] [T] [thread 21105] [17.0] [cxt 0] Applying table 'table_unknown_unicast'
+[13:06:16.806] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.806] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Table 'table_unknown_unicast': miss
+[13:06:16.806] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Action entry is NULL
+[13:06:16.806] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Pipeline 'ingress': end
+[13:06:16.806] [bmv2] [D] [thread 21105] [17.0] [cxt 0] Egress port is 0
+[13:06:16.806] [bmv2] [D] [thread 21106] [17.0] [cxt 0] Pipeline 'egress': start
+[13:06:16.806] [bmv2] [T] [thread 21106] [17.0] [cxt 0] Applying table 'table_egress_xSTP'
+[13:06:16.806] [bmv2] [D] [thread 21106] [17.0] [cxt 0] Looking up key:
+* egress_metadata.out_if : 00
+* ingress_metadata.stp_id: 00
+
+[13:06:16.806] [bmv2] [D] [thread 21106] [17.0] [cxt 0] Table 'table_egress_xSTP': miss
+[13:06:16.806] [bmv2] [D] [thread 21106] [17.0] [cxt 0] Action entry is NULL
+[13:06:16.806] [bmv2] [T] [thread 21106] [17.0] [cxt 0] Applying table 'table_egress_vlan_filtering'
+[13:06:16.806] [bmv2] [D] [thread 21106] [17.0] [cxt 0] Looking up key:
+* egress_metadata.out_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:16.806] [bmv2] [D] [thread 21106] [17.0] [cxt 0] Table 'table_egress_vlan_filtering': miss
+[13:06:16.806] [bmv2] [D] [thread 21106] [17.0] [cxt 0] Action entry is NULL
+[13:06:16.806] [bmv2] [D] [thread 21106] [17.0] [cxt 0] Pipeline 'egress': end
+[13:06:16.806] [bmv2] [D] [thread 21106] [17.0] [cxt 0] Deparser 'deparser': start
+[13:06:16.806] [bmv2] [D] [thread 21106] [17.0] [cxt 0] Deparsing header 'ethernet'
+[13:06:16.806] [bmv2] [D] [thread 21106] [17.0] [cxt 0] Deparser 'deparser': end
+[13:06:16.806] [bmv2] [D] [thread 21110] [17.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Processing packet received on port 2
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Parser 'parser': start
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:06:16.979] [bmv2] [T] [thread 21105] [18.0] [cxt 0] Bytes parsed: 0
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Extracting header 'ethernet'
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:06:16.979] [bmv2] [T] [thread 21105] [18.0] [cxt 0] Bytes parsed: 14
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Parser 'parser': end
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Pipeline 'ingress': start
+[13:06:16.979] [bmv2] [T] [thread 21105] [18.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0002
+
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Table 'table_ingress_lag': miss
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Action entry is NULL
+[13:06:16.979] [bmv2] [T] [thread 21105] [18.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Table 'table_accepted_frame_type': hit with handle 0
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* vlan                  : VALID     00
+Action entry: action_set_pvid - a,
+
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Action entry is action_set_pvid - a,
+[13:06:16.979] [bmv2] [T] [thread 21105] [18.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Table 'table_ingress_l2_interface_type': hit with handle 0
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: action_set_l2_if_type - 3,0,
+
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Action entry is action_set_l2_if_type - 3,0,
+[13:06:16.979] [bmv2] [T] [thread 21105] [18.0] [cxt 0] Applying table 'table_ingress_vlan_filtering'
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Table 'table_ingress_vlan_filtering': hit with handle 0
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: _nop - 
+
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Action entry is _nop - 
+[13:06:16.979] [bmv2] [T] [thread 21105] [18.0] [cxt 0] Applying table 'table_ingress_vlan'
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Table 'table_ingress_vlan': miss
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Action entry is NULL
+[13:06:16.979] [bmv2] [T] [thread 21105] [18.0] [cxt 0] Applying table 'table_xSTP_instance'
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Table 'table_xSTP_instance': miss
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Action entry is NULL
+[13:06:16.979] [bmv2] [T] [thread 21105] [18.0] [cxt 0] Applying table 'table_xSTP'
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+* ingress_metadata.stp_id     : 00
+
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Table 'table_xSTP': miss
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Action entry is NULL
+[13:06:16.979] [bmv2] [T] [thread 21105] [18.0] [cxt 0] Applying table 'table_vbridge'
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Table 'table_vbridge': hit with handle 0
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.bridge_port: EXACT     00
+Action entry: action_set_bridge_id - 0,
+
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Action entry is action_set_bridge_id - 0,
+[13:06:16.979] [bmv2] [T] [thread 21105] [18.0] [cxt 0] Applying table 'table_learn_fdb'
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Looking up key:
+* ethernet.srcAddr          : 1667dc079519
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Table 'table_learn_fdb': miss
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Action entry is NULL
+[13:06:16.979] [bmv2] [T] [thread 21105] [18.0] [cxt 0] Applying table 'table_l3_interface'
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 3333000000fb
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Table 'table_l3_interface': miss
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Action entry is NULL
+[13:06:16.979] [bmv2] [T] [thread 21105] [18.0] [cxt 0] Applying table 'table_fdb'
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 3333000000fb
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Table 'table_fdb': miss
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Action entry is NULL
+[13:06:16.979] [bmv2] [T] [thread 21105] [18.0] [cxt 0] Applying table 'table_unknown_unicast'
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_id: 00
+
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Table 'table_unknown_unicast': miss
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Action entry is NULL
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Pipeline 'ingress': end
+[13:06:16.979] [bmv2] [D] [thread 21105] [18.0] [cxt 0] Egress port is 0
+[13:06:16.979] [bmv2] [D] [thread 21106] [18.0] [cxt 0] Pipeline 'egress': start
+[13:06:16.979] [bmv2] [T] [thread 21106] [18.0] [cxt 0] Applying table 'table_egress_xSTP'
+[13:06:16.979] [bmv2] [D] [thread 21106] [18.0] [cxt 0] Looking up key:
+* egress_metadata.out_if : 00
+* ingress_metadata.stp_id: 00
+
+[13:06:16.979] [bmv2] [D] [thread 21106] [18.0] [cxt 0] Table 'table_egress_xSTP': miss
+[13:06:16.980] [bmv2] [D] [thread 21106] [18.0] [cxt 0] Action entry is NULL
+[13:06:16.980] [bmv2] [T] [thread 21106] [18.0] [cxt 0] Applying table 'table_egress_vlan_filtering'
+[13:06:16.980] [bmv2] [D] [thread 21106] [18.0] [cxt 0] Looking up key:
+* egress_metadata.out_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:16.980] [bmv2] [D] [thread 21106] [18.0] [cxt 0] Table 'table_egress_vlan_filtering': miss
+[13:06:16.980] [bmv2] [D] [thread 21106] [18.0] [cxt 0] Action entry is NULL
+[13:06:16.980] [bmv2] [D] [thread 21106] [18.0] [cxt 0] Pipeline 'egress': end
+[13:06:16.980] [bmv2] [D] [thread 21106] [18.0] [cxt 0] Deparser 'deparser': start
+[13:06:16.980] [bmv2] [D] [thread 21106] [18.0] [cxt 0] Deparsing header 'ethernet'
+[13:06:16.980] [bmv2] [D] [thread 21106] [18.0] [cxt 0] Deparser 'deparser': end
+[13:06:16.980] [bmv2] [D] [thread 21110] [18.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:06:17.017] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Processing packet received on port 0
+[13:06:17.017] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Parser 'parser': start
+[13:06:17.017] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:06:17.017] [bmv2] [T] [thread 21105] [19.0] [cxt 0] Bytes parsed: 0
+[13:06:17.017] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Extracting header 'ethernet'
+[13:06:17.017] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:06:17.017] [bmv2] [T] [thread 21105] [19.0] [cxt 0] Bytes parsed: 14
+[13:06:17.017] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Parser 'parser': end
+[13:06:17.017] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Pipeline 'ingress': start
+[13:06:17.017] [bmv2] [T] [thread 21105] [19.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0000
+
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Table 'table_ingress_lag': hit with handle 0
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Dumping entry 0
+Match key:
+* standard_metadata.ingress_port: EXACT     0000
+Action entry: action_set_lag_l2if - 0,0,0,
+
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Action entry is action_set_lag_l2if - 0,0,0,
+[13:06:17.018] [bmv2] [T] [thread 21105] [19.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Table 'table_accepted_frame_type': hit with handle 0
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* vlan                  : VALID     00
+Action entry: action_set_pvid - a,
+
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Action entry is action_set_pvid - a,
+[13:06:17.018] [bmv2] [T] [thread 21105] [19.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Table 'table_ingress_l2_interface_type': hit with handle 0
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: action_set_l2_if_type - 3,0,
+
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Action entry is action_set_l2_if_type - 3,0,
+[13:06:17.018] [bmv2] [T] [thread 21105] [19.0] [cxt 0] Applying table 'table_ingress_vlan_filtering'
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Table 'table_ingress_vlan_filtering': hit with handle 0
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: _nop - 
+
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Action entry is _nop - 
+[13:06:17.018] [bmv2] [T] [thread 21105] [19.0] [cxt 0] Applying table 'table_ingress_vlan'
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Table 'table_ingress_vlan': miss
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Action entry is NULL
+[13:06:17.018] [bmv2] [T] [thread 21105] [19.0] [cxt 0] Applying table 'table_xSTP_instance'
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Table 'table_xSTP_instance': miss
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Action entry is NULL
+[13:06:17.018] [bmv2] [T] [thread 21105] [19.0] [cxt 0] Applying table 'table_xSTP'
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+* ingress_metadata.stp_id     : 00
+
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Table 'table_xSTP': miss
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Action entry is NULL
+[13:06:17.018] [bmv2] [T] [thread 21105] [19.0] [cxt 0] Applying table 'table_vbridge'
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Table 'table_vbridge': hit with handle 0
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.bridge_port: EXACT     00
+Action entry: action_set_bridge_id - 0,
+
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Action entry is action_set_bridge_id - 0,
+[13:06:17.018] [bmv2] [T] [thread 21105] [19.0] [cxt 0] Applying table 'table_learn_fdb'
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Looking up key:
+* ethernet.srcAddr          : 0e84a3a66867
+* ingress_metadata.bridge_id: 00
+
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Table 'table_learn_fdb': miss
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Action entry is NULL
+[13:06:17.018] [bmv2] [T] [thread 21105] [19.0] [cxt 0] Applying table 'table_l3_interface'
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 3333000000fb
+* ingress_metadata.bridge_id: 00
+
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Table 'table_l3_interface': miss
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Action entry is NULL
+[13:06:17.018] [bmv2] [T] [thread 21105] [19.0] [cxt 0] Applying table 'table_fdb'
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 3333000000fb
+* ingress_metadata.bridge_id: 00
+
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Table 'table_fdb': miss
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Action entry is NULL
+[13:06:17.018] [bmv2] [T] [thread 21105] [19.0] [cxt 0] Applying table 'table_unknown_unicast'
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_id: 00
+
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Table 'table_unknown_unicast': miss
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Action entry is NULL
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Pipeline 'ingress': end
+[13:06:17.018] [bmv2] [D] [thread 21105] [19.0] [cxt 0] Egress port is 0
+[13:06:17.018] [bmv2] [D] [thread 21106] [19.0] [cxt 0] Pipeline 'egress': start
+[13:06:17.018] [bmv2] [T] [thread 21106] [19.0] [cxt 0] Applying table 'table_egress_xSTP'
+[13:06:17.018] [bmv2] [D] [thread 21106] [19.0] [cxt 0] Looking up key:
+* egress_metadata.out_if : 00
+* ingress_metadata.stp_id: 00
+
+[13:06:17.018] [bmv2] [D] [thread 21106] [19.0] [cxt 0] Table 'table_egress_xSTP': miss
+[13:06:17.018] [bmv2] [D] [thread 21106] [19.0] [cxt 0] Action entry is NULL
+[13:06:17.018] [bmv2] [T] [thread 21106] [19.0] [cxt 0] Applying table 'table_egress_vlan_filtering'
+[13:06:17.018] [bmv2] [D] [thread 21106] [19.0] [cxt 0] Looking up key:
+* egress_metadata.out_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:17.018] [bmv2] [D] [thread 21106] [19.0] [cxt 0] Table 'table_egress_vlan_filtering': miss
+[13:06:17.018] [bmv2] [D] [thread 21106] [19.0] [cxt 0] Action entry is NULL
+[13:06:17.018] [bmv2] [D] [thread 21106] [19.0] [cxt 0] Pipeline 'egress': end
+[13:06:17.018] [bmv2] [D] [thread 21106] [19.0] [cxt 0] Deparser 'deparser': start
+[13:06:17.018] [bmv2] [D] [thread 21106] [19.0] [cxt 0] Deparsing header 'ethernet'
+[13:06:17.018] [bmv2] [D] [thread 21106] [19.0] [cxt 0] Deparser 'deparser': end
+[13:06:17.018] [bmv2] [D] [thread 21110] [19.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:06:17.206] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Processing packet received on port 4
+[13:06:17.206] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Parser 'parser': start
+[13:06:17.206] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:06:17.206] [bmv2] [T] [thread 21105] [20.0] [cxt 0] Bytes parsed: 0
+[13:06:17.206] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Extracting header 'ethernet'
+[13:06:17.206] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:06:17.206] [bmv2] [T] [thread 21105] [20.0] [cxt 0] Bytes parsed: 14
+[13:06:17.206] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Parser 'parser': end
+[13:06:17.206] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Pipeline 'ingress': start
+[13:06:17.206] [bmv2] [T] [thread 21105] [20.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:06:17.206] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0004
+
+[13:06:17.206] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Table 'table_ingress_lag': miss
+[13:06:17.206] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Action entry is NULL
+[13:06:17.206] [bmv2] [T] [thread 21105] [20.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:06:17.206] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:06:17.206] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Table 'table_accepted_frame_type': hit with handle 0
+[13:06:17.206] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* vlan                  : VALID     00
+Action entry: action_set_pvid - a,
+
+[13:06:17.206] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Action entry is action_set_pvid - a,
+[13:06:17.206] [bmv2] [T] [thread 21105] [20.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:06:17.206] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:17.206] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Table 'table_ingress_l2_interface_type': hit with handle 0
+[13:06:17.206] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: action_set_l2_if_type - 3,0,
+
+[13:06:17.206] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Action entry is action_set_l2_if_type - 3,0,
+[13:06:17.206] [bmv2] [T] [thread 21105] [20.0] [cxt 0] Applying table 'table_ingress_vlan_filtering'
+[13:06:17.206] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Table 'table_ingress_vlan_filtering': hit with handle 0
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: _nop - 
+
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Action entry is _nop - 
+[13:06:17.207] [bmv2] [T] [thread 21105] [20.0] [cxt 0] Applying table 'table_ingress_vlan'
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Table 'table_ingress_vlan': miss
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Action entry is NULL
+[13:06:17.207] [bmv2] [T] [thread 21105] [20.0] [cxt 0] Applying table 'table_xSTP_instance'
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Table 'table_xSTP_instance': miss
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Action entry is NULL
+[13:06:17.207] [bmv2] [T] [thread 21105] [20.0] [cxt 0] Applying table 'table_xSTP'
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+* ingress_metadata.stp_id     : 00
+
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Table 'table_xSTP': miss
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Action entry is NULL
+[13:06:17.207] [bmv2] [T] [thread 21105] [20.0] [cxt 0] Applying table 'table_vbridge'
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Table 'table_vbridge': hit with handle 0
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.bridge_port: EXACT     00
+Action entry: action_set_bridge_id - 0,
+
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Action entry is action_set_bridge_id - 0,
+[13:06:17.207] [bmv2] [T] [thread 21105] [20.0] [cxt 0] Applying table 'table_learn_fdb'
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Looking up key:
+* ethernet.srcAddr          : c2bc7ac537aa
+* ingress_metadata.bridge_id: 00
+
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Table 'table_learn_fdb': miss
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Action entry is NULL
+[13:06:17.207] [bmv2] [T] [thread 21105] [20.0] [cxt 0] Applying table 'table_l3_interface'
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 3333000000fb
+* ingress_metadata.bridge_id: 00
+
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Table 'table_l3_interface': miss
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Action entry is NULL
+[13:06:17.207] [bmv2] [T] [thread 21105] [20.0] [cxt 0] Applying table 'table_mc_l2_sg_g'
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_id: 00
+* ipv4.srcAddr              : 00000000
+* ipv4.dstAddr              : 00000000
+
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Table 'table_mc_l2_sg_g': miss
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Action entry is NULL
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Pipeline 'ingress': end
+[13:06:17.207] [bmv2] [D] [thread 21105] [20.0] [cxt 0] Egress port is 0
+[13:06:17.207] [bmv2] [D] [thread 21106] [20.0] [cxt 0] Pipeline 'egress': start
+[13:06:17.207] [bmv2] [T] [thread 21106] [20.0] [cxt 0] Applying table 'table_egress_xSTP'
+[13:06:17.207] [bmv2] [D] [thread 21106] [20.0] [cxt 0] Looking up key:
+* egress_metadata.out_if : 00
+* ingress_metadata.stp_id: 00
+
+[13:06:17.207] [bmv2] [D] [thread 21106] [20.0] [cxt 0] Table 'table_egress_xSTP': miss
+[13:06:17.207] [bmv2] [D] [thread 21106] [20.0] [cxt 0] Action entry is NULL
+[13:06:17.207] [bmv2] [T] [thread 21106] [20.0] [cxt 0] Applying table 'table_egress_vlan_filtering'
+[13:06:17.207] [bmv2] [D] [thread 21106] [20.0] [cxt 0] Looking up key:
+* egress_metadata.out_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:17.207] [bmv2] [D] [thread 21106] [20.0] [cxt 0] Table 'table_egress_vlan_filtering': miss
+[13:06:17.207] [bmv2] [D] [thread 21106] [20.0] [cxt 0] Action entry is NULL
+[13:06:17.207] [bmv2] [D] [thread 21106] [20.0] [cxt 0] Pipeline 'egress': end
+[13:06:17.208] [bmv2] [D] [thread 21106] [20.0] [cxt 0] Deparser 'deparser': start
+[13:06:17.208] [bmv2] [D] [thread 21106] [20.0] [cxt 0] Deparsing header 'ethernet'
+[13:06:17.208] [bmv2] [D] [thread 21106] [20.0] [cxt 0] Deparser 'deparser': end
+[13:06:17.208] [bmv2] [D] [thread 21110] [20.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:06:17.237] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Processing packet received on port 3
+[13:06:17.237] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Parser 'parser': start
+[13:06:17.237] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:06:17.237] [bmv2] [T] [thread 21105] [21.0] [cxt 0] Bytes parsed: 0
+[13:06:17.237] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Extracting header 'ethernet'
+[13:06:17.237] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:06:17.237] [bmv2] [T] [thread 21105] [21.0] [cxt 0] Bytes parsed: 14
+[13:06:17.237] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Parser 'parser': end
+[13:06:17.237] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Pipeline 'ingress': start
+[13:06:17.237] [bmv2] [T] [thread 21105] [21.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:06:17.237] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0003
+
+[13:06:17.237] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Table 'table_ingress_lag': miss
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Action entry is NULL
+[13:06:17.238] [bmv2] [T] [thread 21105] [21.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Table 'table_accepted_frame_type': hit with handle 0
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* vlan                  : VALID     00
+Action entry: action_set_pvid - a,
+
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Action entry is action_set_pvid - a,
+[13:06:17.238] [bmv2] [T] [thread 21105] [21.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Table 'table_ingress_l2_interface_type': hit with handle 0
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: action_set_l2_if_type - 3,0,
+
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Action entry is action_set_l2_if_type - 3,0,
+[13:06:17.238] [bmv2] [T] [thread 21105] [21.0] [cxt 0] Applying table 'table_ingress_vlan_filtering'
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Table 'table_ingress_vlan_filtering': hit with handle 0
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: _nop - 
+
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Action entry is _nop - 
+[13:06:17.238] [bmv2] [T] [thread 21105] [21.0] [cxt 0] Applying table 'table_ingress_vlan'
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Table 'table_ingress_vlan': miss
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Action entry is NULL
+[13:06:17.238] [bmv2] [T] [thread 21105] [21.0] [cxt 0] Applying table 'table_xSTP_instance'
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Table 'table_xSTP_instance': miss
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Action entry is NULL
+[13:06:17.238] [bmv2] [T] [thread 21105] [21.0] [cxt 0] Applying table 'table_xSTP'
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+* ingress_metadata.stp_id     : 00
+
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Table 'table_xSTP': miss
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Action entry is NULL
+[13:06:17.238] [bmv2] [T] [thread 21105] [21.0] [cxt 0] Applying table 'table_vbridge'
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Table 'table_vbridge': hit with handle 0
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.bridge_port: EXACT     00
+Action entry: action_set_bridge_id - 0,
+
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Action entry is action_set_bridge_id - 0,
+[13:06:17.238] [bmv2] [T] [thread 21105] [21.0] [cxt 0] Applying table 'table_learn_fdb'
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Looking up key:
+* ethernet.srcAddr          : e6486c960909
+* ingress_metadata.bridge_id: 00
+
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Table 'table_learn_fdb': miss
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Action entry is NULL
+[13:06:17.238] [bmv2] [T] [thread 21105] [21.0] [cxt 0] Applying table 'table_l3_interface'
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 3333000000fb
+* ingress_metadata.bridge_id: 00
+
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Table 'table_l3_interface': miss
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Action entry is NULL
+[13:06:17.238] [bmv2] [T] [thread 21105] [21.0] [cxt 0] Applying table 'table_mc_l2_sg_g'
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_id: 00
+* ipv4.srcAddr              : 00000000
+* ipv4.dstAddr              : 00000000
+
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Table 'table_mc_l2_sg_g': miss
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Action entry is NULL
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Pipeline 'ingress': end
+[13:06:17.238] [bmv2] [D] [thread 21105] [21.0] [cxt 0] Egress port is 0
+[13:06:17.238] [bmv2] [D] [thread 21106] [21.0] [cxt 0] Pipeline 'egress': start
+[13:06:17.238] [bmv2] [T] [thread 21106] [21.0] [cxt 0] Applying table 'table_egress_xSTP'
+[13:06:17.238] [bmv2] [D] [thread 21106] [21.0] [cxt 0] Looking up key:
+* egress_metadata.out_if : 00
+* ingress_metadata.stp_id: 00
+
+[13:06:17.238] [bmv2] [D] [thread 21106] [21.0] [cxt 0] Table 'table_egress_xSTP': miss
+[13:06:17.238] [bmv2] [D] [thread 21106] [21.0] [cxt 0] Action entry is NULL
+[13:06:17.238] [bmv2] [T] [thread 21106] [21.0] [cxt 0] Applying table 'table_egress_vlan_filtering'
+[13:06:17.238] [bmv2] [D] [thread 21106] [21.0] [cxt 0] Looking up key:
+* egress_metadata.out_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:17.238] [bmv2] [D] [thread 21106] [21.0] [cxt 0] Table 'table_egress_vlan_filtering': miss
+[13:06:17.238] [bmv2] [D] [thread 21106] [21.0] [cxt 0] Action entry is NULL
+[13:06:17.238] [bmv2] [D] [thread 21106] [21.0] [cxt 0] Pipeline 'egress': end
+[13:06:17.238] [bmv2] [D] [thread 21106] [21.0] [cxt 0] Deparser 'deparser': start
+[13:06:17.238] [bmv2] [D] [thread 21106] [21.0] [cxt 0] Deparsing header 'ethernet'
+[13:06:17.238] [bmv2] [D] [thread 21106] [21.0] [cxt 0] Deparser 'deparser': end
+[13:06:17.238] [bmv2] [D] [thread 21110] [21.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Processing packet received on port 5
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Parser 'parser': start
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:06:17.300] [bmv2] [T] [thread 21105] [22.0] [cxt 0] Bytes parsed: 0
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Extracting header 'ethernet'
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Parser state 'parse_ethernet': key is 86dd
+[13:06:17.300] [bmv2] [T] [thread 21105] [22.0] [cxt 0] Bytes parsed: 14
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Parser 'parser': end
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Pipeline 'ingress': start
+[13:06:17.300] [bmv2] [T] [thread 21105] [22.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0005
+
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Table 'table_ingress_lag': miss
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Action entry is NULL
+[13:06:17.300] [bmv2] [T] [thread 21105] [22.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Table 'table_accepted_frame_type': hit with handle 0
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* vlan                  : VALID     00
+Action entry: action_set_pvid - a,
+
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Action entry is action_set_pvid - a,
+[13:06:17.300] [bmv2] [T] [thread 21105] [22.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Table 'table_ingress_l2_interface_type': hit with handle 0
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: action_set_l2_if_type - 3,0,
+
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Action entry is action_set_l2_if_type - 3,0,
+[13:06:17.300] [bmv2] [T] [thread 21105] [22.0] [cxt 0] Applying table 'table_ingress_vlan_filtering'
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Table 'table_ingress_vlan_filtering': hit with handle 0
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: _nop - 
+
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Action entry is _nop - 
+[13:06:17.300] [bmv2] [T] [thread 21105] [22.0] [cxt 0] Applying table 'table_ingress_vlan'
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Table 'table_ingress_vlan': miss
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Action entry is NULL
+[13:06:17.300] [bmv2] [T] [thread 21105] [22.0] [cxt 0] Applying table 'table_xSTP_instance'
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Table 'table_xSTP_instance': miss
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Action entry is NULL
+[13:06:17.300] [bmv2] [T] [thread 21105] [22.0] [cxt 0] Applying table 'table_xSTP'
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+* ingress_metadata.stp_id     : 00
+
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Table 'table_xSTP': miss
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Action entry is NULL
+[13:06:17.300] [bmv2] [T] [thread 21105] [22.0] [cxt 0] Applying table 'table_vbridge'
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Table 'table_vbridge': hit with handle 0
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.bridge_port: EXACT     00
+Action entry: action_set_bridge_id - 0,
+
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Action entry is action_set_bridge_id - 0,
+[13:06:17.300] [bmv2] [T] [thread 21105] [22.0] [cxt 0] Applying table 'table_learn_fdb'
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Looking up key:
+* ethernet.srcAddr          : e21129855d4d
+* ingress_metadata.bridge_id: 00
+
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Table 'table_learn_fdb': miss
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Action entry is NULL
+[13:06:17.300] [bmv2] [T] [thread 21105] [22.0] [cxt 0] Applying table 'table_l3_interface'
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 3333000000fb
+* ingress_metadata.bridge_id: 00
+
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Table 'table_l3_interface': miss
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Action entry is NULL
+[13:06:17.300] [bmv2] [T] [thread 21105] [22.0] [cxt 0] Applying table 'table_mc_l2_sg_g'
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_id: 00
+* ipv4.srcAddr              : 00000000
+* ipv4.dstAddr              : 00000000
+
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Table 'table_mc_l2_sg_g': miss
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Action entry is NULL
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Pipeline 'ingress': end
+[13:06:17.300] [bmv2] [D] [thread 21105] [22.0] [cxt 0] Egress port is 0
+[13:06:17.300] [bmv2] [D] [thread 21106] [22.0] [cxt 0] Pipeline 'egress': start
+[13:06:17.300] [bmv2] [T] [thread 21106] [22.0] [cxt 0] Applying table 'table_egress_xSTP'
+[13:06:17.300] [bmv2] [D] [thread 21106] [22.0] [cxt 0] Looking up key:
+* egress_metadata.out_if : 00
+* ingress_metadata.stp_id: 00
+
+[13:06:17.300] [bmv2] [D] [thread 21106] [22.0] [cxt 0] Table 'table_egress_xSTP': miss
+[13:06:17.300] [bmv2] [D] [thread 21106] [22.0] [cxt 0] Action entry is NULL
+[13:06:17.300] [bmv2] [T] [thread 21106] [22.0] [cxt 0] Applying table 'table_egress_vlan_filtering'
+[13:06:17.300] [bmv2] [D] [thread 21106] [22.0] [cxt 0] Looking up key:
+* egress_metadata.out_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:17.300] [bmv2] [D] [thread 21106] [22.0] [cxt 0] Table 'table_egress_vlan_filtering': miss
+[13:06:17.300] [bmv2] [D] [thread 21106] [22.0] [cxt 0] Action entry is NULL
+[13:06:17.300] [bmv2] [D] [thread 21106] [22.0] [cxt 0] Pipeline 'egress': end
+[13:06:17.300] [bmv2] [D] [thread 21106] [22.0] [cxt 0] Deparser 'deparser': start
+[13:06:17.300] [bmv2] [D] [thread 21106] [22.0] [cxt 0] Deparsing header 'ethernet'
+[13:06:17.300] [bmv2] [D] [thread 21106] [22.0] [cxt 0] Deparser 'deparser': end
+[13:06:17.300] [bmv2] [D] [thread 21110] [22.0] [cxt 0] Transmitting packet of size 203 out of port 0
+[13:06:22.868] [bmv2] [T] [thread 21162] bm_get_config_md5
+[13:06:26.633] [bmv2] [T] [thread 21162] bm_table_add_entry
+[13:06:26.633] [bmv2] [E] [thread 21162] Error when trying to add entry to table 'table_ingress_vlan_filtering'
+[13:06:26.634] [bmv2] [T] [thread 21162] bm_table_add_entry
+[13:06:26.634] [bmv2] [E] [thread 21162] Error when trying to add entry to table 'table_ingress_l2_interface_type'
+[13:06:26.634] [bmv2] [T] [thread 21162] bm_table_add_entry
+[13:06:26.634] [bmv2] [E] [thread 21162] Error when trying to add entry to table 'table_vbridge'
+[13:06:26.635] [bmv2] [T] [thread 21162] bm_table_add_entry
+[13:06:26.635] [bmv2] [E] [thread 21162] Error when trying to add entry to table 'table_ingress_vlan_filtering'
+[13:06:26.636] [bmv2] [T] [thread 21162] bm_table_add_entry
+[13:06:26.636] [bmv2] [E] [thread 21162] Error when trying to add entry to table 'table_ingress_l2_interface_type'
+[13:06:26.636] [bmv2] [T] [thread 21162] bm_table_add_entry
+[13:06:26.636] [bmv2] [E] [thread 21162] Error when trying to add entry to table 'table_vbridge'
+[13:06:26.637] [bmv2] [T] [thread 21162] bm_table_add_entry
+[13:06:26.637] [bmv2] [E] [thread 21162] Error when trying to add entry to table 'table_ingress_lag'
+[13:06:26.643] [bmv2] [T] [thread 21162] bm_table_add_entry
+[13:06:26.643] [bmv2] [E] [thread 21162] Error when trying to add entry to table 'table_accepted_frame_type'
+[13:06:26.645] [bmv2] [T] [thread 21162] bm_table_add_entry
+[13:06:26.645] [bmv2] [E] [thread 21162] Error when trying to add entry to table 'table_ingress_lag'
+[13:06:26.647] [bmv2] [T] [thread 21162] bm_table_add_entry
+[13:06:26.647] [bmv2] [E] [thread 21162] Error when trying to add entry to table 'table_accepted_frame_type'
+[13:06:26.649] [bmv2] [T] [thread 21162] bm_table_add_entry
+[13:06:26.649] [bmv2] [D] [thread 21162] Entry 16777216 added to table 'table_fdb'
+[13:06:26.649] [bmv2] [D] [thread 21162] Dumping entry 16777216
+Match key:
+* ethernet.dstAddr          : EXACT     001111111111
+* ingress_metadata.bridge_id: EXACT     00
+Action entry: action_forward_set_outIfType - 0,0,
+
+[13:06:26.650] [bmv2] [T] [thread 21162] bm_table_add_entry
+[13:06:26.650] [bmv2] [D] [thread 21162] Entry 16777217 added to table 'table_fdb'
+[13:06:26.650] [bmv2] [D] [thread 21162] Dumping entry 16777217
+Match key:
+* ethernet.dstAddr          : EXACT     002222222222
+* ingress_metadata.bridge_id: EXACT     00
+Action entry: action_forward_set_outIfType - 1,0,
+
+[13:06:26.654] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Processing packet received on port 0
+[13:06:26.654] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Parser 'parser': start
+[13:06:26.654] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:06:26.654] [bmv2] [T] [thread 21105] [23.0] [cxt 0] Bytes parsed: 0
+[13:06:26.654] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Extracting header 'ethernet'
+[13:06:26.654] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Parser state 'parse_ethernet': key is 0800
+[13:06:26.655] [bmv2] [T] [thread 21105] [23.0] [cxt 0] Bytes parsed: 14
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Extracting header 'ipv4'
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Parser state 'parse_ipv4': key is 06
+[13:06:26.655] [bmv2] [T] [thread 21105] [23.0] [cxt 0] Bytes parsed: 34
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Extracting header 'tcp'
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Parser state 'parse_tcp' has no switch, going to default next state
+[13:06:26.655] [bmv2] [T] [thread 21105] [23.0] [cxt 0] Bytes parsed: 54
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Parser 'parser': end
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Pipeline 'ingress': start
+[13:06:26.655] [bmv2] [T] [thread 21105] [23.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0000
+
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Table 'table_ingress_lag': hit with handle 0
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Dumping entry 0
+Match key:
+* standard_metadata.ingress_port: EXACT     0000
+Action entry: action_set_lag_l2if - 0,0,0,
+
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Action entry is action_set_lag_l2if - 0,0,0,
+[13:06:26.655] [bmv2] [T] [thread 21105] [23.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Table 'table_accepted_frame_type': hit with handle 0
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* vlan                  : VALID     00
+Action entry: action_set_pvid - a,
+
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Action entry is action_set_pvid - a,
+[13:06:26.655] [bmv2] [T] [thread 21105] [23.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Table 'table_ingress_l2_interface_type': hit with handle 0
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: action_set_l2_if_type - 3,0,
+
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Action entry is action_set_l2_if_type - 3,0,
+[13:06:26.655] [bmv2] [T] [thread 21105] [23.0] [cxt 0] Applying table 'table_ingress_vlan_filtering'
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Table 'table_ingress_vlan_filtering': hit with handle 0
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: _nop - 
+
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Action entry is _nop - 
+[13:06:26.655] [bmv2] [T] [thread 21105] [23.0] [cxt 0] Applying table 'table_ingress_vlan'
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Table 'table_ingress_vlan': miss
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Action entry is NULL
+[13:06:26.655] [bmv2] [T] [thread 21105] [23.0] [cxt 0] Applying table 'table_xSTP_instance'
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Table 'table_xSTP_instance': miss
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Action entry is NULL
+[13:06:26.655] [bmv2] [T] [thread 21105] [23.0] [cxt 0] Applying table 'table_xSTP'
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+* ingress_metadata.stp_id     : 00
+
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Table 'table_xSTP': miss
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Action entry is NULL
+[13:06:26.655] [bmv2] [T] [thread 21105] [23.0] [cxt 0] Applying table 'table_vbridge'
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Table 'table_vbridge': hit with handle 0
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.bridge_port: EXACT     00
+Action entry: action_set_bridge_id - 0,
+
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Action entry is action_set_bridge_id - 0,
+[13:06:26.655] [bmv2] [T] [thread 21105] [23.0] [cxt 0] Applying table 'table_learn_fdb'
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Looking up key:
+* ethernet.srcAddr          : 001111111111
+* ingress_metadata.bridge_id: 00
+
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Table 'table_learn_fdb': miss
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Action entry is NULL
+[13:06:26.655] [bmv2] [T] [thread 21105] [23.0] [cxt 0] Applying table 'table_l3_interface'
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 002222222222
+* ingress_metadata.bridge_id: 00
+
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Table 'table_l3_interface': miss
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Action entry is NULL
+[13:06:26.655] [bmv2] [T] [thread 21105] [23.0] [cxt 0] Applying table 'table_fdb'
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 002222222222
+* ingress_metadata.bridge_id: 00
+
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Table 'table_fdb': hit with handle 16777217
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Dumping entry 16777217
+Match key:
+* ethernet.dstAddr          : EXACT     002222222222
+* ingress_metadata.bridge_id: EXACT     00
+Action entry: action_forward_set_outIfType - 1,0,
+
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Action entry is action_forward_set_outIfType - 1,0,
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Pipeline 'ingress': end
+[13:06:26.655] [bmv2] [D] [thread 21105] [23.0] [cxt 0] Egress port is 1
+[13:06:26.655] [bmv2] [D] [thread 21107] [23.0] [cxt 0] Pipeline 'egress': start
+[13:06:26.655] [bmv2] [T] [thread 21107] [23.0] [cxt 0] Applying table 'table_egress_xSTP'
+[13:06:26.655] [bmv2] [D] [thread 21107] [23.0] [cxt 0] Looking up key:
+* egress_metadata.out_if : 01
+* ingress_metadata.stp_id: 00
+
+[13:06:26.655] [bmv2] [D] [thread 21107] [23.0] [cxt 0] Table 'table_egress_xSTP': miss
+[13:06:26.655] [bmv2] [D] [thread 21107] [23.0] [cxt 0] Action entry is NULL
+[13:06:26.655] [bmv2] [T] [thread 21107] [23.0] [cxt 0] Applying table 'table_egress_vlan_filtering'
+[13:06:26.655] [bmv2] [D] [thread 21107] [23.0] [cxt 0] Looking up key:
+* egress_metadata.out_if: 01
+* ingress_metadata.vid  : 000a
+
+[13:06:26.655] [bmv2] [D] [thread 21107] [23.0] [cxt 0] Table 'table_egress_vlan_filtering': miss
+[13:06:26.655] [bmv2] [D] [thread 21107] [23.0] [cxt 0] Action entry is NULL
+[13:06:26.655] [bmv2] [D] [thread 21107] [23.0] [cxt 0] Pipeline 'egress': end
+[13:06:26.655] [bmv2] [D] [thread 21107] [23.0] [cxt 0] Deparser 'deparser': start
+[13:06:26.655] [bmv2] [D] [thread 21107] [23.0] [cxt 0] Deparsing header 'ethernet'
+[13:06:26.655] [bmv2] [D] [thread 21107] [23.0] [cxt 0] Deparsing header 'ipv4'
+[13:06:26.655] [bmv2] [D] [thread 21107] [23.0] [cxt 0] Deparsing header 'tcp'
+[13:06:26.655] [bmv2] [D] [thread 21107] [23.0] [cxt 0] Deparser 'deparser': end
+[13:06:26.655] [bmv2] [D] [thread 21110] [23.0] [cxt 0] Transmitting packet of size 100 out of port 1
+[13:06:27.595] [bmv2] [T] [thread 21162] bm_mt_get_entry_from_key
+[13:06:27.596] [bmv2] [T] [thread 21162] bm_table_delete_entry
+[13:06:27.596] [bmv2] [D] [thread 21162] Removed entry 16777216 from table 'table_fdb'
+[13:06:27.597] [bmv2] [T] [thread 21162] bm_mt_get_entry_from_key
+[13:06:27.597] [bmv2] [T] [thread 21162] bm_table_delete_entry
+[13:06:27.597] [bmv2] [D] [thread 21162] Removed entry 16777217 from table 'table_fdb'
+[13:06:27.598] [bmv2] [T] [thread 21162] bm_table_add_entry
+[13:06:27.598] [bmv2] [E] [thread 21162] Error when trying to add entry to table 'table_ingress_lag'
+[13:06:27.598] [bmv2] [T] [thread 21162] bm_table_add_entry
+[13:06:27.598] [bmv2] [E] [thread 21162] Error when trying to add entry to table 'table_accepted_frame_type'
+[13:06:27.599] [bmv2] [T] [thread 21162] bm_table_add_entry
+[13:06:27.599] [bmv2] [E] [thread 21162] Error when trying to add entry to table 'table_ingress_lag'
+[13:06:27.600] [bmv2] [T] [thread 21162] bm_table_add_entry
+[13:06:27.600] [bmv2] [E] [thread 21162] Error when trying to add entry to table 'table_accepted_frame_type'
+[13:06:46.456] [bmv2] [T] [thread 21174] bm_get_config_md5
+[13:06:48.488] [bmv2] [T] [thread 21174] bm_table_add_entry
+[13:06:48.488] [bmv2] [E] [thread 21174] Error when trying to add entry to table 'table_ingress_vlan_filtering'
+[13:06:48.488] [bmv2] [T] [thread 21174] bm_table_add_entry
+[13:06:48.489] [bmv2] [E] [thread 21174] Error when trying to add entry to table 'table_ingress_l2_interface_type'
+[13:06:48.489] [bmv2] [T] [thread 21174] bm_table_add_entry
+[13:06:48.489] [bmv2] [E] [thread 21174] Error when trying to add entry to table 'table_vbridge'
+[13:06:48.490] [bmv2] [T] [thread 21174] bm_table_add_entry
+[13:06:48.490] [bmv2] [E] [thread 21174] Error when trying to add entry to table 'table_ingress_vlan_filtering'
+[13:06:48.491] [bmv2] [T] [thread 21174] bm_table_add_entry
+[13:06:48.491] [bmv2] [E] [thread 21174] Error when trying to add entry to table 'table_ingress_l2_interface_type'
+[13:06:48.491] [bmv2] [T] [thread 21174] bm_table_add_entry
+[13:06:48.491] [bmv2] [E] [thread 21174] Error when trying to add entry to table 'table_vbridge'
+[13:06:48.494] [bmv2] [T] [thread 21174] bm_table_add_entry
+[13:06:48.494] [bmv2] [E] [thread 21174] Error when trying to add entry to table 'table_ingress_lag'
+[13:06:48.494] [bmv2] [T] [thread 21174] bm_table_add_entry
+[13:06:48.494] [bmv2] [E] [thread 21174] Error when trying to add entry to table 'table_accepted_frame_type'
+[13:06:48.495] [bmv2] [T] [thread 21174] bm_table_add_entry
+[13:06:48.495] [bmv2] [E] [thread 21174] Error when trying to add entry to table 'table_ingress_lag'
+[13:06:48.496] [bmv2] [T] [thread 21174] bm_table_add_entry
+[13:06:48.496] [bmv2] [E] [thread 21174] Error when trying to add entry to table 'table_accepted_frame_type'
+[13:06:48.497] [bmv2] [T] [thread 21174] bm_table_add_entry
+[13:06:48.497] [bmv2] [D] [thread 21174] Entry 33554432 added to table 'table_fdb'
+[13:06:48.497] [bmv2] [D] [thread 21174] Dumping entry 33554432
+Match key:
+* ethernet.dstAddr          : EXACT     001111111111
+* ingress_metadata.bridge_id: EXACT     00
+Action entry: action_forward_set_outIfType - 0,0,
+
+[13:06:48.499] [bmv2] [T] [thread 21174] bm_table_add_entry
+[13:06:48.499] [bmv2] [D] [thread 21174] Entry 33554433 added to table 'table_fdb'
+[13:06:48.500] [bmv2] [D] [thread 21174] Dumping entry 33554433
+Match key:
+* ethernet.dstAddr          : EXACT     002222222222
+* ingress_metadata.bridge_id: EXACT     00
+Action entry: action_forward_set_outIfType - 1,0,
+
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Processing packet received on port 0
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Parser 'parser': start
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[13:06:48.503] [bmv2] [T] [thread 21105] [24.0] [cxt 0] Bytes parsed: 0
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Extracting header 'ethernet'
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Parser state 'parse_ethernet': key is 0800
+[13:06:48.503] [bmv2] [T] [thread 21105] [24.0] [cxt 0] Bytes parsed: 14
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Extracting header 'ipv4'
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Parser state 'parse_ipv4': key is 06
+[13:06:48.503] [bmv2] [T] [thread 21105] [24.0] [cxt 0] Bytes parsed: 34
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Extracting header 'tcp'
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Parser state 'parse_tcp' has no switch, going to default next state
+[13:06:48.503] [bmv2] [T] [thread 21105] [24.0] [cxt 0] Bytes parsed: 54
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Parser 'parser': end
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Pipeline 'ingress': start
+[13:06:48.503] [bmv2] [T] [thread 21105] [24.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0000
+
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Table 'table_ingress_lag': hit with handle 0
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Dumping entry 0
+Match key:
+* standard_metadata.ingress_port: EXACT     0000
+Action entry: action_set_lag_l2if - 0,0,0,
+
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Action entry is action_set_lag_l2if - 0,0,0,
+[13:06:48.503] [bmv2] [T] [thread 21105] [24.0] [cxt 0] Applying table 'table_accepted_frame_type'
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* vlan                  : 00
+
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Table 'table_accepted_frame_type': hit with handle 0
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* vlan                  : VALID     00
+Action entry: action_set_pvid - a,
+
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Action entry is action_set_pvid - a,
+[13:06:48.503] [bmv2] [T] [thread 21105] [24.0] [cxt 0] Applying table 'table_ingress_l2_interface_type'
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Table 'table_ingress_l2_interface_type': hit with handle 0
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: action_set_l2_if_type - 3,0,
+
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Action entry is action_set_l2_if_type - 3,0,
+[13:06:48.503] [bmv2] [T] [thread 21105] [24.0] [cxt 0] Applying table 'table_ingress_vlan_filtering'
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+* ingress_metadata.vid  : 000a
+
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Table 'table_ingress_vlan_filtering': hit with handle 0
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+Action entry: _nop - 
+
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Action entry is _nop - 
+[13:06:48.503] [bmv2] [T] [thread 21105] [24.0] [cxt 0] Applying table 'table_ingress_vlan'
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Table 'table_ingress_vlan': miss
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Action entry is NULL
+[13:06:48.503] [bmv2] [T] [thread 21105] [24.0] [cxt 0] Applying table 'table_xSTP_instance'
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Table 'table_xSTP_instance': miss
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Action entry is NULL
+[13:06:48.503] [bmv2] [T] [thread 21105] [24.0] [cxt 0] Applying table 'table_xSTP'
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+* ingress_metadata.stp_id     : 00
+
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Table 'table_xSTP': miss
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Action entry is NULL
+[13:06:48.503] [bmv2] [T] [thread 21105] [24.0] [cxt 0] Applying table 'table_vbridge'
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Table 'table_vbridge': hit with handle 0
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.bridge_port: EXACT     00
+Action entry: action_set_bridge_id - 0,
+
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Action entry is action_set_bridge_id - 0,
+[13:06:48.503] [bmv2] [T] [thread 21105] [24.0] [cxt 0] Applying table 'table_learn_fdb'
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Looking up key:
+* ethernet.srcAddr          : 001111111111
+* ingress_metadata.bridge_id: 00
+
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Table 'table_learn_fdb': miss
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Action entry is NULL
+[13:06:48.503] [bmv2] [T] [thread 21105] [24.0] [cxt 0] Applying table 'table_l3_interface'
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 002222222222
+* ingress_metadata.bridge_id: 00
+
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Table 'table_l3_interface': miss
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Action entry is NULL
+[13:06:48.503] [bmv2] [T] [thread 21105] [24.0] [cxt 0] Applying table 'table_fdb'
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 002222222222
+* ingress_metadata.bridge_id: 00
+
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Table 'table_fdb': hit with handle 33554433
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Dumping entry 33554433
+Match key:
+* ethernet.dstAddr          : EXACT     002222222222
+* ingress_metadata.bridge_id: EXACT     00
+Action entry: action_forward_set_outIfType - 1,0,
+
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Action entry is action_forward_set_outIfType - 1,0,
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Pipeline 'ingress': end
+[13:06:48.503] [bmv2] [D] [thread 21105] [24.0] [cxt 0] Egress port is 1
+[13:06:48.503] [bmv2] [D] [thread 21107] [24.0] [cxt 0] Pipeline 'egress': start
+[13:06:48.503] [bmv2] [T] [thread 21107] [24.0] [cxt 0] Applying table 'table_egress_xSTP'
+[13:06:48.503] [bmv2] [D] [thread 21107] [24.0] [cxt 0] Looking up key:
+* egress_metadata.out_if : 01
+* ingress_metadata.stp_id: 00
+
+[13:06:48.503] [bmv2] [D] [thread 21107] [24.0] [cxt 0] Table 'table_egress_xSTP': miss
+[13:06:48.503] [bmv2] [D] [thread 21107] [24.0] [cxt 0] Action entry is NULL
+[13:06:48.503] [bmv2] [T] [thread 21107] [24.0] [cxt 0] Applying table 'table_egress_vlan_filtering'
+[13:06:48.503] [bmv2] [D] [thread 21107] [24.0] [cxt 0] Looking up key:
+* egress_metadata.out_if: 01
+* ingress_metadata.vid  : 000a
+
+[13:06:48.503] [bmv2] [D] [thread 21107] [24.0] [cxt 0] Table 'table_egress_vlan_filtering': miss
+[13:06:48.503] [bmv2] [D] [thread 21107] [24.0] [cxt 0] Action entry is NULL
+[13:06:48.503] [bmv2] [D] [thread 21107] [24.0] [cxt 0] Pipeline 'egress': end
+[13:06:48.503] [bmv2] [D] [thread 21107] [24.0] [cxt 0] Deparser 'deparser': start
+[13:06:48.503] [bmv2] [D] [thread 21107] [24.0] [cxt 0] Deparsing header 'ethernet'
+[13:06:48.503] [bmv2] [D] [thread 21107] [24.0] [cxt 0] Deparsing header 'ipv4'
+[13:06:48.503] [bmv2] [D] [thread 21107] [24.0] [cxt 0] Deparsing header 'tcp'
+[13:06:48.503] [bmv2] [D] [thread 21107] [24.0] [cxt 0] Deparser 'deparser': end
+[13:06:48.503] [bmv2] [D] [thread 21110] [24.0] [cxt 0] Transmitting packet of size 100 out of port 1
+[13:06:49.419] [bmv2] [T] [thread 21174] bm_mt_get_entry_from_key
+[13:06:49.419] [bmv2] [T] [thread 21174] bm_table_delete_entry
+[13:06:49.419] [bmv2] [D] [thread 21174] Removed entry 33554432 from table 'table_fdb'
+[13:06:49.420] [bmv2] [T] [thread 21174] bm_mt_get_entry_from_key
+[13:06:49.420] [bmv2] [T] [thread 21174] bm_table_delete_entry
+[13:06:49.420] [bmv2] [D] [thread 21174] Removed entry 33554433 from table 'table_fdb'
+[13:06:49.421] [bmv2] [T] [thread 21174] bm_table_add_entry
+[13:06:49.421] [bmv2] [E] [thread 21174] Error when trying to add entry to table 'table_ingress_lag'
+[13:06:49.421] [bmv2] [T] [thread 21174] bm_table_add_entry
+[13:06:49.421] [bmv2] [E] [thread 21174] Error when trying to add entry to table 'table_accepted_frame_type'
+[13:06:49.422] [bmv2] [T] [thread 21174] bm_table_add_entry
+[13:06:49.422] [bmv2] [E] [thread 21174] Error when trying to add entry to table 'table_ingress_lag'
+[13:06:49.422] [bmv2] [T] [thread 21174] bm_table_add_entry
+[13:06:49.422] [bmv2] [E] [thread 21174] Error when trying to add entry to table 'table_accepted_frame_type'
