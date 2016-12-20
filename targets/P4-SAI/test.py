@@ -1,3 +1,0 @@
-import scapy
-
-pkt = scapy
