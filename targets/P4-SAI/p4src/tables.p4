@@ -1,5 +1,6 @@
 #include "defines.p4"
 
+// PORT
 table table_ingress_lag {
     reads {
         standard_metadata.ingress_port : exact;
@@ -12,10 +13,16 @@ table table_accepted_frame_type {
     reads {
         ingress_metadata.l2_if : exact;
         // ingress_metadata.is_tagged : exact;
+    }
+    actions {action_set_pvid;}
+    //size : 1; // TODO
+}
+
+table table_accepted_frame_type_default_internal {
+    reads {
         vlan : valid;
     }
-    actions {action_set_pvid;action_set_packet_vid;_drop;}
-    //size : 1; // TODO
+    actions {action_set_packet_vid; _drop;}
 }
 
 table table_ingress_l2_interface_type {
@@ -27,9 +34,7 @@ table table_ingress_l2_interface_type {
     //size : 1; TODO
 }
 
-//-----------
-// ingress 1d bridge
-//-----------
+// BRIDGE
 table table_vbridge {
     reads {
         ingress_metadata.bridge_port : exact;
@@ -37,7 +42,16 @@ table table_vbridge {
     actions {action_set_bridge_id; _drop;}
     //size : 1; TODO
 }
+table table_vbridge_default_internal {
+    reads {
+        ingress_metadata.l2_if_type : exact;
+    }
+    actions {_drop; action_set_bridge_id_with_vid;}
+}
 
+//-----------
+// ingress 1d bridge
+//-----------
 table table_vbridge_STP {
     reads {
         ingress_metadata.bridge_port : exact;
@@ -185,12 +199,12 @@ table table_egress_xSTP{
     actions {action_set_egress_stp_state; _drop;}
 }
 
-table table_egress_vlan_filtering{
+table table_egress_vlan_filtering {
     reads{
         egress_metadata.out_if  : exact;
         ingress_metadata.vid    : exact;
     }
-    actions{_drop;action_tag_vlan;action_untag_vlan}
+    actions{_drop; action_set_vlan_tag_mode; action_untag_vlan;} // Need untag??
 }
 
 //-----------

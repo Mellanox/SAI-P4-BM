@@ -27,8 +27,12 @@ action action_set_l2_if_type(in bit<2> l2_if_type, in bit<8> bridge_port){
 	ingress_metadata.l2_if_type = l2_if_type;
 	ingress_metadata.bridge_port = bridge_port; 
 }
+
 action action_set_bridge_id(in bit<3> bridge_id){
 	ingress_metadata.bridge_id = bridge_id;
+}
+action action_set_bridge_id_with_vid() {
+	ingress_metadata.bridge_id = ingress_metadata.vid;
 }
 
 action action_set_mcast_snp(in bit<1> mcast_snp){
@@ -79,24 +83,17 @@ action action_set_egress_stp_state(in bit<2> stp_state){
 	egress_metadata.stp_state = stp_state;
 }
 
-action action_vlan_tag(in bit<12>vid) {
-	_nop;
+action action_untag_vlan() {
+	no_op();
 }
 
-action action_vlan_untag() {
-	_nop;
-}
-
-action action_set_tag_mode(in bit tag_mode){
-	egress_metadata.tag_mode = tag_mode;
-}
-
-action action_set_vlan_tag_mode(in bit<3> pcp, in bit cfi, in bit<12> vid, in bit<16> ethType, in bit tag_mode){
+action action_set_vlan_tag_mode(in bit<3> pcp, in bit cfi){
 	vlan.pcp = pcp;
 	vlan.cfi = cfi;
-	vlan.vid = vid;
-	vlan.ethType = ethType;
-	egress_metadata.tag_mode = tag_mode;
+	vlan.vid = ingress_metadata.vid;
+	vlan.etherType = ethernet.etherType;
+	ethernet.etherType = VLAN_TYPE;
+	// egress_metadata.tag_mode = tag_mode;
 }
 
 action action_set_lag_hash_size(in bit<6> lag_size) {

@@ -38,11 +38,9 @@ class SwitchThriftClient():
         return standard_client, mc_client
 
     def AddTable(self, table_name, action_name, match_string, value_string):
-        cli.RuntimeAPI(self.pre, self.standard_client, self.mc_client).do_table_add('%s %s %s => %s' %
-                                                                                   (table_name,
-                                                                                    action_name,
-                                                                                    match_string,
-                                                                                    value_string))
+        cmd = '%s %s %s => %s' % (table_name, action_name, match_string, value_string)
+        print 'table_add ' + cmd
+        cli.RuntimeAPI(self.pre, self.standard_client, self.mc_client).do_table_add(cmd)
 
 
     def RemoveTableEntry(self, table_name, match_string):

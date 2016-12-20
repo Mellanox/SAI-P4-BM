@@ -28,18 +28,22 @@ control ingress {
 //	control_dot1br_ingress();
 
 	// bridging
-	if (ingress_metadata.l2_if_type == L2_1D_BRIDGE)	{
-		control_1d_bridge_flow();
-	}
-	if (ingress_metadata.l2_if_type == L2_1Q_BRIDGE) {
-		control_1q_bridge_flow();
-	}
-	// bridge fdb
 	if ((ingress_metadata.l2_if_type == L2_1Q_BRIDGE) or (ingress_metadata.l2_if_type == L2_1D_BRIDGE)) {
-		apply(table_vbridge);
+		apply(table_vbridge) {
+			miss {
+				apply(table_vbridge_default_internal);
+			}
+		}
+
+		if (ingress_metadata.l2_if_type == L2_1D_BRIDGE)	{
+			control_1d_bridge_flow();
+		} else  {
+			control_1q_bridge_flow();
+		}
+
 		control_fdb();
 	}
-	
+
 	// router
 	if (ingress_metadata.l2_if_type == L2_ROUTER_TYPE) { 
 		control_router_flow();
@@ -48,7 +52,11 @@ control ingress {
 
 control control_port{
 	apply(table_ingress_lag);
-	apply(table_accepted_frame_type);
+	apply(table_accepted_frame_type) {
+		miss {
+			apply(table_accepted_frame_type_default_internal);
+		}
+	}
 	//apply(table_ingress_acl); // TODO
 	apply(table_ingress_l2_interface_type);
 }

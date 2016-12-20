@@ -12,7 +12,7 @@ header_type vlan_t {
         bit<3> 	pcp;
 	    bit 	cfi;
 	    bit<12>	vid;
-	    bit<16>	ethType;
+	    bit<16>	etherType;
     }
     //length  4;
     //max_length 4;

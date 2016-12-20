@@ -91,6 +91,12 @@ class SaiHandler:
     self.active_vlans[vlan_id].append(vlan_member_id)
     self.cli_client.AddTable('table_ingress_vlan_filtering','_nop',list_to_str([port_id, vlan_id]),'')
 
+    if tagging_mode == sai_vlan_tagging_mode.SAI_VLAN_TAGGING_MODE_TAGGED:
+      vlan_pcp = 0 
+      vlan_cfi = 0
+      self.cli_client.AddTable('table_egress_vlan_filtering','action_set_vlan_tag_mode',
+                               list_to_str([port_id, vlan_id]), list_to_str([vlan_pcp, vlan_cfi]))
+
     # TODO - this needs to be somewhere else.
     l2_if_type = 3   # 1Q Bridge, TODO: not part of SAI api??
     br_port = GetNewIndex(self.bridge_ports)
@@ -106,8 +112,8 @@ class SaiHandler:
   def sai_thrift_set_port_attribute(self, port, attr):
     if attr.id == sai_port_attr.SAI_PORT_ATTR_PORT_VLAN_ID:
       vlan_id = attr.value.u16
-    self.cli_client.AddTable('table_ingress_lag', 'action_set_lag_l2if', str(port), list_to_str([0, 0,port]))  # TODO - this needs to be somehwere else
-    self.cli_client.AddTable('table_accepted_frame_type', 'action_set_pvid', list_to_str([port, 0]), str(vlan_id))
+    #self.cli_client.AddTable('table_ingress_lag', 'action_set_lag_l2if', str(port), list_to_str([0, 0,port]))  # TODO - this needs to be somehwere else
+    self.cli_client.AddTable('table_accepted_frame_type', 'action_set_pvid', str(port), str(vlan_id))
     return 0
 
 
