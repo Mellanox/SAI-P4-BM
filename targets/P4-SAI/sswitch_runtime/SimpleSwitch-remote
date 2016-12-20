@@ -31,6 +31,8 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  i32 set_all_egress_queue_depths(i32 depth_pkts)')
   print('  i32 set_egress_queue_rate(i32 port_num, i64 rate_pps)')
   print('  i32 set_all_egress_queue_rates(i64 rate_pps)')
+  print('  i64 get_time_elapsed_us()')
+  print('  i64 get_time_since_epoch_us()')
   print('')
   sys.exit(0)
 
@@ -128,6 +130,18 @@ elif cmd == 'set_all_egress_queue_rates':
     print('set_all_egress_queue_rates requires 1 args')
     sys.exit(1)
   pp.pprint(client.set_all_egress_queue_rates(eval(args[0]),))
+
+elif cmd == 'get_time_elapsed_us':
+  if len(args) != 0:
+    print('get_time_elapsed_us requires 0 args')
+    sys.exit(1)
+  pp.pprint(client.get_time_elapsed_us())
+
+elif cmd == 'get_time_since_epoch_us':
+  if len(args) != 0:
+    print('get_time_since_epoch_us requires 0 args')
+    sys.exit(1)
+  pp.pprint(client.get_time_since_epoch_us())
 
 else:
   print('Unrecognized method %s' % cmd)

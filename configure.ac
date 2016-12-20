@@ -187,12 +187,9 @@ AC_CONFIG_FILES([Makefile
 		src/bm_apps/Makefile
 		src/bm_apps/examples/Makefile
 		targets/Makefile
-		targets/simple_router/Makefile
-		targets/l2_switch/Makefile
-		targets/l2_switch/learn_client/Makefile
-		targets/simple_switch/Makefile
-		targets/simple_switch/tests/Makefile
-		targets/simple_switch/tests/CLI_tests/Makefile
+    targets/P4-SAI/Makefile
+    targets/P4-SAI/tests/Makefile
+    targets/P4-SAI/tests/CLI_tests/Makefile
 		tests/Makefile
 		tests/stress_tests/Makefile
                 tools/Makefile
@@ -203,8 +200,8 @@ AC_CONFIG_FILES([Makefile
 AC_CONFIG_FILES([tests/utils.cpp
                  src/bm_sim/version.cpp
                  mininet/stress_test_ipv4.py])
-AC_CONFIG_FILES([targets/simple_switch/tests/CLI_tests/run_one_test.py],
-                [chmod +x targets/simple_switch/tests/CLI_tests/run_one_test.py])
+AC_CONFIG_FILES([targets/P4-SAI/tests/CLI_tests/run_one_test.py],
+                [chmod +x targets/P4-SAI/tests/CLI_tests/run_one_test.py])
 
 AC_OUTPUT
 
