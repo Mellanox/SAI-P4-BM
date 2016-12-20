@@ -95,7 +95,14 @@ class SaiHandler:
       vlan_pcp = 0 
       vlan_cfi = 0
       self.cli_client.AddTable('table_egress_vlan_filtering','action_set_vlan_tag_mode',
-                               list_to_str([port_id, vlan_id]), list_to_str([vlan_pcp, vlan_cfi]))
+                               list_to_str([port_id, vlan_id, 0]), list_to_str([vlan_pcp, vlan_cfi]))
+    else:
+      self.cli_client.AddTable('table_egress_vlan_filtering','_nop',
+                              list_to_str([port_id, vlan_id, 0]),'')
+
+    self.cli_client.AddTable('table_egress_vlan_filtering','_nop',
+                              list_to_str([port_id, vlan_id, 1]),'')
+
 
     # TODO - this needs to be somewhere else.
     l2_if_type = 3   # 1Q Bridge, TODO: not part of SAI api??

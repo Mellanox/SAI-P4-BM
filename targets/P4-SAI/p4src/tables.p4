@@ -203,9 +203,11 @@ table table_egress_vlan_filtering {
     reads{
         egress_metadata.out_if  : exact;
         ingress_metadata.vid    : exact;
+        vlan : valid;
     }
-    actions{_drop; action_set_vlan_tag_mode; action_untag_vlan;} // Need untag??
+    actions{_drop; action_set_vlan_tag_mode; action_untag_vlan;_nop;} // Need untag??
 }
+
 
 //-----------
 // egress lag/phy
