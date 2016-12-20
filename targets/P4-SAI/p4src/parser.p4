@@ -17,11 +17,20 @@ parser start {
 // ethernet parser - decide next layer according the ethertype
 parser parse_ethernet {
     extract(ethernet);
+    return parse_ethertype;
+}
+
+parser parse_ethertype {
     return select(latest.etherType) {
     	VLAN_TYPE : parse_vlan;
         IPV4_TYPE : parse_ipv4;
         default: ingress;
     }
+}
+
+parser parse_vlan {
+    extract(vlan);
+    return parse_ethertype;
 }
 
 // IPv4 parser, decide next layer according to protocol field
@@ -44,9 +53,4 @@ parser parse_udp {
 parser parse_tcp {
 	extract(tcp);
 	return ingress;
-}
-
-parser parse_vlan {
-    extract(vlan);
-    return ingress;
 }

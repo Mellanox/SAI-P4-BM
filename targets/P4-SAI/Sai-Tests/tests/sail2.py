@@ -57,7 +57,7 @@ class L2AccessToAccessVlanTest(sai_base_test.ThriftInterfaceDataPlane):
 
         try:
             send_packet(self, port1, str(pkt))
-            verify_packets(self, exp_pkt, [port2])
+            verify_packets(self, pkt, [port2])
         finally:
             sai_thrift_delete_fdb(self.client, vlan_id, mac1, port1)
             sai_thrift_delete_fdb(self.client, vlan_id, mac2, port2)

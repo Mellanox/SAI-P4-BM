@@ -88,6 +88,7 @@ action action_untag_vlan() {
 }
 
 action action_set_vlan_tag_mode(in bit<3> pcp, in bit cfi){
+	add_header(vlan);
 	vlan.pcp = pcp;
 	vlan.cfi = cfi;
 	vlan.vid = ingress_metadata.vid;
