@@ -1,1 +1,1 @@
-SUBDIRS = simple_router l2_switch simple_switch
+SUBDIRS = P4-SAI
