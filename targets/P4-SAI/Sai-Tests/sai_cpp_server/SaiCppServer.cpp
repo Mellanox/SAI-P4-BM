@@ -1,5 +1,7 @@
 
 #include <iostream>
+#include <list>
+#include <algorithm>
 /// thrift sai server
 #include "../sai_thrift_src/gen-cpp/switch_sai_rpc.h"
 
@@ -13,8 +15,31 @@
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/protocol/TMultiplexedProtocol.h>
 #include <thrift/transport/TSocket.h>
-#include <thrift/transport/TTransportUtils.h>
-#include "../../../../thrift_src/gen-cpp/bm/Standard.h"
+
+//SAI
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <sai.h>
+#ifdef __cplusplus
+}
+#endif
+
+#include <saifdb.h>
+#include <saivlan.h>
+#include <sairouter.h>
+#include <sairouterintf.h>
+#include <sairoute.h>
+#include <saiswitch.h>
+#include <saimirror.h>
+#include <saistatus.h>
+
+// INTERNAL
+#include "switch_meta_data.h"
+
+
+
+
 using namespace std;
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -44,11 +69,14 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
   transport(new TBufferedTransport(socket)),
   bprotocol(new TBinaryProtocol(transport)),
   protocol (new TMultiplexedProtocol(bprotocol, "standard")),
-  bm_client(protocol)
+  bm_client(protocol),
+  active_vlans{}
       {
   // initialization   
     transport->open();
     cout << "BM connection started\n"; 
+  //
+
   }
 
   sai_thrift_status_t sai_thrift_set_port_attribute(const sai_thrift_object_id_t port_id, const sai_thrift_attribute_t& thrift_attr) {
@@ -87,12 +115,25 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
   }
 
   sai_thrift_status_t sai_thrift_create_vlan(const sai_thrift_vlan_id_t vlan_id) {
-    // Your implementation goes here
-    
-    std::string table_name = "table_ingress_lag"; 
-    BmEntryHandle handle = 0;
-    //cout << bm_client::bm_client::a << endl;
-    bm_client.bm_mt_delete_entry(cxt_id, table_name, handle);
+  
+  // Your implementation goes here
+    auto it = std::find_if( std::begin( active_vlans ),
+                            std::end( active_vlans ),
+                            vlan_id );
+
+    if ( myList.end() == it )
+    {
+        std::cout << "creating vlan" << std::endl;
+    }
+    else
+    {
+        const int pos = std::distance( myList.begin(), it ) + 1;
+        printf("vlan id %d already exists \n",vlan_id);
+    }
+  //  std::string table_name = "table_ingress_lag"; 
+  //  BmEntryHandle handle = 0;
+  
+  //  bm_client.bm_mt_delete_entry(cxt_id, table_name, handle);
 
     printf("sai_thrift_create_vlan\n");
     return 0;
@@ -437,6 +478,7 @@ private:
   boost::shared_ptr<TTransport> transport;
   boost::shared_ptr<TProtocol>  bprotocol;
   boost::shared_ptr<TProtocol>  protocol;
+  std::list<sai_thrift_vlan_id_t> active_vlans;
 
 public:
   StandardClient bm_client;
