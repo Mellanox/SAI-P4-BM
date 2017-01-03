@@ -34,28 +34,83 @@ typedef i32 sai_thrift_port_stat_counter_t
 typedef i32 sai_thrift_queue_stat_counter_t
 typedef i32 sai_thrift_pg_stat_counter_t
 
+enum sai_switch_attr {
+    SAI_SWITCH_ATTR_PORT_NUMBER,
+    SAI_SWITCH_ATTR_PORT_LIST
+}
+
+
+enum sai_bridge_port_type {
+    SAI_BRIDGE_PORT_TYPE_PORT,
+    SAI_BRIDGE_PORT_TYPE_SUB_PORT,
+    SAI_BRIDGE_PORT_TYPE_1Q_ROUTER,
+    SAI_BRIDGE_PORT_TYPE_1D_ROUTER,
+    SAI_BRIDGE_PORT_TYPE_TUNNEL
+}
+
+enum sai_bridge_port_attr {
+    SAI_BRIDGE_PORT_ATTR_TYPE,
+    SAI_BRIDGE_PORT_ATTR_PORT_ID,
+    SAI_BRIDGE_PORT_ATTR_VLAN_ID,
+    SAI_BRIDGE_PORT_ATTR_RIF_ID,
+    SAI_BRIDGE_PORT_ATTR_TUNNEL_ID,
+    SAI_BRIDGE_PORT_ATTR_BRIDGE_ID,
+    SAI_BRIDGE_PORT_ATTR_FDB_LEARNING_MODE,
+}
+
 enum sai_fdb_entry_attr {
     SAI_FDB_ENTRY_ATTR_TYPE,
     SAI_FDB_ENTRY_ATTR_PACKET_ACTION,
-    SAI_FDB_ENTRY_ATTR_PORT_ID,
+    SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID,
     SAI_FDB_ENTRY_ATTR_META_DATA,
     SAI_FDB_ENTRY_ATTR_END
 }
-
 enum sai_fdb_entry_type {
     SAI_FDB_ENTRY_TYPE_DYNAMIC,
     SAI_FDB_ENTRY_TYPE_STATIC
 }
+enum sai_fdb_flush_attr{
+    SAI_FDB_FLUSH_ATTR_PORT_ID,
+    SAI_FDB_FLUSH_ATTR_VLAN_ID,
+    SAI_FDB_FLUSH_ATTR_ENTRY_TYPE
+}
 
 enum sai_vlan_member_attr {
     SAI_VLAN_MEMBER_ATTR_VLAN_ID,
-    SAI_VLAN_MEMBER_ATTR_PORT_ID,
+    SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID,
     SAI_VLAN_MEMBER_ATTR_VLAN_TAGGING_MODE
 }
 
-enum sai_port_attr {
-    SAI_PORT_ATTR_PORT_VLAN_ID
+enum sai_vlan_attr {
+    SAI_VLAN_ATTR_VLAN_ID,
+    SAI_VLAN_ATTR_MEMBER_LIST
 }
+
+enum sai_port_attr {
+    SAI_PORT_ATTR_BIND_MODE,
+    SAI_PORT_ATTR_PORT_VLAN_ID,
+    SAI_PORT_ATTR_HW_LANE_LIST
+}
+
+enum sai_bridge_attr {
+    SAI_BRIDGE_ATTR_TYPE
+}
+
+enum sai_bridge_type {
+    SAI_BRIDGE_TYPE_1Q,
+    SAI_BRIDGE_TYPE_1D
+}
+
+enum sai_port_bind_mode {
+    SAI_PORT_BIND_MODE_PORT,
+    SAI_PORT_BIND_MODE_SUB_PORT
+}
+
+enum sai_fdb_entry_bridge_type
+{
+    SAI_FDB_ENTRY_BRIDGE_TYPE_1Q,
+    SAI_FDB_ENTRY_BRIDGE_TYPE_1D
+} 
 
 enum sai_packet_action {
     SAI_PACKET_ACTION_DROP,
@@ -77,6 +132,8 @@ enum sai_vlan_tagging_mode {
 struct sai_thrift_fdb_entry_t {
     1: sai_thrift_mac_t mac_address;
     2: sai_thrift_vlan_id_t vlan_id;
+    3: sai_fdb_entry_bridge_type bridge_type;
+    4: sai_thrift_object_id_t bridge_id;
 }
 
 struct sai_thrift_vlan_port_t {
@@ -240,14 +297,21 @@ service switch_sai_rpc {
                              3: i32 number_of_counters);
     sai_thrift_status_t sai_thrift_clear_port_all_stats(1: sai_thrift_object_id_t port_id)
 
+    sai_thrift_object_id_t sai_thrift_create_port(1: list<sai_thrift_attribute_t> thrift_attr_list);
+
+    //bridge API
+    sai_thrift_object_id_t sai_thrift_create_bridge(1: list<sai_thrift_attribute_t> thrift_attr_list);
+    sai_thrift_object_id_t sai_thrift_create_bridge_port(1: list<sai_thrift_attribute_t> thrift_attr_list);
+
     //fdb API
     sai_thrift_status_t sai_thrift_create_fdb_entry(1: sai_thrift_fdb_entry_t thrift_fdb_entry, 2: list<sai_thrift_attribute_t> thrift_attr_list);
     sai_thrift_status_t sai_thrift_delete_fdb_entry(1: sai_thrift_fdb_entry_t thrift_fdb_entry);
     sai_thrift_status_t sai_thrift_flush_fdb_entries(1: list <sai_thrift_attribute_t> thrift_attr_list);
 
     //vlan API
-    sai_thrift_status_t sai_thrift_create_vlan(1: sai_thrift_vlan_id_t vlan_id);
-    sai_thrift_status_t sai_thrift_delete_vlan(1: sai_thrift_vlan_id_t vlan_id);
+    sai_thrift_object_id_t sai_thrift_create_vlan(1: list<sai_thrift_attribute_t> thrift_attr_list);
+    sai_thrift_status_t sai_thrift_delete_vlan(1: sai_thrift_object_id_t vlan_id);
+    
     list<i64> sai_thrift_get_vlan_stats(
                              1: sai_thrift_vlan_id_t vlan_id,
                              2: list<sai_thrift_vlan_stat_counter_t> counter_ids,
@@ -295,7 +359,8 @@ service switch_sai_rpc {
     sai_thrift_status_t sai_thrift_remove_neighbor_entry(1: sai_thrift_neighbor_entry_t thrift_neighbor_entry);
 
     //switch API
-    sai_thrift_attribute_list_t sai_thrift_get_switch_attribute();
+    sai_thrift_object_id_t sai_thrift_create_switch(1: list<sai_thrift_attribute_t> thrift_attr_list);
+    sai_thrift_attribute_list_t sai_thrift_get_switch_attribute(1: list<sai_thrift_attribute_t> thrift_attr_list);
     sai_thrift_attribute_t sai_thrift_get_port_list_by_front_port();
     sai_thrift_object_id_t sai_thrift_get_cpu_port_id();
     sai_thrift_object_id_t sai_thrift_get_default_trap_group();

@@ -16,17 +16,31 @@ except:
   fastbinary = None
 
 
+class sai_switch_attr:
+  SAI_SWITCH_ATTR_PORT_NUMBER = 0
+  SAI_SWITCH_ATTR_PORT_LIST = 1
+
+  _VALUES_TO_NAMES = {
+    0: "SAI_SWITCH_ATTR_PORT_NUMBER",
+    1: "SAI_SWITCH_ATTR_PORT_LIST",
+  }
+
+  _NAMES_TO_VALUES = {
+    "SAI_SWITCH_ATTR_PORT_NUMBER": 0,
+    "SAI_SWITCH_ATTR_PORT_LIST": 1,
+  }
+
 class sai_fdb_entry_attr:
   SAI_FDB_ENTRY_ATTR_TYPE = 0
   SAI_FDB_ENTRY_ATTR_PACKET_ACTION = 1
-  SAI_FDB_ENTRY_ATTR_PORT_ID = 2
+  SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID = 2
   SAI_FDB_ENTRY_ATTR_META_DATA = 3
   SAI_FDB_ENTRY_ATTR_END = 4
 
   _VALUES_TO_NAMES = {
     0: "SAI_FDB_ENTRY_ATTR_TYPE",
     1: "SAI_FDB_ENTRY_ATTR_PACKET_ACTION",
-    2: "SAI_FDB_ENTRY_ATTR_PORT_ID",
+    2: "SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID",
     3: "SAI_FDB_ENTRY_ATTR_META_DATA",
     4: "SAI_FDB_ENTRY_ATTR_END",
   }
@@ -34,9 +48,61 @@ class sai_fdb_entry_attr:
   _NAMES_TO_VALUES = {
     "SAI_FDB_ENTRY_ATTR_TYPE": 0,
     "SAI_FDB_ENTRY_ATTR_PACKET_ACTION": 1,
-    "SAI_FDB_ENTRY_ATTR_PORT_ID": 2,
+    "SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID": 2,
     "SAI_FDB_ENTRY_ATTR_META_DATA": 3,
     "SAI_FDB_ENTRY_ATTR_END": 4,
+  }
+
+class sai_bridge_port_type:
+  SAI_BRIDGE_PORT_TYPE_PORT = 0
+  SAI_BRIDGE_PORT_TYPE_SUB_PORT = 1
+  SAI_BRIDGE_PORT_TYPE_1Q_ROUTER = 2
+  SAI_BRIDGE_PORT_TYPE_1D_ROUTER = 3
+  SAI_BRIDGE_PORT_TYPE_TUNNEL = 4
+
+  _VALUES_TO_NAMES = {
+    0: "SAI_BRIDGE_PORT_TYPE_PORT",
+    1: "SAI_BRIDGE_PORT_TYPE_SUB_PORT",
+    2: "SAI_BRIDGE_PORT_TYPE_1Q_ROUTER",
+    3: "SAI_BRIDGE_PORT_TYPE_1D_ROUTER",
+    4: "SAI_BRIDGE_PORT_TYPE_TUNNEL",
+  }
+
+  _NAMES_TO_VALUES = {
+    "SAI_BRIDGE_PORT_TYPE_PORT": 0,
+    "SAI_BRIDGE_PORT_TYPE_SUB_PORT": 1,
+    "SAI_BRIDGE_PORT_TYPE_1Q_ROUTER": 2,
+    "SAI_BRIDGE_PORT_TYPE_1D_ROUTER": 3,
+    "SAI_BRIDGE_PORT_TYPE_TUNNEL": 4,
+  }
+
+class sai_bridge_port_attr:
+  SAI_BRIDGE_PORT_ATTR_TYPE = 0
+  SAI_BRIDGE_PORT_ATTR_PORT_ID = 1
+  SAI_BRIDGE_PORT_ATTR_VLAN_ID = 2
+  SAI_BRIDGE_PORT_ATTR_RIF_ID = 3
+  SAI_BRIDGE_PORT_ATTR_TUNNEL_ID = 4
+  SAI_BRIDGE_PORT_ATTR_BRIDGE_ID = 5
+  SAI_BRIDGE_PORT_ATTR_FDB_LEARNING_MODE = 6
+
+  _VALUES_TO_NAMES = {
+    0: "SAI_BRIDGE_PORT_ATTR_TYPE",
+    1: "SAI_BRIDGE_PORT_ATTR_PORT_ID",
+    2: "SAI_BRIDGE_PORT_ATTR_VLAN_ID",
+    3: "SAI_BRIDGE_PORT_ATTR_RIF_ID",
+    4: "SAI_BRIDGE_PORT_ATTR_TUNNEL_ID",
+    5: "SAI_BRIDGE_PORT_ATTR_BRIDGE_ID",
+    6: "SAI_BRIDGE_PORT_ATTR_FDB_LEARNING_MODE",
+  }
+
+  _NAMES_TO_VALUES = {
+    "SAI_BRIDGE_PORT_ATTR_TYPE": 0,
+    "SAI_BRIDGE_PORT_ATTR_PORT_ID": 1,
+    "SAI_BRIDGE_PORT_ATTR_VLAN_ID": 2,
+    "SAI_BRIDGE_PORT_ATTR_RIF_ID": 3,
+    "SAI_BRIDGE_PORT_ATTR_TUNNEL_ID": 4,
+    "SAI_BRIDGE_PORT_ATTR_BRIDGE_ID": 5,
+    "SAI_BRIDGE_PORT_ATTR_FDB_LEARNING_MODE": 6,
   }
 
 class sai_fdb_entry_type:
@@ -55,30 +121,103 @@ class sai_fdb_entry_type:
 
 class sai_vlan_member_attr:
   SAI_VLAN_MEMBER_ATTR_VLAN_ID = 0
-  SAI_VLAN_MEMBER_ATTR_PORT_ID = 1
+  SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID = 1
   SAI_VLAN_MEMBER_ATTR_VLAN_TAGGING_MODE = 2
 
   _VALUES_TO_NAMES = {
     0: "SAI_VLAN_MEMBER_ATTR_VLAN_ID",
-    1: "SAI_VLAN_MEMBER_ATTR_PORT_ID",
+    1: "SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID",
     2: "SAI_VLAN_MEMBER_ATTR_VLAN_TAGGING_MODE",
   }
 
   _NAMES_TO_VALUES = {
     "SAI_VLAN_MEMBER_ATTR_VLAN_ID": 0,
-    "SAI_VLAN_MEMBER_ATTR_PORT_ID": 1,
+    "SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID": 1,
     "SAI_VLAN_MEMBER_ATTR_VLAN_TAGGING_MODE": 2,
   }
 
-class sai_port_attr:
-  SAI_PORT_ATTR_PORT_VLAN_ID = 0
+class sai_vlan_attr:
+  SAI_VLAN_ATTR_VLAN_ID = 0
+  SAI_VLAN_ATTR_MEMBER_LIST = 1
 
   _VALUES_TO_NAMES = {
-    0: "SAI_PORT_ATTR_PORT_VLAN_ID",
+    0: "SAI_VLAN_ATTR_VLAN_ID",
+    1: "SAI_VLAN_ATTR_MEMBER_LIST",
   }
 
   _NAMES_TO_VALUES = {
-    "SAI_PORT_ATTR_PORT_VLAN_ID": 0,
+    "SAI_VLAN_ATTR_VLAN_ID": 0,
+    "SAI_VLAN_ATTR_MEMBER_LIST": 1,
+  }
+
+class sai_port_attr:
+  SAI_PORT_ATTR_BIND_MODE = 0
+  SAI_PORT_ATTR_PORT_VLAN_ID = 1
+  SAI_PORT_ATTR_HW_LANE_LIST = 2
+
+  _VALUES_TO_NAMES = {
+    0: "SAI_PORT_ATTR_BIND_MODE",
+    1: "SAI_PORT_ATTR_PORT_VLAN_ID",
+    2: "SAI_PORT_ATTR_HW_LANE_LIST",
+  }
+
+  _NAMES_TO_VALUES = {
+    "SAI_PORT_ATTR_BIND_MODE": 0,
+    "SAI_PORT_ATTR_PORT_VLAN_ID": 1,
+    "SAI_PORT_ATTR_HW_LANE_LIST": 2,
+  }
+
+class sai_bridge_attr:
+  SAI_BRIDGE_ATTR_TYPE = 0
+
+  _VALUES_TO_NAMES = {
+    0: "SAI_BRIDGE_ATTR_TYPE",
+  }
+
+  _NAMES_TO_VALUES = {
+    "SAI_BRIDGE_ATTR_TYPE": 0,
+  }
+
+class sai_bridge_type:
+  SAI_BRIDGE_TYPE_1Q = 0
+  SAI_BRIDGE_TYPE_1D = 1
+
+  _VALUES_TO_NAMES = {
+    0: "SAI_BRIDGE_TYPE_1Q",
+    1: "SAI_BRIDGE_TYPE_1D",
+  }
+
+  _NAMES_TO_VALUES = {
+    "SAI_BRIDGE_TYPE_1Q": 0,
+    "SAI_BRIDGE_TYPE_1D": 1,
+  }
+
+class sai_port_bind_mode:
+  SAI_PORT_BIND_MODE_PORT = 0
+  SAI_PORT_BIND_MODE_SUB_PORT = 1
+
+  _VALUES_TO_NAMES = {
+    0: "SAI_PORT_BIND_MODE_PORT",
+    1: "SAI_PORT_BIND_MODE_SUB_PORT",
+  }
+
+  _NAMES_TO_VALUES = {
+    "SAI_PORT_BIND_MODE_PORT": 0,
+    "SAI_PORT_BIND_MODE_SUB_PORT": 1,
+  }
+
+class sai_fdb_entry_bridge_type:
+  SAI_FDB_ENTRY_BRIDGE_TYPE_1Q = 0
+  SAI_FDB_ENTRY_BRIDGE_TYPE_1D = 1
+
+  _VALUES_TO_NAMES = {
+    0: "SAI_FDB_ENTRY_BRIDGE_TYPE_1Q",
+    1: "SAI_FDB_ENTRY_BRIDGE_TYPE_1D",
+  }
+
+  _NAMES_TO_VALUES = {
+    "SAI_FDB_ENTRY_BRIDGE_TYPE_1Q": 0,
+    "SAI_FDB_ENTRY_BRIDGE_TYPE_1D": 1,
   }
 
 class sai_packet_action:
@@ -136,17 +275,23 @@ class sai_thrift_fdb_entry_t:
   Attributes:
    - mac_address
    - vlan_id
+   - bridge_type
+   - bridge_id
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'mac_address', None, None, ), # 1
     (2, TType.I16, 'vlan_id', None, None, ), # 2
+    (3, TType.I32, 'bridge_type', None, None, ), # 3
+    (4, TType.I64, 'bridge_id', None, None, ), # 4
   )
 
-  def __init__(self, mac_address=None, vlan_id=None,):
+  def __init__(self, mac_address=None, vlan_id=None, bridge_type=None, bridge_id=None,):
     self.mac_address = mac_address
     self.vlan_id = vlan_id
+    self.bridge_type = bridge_type
+    self.bridge_id = bridge_id
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -167,6 +312,16 @@ class sai_thrift_fdb_entry_t:
           self.vlan_id = iprot.readI16();
         else:
           iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I32:
+          self.bridge_type = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.I64:
+          self.bridge_id = iprot.readI64();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -185,6 +340,14 @@ class sai_thrift_fdb_entry_t:
       oprot.writeFieldBegin('vlan_id', TType.I16, 2)
       oprot.writeI16(self.vlan_id)
       oprot.writeFieldEnd()
+    if self.bridge_type is not None:
+      oprot.writeFieldBegin('bridge_type', TType.I32, 3)
+      oprot.writeI32(self.bridge_type)
+      oprot.writeFieldEnd()
+    if self.bridge_id is not None:
+      oprot.writeFieldBegin('bridge_id', TType.I64, 4)
+      oprot.writeI64(self.bridge_id)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -196,6 +359,8 @@ class sai_thrift_fdb_entry_t:
     value = 17
     value = (value * 31) ^ hash(self.mac_address)
     value = (value * 31) ^ hash(self.vlan_id)
+    value = (value * 31) ^ hash(self.bridge_type)
+    value = (value * 31) ^ hash(self.bridge_id)
     return value
 
   def __repr__(self):

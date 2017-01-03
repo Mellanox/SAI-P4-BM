@@ -1,17 +1,5 @@
 table_set_default table_vbridge_default_internal _drop
 table_add table_vbridge_default_internal action_set_bridge_id_with_vid 3 =>
-
-table_add table_accepted_frame_type_default_internal action_set_packet_vid 1 =>
-table_add table_accepted_frame_type_default_internal _drop 0 =>
-
+table_set_default table_accepted_frame_type_default_internal _drop
+table_add table_accepted_frame_type action_set_packet_vid 1 =>
 table_set_default table_egress_vlan_filtering _drop
-
-
-table_add table_ingress_lag action_set_lag_l2if 0 => 0 0 0
-table_add table_ingress_lag action_set_lag_l2if 1 => 0 0 1
-table_add table_ingress_lag action_set_lag_l2if 2 => 0 0 2
-table_add table_ingress_lag action_set_lag_l2if 3 => 0 0 3
-table_add table_ingress_lag action_set_lag_l2if 4 => 0 0 4
-table_add table_ingress_lag action_set_lag_l2if 5 => 0 0 5
-table_add table_ingress_lag action_set_lag_l2if 6 => 0 0 6
-table_add table_ingress_lag action_set_lag_l2if 7 => 0 0 7

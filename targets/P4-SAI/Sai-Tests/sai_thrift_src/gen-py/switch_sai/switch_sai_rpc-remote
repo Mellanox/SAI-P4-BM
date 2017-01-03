@@ -28,11 +28,14 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  sai_thrift_attribute_list_t sai_thrift_get_port_attribute(sai_thrift_object_id_t port_id)')
   print('   sai_thrift_get_port_stats(sai_thrift_object_id_t port_id,  counter_ids, i32 number_of_counters)')
   print('  sai_thrift_status_t sai_thrift_clear_port_all_stats(sai_thrift_object_id_t port_id)')
+  print('  sai_thrift_object_id_t sai_thrift_create_port( thrift_attr_list)')
+  print('  sai_thrift_object_id_t sai_thrift_create_bridge( thrift_attr_list)')
+  print('  sai_thrift_object_id_t sai_thrift_create_bridge_port( thrift_attr_list)')
   print('  sai_thrift_status_t sai_thrift_create_fdb_entry(sai_thrift_fdb_entry_t thrift_fdb_entry,  thrift_attr_list)')
   print('  sai_thrift_status_t sai_thrift_delete_fdb_entry(sai_thrift_fdb_entry_t thrift_fdb_entry)')
   print('  sai_thrift_status_t sai_thrift_flush_fdb_entries( thrift_attr_list)')
-  print('  sai_thrift_status_t sai_thrift_create_vlan(sai_thrift_vlan_id_t vlan_id)')
-  print('  sai_thrift_status_t sai_thrift_delete_vlan(sai_thrift_vlan_id_t vlan_id)')
+  print('  sai_thrift_object_id_t sai_thrift_create_vlan( thrift_attr_list)')
+  print('  sai_thrift_status_t sai_thrift_delete_vlan(sai_thrift_object_id_t vlan_id)')
   print('   sai_thrift_get_vlan_stats(sai_thrift_vlan_id_t vlan_id,  counter_ids, i32 number_of_counters)')
   print('  sai_thrift_object_id_t sai_thrift_create_vlan_member( thrift_attr_list)')
   print('  sai_thrift_status_t sai_thrift_remove_vlan_member(sai_thrift_object_id_t vlan_member_id)')
@@ -59,7 +62,8 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  sai_thrift_port_stp_port_state_t sai_thrift_get_stp_port_state(sai_thrift_object_id_t stp_id, sai_thrift_object_id_t port_id)')
   print('  sai_thrift_status_t sai_thrift_create_neighbor_entry(sai_thrift_neighbor_entry_t thrift_neighbor_entry,  thrift_attr_list)')
   print('  sai_thrift_status_t sai_thrift_remove_neighbor_entry(sai_thrift_neighbor_entry_t thrift_neighbor_entry)')
-  print('  sai_thrift_attribute_list_t sai_thrift_get_switch_attribute()')
+  print('  sai_thrift_object_id_t sai_thrift_create_switch( thrift_attr_list)')
+  print('  sai_thrift_attribute_list_t sai_thrift_get_switch_attribute( thrift_attr_list)')
   print('  sai_thrift_attribute_t sai_thrift_get_port_list_by_front_port()')
   print('  sai_thrift_object_id_t sai_thrift_get_cpu_port_id()')
   print('  sai_thrift_object_id_t sai_thrift_get_default_trap_group()')
@@ -178,6 +182,24 @@ elif cmd == 'sai_thrift_clear_port_all_stats':
     print('sai_thrift_clear_port_all_stats requires 1 args')
     sys.exit(1)
   pp.pprint(client.sai_thrift_clear_port_all_stats(eval(args[0]),))
+
+elif cmd == 'sai_thrift_create_port':
+  if len(args) != 1:
+    print('sai_thrift_create_port requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.sai_thrift_create_port(eval(args[0]),))
+
+elif cmd == 'sai_thrift_create_bridge':
+  if len(args) != 1:
+    print('sai_thrift_create_bridge requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.sai_thrift_create_bridge(eval(args[0]),))
+
+elif cmd == 'sai_thrift_create_bridge_port':
+  if len(args) != 1:
+    print('sai_thrift_create_bridge_port requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.sai_thrift_create_bridge_port(eval(args[0]),))
 
 elif cmd == 'sai_thrift_create_fdb_entry':
   if len(args) != 2:
@@ -365,11 +387,17 @@ elif cmd == 'sai_thrift_remove_neighbor_entry':
     sys.exit(1)
   pp.pprint(client.sai_thrift_remove_neighbor_entry(eval(args[0]),))
 
-elif cmd == 'sai_thrift_get_switch_attribute':
-  if len(args) != 0:
-    print('sai_thrift_get_switch_attribute requires 0 args')
+elif cmd == 'sai_thrift_create_switch':
+  if len(args) != 1:
+    print('sai_thrift_create_switch requires 1 args')
     sys.exit(1)
-  pp.pprint(client.sai_thrift_get_switch_attribute())
+  pp.pprint(client.sai_thrift_create_switch(eval(args[0]),))
+
+elif cmd == 'sai_thrift_get_switch_attribute':
+  if len(args) != 1:
+    print('sai_thrift_get_switch_attribute requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.sai_thrift_get_switch_attribute(eval(args[0]),))
 
 elif cmd == 'sai_thrift_get_port_list_by_front_port':
   if len(args) != 0:

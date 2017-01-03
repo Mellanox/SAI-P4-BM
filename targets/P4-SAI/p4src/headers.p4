@@ -85,11 +85,12 @@ header_type ingress_metadata_t {
 header_type egress_metadata_t {
 	fields {
 		bit 	out_if_type; 
-        bit<3> 	out_if; // L2_BRIDGE_NUM_WDT TODO remove? same as standard_metadata.egress_spec?
+        bit<6> 	out_if; // PHY_PORT_NUM_WDT TODO remove? same as standard_metadata.egress_spec?
         bit<2> 	stp_state; // same as ingress? duplication?
         bit  	tag_mode;
         bit<6> 	hash_val;// TODO for egress lag table, when it is set?
         bit<4> 	mcast_grp;
+        bit<8>  bridge_port; //L2_BRIDGE_PORT_WDT 
     }
 }
 

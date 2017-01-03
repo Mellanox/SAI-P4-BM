@@ -60,6 +60,10 @@ action action_learn_mac() {
     generate_digest(MAC_LEARN_RECEIVER, mac_learn_digest);
 }
 
+action action_set_egress_br_port(in bit<8> br_port){
+	egress_metadata.bridge_port = br_port;
+}
+
 action action_forward_set_outIfType(in bit<6> out_if,in bit<1> out_if_type){
 	egress_metadata.out_if 			= out_if;
 	egress_metadata.out_if_type 	= out_if_type;
@@ -87,7 +91,7 @@ action action_untag_vlan() {
 	no_op();
 }
 
-action action_set_vlan_tag_mode(in bit<3> pcp, in bit cfi){
+action action_forward_vlan_tag(in bit<3> pcp, in bit cfi){
 	add_header(vlan);
 	vlan.pcp = pcp;
 	vlan.cfi = cfi;

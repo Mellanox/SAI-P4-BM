@@ -23,7 +23,7 @@ metadata 	egress_metadata_t 	 egress_metadata;
 
 control ingress {
 	// phy
-	control_port();
+	control_ingress_port();
 	// dot1br 
 //	control_dot1br_ingress();
 
@@ -50,7 +50,7 @@ control ingress {
 	}
 }
 
-control control_port{
+control control_ingress_port{
 	apply(table_ingress_lag);
 	apply(table_accepted_frame_type) {
 		miss {
@@ -61,6 +61,9 @@ control control_port{
 	apply(table_ingress_l2_interface_type);
 }
 
+// control control_egress_port {
+	// apply(table_egress_)
+// }
 //control control_dot1br_ingress{
 	//apply(table_dot1br_port_type);
 	//apply(table_extended_port_determination);
@@ -95,7 +98,7 @@ control control_fdb{
 					miss { // if packet not in fdb
 						apply(table_unknown_unicast);
 					}
-				}	
+				}
 			} else if(ingress_metadata.mcast_snp & ingress_metadata.ipmc){
 				apply(table_mc_l2_sg_g);	
 			} else if( not (ingress_metadata.mcast_snp & ingress_metadata.ipmc)){ // MC flow
@@ -119,7 +122,7 @@ control egress{
 		apply(table_egress_xSTP);
 		apply(table_egress_vlan_filtering);
 	}
-
+	apply(table_egress_br_port);
 	// if (egress_metadata.out_if_type == OUT_IF_IS_PORT) {
 	//	apply(table_egress_port);
 	//} else
