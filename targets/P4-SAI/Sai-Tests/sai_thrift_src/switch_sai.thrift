@@ -58,6 +58,11 @@ enum sai_bridge_port_attr {
     SAI_BRIDGE_PORT_ATTR_FDB_LEARNING_MODE,
 }
 
+enum sai_lag_member_attr { 
+    SAI_LAG_MEMBER_ATTR_PORT_ID,
+    SAI_LAG_MEMBER_ATTR_LAG_ID
+}
+
 enum sai_fdb_entry_attr {
     SAI_FDB_ENTRY_ATTR_TYPE,
     SAI_FDB_ENTRY_ATTR_PACKET_ACTION,

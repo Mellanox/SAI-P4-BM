@@ -379,8 +379,84 @@
             "init_state": "start",
             "parse_states": [
                 {
-                    "name": "parse_ipv4",
+                    "name": "parse_tcp",
                     "id": 0,
+                    "parser_ops": [
+                        {
+                            "op": "extract",
+                            "parameters": [
+                                {
+                                    "type": "regular",
+                                    "value": "tcp"
+                                }
+                            ]
+                        }
+                    ],
+                    "transition_key": [],
+                    "transitions": [
+                        {
+                            "type": "default",
+                            "value": null,
+                            "mask": null,
+                            "next_state": null
+                        }
+                    ]
+                },
+                {
+                    "name": "parse_vlan",
+                    "id": 1,
+                    "parser_ops": [
+                        {
+                            "op": "extract",
+                            "parameters": [
+                                {
+                                    "type": "regular",
+                                    "value": "vlan"
+                                }
+                            ]
+                        }
+                    ],
+                    "transition_key": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "vlan",
+                                "etherType"
+                            ]
+                        }
+                    ],
+                    "transitions": [
+                        {
+                            "type": "hexstr",
+                            "value": "0x0800",
+                            "mask": null,
+                            "next_state": "parse_ipv4"
+                        },
+                        {
+                            "type": "default",
+                            "value": null,
+                            "mask": null,
+                            "next_state": null
+                        }
+                    ]
+                },
+                {
+                    "name": "start",
+                    "id": 2,
+                    "parser_ops": [],
+                    "transition_key": [],
+                    "transitions": [
+                        {
+                            "type": "default",
+                            "value": null,
+                            "mask": null,
+                            "next_state": "parse_ethernet"
+                        }
+                    ]
+                },
+                {
+                    "name": "parse_ipv4",
+                    "id": 3,
                     "parser_ops": [
                         {
                             "op": "extract",
@@ -424,7 +500,7 @@
                 },
                 {
                     "name": "parse_udp",
-                    "id": 1,
+                    "id": 4,
                     "parser_ops": [
                         {
                             "op": "extract",
@@ -438,82 +514,6 @@
                     ],
                     "transition_key": [],
                     "transitions": [
-                        {
-                            "type": "default",
-                            "value": null,
-                            "mask": null,
-                            "next_state": null
-                        }
-                    ]
-                },
-                {
-                    "name": "start",
-                    "id": 2,
-                    "parser_ops": [],
-                    "transition_key": [],
-                    "transitions": [
-                        {
-                            "type": "default",
-                            "value": null,
-                            "mask": null,
-                            "next_state": "parse_ethernet"
-                        }
-                    ]
-                },
-                {
-                    "name": "parse_tcp",
-                    "id": 3,
-                    "parser_ops": [
-                        {
-                            "op": "extract",
-                            "parameters": [
-                                {
-                                    "type": "regular",
-                                    "value": "tcp"
-                                }
-                            ]
-                        }
-                    ],
-                    "transition_key": [],
-                    "transitions": [
-                        {
-                            "type": "default",
-                            "value": null,
-                            "mask": null,
-                            "next_state": null
-                        }
-                    ]
-                },
-                {
-                    "name": "parse_vlan",
-                    "id": 4,
-                    "parser_ops": [
-                        {
-                            "op": "extract",
-                            "parameters": [
-                                {
-                                    "type": "regular",
-                                    "value": "vlan"
-                                }
-                            ]
-                        }
-                    ],
-                    "transition_key": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "vlan",
-                                "etherType"
-                            ]
-                        }
-                    ],
-                    "transitions": [
-                        {
-                            "type": "hexstr",
-                            "value": "0x0800",
-                            "mask": null,
-                            "next_state": "parse_ipv4"
-                        },
                         {
                             "type": "default",
                             "value": null,
@@ -586,102 +586,8 @@
     "meter_arrays": [],
     "actions": [
         {
-            "name": "action_set_stp_id",
-            "id": 0,
-            "runtime_data": [
-                {
-                    "name": "stp_id",
-                    "bitwidth": 3
-                }
-            ],
-            "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "ingress_metadata",
-                                "stp_id"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "action_forward_vlan_untag",
-            "id": 1,
-            "runtime_data": [],
-            "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "ethernet",
-                                "etherType"
-                            ]
-                        },
-                        {
-                            "type": "field",
-                            "value": [
-                                "vlan",
-                                "etherType"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "op": "remove_header",
-                    "parameters": [
-                        {
-                            "type": "header",
-                            "value": "vlan"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "action_go_to_in_l3_if_table",
-            "id": 2,
-            "runtime_data": [],
-            "primitives": [
-                {
-                    "op": "no_op",
-                    "parameters": []
-                }
-            ]
-        },
-        {
-            "name": "action_learn_mac",
-            "id": 3,
-            "runtime_data": [],
-            "primitives": [
-                {
-                    "op": "generate_digest",
-                    "parameters": [
-                        {
-                            "type": "hexstr",
-                            "value": "0x200"
-                        },
-                        {
-                            "type": "hexstr",
-                            "value": "0x1"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
             "name": "action_set_egress_br_port",
-            "id": 4,
+            "id": 0,
             "runtime_data": [
                 {
                     "name": "br_port",
@@ -708,34 +614,8 @@
             ]
         },
         {
-            "name": "action_set_packet_vid",
-            "id": 5,
-            "runtime_data": [],
-            "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "ingress_metadata",
-                                "vid"
-                            ]
-                        },
-                        {
-                            "type": "field",
-                            "value": [
-                                "vlan",
-                                "vid"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
             "name": "action_set_vlan",
-            "id": 6,
+            "id": 1,
             "runtime_data": [
                 {
                     "name": "vid",
@@ -763,7 +643,7 @@
         },
         {
             "name": "action_forward_set_outIfType",
-            "id": 7,
+            "id": 2,
             "runtime_data": [
                 {
                     "name": "out_if",
@@ -826,8 +706,43 @@
             ]
         },
         {
+            "name": "action_forward_vlan_untag",
+            "id": 3,
+            "runtime_data": [],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ethernet",
+                                "etherType"
+                            ]
+                        },
+                        {
+                            "type": "field",
+                            "value": [
+                                "vlan",
+                                "etherType"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "op": "remove_header",
+                    "parameters": [
+                        {
+                            "type": "header",
+                            "value": "vlan"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "name": "action_forward",
-            "id": 8,
+            "id": 4,
             "runtime_data": [
                 {
                     "name": "port",
@@ -870,42 +785,25 @@
             ]
         },
         {
-            "name": "action_forward_mc_set_if_list",
-            "id": 9,
+            "name": "action_set_mc_fdb_miss",
+            "id": 5,
             "runtime_data": [],
-            "primitives": []
-        },
-        {
-            "name": "action_set_pvid",
-            "id": 10,
-            "runtime_data": [
-                {
-                    "name": "pvid",
-                    "bitwidth": 12
-                }
-            ],
             "primitives": [
                 {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "ingress_metadata",
-                                "vid"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
+                    "op": "no_op",
+                    "parameters": []
                 }
             ]
         },
         {
+            "name": "action_forward_mc_set_if_list",
+            "id": 6,
+            "runtime_data": [],
+            "primitives": []
+        },
+        {
             "name": "action_set_egress_stp_state",
-            "id": 11,
+            "id": 7,
             "runtime_data": [
                 {
                     "name": "stp_state",
@@ -932,8 +830,19 @@
             ]
         },
         {
+            "name": "_drop",
+            "id": 8,
+            "runtime_data": [],
+            "primitives": [
+                {
+                    "op": "drop",
+                    "parameters": []
+                }
+            ]
+        },
+        {
             "name": "_nop",
-            "id": 12,
+            "id": 9,
             "runtime_data": [],
             "primitives": [
                 {
@@ -943,76 +852,8 @@
             ]
         },
         {
-            "name": "action_set_lag_l2if",
-            "id": 13,
-            "runtime_data": [
-                {
-                    "name": "is_lag",
-                    "bitwidth": 1
-                },
-                {
-                    "name": "lag_id",
-                    "bitwidth": 16
-                },
-                {
-                    "name": "l2_if",
-                    "bitwidth": 3
-                }
-            ],
-            "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "ingress_metadata",
-                                "is_lag"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
-                },
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "ingress_metadata",
-                                "lag_id"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 1
-                        }
-                    ]
-                },
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "ingress_metadata",
-                                "l2_if"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 2
-                        }
-                    ]
-                }
-            ]
-        },
-        {
             "name": "action_forward_vlan_tag",
-            "id": 14,
+            "id": 10,
             "runtime_data": [
                 {
                     "name": "pcp",
@@ -1124,7 +965,7 @@
         },
         {
             "name": "action_set_lag_hash_size",
-            "id": 15,
+            "id": 11,
             "runtime_data": [
                 {
                     "name": "lag_size",
@@ -1160,7 +1001,7 @@
         },
         {
             "name": "action_set_out_port",
-            "id": 16,
+            "id": 12,
             "runtime_data": [
                 {
                     "name": "port",
@@ -1187,19 +1028,82 @@
             ]
         },
         {
-            "name": "action_set_mc_fdb_miss",
-            "id": 17,
+            "name": "action_set_lag_l2if",
+            "id": 13,
+            "runtime_data": [
+                {
+                    "name": "is_lag",
+                    "bitwidth": 1
+                },
+                {
+                    "name": "l2_if",
+                    "bitwidth": 3
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ingress_metadata",
+                                "is_lag"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ingress_metadata",
+                                "l2_if"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_set_packet_vid",
+            "id": 14,
             "runtime_data": [],
             "primitives": [
                 {
-                    "op": "no_op",
-                    "parameters": []
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ingress_metadata",
+                                "vid"
+                            ]
+                        },
+                        {
+                            "type": "field",
+                            "value": [
+                                "vlan",
+                                "vid"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
         {
             "name": "action_set_l2_if_type",
-            "id": 18,
+            "id": 15,
             "runtime_data": [
                 {
                     "name": "l2_if_type",
@@ -1247,7 +1151,7 @@
         },
         {
             "name": "action_set_bridge_id",
-            "id": 19,
+            "id": 16,
             "runtime_data": [
                 {
                     "name": "bridge_id",
@@ -1274,19 +1178,36 @@
             ]
         },
         {
-            "name": "_drop",
-            "id": 20,
-            "runtime_data": [],
+            "name": "action_set_pvid",
+            "id": 17,
+            "runtime_data": [
+                {
+                    "name": "pvid",
+                    "bitwidth": 12
+                }
+            ],
             "primitives": [
                 {
-                    "op": "drop",
-                    "parameters": []
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ingress_metadata",
+                                "vid"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
                 }
             ]
         },
         {
             "name": "action_set_mcast_snp",
-            "id": 21,
+            "id": 18,
             "runtime_data": [
                 {
                     "name": "mcast_snp",
@@ -1314,7 +1235,7 @@
         },
         {
             "name": "action_set_stp_state",
-            "id": 22,
+            "id": 19,
             "runtime_data": [
                 {
                     "name": "stp_state",
@@ -1335,6 +1256,65 @@
                         {
                             "type": "runtime_data",
                             "value": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_set_stp_id",
+            "id": 20,
+            "runtime_data": [
+                {
+                    "name": "stp_id",
+                    "bitwidth": 3
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ingress_metadata",
+                                "stp_id"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_go_to_in_l3_if_table",
+            "id": 21,
+            "runtime_data": [],
+            "primitives": [
+                {
+                    "op": "no_op",
+                    "parameters": []
+                }
+            ]
+        },
+        {
+            "name": "action_learn_mac",
+            "id": 22,
+            "runtime_data": [],
+            "primitives": [
+                {
+                    "op": "generate_digest",
+                    "parameters": [
+                        {
+                            "type": "hexstr",
+                            "value": "0x200"
+                        },
+                        {
+                            "type": "hexstr",
+                            "value": "0x1"
                         }
                     ]
                 }
@@ -2527,6 +2507,13 @@
                     "value": [
                         "ethernet",
                         "srcAddr"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "id"
                     ]
                 }
             ],

@@ -28,6 +28,7 @@ field_list ipv4_checksum_list {
 
 field_list lag_hash_fieldlist { //TODO: Consult Matty which fields to use for hash, preferably to keep same flows in same out port.
     ethernet.srcAddr;
+    ipv4.id;
 }
 
 field_list_calculation lag_hash {

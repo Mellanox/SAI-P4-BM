@@ -9,9 +9,9 @@ action _nop() {
 }
 
 // ingres L2
-action action_set_lag_l2if(in bit is_lag, in bit<16> lag_id,in bit<3> l2_if){
+action action_set_lag_l2if(in bit is_lag, in bit<3> l2_if) { // , in bit<16> lag_id
 	ingress_metadata.is_lag	=	is_lag;
-	ingress_metadata.lag_id =	lag_id;
+	// ingress_metadata.lag_id =	lag_id;
 	ingress_metadata.l2_if 	=	l2_if;
 }
 

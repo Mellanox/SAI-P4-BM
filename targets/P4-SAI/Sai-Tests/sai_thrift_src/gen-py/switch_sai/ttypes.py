@@ -82,6 +82,20 @@ class sai_bridge_port_attr:
     "SAI_BRIDGE_PORT_ATTR_FDB_LEARNING_MODE": 6,
   }
 
+class sai_lag_member_attr:
+  SAI_LAG_MEMBER_ATTR_PORT_ID = 0
+  SAI_LAG_MEMBER_ATTR_LAG_ID = 1
+
+  _VALUES_TO_NAMES = {
+    0: "SAI_LAG_MEMBER_ATTR_PORT_ID",
+    1: "SAI_LAG_MEMBER_ATTR_LAG_ID",
+  }
+
+  _NAMES_TO_VALUES = {
+    "SAI_LAG_MEMBER_ATTR_PORT_ID": 0,
+    "SAI_LAG_MEMBER_ATTR_LAG_ID": 1,
+  }
+
 class sai_fdb_entry_attr:
   SAI_FDB_ENTRY_ATTR_TYPE = 0
   SAI_FDB_ENTRY_ATTR_PACKET_ACTION = 1
