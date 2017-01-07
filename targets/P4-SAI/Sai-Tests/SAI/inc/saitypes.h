@@ -192,7 +192,7 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_FDB_ENTRY                = 32,
     SAI_OBJECT_TYPE_SWITCH                   = 33,
     SAI_OBJECT_TYPE_HOSTIF_TRAP              = 34,
-    SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP = 35,
+    SAI_OBJECT_TYPE_HOSTIF_TABLE_ENTRY       = 35,
     SAI_OBJECT_TYPE_NEIGHBOR_ENTRY           = 36,
     SAI_OBJECT_TYPE_ROUTE_ENTRY              = 37,
     SAI_OBJECT_TYPE_VLAN                     = 38,
@@ -213,8 +213,10 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_L2MC_ENTRY               = 53,
     SAI_OBJECT_TYPE_IPMC_ENTRY               = 54,
     SAI_OBJECT_TYPE_MCAST_FDB_ENTRY          = 55,
-    SAI_OBJECT_TYPE_MAX                      = 56
-
+    SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP = 56,
+    SAI_OBJECT_TYPE_BRIDGE                   = 57,
+    SAI_OBJECT_TYPE_BRIDGE_PORT              = 58,
+    SAI_OBJECT_TYPE_MAX                      = 59
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {
@@ -474,6 +476,9 @@ typedef struct _sai_tunnel_map_params_t
     /** VNI id */
     sai_uint32_t vni_id;
 
+    /** Bridge IF */
+    sai_object_id_t bridge_if;
+
 } sai_tunnel_map_params_t;
 
 typedef struct _sai_tunnel_map_t
@@ -523,6 +528,19 @@ typedef struct _sai_acl_capability_t
      */
     sai_s32_list_t action_list;
 }sai_acl_capability_t;
+
+/**
+ * @brief FDB entry type.
+ */
+typedef enum _sai_fdb_entry_bridge_type_t
+{
+    /** .1Q FDB Entry */
+    SAI_FDB_ENTRY_BRIDGE_TYPE_1Q,
+
+    /** .1D FDB Entry */
+    SAI_FDB_ENTRY_BRIDGE_TYPE_1D,
+
+} sai_fdb_entry_bridge_type_t;
 
 /**
  * @brief Data Type to use enum's as attribute value is sai_int32_t s32

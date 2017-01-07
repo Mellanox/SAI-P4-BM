@@ -61,8 +61,18 @@ typedef struct _sai_fdb_entry_t
     /** Mac address */
     sai_mac_t mac_address;
 
-    /** Vlan ID */
+    /** Bridge type */
+    sai_fdb_entry_bridge_type_t bridge_type;
+
+    /** Vlan ID. Valid for .1Q */
     sai_vlan_id_t vlan_id;
+
+    /**
+     * Bridge ID. Valid for .1D
+     *
+     * @objects SAI_OBJECT_TYPE_BRIDGE
+     */
+    sai_object_id_t bridge_id;
 
 } sai_fdb_entry_t;
 
@@ -114,11 +124,7 @@ typedef enum _sai_fdb_entry_attr_t
     SAI_FDB_ENTRY_ATTR_PACKET_ACTION,
 
     /**
-     * @brief FDB entry port id
-     *
-     * The port id here can refer to a generic port object such as SAI port object id,
-     * SAI LAG object id and etc. or to a tunnel next hop object in case the entry is
-     * l2 tunnel
+     * @brief FDB entry bridge port id
      *
      * The port id is only effective when the packet action is one of the following:
      *  FORWARD, COPY, LOG, TRANSIT
@@ -126,12 +132,12 @@ typedef enum _sai_fdb_entry_attr_t
      * When it is SAI_NULL_OBJECT_ID, then packet will be dropped.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_TUNNEL
+     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      * @default SAI_NULL_OBJECT_ID
      * @flags CREATE_AND_SET
      * @allownull true
      */
-    SAI_FDB_ENTRY_ATTR_PORT_ID,
+    SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID,
 
     /**
      * @brief User based Meta Data
