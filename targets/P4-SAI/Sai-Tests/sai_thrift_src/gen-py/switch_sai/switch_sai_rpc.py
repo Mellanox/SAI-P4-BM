@@ -49,6 +49,13 @@ class Iface:
     """
     pass
 
+  def sai_thrift_remove_port(self, port_id):
+    """
+    Parameters:
+     - port_id
+    """
+    pass
+
   def sai_thrift_create_port(self, thrift_attr_list):
     """
     Parameters:
@@ -717,6 +724,37 @@ class Client(Iface):
     if result.success is not None:
       return result.success
     raise TApplicationException(TApplicationException.MISSING_RESULT, "sai_thrift_clear_port_all_stats failed: unknown result");
+
+  def sai_thrift_remove_port(self, port_id):
+    """
+    Parameters:
+     - port_id
+    """
+    self.send_sai_thrift_remove_port(port_id)
+    return self.recv_sai_thrift_remove_port()
+
+  def send_sai_thrift_remove_port(self, port_id):
+    self._oprot.writeMessageBegin('sai_thrift_remove_port', TMessageType.CALL, self._seqid)
+    args = sai_thrift_remove_port_args()
+    args.port_id = port_id
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_sai_thrift_remove_port(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = sai_thrift_remove_port_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "sai_thrift_remove_port failed: unknown result");
 
   def sai_thrift_create_port(self, thrift_attr_list):
     """
@@ -3076,6 +3114,7 @@ class Processor(Iface, TProcessor):
     self._processMap["sai_thrift_get_port_attribute"] = Processor.process_sai_thrift_get_port_attribute
     self._processMap["sai_thrift_get_port_stats"] = Processor.process_sai_thrift_get_port_stats
     self._processMap["sai_thrift_clear_port_all_stats"] = Processor.process_sai_thrift_clear_port_all_stats
+    self._processMap["sai_thrift_remove_port"] = Processor.process_sai_thrift_remove_port
     self._processMap["sai_thrift_create_port"] = Processor.process_sai_thrift_create_port
     self._processMap["sai_thrift_create_bridge"] = Processor.process_sai_thrift_create_bridge
     self._processMap["sai_thrift_create_bridge_port"] = Processor.process_sai_thrift_create_bridge_port
@@ -3207,6 +3246,17 @@ class Processor(Iface, TProcessor):
     result = sai_thrift_clear_port_all_stats_result()
     result.success = self._handler.sai_thrift_clear_port_all_stats(args.port_id)
     oprot.writeMessageBegin("sai_thrift_clear_port_all_stats", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_sai_thrift_remove_port(self, seqid, iprot, oprot):
+    args = sai_thrift_remove_port_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = sai_thrift_remove_port_result()
+    result.success = self._handler.sai_thrift_remove_port(args.port_id)
+    oprot.writeMessageBegin("sai_thrift_remove_port", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -4585,6 +4635,135 @@ class sai_thrift_clear_port_all_stats_result:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('sai_thrift_clear_port_all_stats_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.I32, 0)
+      oprot.writeI32(self.success)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class sai_thrift_remove_port_args:
+  """
+  Attributes:
+   - port_id
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.I64, 'port_id', None, None, ), # 1
+  )
+
+  def __init__(self, port_id=None,):
+    self.port_id = port_id
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.I64:
+          self.port_id = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('sai_thrift_remove_port_args')
+    if self.port_id is not None:
+      oprot.writeFieldBegin('port_id', TType.I64, 1)
+      oprot.writeI64(self.port_id)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.port_id)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class sai_thrift_remove_port_result:
+  """
+  Attributes:
+   - success
+  """
+
+  thrift_spec = (
+    (0, TType.I32, 'success', None, None, ), # 0
+  )
+
+  def __init__(self, success=None,):
+    self.success = success
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.I32:
+          self.success = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('sai_thrift_remove_port_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.I32, 0)
       oprot.writeI32(self.success)

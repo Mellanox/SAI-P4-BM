@@ -29,12 +29,6 @@ control ingress {
 
 	// bridging
 	if ((ingress_metadata.l2_if_type == L2_1Q_BRIDGE) or (ingress_metadata.l2_if_type == L2_1D_BRIDGE)) {
-		apply(table_vbridge) {
-			miss {
-				apply(table_vbridge_default_internal);
-			}
-		}
-
 		if (ingress_metadata.l2_if_type == L2_1D_BRIDGE)	{
 			control_1d_bridge_flow();
 		} else  {
@@ -71,10 +65,12 @@ control control_ingress_port{
 //}
 
 control control_1d_bridge_flow{
+	apply(table_bridge_id_1d);
 	apply(table_vbridge_STP);
 }
 
 control control_1q_bridge_flow{
+	apply(table_bridge_id_1q);
  	apply(table_ingress_vlan_filtering);
  	apply(table_ingress_vlan);
  	apply(table_xSTP_instance);
@@ -116,16 +112,18 @@ control control_fdb{
 control egress{
 	if(ingress_metadata.l2_if_type == L2_1D_BRIDGE){
 		apply(table_egress_vbridge_STP);
-		apply(table_egress_vbridge);
 	}
 	if(ingress_metadata.l2_if_type == L2_1Q_BRIDGE){
 		apply(table_egress_xSTP);
 		apply(table_egress_vlan_filtering);
 	}
-	apply(table_egress_br_port);
-	// if (egress_metadata.out_if_type == OUT_IF_IS_PORT) {
-	//	apply(table_egress_port);
-	//} else
+
+	apply(table_egress_br_port_to_if);
+	if(ingress_metadata.l2_if_type == L2_1D_BRIDGE){
+		apply(table_egress_set_vlan);
+	}
+	apply(table_egress_vlan_tag);
+
 	if (egress_metadata.out_if_type == OUT_IF_IS_LAG) { 
 		apply(table_lag_hash);
 		apply(table_egress_lag);

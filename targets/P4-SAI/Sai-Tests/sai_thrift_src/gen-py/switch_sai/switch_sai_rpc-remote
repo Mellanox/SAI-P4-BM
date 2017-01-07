@@ -28,6 +28,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  sai_thrift_attribute_list_t sai_thrift_get_port_attribute(sai_thrift_object_id_t port_id)')
   print('   sai_thrift_get_port_stats(sai_thrift_object_id_t port_id,  counter_ids, i32 number_of_counters)')
   print('  sai_thrift_status_t sai_thrift_clear_port_all_stats(sai_thrift_object_id_t port_id)')
+  print('  sai_thrift_status_t sai_thrift_remove_port(sai_thrift_object_id_t port_id)')
   print('  sai_thrift_object_id_t sai_thrift_create_port( thrift_attr_list)')
   print('  sai_thrift_object_id_t sai_thrift_create_bridge( thrift_attr_list)')
   print('  sai_thrift_object_id_t sai_thrift_create_bridge_port( thrift_attr_list)')
@@ -182,6 +183,12 @@ elif cmd == 'sai_thrift_clear_port_all_stats':
     print('sai_thrift_clear_port_all_stats requires 1 args')
     sys.exit(1)
   pp.pprint(client.sai_thrift_clear_port_all_stats(eval(args[0]),))
+
+elif cmd == 'sai_thrift_remove_port':
+  if len(args) != 1:
+    print('sai_thrift_remove_port requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.sai_thrift_remove_port(eval(args[0]),))
 
 elif cmd == 'sai_thrift_create_port':
   if len(args) != 1:

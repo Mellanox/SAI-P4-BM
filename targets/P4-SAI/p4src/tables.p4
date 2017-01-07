@@ -35,24 +35,17 @@ table table_ingress_l2_interface_type {
     //size : 1; TODO
 }
 
-// BRIDGE
-table table_vbridge {
-    reads {
-        ingress_metadata.bridge_port : exact;
-    }
-    actions {action_set_bridge_id; _drop;}
-    //size : 1; TODO
-}
-table table_vbridge_default_internal {
-    reads {
-        ingress_metadata.l2_if_type : exact;
-    }
-    actions {_drop; action_set_bridge_id_with_vid;}
-}
 
 //-----------
 // ingress 1d bridge
 //-----------
+table table_bridge_id_1d {
+    reads {
+        ingress_metadata.bridge_port : exact;
+    }
+    actions {action_set_bridge_id; _drop;}
+}
+
 table table_vbridge_STP {
     reads {
         ingress_metadata.bridge_port : exact;
@@ -63,10 +56,16 @@ table table_vbridge_STP {
 //-----------
 // ingress 1q bridge
 //-----------
+table table_bridge_id_1q {
+    reads {
+        ingress_metadata.vid : exact;
+    }
+    actions {action_set_bridge_id; _drop;}
+}
 
 table table_ingress_vlan_filtering{
 	reads{
-		ingress_metadata.l2_if : exact;
+		ingress_metadata.bridge_port : exact;
         ingress_metadata.vid   : exact;
 	}
 	actions{_drop;_nop;}
@@ -174,17 +173,19 @@ table table_unknown_multicast{
 
 table table_egress_vbridge_STP {
     reads {
-        egress_metadata.bridge_port : exact; //TODO maybe egress? who set br_port?
+        egress_metadata.bridge_port : exact; 
     }
     actions {action_set_egress_stp_state; _drop;}
     //size : 1; // TODO
 }
 
-table table_egress_vbridge {
+table table_egress_vlan_tag {
     reads {
-        egress_metadata.bridge_port : exact; //TODO maybe egress? who set br_port?
+        egress_metadata.out_if : exact;
+        ingress_metadata.vid : exact;
+        vlan : valid;
     }
-    actions {action_forward_vlan_tag; action_forward_set_outIfType; _drop;}
+    actions {action_forward_vlan_tag; action_forward_vlan_untag; _drop;_nop;}
     //size : 1; // TODO
 }
 
@@ -204,19 +205,25 @@ table table_egress_vlan_filtering {
     reads{
         egress_metadata.bridge_port  : exact;
         ingress_metadata.vid    : exact;
-        vlan : valid;
     }
-    actions{_drop; action_forward_vlan_tag; action_untag_vlan;_nop;} // Need untag??
+    actions{_drop; _nop; } 
 }
 
 // --------------
 // egress bridge
 // --------------
-table table_egress_br_port {
+table table_egress_br_port_to_if {
     reads {
         egress_metadata.bridge_port : exact;
     }
     actions {action_forward_set_outIfType; _drop;}
+}
+
+table table_egress_set_vlan {
+    reads {
+        egress_metadata.bridge_port : exact;
+    }
+    actions {action_set_vlan;}
 }
 
 //-----------

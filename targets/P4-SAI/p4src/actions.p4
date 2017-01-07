@@ -64,6 +64,10 @@ action action_set_egress_br_port(in bit<8> br_port){
 	egress_metadata.bridge_port = br_port;
 }
 
+action action_set_vlan(in bit<12> vid) {
+	ingress_metadata.vid = vid;
+}
+
 action action_forward_set_outIfType(in bit<6> out_if,in bit<1> out_if_type){
 	egress_metadata.out_if 			= out_if;
 	egress_metadata.out_if_type 	= out_if_type;
@@ -87,15 +91,16 @@ action action_set_egress_stp_state(in bit<2> stp_state){
 	egress_metadata.stp_state = stp_state;
 }
 
-action action_untag_vlan() {
-	no_op();
+action action_forward_vlan_untag(){
+	ethernet.etherType = vlan.etherType;
+	remove_header(vlan);
 }
 
-action action_forward_vlan_tag(in bit<3> pcp, in bit cfi){
+action action_forward_vlan_tag(in bit<3> pcp, in bit cfi, in bit<12> vid){
 	add_header(vlan);
 	vlan.pcp = pcp;
 	vlan.cfi = cfi;
-	vlan.vid = ingress_metadata.vid;
+	vlan.vid = vid;
 	vlan.etherType = ethernet.etherType;
 	ethernet.etherType = VLAN_TYPE;
 	// egress_metadata.tag_mode = tag_mode;
