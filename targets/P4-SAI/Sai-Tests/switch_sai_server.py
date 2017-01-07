@@ -194,8 +194,11 @@ class SaiHandler():
     vlan_member_obj.vlan_oid = vlan_oid
     vlan_member_obj.tagging_mode = tagging_mode
     vlan_obj.vlan_members.append(vlan_member_id)
-    out_if = self.ports[self.bridge_ports[bridge_port_id].port_id].hw_port
-
+    port_id = self.bridge_ports[bridge_port_id].port_id
+    if port_id in self.lags.keys():
+      out_if = port_id
+    else:
+      out_if = self.ports[port_id].hw_port
     if tagging_mode == sai_vlan_tagging_mode.SAI_VLAN_TAGGING_MODE_TAGGED:
       vlan_pcp = 0 
       vlan_cfi = 0
