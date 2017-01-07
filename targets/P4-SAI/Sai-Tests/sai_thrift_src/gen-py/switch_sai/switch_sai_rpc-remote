@@ -31,7 +31,9 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  sai_thrift_status_t sai_thrift_remove_port(sai_thrift_object_id_t port_id)')
   print('  sai_thrift_object_id_t sai_thrift_create_port( thrift_attr_list)')
   print('  sai_thrift_object_id_t sai_thrift_create_bridge( thrift_attr_list)')
+  print('  sai_thrift_status_t sai_thrift_remove_bridge(sai_thrift_object_id_t bridge_id)')
   print('  sai_thrift_object_id_t sai_thrift_create_bridge_port( thrift_attr_list)')
+  print('  sai_thrift_status_t sai_thrift_remove_bridge_port(sai_thrift_object_id_t bridge_port_id)')
   print('  sai_thrift_status_t sai_thrift_create_fdb_entry(sai_thrift_fdb_entry_t thrift_fdb_entry,  thrift_attr_list)')
   print('  sai_thrift_status_t sai_thrift_delete_fdb_entry(sai_thrift_fdb_entry_t thrift_fdb_entry)')
   print('  sai_thrift_status_t sai_thrift_flush_fdb_entries( thrift_attr_list)')
@@ -202,11 +204,23 @@ elif cmd == 'sai_thrift_create_bridge':
     sys.exit(1)
   pp.pprint(client.sai_thrift_create_bridge(eval(args[0]),))
 
+elif cmd == 'sai_thrift_remove_bridge':
+  if len(args) != 1:
+    print('sai_thrift_remove_bridge requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.sai_thrift_remove_bridge(eval(args[0]),))
+
 elif cmd == 'sai_thrift_create_bridge_port':
   if len(args) != 1:
     print('sai_thrift_create_bridge_port requires 1 args')
     sys.exit(1)
   pp.pprint(client.sai_thrift_create_bridge_port(eval(args[0]),))
+
+elif cmd == 'sai_thrift_remove_bridge_port':
+  if len(args) != 1:
+    print('sai_thrift_remove_bridge_port requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.sai_thrift_remove_bridge_port(eval(args[0]),))
 
 elif cmd == 'sai_thrift_create_fdb_entry':
   if len(args) != 2:

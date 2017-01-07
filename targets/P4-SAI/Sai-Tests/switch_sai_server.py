@@ -228,6 +228,19 @@ class SaiHandler():
     self.cli_client.AddTable('table_accepted_frame_type', 'action_set_pvid', str(port), str(vlan_id))
     return 0
 
+  # Bridge API
+  def sai_thrift_create_bridge(self, thrift_attr_list):
+    bridge_id, bridge_obj = CreateNewItem(self.bridge_ids, Bridge_obj)
+    for attr in thrift_attr_list:
+      if attr.id == sai_bridge_attr.SAI_BRIDGE_ATTR_TYPE:
+        bridge_type = attr.value.s32
+        bridge_obj.bridge_type = bridge_type
+    return bridge_id
+
+  def sai_thrift_remove_bridge(self, bridge_id):
+    self.bridge_ids.pop(bridge_id, None)
+    return 0
+
   def sai_thrift_create_bridge_port(self, thrift_attr_list):
     for attr in thrift_attr_list:
       if attr.id == sai_bridge_port_attr.SAI_BRIDGE_PORT_ATTR_VLAN_ID:
@@ -256,15 +269,16 @@ class SaiHandler():
     self.cli_client.AddTable('table_egress_br_port_to_if', 'action_forward_set_outIfType', str(br_port), list_to_str([self.ports[port_id].hw_port, 0]))
     return br_port
 
-  def sai_thrift_create_bridge(self, thrift_attr_list):
-    for attr in thrift_attr_list:
-      if attr.id == sai_bridge_attr.SAI_BRIDGE_ATTR_TYPE:
-        bridge_type = attr.value.s32
-    # bridge_type = sai_bridge_type.SAI_BRIDGE_TYPE_1D
-    bridge_id, bridge_obj = CreateNewItem(self.bridge_ids, Bridge_obj)
-    # bridge_obj.bridge_type = bridge_type
-    print bridge_id
-    return bridge_id
+  def sai_thrift_remove_bridge_port(self, bridge_port_id):
+    br_port = self.bridge_ports.pop(bridge_port_id, None)
+    if br_port.type == sai_bridge_port_type.SAI_BRIDGE_PORT_TYPE_SUB_PORT: #.1D 
+      self.cli_client.RemoveTableEntry('table_bridge_id_1d', str(br_port.id))
+      self.cli_client.RemoveTableEntry('table_egress_set_vlan', str(br_port.id))
+    else:
+      self.cli_client.RemoveTableEntry('table_bridge_id_1d', str(br_port.vlan_id))
+    self.cli_client.RemoveTableEntry('table_ingress_l2_interface_type', list_to_str([br_port.port_id, br_port.vlan_id]))
+    self.cli_client.RemoveTableEntry('table_egress_br_port_to_if', str(br_port.id))
+    return 0
 
   def sai_thrift_create_port(self, thrift_attr_list):
     for attr in thrift_attr_list:
@@ -286,6 +300,7 @@ class SaiHandler():
 
   def sai_thrift_remove_port(self, port_id):
     hw_port = self.ports[port_id].hw_port
+    print "table_ingress_lag remove. hw_port %d" % hw_port 
     self.cli_client.RemoveTableEntry('table_ingress_lag', str(hw_port))
     self.cli_client.RemoveTableEntry('table_accepted_frame_type_default_internal', str(port_id))
     self.cli_client.RemoveTableEntry('table_accepted_frame_type', str(port_id))

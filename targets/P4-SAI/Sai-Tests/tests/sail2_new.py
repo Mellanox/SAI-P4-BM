@@ -77,6 +77,9 @@ class L21DBridgeBasicTest(sai_base_test.ThriftInterfaceDataPlane):
         finally:
             sai_thrift_delete_fdb(self.client, mac1, bridge)
             sai_thrift_delete_fdb(self.client, mac2, bridge)
+            self.client.sai_thrift_remove_bridge_port(bridge_port1)
+            self.client.sai_thrift_remove_bridge_port(bridge_port2)
+            self.client.sai_thrift_remove_bridge(bridge)
             self.client.sai_thrift_remove_port(port1)
             self.client.sai_thrift_remove_port(port2)
 
@@ -144,11 +147,14 @@ class L21QBridgeAccess2AccessTest(sai_base_test.ThriftInterfaceDataPlane):
         finally:
             sai_thrift_delete_fdb(self.client, mac1, bridge)
             sai_thrift_delete_fdb(self.client, mac2, bridge)
-            self.client.sai_thrift_remove_port(port1)
-            self.client.sai_thrift_remove_port(port2)
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan_member(vlan_member2)
             self.client.sai_thrift_delete_vlan(vlan_oid)
+            self.client.sai_thrift_remove_bridge_port(bridge_port1)
+            self.client.sai_thrift_remove_bridge_port(bridge_port2)
+            self.client.sai_thrift_remove_bridge(bridge)
+            self.client.sai_thrift_remove_port(port1)
+            self.client.sai_thrift_remove_port(port2)
 
 @group('l2')
 class L21QBridgeAccess2TrunkTest(sai_base_test.ThriftInterfaceDataPlane):
@@ -232,11 +238,14 @@ class L21QBridgeAccess2TrunkTest(sai_base_test.ThriftInterfaceDataPlane):
         finally:
             sai_thrift_delete_fdb(self.client, mac1, bridge)
             sai_thrift_delete_fdb(self.client, mac2, bridge)
-            self.client.sai_thrift_remove_port(port1)
-            self.client.sai_thrift_remove_port(port2)
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan_member(vlan_member2)
             self.client.sai_thrift_delete_vlan(vlan_oid)
+            self.client.sai_thrift_remove_bridge_port(bridge_port1)
+            self.client.sai_thrift_remove_bridge_port(bridge_port2)
+            self.client.sai_thrift_remove_bridge(bridge)
+            self.client.sai_thrift_remove_port(port1)
+            self.client.sai_thrift_remove_port(port2)
 
 
 @group('l2')
@@ -320,11 +329,14 @@ class L21QBridgeTrunk2TrunkTest(sai_base_test.ThriftInterfaceDataPlane):
         finally:
             sai_thrift_delete_fdb(self.client, mac1, bridge)
             sai_thrift_delete_fdb(self.client, mac2, bridge)
-            self.client.sai_thrift_remove_port(port1)
-            self.client.sai_thrift_remove_port(port2)
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan_member(vlan_member2)
             self.client.sai_thrift_delete_vlan(vlan_oid)
+            self.client.sai_thrift_remove_bridge_port(bridge_port1)
+            self.client.sai_thrift_remove_bridge_port(bridge_port2)
+            self.client.sai_thrift_remove_bridge(bridge)
+            self.client.sai_thrift_remove_port(port1)
+            self.client.sai_thrift_remove_port(port2)
 
 @group('l2')
 class L21QBridgeTrunk2AccessTest(sai_base_test.ThriftInterfaceDataPlane):
@@ -407,11 +419,14 @@ class L21QBridgeTrunk2AccessTest(sai_base_test.ThriftInterfaceDataPlane):
         finally:
             sai_thrift_delete_fdb(self.client, mac1, bridge)
             sai_thrift_delete_fdb(self.client, mac2, bridge)
-            self.client.sai_thrift_remove_port(port1)
-            self.client.sai_thrift_remove_port(port2)
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan_member(vlan_member2)
             self.client.sai_thrift_delete_vlan(vlan_oid)
+            self.client.sai_thrift_remove_bridge_port(bridge_port1)
+            self.client.sai_thrift_remove_bridge_port(bridge_port2)
+            self.client.sai_thrift_remove_bridge(bridge)
+            self.client.sai_thrift_remove_port(port1)
+            self.client.sai_thrift_remove_port(port2)
 
 @group('l2')
 @group('lag')
