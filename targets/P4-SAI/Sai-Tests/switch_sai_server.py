@@ -237,7 +237,6 @@ class SaiHandler():
     hw_port = self.ports[port_id].hw_port
     self.cli_client.RemoveTableEntry('table_ingress_lag', str(hw_port))
     self.cli_client.RemoveTableEntry('table_accepted_frame_type_default_internal', str(port_id))
-    self.cli_client.RemoveTableEntry('table_accepted_frame_type', str(port_id))
     self.ports.pop(port_id, None)
     return 0
 
@@ -245,7 +244,7 @@ class SaiHandler():
     if attr.id == sai_port_attr.SAI_PORT_ATTR_PORT_VLAN_ID:
       vlan_id = attr.value.u16
     #self.cli_client.AddTable('table_ingress_lag', 'action_set_lag_l2if', str(port), list_to_str([0, 0,port]))  # TODO - this needs to be somehwere else
-    self.cli_client.AddTable('table_accepted_frame_type', 'action_set_pvid', str(port), str(vlan_id))
+    self.cli_client.AddTable('table_accepted_frame_type_default_internal', 'action_set_pvid', str(port), str(vlan_id))
     return 0
 
   # LAG Api

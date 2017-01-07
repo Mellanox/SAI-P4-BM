@@ -484,7 +484,14 @@ class L21DLagTest(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_fdb(self.client, mac1, bridge_type, vid, bridge, bridge_port1, mac_action, fdb_entry_type)
         sai_thrift_create_fdb(self.client, mac2, bridge_type, vid, bridge, bridge_port2, mac_action, fdb_entry_type)
 
+        pkt = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
+                                eth_src='00:22:22:22:22:22',
+                                ip_dst='10.0.0.1',
+                                ip_id=101,
+                                ip_ttl=64)
         try:
+            send_packet(self, hw_port3, str(pkt))
+            verify_packets(self, pkt, [hw_port1])
             for ip_id in [101,103,105]:
                 pkt = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
                                     eth_src='00:11:11:11:11:11',
