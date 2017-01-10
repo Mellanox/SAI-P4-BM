@@ -64,20 +64,26 @@ symbols in the binary:
 
 The new bmv2 debugger can be enabled by passing `--enable-debugger` to
 `configure`.
+## SAI Target
+SAI P4 target is found inside targets/P4-SAI.
 
-## Running SAI P4 program
+### Running SAI P4 program
 running the switch can be done with the following command:
 
     sudo ./simple_switch -i 0@<iface0> -i 1@<iface1> <path to JSON file>
 
 In this example \<iface0\> and \<iface1\> are the interfaces which are bound to
 the switch (as ports 0 and 1).
-Or more easily, you can use the script ```run_server.sh``` found in P4-SAI directory.
+Some default configurations are required (TODO: Maybe we can get rid of this need), to do this run:
 
-## Using SAI to configure the switch
+     ./runtime_CLI < p4src/DefaultConfig.txt
+
+Or more easily, you can use the script ```run_server.sh``` found in P4-SAI target directory, which does both.
+
+### Using SAI to configure the switch
 TODO.
 
-## Editing P4 code
+### Compiling P4 code
 if any editing to the P4 program was made, before running it you first need to transform the P4 code into a json representation which can be consumed by the software switch. This
 representation will tell bmv2 which tables to initialize, how to configure the
 parser, ... It is produced by the [p4c-bm](https://github.com/p4lang/p4c-bm)
@@ -90,6 +96,8 @@ as follows:
     
 or more easily you can use the ```compile_json.sh``` script that is found inside the P4-SAI target directory.
 
-## Running PTF tests
+### Running PTF tests
 Inside target/P4-SAI/Sai-tests some tests were written using the [ptf](https://github.com/p4lang/ptf) framework. 
-To run them simply run the server with ```run_server.sh```, then in another terminal run the rpc_server with ```sai_rpc_server.sh```, and in another terminal you can run ptf tests using ```run_ptf.sh```
+To run them you need run the sai switch with ```run_server.sh```.
+The tests themselves are run in another terminal. run the python the rpc_server with ```sai_rpc_server.sh``` (TODO: this will change to the new C++ server when ready),  and in another terminal you can run ptf tests, for example using ```run_ptf_l2_tests.sh```
+The directory is divided to tests (ready and passing tests), wip_tests for work in progress, and old_tests for old sai tests.
