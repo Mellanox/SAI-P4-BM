@@ -1,10 +1,10 @@
 # SAI BEHAVIORAL MODEL USING P4 
 This repository contains P4 implementation of SAI behavioural model, forked from [p4lang/behavioural_model](https://github.com/p4lang/behavioral-model/).
 
-## Compiling Behavioural model
+## Compiling P4 Behavioural model 
+following instructions were taken from [p4lang/behavioural_model](https://github.com/p4lang/behavioral-model/).
 
 ### Dependencies
-
 On Ubuntu 14.04, the following packages are required:
 
 - automake
@@ -64,6 +64,8 @@ symbols in the binary:
 
 The new bmv2 debugger can be enabled by passing `--enable-debugger` to
 `configure`.
+
+
 ## SAI Target
 SAI P4 target is found inside targets/P4-SAI.
 
