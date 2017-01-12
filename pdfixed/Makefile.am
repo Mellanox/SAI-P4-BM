@@ -136,7 +136,7 @@ $(pdf_files)
 
 libbmpdfixed_la_LIBADD = \
 $(top_builddir)/thrift_src/libruntimestubs.la \
-$(top_builddir)/targets/simple_switch/libsimpleswitch_thrift.la
+$(top_builddir)/targets/P4-SAI/libsimpleswitch_thrift.la
 
 libbmpdfixedthrift_la_SOURCES = \
 thrift-src/pdfixed_rpc_server.cpp \
@@ -149,7 +149,7 @@ $(pdfixed_thrift_files_cxx)
 
 AM_CXXFLAGS =
 AM_CPPFLAGS = -I$(top_builddir)/thrift_src/gen-cpp
-AM_CPPFLAGS += -I$(top_builddir)/targets/simple_switch/gen-cpp
+AM_CPPFLAGS += -I$(top_builddir)/targets/P4-SAI/gen-cpp
 AM_CPPFLAGS += -I$(srcdir)/include
 AM_CPPFLAGS += -I$(top_srcdir)/include
 AM_CPPFLAGS += -I$(builddir)/pd_thrift_gen/gen-cpp/
