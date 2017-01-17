@@ -5,28 +5,43 @@ table table_ingress_lag {
     reads {
         standard_metadata.ingress_port : exact;
     }
-    actions {action_set_lag_l2if;}
+    actions {action_set_lag_l2if;action_set_l2if;}//mattyk update
     size : PHY_PORT_NUM;
 }
 
 table table_accepted_frame_type {
     reads {
-        vlan : valid;
+        vlan : valid;//matty prio tagged frames will have vlan valid 
     }
     actions {action_set_packet_vid;}
 }
 
-table table_accepted_frame_type_default_internal {
+table table_port_PVID {  
     reads {
         ingress_metadata.l2_if : exact;
-        // ingress_metadata.is_tagged : exact;
     }
-    actions {action_set_pvid;_drop;}
+    actions {action_set_pvid;}
+    //size : 1; // TODO
+}
+
+table table_port_mode {  
+    reads {
+        ingress_metadata.l2_if : exact;
+    }
+    actions {action_set_port_mode;}
     //size : 1; // TODO
 }
 
 
-table table_ingress_l2_interface_type {
+table table_port_ingress_interface_type {// should be 
+    reads {
+        ingress_metadata.l2_if: exact;
+    }
+    actions {action_set_l2_if_type; _drop;}
+    //size : 1; TODO
+}
+
+table table_subport_ingress_interface_type {
     reads {
         ingress_metadata.l2_if : exact;
         ingress_metadata.vid   : exact;
@@ -60,7 +75,7 @@ table table_bridge_id_1q {
     reads {
         ingress_metadata.vid : exact;
     }
-    actions {action_set_bridge_id; _drop;}
+    actions {action_set_bridge_id;action_set_bridge_id_vid;}//why drop 
 }
 
 table table_ingress_vlan_filtering{
@@ -71,11 +86,11 @@ table table_ingress_vlan_filtering{
 	actions{_drop;_nop;}
 }
 
-table table_ingress_vlan{
+table table_mc_lookup_mode{
     reads{
         ingress_metadata.vid   : exact;
     }
-    actions{action_set_mcast_snp;}
+    actions{action_set_mcast_lookup_mode;}
 }
 
 table table_xSTP_instance{
@@ -84,12 +99,13 @@ table table_xSTP_instance{
 	}
 	actions{action_set_stp_id;}
 }
+
 table table_xSTP {
     reads {
         ingress_metadata.bridge_port : exact;
         ingress_metadata.stp_id 	 : exact;
     }
-    actions {action_set_stp_state;}
+    actions {action_set_stp_state;_drop;}
     //size : 1; TODO
 }
 
@@ -111,9 +127,10 @@ table table_l3_interface {
     	ethernet.dstAddr			: exact;
     	ingress_metadata.bridge_id 	: exact;
     }
-    actions {action_go_to_in_l3_if_table; }//action_go_to_fdb_table;}
+    actions {action_set_egress_br_port;}//action_go_to_fdb_table;}
     //size : 1; TODO
 }
+
 //---------
 // unicast:
 //---------
@@ -126,13 +143,13 @@ table table_fdb { // TODO ask if can be melded into l3 interface table...
     size : FDB_TABLE_SIZE;
 }
 
-table table_l3_if{ // TODO - definition
-	reads{
-		ethernet.dstAddr		   : exact;
-        ingress_metadata.bridge_id : exact;
-	}
-	actions{action_forward;}//action_go_to_fdb_table;}
-}
+//table table_l3_if{ // TODO - definition
+//	reads{
+//		ethernet.dstAddr		   : exact;
+//        ingress_metadata.bridge_id : exact;
+//	}
+//	actions{action_forward;}//action_go_to_fdb_table;}
+//}
 
 table table_unknown_unicast {
     reads {
@@ -161,12 +178,34 @@ table table_mc_l2_sg_g{// IP MC
     actions{action_forward_mc_set_if_list;action_set_mc_fdb_miss;}
 }
 
-table table_unknown_multicast{
+table table_unknown_multicast_nonip{
     reads{
       ingress_metadata.bridge_id : exact;
     }
     actions{action_forward_mc_set_if_list;}
 }
+
+table table_unknown_multicast_ipv4{
+    reads{
+      ingress_metadata.bridge_id : exact;
+    }
+    actions{action_forward_mc_set_if_list;}
+}
+
+//table table_unknown_multicast_ipv6{
+//    reads{
+//      ingress_metadata.bridge_id : exact;
+//    }
+//    actions{action_forward_mc_set_if_list;}
+//}
+
+table table_broadcast{
+    reads{
+      ingress_metadata.bridge_id : exact;
+    }
+    actions{action_forward_mc_set_if_list;}
+}
+
 //-----------
 // egress 1d bridge
 //-----------

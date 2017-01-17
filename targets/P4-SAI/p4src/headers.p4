@@ -67,6 +67,7 @@ header_type ingress_metadata_t {
 		bit 	is_tagged;
 		bit 	is_lag;
 		bit<16> lag_id; // LAG_WDT
+		bit     port_mode; 
 		bit<2> 	l2_if_type;
 		bit<8> 	bridge_port; //L2_BRIDGE_PORT_WDT
 		bit<3> 	bridge_id;	 //L2_BRIDGE_NUM_WDT
@@ -74,9 +75,10 @@ header_type ingress_metadata_t {
 		bit<3>	stp_id; // TODO size?
 		bit<12> vid;
 		bit<1> 	unknown_unicast;
-        bit<1>  mcast_snp;
+        bit<2>  mcast_mode;
         bit<1>  mc_fdb_miss;
         bit     ipmc;
+        bit     isip;
 	}
 }
 

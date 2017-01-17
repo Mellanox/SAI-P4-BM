@@ -1,3 +1,39 @@
-table_set_default table_accepted_frame_type_default_internal _drop
+table_set_default table_ingress_lag  action_set_l2if
+table_set_default table_port_PVID action_set_pvid 1
 table_add table_accepted_frame_type action_set_packet_vid 1 =>
-table_set_default table_egress_vlan_filtering _drop
+table_set_default  table_port_mode table action_set_port_mode 0
+table_set_default  table_port_ingress_l2_interface_type _drop
+table_set_default  table_subport_ingress_l2_interface_type _drop
+table_add table_port_ingress_interface_type  action_set_packet_vid 1 =>
+
+table_add table_port_ingress_interface_type action_set_l2_if_type 1 => 3 1 
+table_add table_port_ingress_interface_type action_set_l2_if_type 2 => 3 2
+table_add table_port_ingress_interface_type action_set_l2_if_type 3 => 3 3
+table_add table_port_ingress_interface_type action_set_l2_if_type 4 => 3 4
+table_add table_port_ingress_interface_type action_set_l2_if_type 5 => 3 5
+table_add table_port_ingress_interface_type action_set_l2_if_type 6 => 3 6
+table_add table_port_ingress_interface_type action_set_l2_if_type 7 => 3 7
+table_add table_port_ingress_interface_type action_set_l2_if_type 8 => 3 8
+
+table_set_default table_bridge_id_1q action_set_bridge_id_vid
+
+table_set_default table_ingress_vlan_filtering _drpo
+
+table_add table_ingress_vlan_filtering _nop 1 1 =>
+table_add table_ingress_vlan_filtering _nop 2 1 =>
+table_add table_ingress_vlan_filtering _nop 3 1 =>
+table_add table_ingress_vlan_filtering _nop 4 1 =>
+table_add table_ingress_vlan_filtering _nop 5 1 =>
+table_add table_ingress_vlan_filtering _nop 6 1 =>
+table_add table_ingress_vlan_filtering _nop 7 1 =>
+table_add table_ingress_vlan_filtering _nop 8 1 =>
+
+table_set_default table_xSTP_instance action_set_stp_id 1
+
+table_set_default table_mc_lookup_mode action_set_mcast_lookup_mode 0 
+
+table_set_default table_mc_fdb action_set_mc_fdb_miss
+
+table_set_default table_mc_l2_sg_g  action_set_mc_fdb_miss
+
+table_set_default  table_egress_vlan_filtering _drop

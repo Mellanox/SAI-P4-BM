@@ -34,13 +34,25 @@ parser parse_vlan {
 
 // IPv4 parser, decide next layer according to protocol field
 parser parse_ipv4 {
+   // set_metadata(ingress_metadata.isip,1);
     extract(ipv4);
-    return select(latest.protocol) {
+     return post_parse_ipv4 ;
+ //   return select(latest.protocol) {
+ //     TCP_PROTOCOL_NUM 	: parse_tcp;
+  //     UDP_PROTOCOL_NUM	: parse_udp;
+   //    default 			: ingress;
+  // }
+}
+
+parser post_parse_ipv4 {
+    set_metadata(ingress_metadata.isip,1);
+    return select(ipv4.protocol) {
         TCP_PROTOCOL_NUM 	: parse_tcp;
         UDP_PROTOCOL_NUM	: parse_udp;
         default 			: ingress;
     }
 }
+
 
 // TCP parser, next layer are irrelvant for us, thus not included
 // (cosidered payload data).

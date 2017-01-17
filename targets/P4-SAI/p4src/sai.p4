@@ -23,20 +23,22 @@ metadata 	egress_metadata_t 	 egress_metadata;
 
 control ingress {
 	// phy
-	control_ingress_port();
-	// dot1br 
-//	control_dot1br_ingress();
-
-	// bridging
-	if ((ingress_metadata.l2_if_type == L2_1Q_BRIDGE) or (ingress_metadata.l2_if_type == L2_1D_BRIDGE)) {
-		if (ingress_metadata.l2_if_type == L2_1D_BRIDGE)	{
+	control_ingress_port();	//bridging
+    if((ingress_metadata.l2_if_type == L2_1Q_BRIDGE) or (ingress_metadata.l2_if_type == L2_1D_BRIDGE)) {
+		if(ingress_metadata.l2_if_type == L2_1D_BRIDGE){
 			control_1d_bridge_flow();
-		} else  {
+		} 
+	   else{
 			control_1q_bridge_flow();
 		}
-
-		control_fdb();
-	}
+		 control_learn_fdb();
+		 if((ethernet.dstAddr&0x010000000000)==0x0){   //unicast 
+		     control_unicast_fdb();}
+		else if(ethernet.dstAddr==0xffffffffffff){//broadcast
+		    control_bc_fdb();}
+	     else {
+	  	  control_mc_fdb();}
+	}//end of bridge flow 
 
 	// router
 	if (ingress_metadata.l2_if_type == L2_ROUTER_TYPE) { 
@@ -46,13 +48,20 @@ control ingress {
 
 control control_ingress_port{
 	apply(table_ingress_lag);
-	apply(table_accepted_frame_type) {
-		miss {
-			apply(table_accepted_frame_type_default_internal);
-		}
-	}
+	apply(table_accepted_frame_type);//need to add accepted frame type atribute 
+	// {
+		//miss {
+			//apply(table_port_PVID);
+		//}
+	//}
+	if(ingress_metadata.vid==0)//prio tagged frame 
+	      apply(table_port_PVID);
 	//apply(table_ingress_acl); // TODO
-	apply(table_ingress_l2_interface_type);
+	apply(table_port_mode);
+	if(ingress_metadata.port_mode ==PORT_MODE_PORT) 
+	       apply(table_port_ingress_interface_type);
+	 else
+	    apply(table_subport_ingress_interface_type);
 }
 
 // control control_egress_port {
@@ -72,7 +81,6 @@ control control_1d_bridge_flow{
 control control_1q_bridge_flow{
 	apply(table_bridge_id_1q);
  	apply(table_ingress_vlan_filtering);
- 	apply(table_ingress_vlan);
  	apply(table_xSTP_instance);
  	apply(table_xSTP);
 }
@@ -80,34 +88,43 @@ control control_1q_bridge_flow{
 control control_router_flow{
 	// TODO
 }
-
-control control_fdb{
-	apply(table_learn_fdb);
-	apply(table_l3_interface){
-		hit{
-			apply(table_l3_if);
-		}
-		miss{
-			// action_go_to_fdb_table{
-			if((ethernet.srcAddr>>47) == UNICAST){ //TODO unicast - mac msb is off lsb of 1st byte should be 0.
-				apply(table_fdb){
-					miss { // if packet not in fdb
-						apply(table_unknown_unicast);
-					}
-				}
-			} else if(ingress_metadata.mcast_snp & ingress_metadata.ipmc){
-				apply(table_mc_l2_sg_g);	
-			} else if( not (ingress_metadata.mcast_snp & ingress_metadata.ipmc)){ // MC flow
-				apply(table_mc_fdb);	
-			}
-			if(ingress_metadata.mc_fdb_miss == 1) {
-				apply(table_unknown_multicast);
-			}
-			//TODO duplicate to multiple egress according to fdb list
-		}
-
-	}
+control control_learn_fdb{
+          apply(table_learn_fdb);
 }
+control control_unicast_fdb{
+	apply(table_l3_interface){//should be for unicast only TDB
+		miss{ 
+				apply(table_fdb);
+			}
+	 }
+}
+					
+control control_bc_fdb{
+	 //DMAC is broadcast 
+	if(ethernet.dstAddr==0xffffffffffff) 
+			   apply(table_broadcast); 
+}	
+
+control control_mc_fdb{ 
+      apply(table_mc_lookup_mode);
+	//non ip multicast 
+	 if((ingress_metadata.isip==0) or (ingress_metadata.mcast_mode==MAC_BASE_MC_LOOKUP))//non ip or multicast mode == FDB
+	         apply(table_mc_fdb);
+     else if((ingress_metadata.isip==1) and (ingress_metadata.mcast_mode==SG_IP_BASE_MC_LOOKUP))
+		    apply(table_mc_l2_sg_g); 
+	//TBD add * G table 		     
+    //FDB miss flow 
+	 if(ingress_metadata.mc_fdb_miss==1)
+	 {
+		//non ip
+		if(ingress_metadata.isip==1)
+		    apply(table_unknown_multicast_ipv4);
+		 else 
+		    apply(table_unknown_multicast_nonip);
+		   	    
+	 }
+}
+
 
 control egress{
 	if(ingress_metadata.l2_if_type == L2_1D_BRIDGE){

@@ -15,11 +15,20 @@ action action_set_lag_l2if(in bit is_lag, in bit<3> l2_if) { // , in bit<16> lag
 	ingress_metadata.l2_if 	=	l2_if;
 }
 
+// ingres L2
+action action_set_l2if() { 
+	ingress_metadata.l2_if =standard_metadata.ingress_port;
+}
+
 action action_set_pvid(in bit<12> pvid){
 	ingress_metadata.vid 	=	pvid;
 }
 action action_set_packet_vid(){
 	ingress_metadata.vid 	=	vlan.vid;
+}
+
+action action_set_port_mode(in bit <1> mode){
+	ingress_metadata.port_mode 	= mode;
 }
 
 action action_set_l2_if_type(in bit<2> l2_if_type, in bit<8> bridge_port){
@@ -28,17 +37,24 @@ action action_set_l2_if_type(in bit<2> l2_if_type, in bit<8> bridge_port){
 	ingress_metadata.bridge_port = bridge_port; 
 }
 
-action action_set_bridge_id(in bit<3> bridge_id){
+action action_set_bridge_id(in bit<12> bridge_id){
 	ingress_metadata.bridge_id = bridge_id;
 }
+
+
+action action_set_bridge_id_vid(){
+	ingress_metadata.bridge_id =ingress_metadata.vid;
+}
+
 action action_set_bridge_id_with_vid() {
 	ingress_metadata.bridge_id = ingress_metadata.vid;
 }
 
-action action_set_mcast_snp(in bit<1> mcast_snp){
-	ingress_metadata.mcast_snp = mcast_snp;
+action action_set_mcast_lookup_mode(in bit<2> mcast_mode){
+	ingress_metadata.mcast_mode =mcast_mode;
 }
-action action_set_stp_state(in bit<3> stp_state){
+
+action action_set_stp_state(in bit<3> stp_state){//need to enforce STP state  
 	ingress_metadata.stp_state = stp_state;
 }
 
@@ -74,13 +90,13 @@ action action_forward_set_outIfType(in bit<6> out_if,in bit<1> out_if_type){
 	standard_metadata.egress_spec = out_if; 
 }
 
-action action_ste_fdb_miss(in bit mc_fdb_miss){
-	ingress_metadata.mc_fdb_miss = mc_fdb_miss;
-}
+//action action_ste_fdb_miss(in bit mc_fdb_miss){
+//	ingress_metadata.mc_fdb_miss = mc_fdb_miss;
+//}
 
-action action_forward(in bit<6> port) {
-    standard_metadata.egress_spec 	= port;	
-    egress_metadata.out_if 			= port;
+action action_forward(in bit<6> br_port) {
+  //  standard_metadata.egress_spec = port;	//need to map bride port to interface  
+    egress_metadata.bridge_port = br_port;
 }
 
 action action_forward_mc_set_if_list(){
@@ -114,9 +130,9 @@ action action_set_out_port(in bit<6> port){
 	standard_metadata.egress_spec 	= port;
 }
 
-action broadcast() {
-    modify_field(egress_metadata.mcast_grp, 1);
-}
+//action broadcast() {
+//    modify_field(egress_metadata.mcast_grp, 1);
+//}
 
 action set_egr(in bit<6> egress_spec) {
     modify_field(standard_metadata.egress_spec, egress_spec);
@@ -124,5 +140,5 @@ action set_egr(in bit<6> egress_spec) {
 
 // mc
 action action_set_mc_fdb_miss() {
-	no_op();
+	ingress_metadata.mc_fdb_miss=1;
 }
