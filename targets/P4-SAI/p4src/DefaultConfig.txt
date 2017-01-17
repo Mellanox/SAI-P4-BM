@@ -17,7 +17,7 @@ table_add table_port_ingress_interface_type action_set_l2_if_type 8 => 3 8
 
 table_set_default table_bridge_id_1q action_set_bridge_id_vid
 
-table_set_default table_ingress_vlan_filtering _drpo
+table_set_default table_ingress_vlan_filtering _drop
 
 table_add table_ingress_vlan_filtering _nop 1 1 =>
 table_add table_ingress_vlan_filtering _nop 2 1 =>
