@@ -1,4 +1,4 @@
-sudo ./ptf/ptf --test-dir tests/ --pypath sai_thrift_src/gen-py --interface 0@veth1 --interface 1@veth3 --interface 2@veth5 \
-    	 --interface 3@veth7 --interface 4@veth9 --interface 5@veth11 --interface 6@veth13 --interface 7@veth15  \
-    	 sail2_new.L21DBridgeBasicTest sail2_new.L21QBridgeAccess2AccessTest  sail2_new.L21QBridgeAccess2TrunkTest sail2_new.L21QBridgeTrunk2TrunkTest sail2_new.L21DLagTest sail2_new.L21QLagTest
+sudo ./ptf/ptf --test-dir tests/ --pypath sai_thrift_src/gen-py --interface 0@sw_port0 --interface 1@sw_port1 --interface 2@sw_port2 \
+    	 --interface 3@sw_port3 --interface 4@sw_port4 --interface 5@sw_port5 --interface 6@sw_port6 --interface 7@sw_port7  \
+    	 sail2_new.L21DBridgeBasicTest sail2_new.L21QBridgeAccess2AccessTest sail2_new.L21QBridgeAccess2TrunkTest sail2_new.L21QBridgeAccess2TrunkTest  sail2_new.L21QBridgeTrunk2TrunkTest sail2_new.L21DLagTest sail2_new.L21QLagTest
     	 

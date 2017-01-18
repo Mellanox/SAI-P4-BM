@@ -36,10 +36,11 @@ class Sai_obj():
 
 
 class Port_obj(Sai_obj):
-    def __init__(self, id, hw_port=0, pvid=1):
+    def __init__(self, id, hw_port=0, pvid=1, bind_mode=0):
         Sai_obj.__init__(self, id)
         self.hw_port = hw_port
         self.pvid = pvid
+        self.bind_mode = bind_mode
 
 
 class Lag_obj(Sai_obj):
@@ -99,7 +100,6 @@ class SaiHandler():
     self.bridge_ids = {}
     self.lag_members = {}
     self.lags = {}
-
 
   def sai_thrift_create_switch(self, thrift_attr_list):
     return self.switch_id
@@ -167,6 +167,7 @@ class SaiHandler():
     bridge_port_id = vlan_member.bridge_port_id
     vid = vlan_member.vid
     self.cli_client.RemoveTableEntry('table_egress_vlan_filtering', list_to_str([bridge_port_id, vid]))
+    self.cli_client.RemoveTableEntry('table_ingress_vlan_filtering', list_to_str([bridge_port_id, vid]))
     out_if = self.ports[self.bridge_ports[bridge_port_id].port_id].hw_port
     if vlan_member.tagging_mode == sai_vlan_tagging_mode.SAI_VLAN_TAGGING_MODE_UNTAGGED:
       self.cli_client.RemoveTableEntry('table_egress_vlan_tag', list_to_str([out_if, vid, 1]))
@@ -215,7 +216,8 @@ class SaiHandler():
 
     self.cli_client.AddTable('table_egress_vlan_filtering','_nop',
                               list_to_str([bridge_port_id, vlan_id]),'')
-
+    self.cli_client.AddTable('table_ingress_vlan_filtering','_nop',
+                              list_to_str([bridge_port_id, vlan_id]),'')
 
     return vlan_member_id
 
@@ -226,9 +228,11 @@ class SaiHandler():
       if attr.id == sai_port_attr.SAI_PORT_ATTR_PORT_VLAN_ID:
         vlan_id = attr.value.u16
         port_obj.pvid = vlan_id
-        self.cli_client.AddTable('table_accepted_frame_type_default_internal', 'action_set_pvid', str(port), str(vlan_id))
+        self.cli_client.AddTable('table_port_PVID', 'action_set_pvid', str(port), str(vlan_id))
       elif attr.id == sai_port_attr.SAI_PORT_ATTR_BIND_MODE:
         bind_mode = attr.value.s32
+        port_obj.bind_mode = bind_mode
+        self.cli_client.AddTable('table_port_mode', 'action_set_port_mode', str(port), str(bind_mode))
       elif attr.id == sai_port_attr.SAI_PORT_ATTR_HW_LANE_LIST:
         hw_port_list = attr.value.u32list.u32list
     hw_port = hw_port_list[0]
@@ -239,7 +243,7 @@ class SaiHandler():
   def sai_thrift_remove_port(self, port_id):
     hw_port = self.ports[port_id].hw_port
     self.cli_client.RemoveTableEntry('table_ingress_lag', str(hw_port))
-    self.cli_client.RemoveTableEntry('table_accepted_frame_type_default_internal', str(port_id))
+    self.cli_client.RemoveTableEntry('table_port_PVID', str(port_id))
     self.ports.pop(port_id, None)
     return 0
 
@@ -269,12 +273,19 @@ class SaiHandler():
         lag_id = attr.value.oid
         lag_member_obj.lag_id = lag_id
         self.lags[lag_id].lag_members.append(lag_member_id)
-    hw_port = self.ports[port_id].hw_port
+    port = self.ports[port_id]
+    hw_port = port.hw_port
+    pvid = port.pvid
+    bind_mode = port.bind_mode 
     self.cli_client.RemoveTableEntry('table_ingress_lag', str(hw_port))
     self.cli_client.AddTable('table_ingress_lag', 'action_set_lag_l2if', str(hw_port), list_to_str([1, lag_id]))
     self.cli_client.RemoveTableEntry('table_lag_hash',str(lag_id))
     self.cli_client.AddTable('table_lag_hash', 'action_set_lag_hash_size', str(lag_id), str(len(self.lags[lag_id].lag_members)))
     self.cli_client.AddTable('table_egress_lag', 'action_set_out_port', list_to_str([lag_id, lag_member_id]), str(hw_port))
+    self.cli_client.RemoveTableEntry('table_port_PVID', str(lag_id))
+    self.cli_client.RemoveTableEntry('table_port_mode', str(lag_id))
+    self.cli_client.AddTable('table_port_PVID', 'action_set_pvid', str(lag_id), str(pvid))
+    self.cli_client.AddTable('table_port_mode', 'action_set_port_mode', str(lag_id), str(bind_mode))
     return lag_member_id
 
   def sai_thrift_remove_lag_member(self, lag_member_id):
@@ -321,19 +332,28 @@ class SaiHandler():
     br_port_obj.type = bridge_port_type
     #TODO: Connect Thrift constants to P4 ?
     if bridge_port_type == sai_bridge_port_type.SAI_BRIDGE_PORT_TYPE_SUB_PORT: #.1D
-      l2_if_type = 2  
+      self.cli_client.RemoveTableEntry('table_bridge_id_1d', str(br_port))
+      self.cli_client.RemoveTableEntry('table_egress_set_vlan', str(br_port))
       self.cli_client.AddTable('table_bridge_id_1d', 'action_set_bridge_id', str(br_port), str(bridge_id))
       self.cli_client.AddTable('table_egress_set_vlan', 'action_set_vlan', str(br_port), str(vlan_id))
+      l2_if_type = 2
     elif bridge_port_type == sai_bridge_port_type.SAI_BRIDGE_PORT_TYPE_PORT: #.1Q
-      l2_if_type = 3
+      self.cli_client.RemoveTableEntry('table_bridge_id_1q', str(br_port))
       self.cli_client.AddTable('table_bridge_id_1q', 'action_set_bridge_id', str(vlan_id), str(bridge_id))
+      l2_if_type = 3 
 
-    self.cli_client.AddTable('table_ingress_l2_interface_type', 'action_set_l2_if_type',
-                             list_to_str([port_id, vlan_id]), list_to_str([l2_if_type, br_port]))
+    self.cli_client.RemoveTableEntry('table_egress_br_port_to_if', str(br_port))  
     if port_id in self.lags.keys(): # LAG
       self.cli_client.AddTable('table_egress_br_port_to_if', 'action_forward_set_outIfType', str(br_port), list_to_str([port_id, 1]))
+      bind_mode = self.ports[self.lag_members[self.lags[port_id].lag_members[0]].port_id].bind_mode
     else: # port
       self.cli_client.AddTable('table_egress_br_port_to_if', 'action_forward_set_outIfType', str(br_port), list_to_str([self.ports[port_id].hw_port, 0]))
+      bind_mode = self.ports[port_id].bind_mode
+
+    if bind_mode == sai_port_bind_mode.SAI_PORT_BIND_MODE_SUB_PORT:
+      self.cli_client.AddTable('table_subport_ingress_interface_type', 'action_set_l2_if_type', list_to_str([port_id, vlan_id]), list_to_str([l2_if_type, br_port]))
+    else:
+      self.cli_client.AddTable('table_port_ingress_interface_type', 'action_set_l2_if_type', str(port_id), str(br_port))
     return br_port
 
   def sai_thrift_remove_bridge_port(self, bridge_port_id):
