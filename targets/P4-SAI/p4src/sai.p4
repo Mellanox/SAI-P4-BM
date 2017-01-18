@@ -32,12 +32,15 @@ control ingress {
 			control_1q_bridge_flow();
 		}
 		 control_learn_fdb();
-		 if((ethernet.dstAddr&0x010000000000)==0x0){   //unicast 
-		     control_unicast_fdb();}
-		else if(ethernet.dstAddr==0xffffffffffff){//broadcast
-		    control_bc_fdb();}
-	     else {
-	  	  control_mc_fdb();}
+		if((ethernet.dstAddr&0x010000000000)==0x0){   //unicast 
+			control_unicast_fdb();}
+		else if(ethernet.dstAddr!=0xffffffffffff){//multicast
+	  	  	control_mc_fdb();
+	  	}
+	  	if ((ethernet.dstAddr==0xffffffffffff) or (ingress_metadata.unknown_unicast==1)) { //broadcast
+			control_bc_fdb();
+	  	}
+
 	}//end of bridge flow 
 
 	// router
@@ -48,30 +51,17 @@ control ingress {
 
 control control_ingress_port{
 	apply(table_ingress_lag);
-	apply(table_accepted_frame_type);//need to add accepted frame type atribute 
-	// {
-		//miss {
-			//apply(table_port_PVID);
-		//}
-	//}
-	if(ingress_metadata.vid==0)//prio tagged frame 
-	      apply(table_port_PVID);
+	apply(table_accepted_frame_type); //need to add accepted frame type atribute 
+	if(ingress_metadata.vid==0) { //prio tagged frame 
+	    apply(table_port_PVID);
+	}
 	//apply(table_ingress_acl); // TODO
 	apply(table_port_mode);
 	if(ingress_metadata.port_mode ==PORT_MODE_PORT) 
-	       apply(table_port_ingress_interface_type);
-	 else
+	    apply(table_port_ingress_interface_type);
+	else
 	    apply(table_subport_ingress_interface_type);
 }
-
-// control control_egress_port {
-	// apply(table_egress_)
-// }
-//control control_dot1br_ingress{
-	//apply(table_dot1br_port_type);
-	//apply(table_extended_port_determination);
-	//apply(table_dot1br_lag);
-//}
 
 control control_1d_bridge_flow{
 	apply(table_bridge_id_1d);
@@ -100,9 +90,7 @@ control control_unicast_fdb{
 }
 					
 control control_bc_fdb{
-	 //DMAC is broadcast 
-	if(ethernet.dstAddr==0xffffffffffff) 
-			   apply(table_broadcast); 
+	apply(table_broadcast); 
 }	
 
 control control_mc_fdb{ 

@@ -96,3 +96,15 @@ header_type egress_metadata_t {
     }
 }
 
+header_type intrinsic_metadata_t {
+    fields {
+        bit <48> ingress_global_timestamp;
+        bit <8> lf_field_list;
+        bit <16> mcast_grp;
+        bit <16> egress_rid;
+        bit <8> resubmit_flag;
+        bit <8> recirculate_flag;
+    }
+}
+
+metadata intrinsic_metadata_t intrinsic_metadata;

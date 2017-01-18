@@ -90,6 +90,10 @@ action action_forward_set_outIfType(in bit<6> out_if,in bit<1> out_if_type){
 	standard_metadata.egress_spec = out_if; 
 }
 
+action action_set_unknown_unicast(in bit<1> unknown_unicast) {
+	ingress_metadata.unknown_unicast = unknown_unicast;
+}
+
 //action action_ste_fdb_miss(in bit mc_fdb_miss){
 //	ingress_metadata.mc_fdb_miss = mc_fdb_miss;
 //}
@@ -99,8 +103,9 @@ action action_forward(in bit<6> br_port) {
     egress_metadata.bridge_port = br_port;
 }
 
-action action_forward_mc_set_if_list(){
+action action_forward_mc_set_if_list(in bit<16> mcast_grp){
 	// TODO add set egress if list
+	modify_field(intrinsic_metadata.mcast_grp, mcast_grp);
 }
 
 action action_set_egress_stp_state(in bit<2> stp_state){
