@@ -106,7 +106,7 @@ action action_forward(in bit<6> br_port) {
 action action_forward_mc_set_if_list(in bit<16> mcast_grp, in bit<1> go_to_router){
 	// TODO add set egress if list
 	modify_field(intrinsic_metadata.mcast_grp, mcast_grp);
-	modify_field(intrinsic_metadata.go_to_router, go_to_router);
+	modify_field(ingress_metadata.go_to_router, go_to_router);
 }
 
 action action_set_egress_stp_state(in bit<2> stp_state){
