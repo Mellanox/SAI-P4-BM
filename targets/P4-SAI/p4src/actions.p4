@@ -85,8 +85,8 @@ action action_set_vlan(in bit<12> vid) {
 }
 
 action action_forward_set_outIfType(in bit<6> out_if,in bit<1> out_if_type){
-	egress_metadata.out_if 			= out_if;
-	egress_metadata.out_if_type 	= out_if_type;
+	egress_metadata.out_if 		  = out_if;
+	egress_metadata.out_if_type   = out_if_type;
 	standard_metadata.egress_spec = out_if; 
 }
 
@@ -103,9 +103,10 @@ action action_forward(in bit<6> br_port) {
     egress_metadata.bridge_port = br_port;
 }
 
-action action_forward_mc_set_if_list(in bit<16> mcast_grp){
+action action_forward_mc_set_if_list(in bit<16> mcast_grp, in bit<1> go_to_router){
 	// TODO add set egress if list
 	modify_field(intrinsic_metadata.mcast_grp, mcast_grp);
+	modify_field(intrinsic_metadata.go_to_router, go_to_router);
 }
 
 action action_set_egress_stp_state(in bit<2> stp_state){

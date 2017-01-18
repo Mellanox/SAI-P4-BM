@@ -412,7 +412,8 @@ SimpleSwitch::ingress_thread() {
       for (const auto &out : pre_out) {
         egress_port = out.egress_port;
         // if (ingress_port == egress_port) continue; // pruning
-        BMLOG_DEBUG_PKT(*packet, "Replicating packet on port {}", egress_port);
+        phv->get_field("egress_metadata.bridge_port").set(egress_port);
+        BMLOG_DEBUG_PKT(*packet, "Replicating packet on bridge port {}", egress_port);
         f_rid.set(out.rid);
         f_instance_type.set(PKT_INSTANCE_TYPE_REPLICATION);
         std::unique_ptr<Packet> packet_copy = packet->clone_with_phv_ptr();
