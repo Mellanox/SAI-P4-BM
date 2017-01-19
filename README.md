@@ -6,7 +6,7 @@ the Packet Test Framework (pft) implements test using python.
 
 ##P4 - switch architecture
 ##SAI - switch api
-##PTF - test frame work
+[PTF](#ptf) - test frame work (currently using python thrift server and API)
 
 
 This repository contains P4 implementation of SAI behavioural model, forked from [p4lang/behavioural_model](https://github.com/p4lang/behavioral-model/).
@@ -107,8 +107,8 @@ as follows:
     p4c-bm --json <path to JSON file> <path to P4 file>
     
 or more easily you can use the ```compile_json.sh``` script that is found inside the P4-SAI target directory.
-
-### Running PTF tests
+<a name="ptf"></a>
+# Running PTF tests
 Inside target/P4-SAI/Sai-tests some tests were written using the [ptf](https://github.com/p4lang/ptf) framework. 
 To run them you need run the sai switch with ```run_server.sh```.
 The tests themselves are run in another terminal. run the python the rpc_server with ```sai_rpc_server.sh``` (TODO: this will change to the new C++ server when ready),  and in another terminal you can run ptf tests, for example using ```run_ptf_l2_tests.sh```
