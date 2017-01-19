@@ -100,8 +100,8 @@ or manualy, as follows:
     
 
 <a name="sai"></a>
-# Using SAI API to configure the switch
-![sai_arch](docs/SAI_arch.png)
+# SAI API
+![[sai_arch]](https://github.com/YonatanPitz/SAI-P4-BM/blob/master/docs/SAI_arch.PNG)  
 The SAI lib (C lib) can be found and included in [SAI dir](targets/P4-SAI/SAI/)
 SAI API consist of few layers.
 
