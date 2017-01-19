@@ -1,16 +1,16 @@
 # SAI BEHAVIORAL MODEL USING P4 
-This repository is ment to provide a conformal behavioral model with SAI interface.
-it implements SAI 1.0 on top of soft switch coded via P4.
-the SAI API can can be used by including "sai.h" (see below for details).
-the Packet Test Framework (pft) implements test using python.
+This repository is ment to provide a conformal behavioral model with SAI interface.  
+It implements SAI 1.0 on top of soft switch coded via P4.  
+The Packet Test Framework (pft) implements test using python.
 
-[###P4](#p4) - switch architecture
-[###SAI](#sai) - switch api
-[###PTF](#ptf) - test frame work (currently using python thrift server and API)
+###[P4](#p4) - switch architecture
+###[SAI](#sai) - switch api
+###[PTF](#ptf) - test frame work
 
 
 This repository contains P4 implementation of SAI behavioural model, forked from [p4lang/behavioural_model](https://github.com/p4lang/behavioral-model/).
-
+<a name="p4"></a>
+# P4
 ## Compiling P4 Behavioural model 
 following instructions were taken from [p4lang/behavioural_model](https://github.com/p4lang/behavioral-model/).
 
@@ -75,22 +75,15 @@ symbols in the binary:
 The new bmv2 debugger can be enabled by passing `--enable-debugger` to
 `configure`.
 
-<a name="p4"></a>
-## SAI P4 Target
-SAI P4 target is found inside targets/P4-SAI.
 
-### Running SAI P4 program
-running the switch can be done with the following command:
+## P4 Target
+P4 target is found inside targets/P4-SAI.
 
-    sudo ./simple_switch -i 0@<iface0> -i 1@<iface1> <path to JSON file>
-
-In this example \<iface0\> and \<iface1\> are the interfaces which are bound to
-the switch (as ports 0 and 1).
-Some default configurations are required (TODO: Maybe we can get rid of this need), to do this run:
-
-     ./runtime_CLI < p4src/DefaultConfig.txt
-
-Or more easily, you can use the script ```run_server.sh``` found in P4-SAI target directory, which does both.
+### Create virtual interfaces
+Use the ```veth_setup.sh``` script to create the virtual interfaces and hosts.
+### Running P4 program
+running the switch can be done with the following command: ```run_server.sh``` found in P4-SAI target directory.
+This script olso implements some default configurations found in: p4src/DefaultConfig.txt
 
 
 ### Compiling P4 code
@@ -99,16 +92,17 @@ representation will tell bmv2 which tables to initialize, how to configure the
 parser, ... It is produced by the [p4c-bm](https://github.com/p4lang/p4c-bm)
 tool. Please take a look at the
 [README](https://github.com/p4lang/p4c-bm/blob/master/README.rst) for this repo
-to find out how to install it. Once this is done, you can obtain the json file
-as follows:
+to find out how to install it. Once this is done, 
+use the ```compile_json.sh``` script that is found inside the P4-SAI target directory.
+or manualy, as follows:
 
     p4c-bm --json <path to JSON file> <path to P4 file>
     
-or more easily you can use the ```compile_json.sh``` script that is found inside the P4-SAI target directory.
 
 <a name="sai"></a>
 # Using SAI API to configure the switch
-TODO.
+The SAI lib (C lib) can be found and included in 
+SAI API consist of few layers.
 
 
 <a name="ptf"></a>
