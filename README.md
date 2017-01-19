@@ -1,4 +1,14 @@
 # SAI BEHAVIORAL MODEL USING P4 
+This repository is ment to provide a conformal behavioral model with SAI interface.
+it implements SAI 1.0 on top of soft switch coded via P4.
+the SAI API can can be used by including "sai.h" (see below for details).
+the Packet Test Framework (pft) implements test using python.
+
+##P4 - switch architecture
+##SAI - switch api
+##PTF - test frame work
+
+
 This repository contains P4 implementation of SAI behavioural model, forked from [p4lang/behavioural_model](https://github.com/p4lang/behavioral-model/).
 
 ## Compiling P4 Behavioural model 
