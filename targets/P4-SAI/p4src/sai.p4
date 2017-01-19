@@ -25,34 +25,38 @@ control ingress {
 	// phy
 	control_ingress_port();	//bridging
     if((ingress_metadata.l2_if_type == L2_1Q_BRIDGE) or (ingress_metadata.l2_if_type == L2_1D_BRIDGE)) {
-		if(ingress_metadata.l2_if_type == L2_1D_BRIDGE){
-			control_1d_bridge_flow();
-		} 
-	   else{
-			control_1q_bridge_flow();
-		}
-		 control_learn_fdb();
-		if((ethernet.dstAddr&0x010000000000)==0x0){   //unicast 
-			control_unicast_fdb();}
-		else if(ethernet.dstAddr!=0xffffffffffff){//multicast
-	  	  	control_mc_fdb();
-	  	}
-	  	if ((ethernet.dstAddr==0xffffffffffff) or (ingress_metadata.unknown_unicast==1)) { //broadcast
-			control_bc_fdb();
-	  	}
-
-	}//end of bridge flow 
+    	control_bridge();
+	}
 
 	// router
 	if ((ingress_metadata.l2_if_type == L2_ROUTER_TYPE) or (ingress_metadata.go_to_router == 1)) { 
 		control_router_flow();
 	}
+
+	//todo: bridge after router
+}
+
+control control_bridge { 
+	if(ingress_metadata.l2_if_type == L2_1D_BRIDGE){
+		control_1d_bridge_flow();
+	} else{
+		control_1q_bridge_flow();
+	}
+
+	control_learn_fdb();
+	if((ethernet.dstAddr&0x010000000000)==0x0){   //unicast 
+		control_unicast_fdb();
+	} else if(ethernet.dstAddr==0xffffffffffff){  //broadcast
+		control_bc_fdb();
+	} else { //multicast
+	    control_mc_fdb();
+	}
 }
 
 control control_ingress_port{
 	apply(table_ingress_lag);
-	apply(table_accepted_frame_type); //need to add accepted frame type atribute 
-	if(ingress_metadata.vid==0) { //prio tagged frame 
+	apply(table_accepted_frame_type);
+	if(ingress_metadata.is_tagged==0) { 
 	    apply(table_port_PVID);
 	}
 	//apply(table_ingress_acl); // TODO
@@ -81,10 +85,15 @@ control control_router_flow{
 control control_learn_fdb{
           apply(table_learn_fdb);
 }
+
 control control_unicast_fdb{
 	apply(table_l3_interface){//should be for unicast only TDB
 		miss{ 
-				apply(table_fdb);
+				apply(table_fdb) {
+					miss { 
+						apply(table_flood);
+					}
+				}
 			}
 	 }
 }
