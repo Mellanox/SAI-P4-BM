@@ -12,72 +12,11 @@ This repository contains P4 implementation of SAI behavioural model, forked from
 <a name="p4"></a>
 # P4
 ## Compiling P4 Behavioural model 
-following instructions were taken from [p4lang/behavioural_model](https://github.com/p4lang/behavioral-model/).
-
-### Dependencies
-On Ubuntu 14.04, the following packages are required:
-
-- automake
-- cmake
-- libjudy-dev
-- libgmp-dev
-- libpcap-dev
-- libboost-dev
-- libboost-test-dev
-- libboost-program-options-dev
-- libboost-system-dev
-- libboost-filesystem-dev
-- libboost-thread-dev
-- libevent-dev
-- libtool
-- flex
-- bison
-- pkg-config
-- g++
-- libssl-dev
-
-You also need to install [thrift](https://github.com/apache/thrift) and
-[nanomsg](http://download.nanomsg.org/nanomsg-0.5-beta.tar.gz) from source. Feel
-free to use the install scripts under travis/.
-
-To use the CLI, you will need to install the
-[nnpy](https://github.com/nanomsg/nnpy) Python package. Feel free to use
-travis/install-nnpy.sh
-
-To make your life easier, we provide the *install_deps.sh* script, which will
-install all the dependencies needed on Ubuntu 14.04.
-
-Our Travis regression tests now run on Ubuntu 14.04.
-
-On MacOS you can use the tools/macos/bootstrap_mac.sh script to
-install all the above dependencies using homebrew. Note that in order
-to compile the code you need [XCode 8](https://itunes.apple.com/us/app/xcode/id497799835?mt=12)
-or later.
-
-### Building the code
-
-    1. ./autogen.sh
-    2. ./configure
-    3. make
-    4. [sudo] make install  # if you need to install bmv2
-
-In addition, on Linux, you may have to run `sudo ldconfig` after installing
-bmv2, to refresh the shared library cache.
-
-Debug logging is enabled by default. If you want to disable it for performance
-reasons, you can pass `--disable-logging-macros` to the `configure` script.
-
-In 'debug mode', you probably want to disable compiler optimization and enable
-symbols in the binary:
-
-    ./configure 'CXXFLAGS=-O0 -g'
-
-The new bmv2 debugger can be enabled by passing `--enable-debugger` to
-`configure`.
-
+For list of dependencies and build instructions:
+[p4lang/behavioural_model](https://github.com/p4lang/behavioral-model/).
 
 ## P4 Target
-P4 target is found inside targets/P4-SAI.
+P4 target is found inside [targets/P4-SAI](targets/P4-SAI).
 
 ### Create virtual interfaces
 Use the ```veth_setup.sh``` script to create the virtual interfaces and hosts.
@@ -102,9 +41,8 @@ or manualy, as follows:
 <a name="sai"></a>
 # SAI API
 ![[sai_arch]](https://github.com/YonatanPitz/SAI-P4-BM/blob/master/docs/SAI_arch.PNG)  
-The SAI lib (C lib) can be found and included in [SAI dir](targets/P4-SAI/SAI/)
-SAI API consist of few layers.
-
+The SAI lib (C lib) can be found and included in [SAI dir](targets/P4-SAI/SAI/)  
+The sai lib uses P4 thrift to configure the soft switch
 
 <a name="ptf"></a>
 # Running PTF tests
