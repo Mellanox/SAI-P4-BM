@@ -17,6 +17,7 @@ parser start {
 // ethernet parser - decide next layer according the ethertype
 parser parse_ethernet {
     extract(ethernet);
+    set_metadata(ingress_metadata.is_tagged,0);
     return select(latest.etherType) {
     	VLAN_TYPE : parse_vlan;
         IPV4_TYPE : parse_ipv4;
@@ -26,11 +27,7 @@ parser parse_ethernet {
 
 parser parse_vlan {
     extract(vlan);
-    if vlan.vid == 0 {
-      set_metadata(ingress_metadata.is_tagged, 0);
-    } else {
-      set_metadata(ingress_metadata.is_tagged, 1);
-    }
+    set_metadata(ingress_metadata.is_tagged, (bit)(vlan.vid >> 11) | (bit)(vlan.vid >> 10) | (bit)(vlan.vid >> 9) | (bit)(vlan.vid >> 8) | (bit)(vlan.vid >> 7) | (bit)(vlan.vid >> 6) | (bit)(vlan.vid >> 5) | (bit)(vlan.vid >> 4) | (bit)(vlan.vid >> 3) | (bit)(vlan.vid >> 2) | (bit)(vlan.vid >> 1) | (bit)(vlan.vid)); //if vid==0 not tagged. TODO: need to do this better (maybe add parser support for casting boolean)
     return select(latest.etherType) {
         IPV4_TYPE : parse_ipv4;
         default: ingress;
@@ -39,18 +36,12 @@ parser parse_vlan {
 
 // IPv4 parser, decide next layer according to protocol field
 parser parse_ipv4 {
-   // set_metadata(ingress_metadata.isip,1);
     extract(ipv4);
-     return post_parse_ipv4 ;
- //   return select(latest.protocol) {
- //     TCP_PROTOCOL_NUM 	: parse_tcp;
-  //     UDP_PROTOCOL_NUM	: parse_udp;
-   //    default 			: ingress;
-  // }
+    set_metadata(ingress_metadata.isip,1);
+    return post_parse_ipv4 ;
 }
 
 parser post_parse_ipv4 {
-    set_metadata(ingress_metadata.isip,1);
     return select(ipv4.protocol) {
         TCP_PROTOCOL_NUM 	: parse_tcp;
         UDP_PROTOCOL_NUM	: parse_udp;
