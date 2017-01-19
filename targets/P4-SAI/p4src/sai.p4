@@ -55,8 +55,8 @@ control control_bridge {
 
 control control_ingress_port{
 	apply(table_ingress_lag);
-	apply(table_accepted_frame_type);
-	if(ingress_metadata.is_tagged==0) { 
+	apply(table_accepted_frame_type); //need to add accepted frame type atribute 
+	if(ingress_metadata.vid==0) { //prio tagged frame
 	    apply(table_port_PVID);
 	}
 	//apply(table_ingress_acl); // TODO

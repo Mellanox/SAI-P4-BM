@@ -11,11 +11,9 @@ table table_ingress_lag {
 
 table table_accepted_frame_type {
     reads {
-        ingress_metadata.l2_if : exact;
-        ingress_metadata.is_tagged : exact;//matty prio tagged frames will have vlan valid 
-
+         vlan : valid;//matty prio tagged frames will have vlan valid
     }
-    actions {action_set_packet_vid;_drop;_nop;}
+    actions {action_set_packet_vid;}
 }
 
 table table_port_PVID {  

@@ -433,7 +433,7 @@
             "init_state": "start",
             "parse_states": [
                 {
-                    "name": "parse_tcp",
+                    "name": "parse_ipv4",
                     "id": 0,
                     "parser_ops": [
                         {
@@ -441,7 +441,7 @@
                             "parameters": [
                                 {
                                     "type": "regular",
-                                    "value": "tcp"
+                                    "value": "ipv4"
                                 }
                             ]
                         }
@@ -452,7 +452,7 @@
                             "type": "default",
                             "value": null,
                             "mask": null,
-                            "next_state": null
+                            "next_state": "post_parse_ipv4"
                         }
                     ]
                 },
@@ -628,7 +628,7 @@
                     ]
                 },
                 {
-                    "name": "parse_ipv4",
+                    "name": "parse_tcp",
                     "id": 6,
                     "parser_ops": [
                         {
@@ -636,7 +636,7 @@
                             "parameters": [
                                 {
                                     "type": "regular",
-                                    "value": "ipv4"
+                                    "value": "tcp"
                                 }
                             ]
                         }
@@ -647,7 +647,7 @@
                             "type": "default",
                             "value": null,
                             "mask": null,
-                            "next_state": "post_parse_ipv4"
+                            "next_state": null
                         }
                     ]
                 }
@@ -663,8 +663,8 @@
                 "ethernet",
                 "vlan",
                 "ipv4",
-                "udp",
-                "tcp"
+                "tcp",
+                "udp"
             ]
         }
     ],
@@ -758,9 +758,18 @@
             ]
         },
         {
-            "name": "action_set_l2if",
+            "name": "action_forward_mc_set_if_list",
             "id": 3,
-            "runtime_data": [],
+            "runtime_data": [
+                {
+                    "name": "mcast_grp",
+                    "bitwidth": 16
+                },
+                {
+                    "name": "go_to_router",
+                    "bitwidth": 1
+                }
+            ],
             "primitives": [
                 {
                     "op": "modify_field",
@@ -768,16 +777,29 @@
                         {
                             "type": "field",
                             "value": [
-                                "ingress_metadata",
-                                "l2_if"
+                                "intrinsic_metadata",
+                                "mcast_grp"
                             ]
                         },
                         {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
                             "type": "field",
                             "value": [
-                                "standard_metadata",
-                                "ingress_port"
+                                "ingress_metadata",
+                                "go_to_router"
                             ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 1
                         }
                     ]
                 }
@@ -1325,18 +1347,9 @@
             ]
         },
         {
-            "name": "action_forward_mc_set_if_list",
+            "name": "action_set_l2if",
             "id": 20,
-            "runtime_data": [
-                {
-                    "name": "mcast_grp",
-                    "bitwidth": 16
-                },
-                {
-                    "name": "go_to_router",
-                    "bitwidth": 1
-                }
-            ],
+            "runtime_data": [],
             "primitives": [
                 {
                     "op": "modify_field",
@@ -1344,29 +1357,16 @@
                         {
                             "type": "field",
                             "value": [
-                                "intrinsic_metadata",
-                                "mcast_grp"
+                                "ingress_metadata",
+                                "l2_if"
                             ]
                         },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
-                },
-                {
-                    "op": "modify_field",
-                    "parameters": [
                         {
                             "type": "field",
                             "value": [
-                                "ingress_metadata",
-                                "go_to_router"
+                                "standard_metadata",
+                                "ingress_port"
                             ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 1
                         }
                     ]
                 }

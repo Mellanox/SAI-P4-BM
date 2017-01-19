@@ -26,11 +26,6 @@ parser parse_ethernet {
 
 parser parse_vlan {
     extract(vlan);
-    if vlan.vid == 0 {
-      set_metadata(ingress_metadata.is_tagged, 0);
-    } else {
-      set_metadata(ingress_metadata.is_tagged, 1);
-    }
     return select(latest.etherType) {
         IPV4_TYPE : parse_ipv4;
         default: ingress;
