@@ -4,9 +4,9 @@ it implements SAI 1.0 on top of soft switch coded via P4.
 the SAI API can can be used by including "sai.h" (see below for details).
 the Packet Test Framework (pft) implements test using python.
 
-##P4 - switch architecture
-##SAI - switch api
-[PTF](#ptf) - test frame work (currently using python thrift server and API)
+[###P4](#p4) - switch architecture
+[###SAI](#sai) - switch api
+[###PTF](#ptf) - test frame work (currently using python thrift server and API)
 
 
 This repository contains P4 implementation of SAI behavioural model, forked from [p4lang/behavioural_model](https://github.com/p4lang/behavioral-model/).
@@ -75,8 +75,8 @@ symbols in the binary:
 The new bmv2 debugger can be enabled by passing `--enable-debugger` to
 `configure`.
 
-
-## SAI Target
+<a name="p4"></a>
+## SAI P4 Target
 SAI P4 target is found inside targets/P4-SAI.
 
 ### Running SAI P4 program
@@ -92,8 +92,6 @@ Some default configurations are required (TODO: Maybe we can get rid of this nee
 
 Or more easily, you can use the script ```run_server.sh``` found in P4-SAI target directory, which does both.
 
-### Using SAI to configure the switch
-TODO.
 
 ### Compiling P4 code
 if any editing to the P4 program was made, before running it you first need to transform the P4 code into a json representation which can be consumed by the software switch. This
@@ -107,6 +105,12 @@ as follows:
     p4c-bm --json <path to JSON file> <path to P4 file>
     
 or more easily you can use the ```compile_json.sh``` script that is found inside the P4-SAI target directory.
+
+<a name="sai"></a>
+# Using SAI API to configure the switch
+TODO.
+
+
 <a name="ptf"></a>
 # Running PTF tests
 Inside target/P4-SAI/Sai-tests some tests were written using the [ptf](https://github.com/p4lang/ptf) framework. 
