@@ -1,0 +1,13 @@
+#include <sai.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+typedef void* S_O_Handle;
+S_O_Handle 		create_sai_object();
+void    		free_sai_object(S_O_Handle);
+sai_status_t 	sai_obj_create_port(S_O_Handle, sai_object_id_t*, sai_object_id_t,uint32_t,const sai_attribute_t*);
+sai_status_t 	sai_obj_api_query(S_O_Handle,sai_api_t,void**);
+#ifdef __cplusplus
+}
+#endif

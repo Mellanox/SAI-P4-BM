@@ -433,26 +433,16 @@
             "init_state": "start",
             "parse_states": [
                 {
-                    "name": "parse_ipv4",
+                    "name": "start",
                     "id": 0,
-                    "parser_ops": [
-                        {
-                            "op": "extract",
-                            "parameters": [
-                                {
-                                    "type": "regular",
-                                    "value": "ipv4"
-                                }
-                            ]
-                        }
-                    ],
+                    "parser_ops": [],
                     "transition_key": [],
                     "transitions": [
                         {
                             "type": "default",
                             "value": null,
                             "mask": null,
-                            "next_state": "post_parse_ipv4"
+                            "next_state": "parse_ethernet"
                         }
                     ]
                 },
@@ -508,22 +498,8 @@
                     ]
                 },
                 {
-                    "name": "start",
-                    "id": 2,
-                    "parser_ops": [],
-                    "transition_key": [],
-                    "transitions": [
-                        {
-                            "type": "default",
-                            "value": null,
-                            "mask": null,
-                            "next_state": "parse_ethernet"
-                        }
-                    ]
-                },
-                {
                     "name": "parse_ethernet",
-                    "id": 3,
+                    "id": 2,
                     "parser_ops": [
                         {
                             "op": "extract",
@@ -566,15 +542,15 @@
                     ]
                 },
                 {
-                    "name": "parse_udp",
-                    "id": 4,
+                    "name": "parse_ipv4",
+                    "id": 3,
                     "parser_ops": [
                         {
                             "op": "extract",
                             "parameters": [
                                 {
                                     "type": "regular",
-                                    "value": "udp"
+                                    "value": "ipv4"
                                 }
                             ]
                         }
@@ -585,13 +561,13 @@
                             "type": "default",
                             "value": null,
                             "mask": null,
-                            "next_state": null
+                            "next_state": "post_parse_ipv4"
                         }
                     ]
                 },
                 {
                     "name": "parse_vlan",
-                    "id": 5,
+                    "id": 4,
                     "parser_ops": [
                         {
                             "op": "extract",
@@ -629,7 +605,7 @@
                 },
                 {
                     "name": "parse_tcp",
-                    "id": 6,
+                    "id": 5,
                     "parser_ops": [
                         {
                             "op": "extract",
@@ -637,6 +613,30 @@
                                 {
                                     "type": "regular",
                                     "value": "tcp"
+                                }
+                            ]
+                        }
+                    ],
+                    "transition_key": [],
+                    "transitions": [
+                        {
+                            "type": "default",
+                            "value": null,
+                            "mask": null,
+                            "next_state": null
+                        }
+                    ]
+                },
+                {
+                    "name": "parse_udp",
+                    "id": 6,
+                    "parser_ops": [
+                        {
+                            "op": "extract",
+                            "parameters": [
+                                {
+                                    "type": "regular",
+                                    "value": "udp"
                                 }
                             ]
                         }
@@ -671,8 +671,148 @@
     "meter_arrays": [],
     "actions": [
         {
-            "name": "action_set_unknown_unicast",
+            "name": "action_learn_mac",
             "id": 0,
+            "runtime_data": [],
+            "primitives": [
+                {
+                    "op": "generate_digest",
+                    "parameters": [
+                        {
+                            "type": "hexstr",
+                            "value": "0x200"
+                        },
+                        {
+                            "type": "hexstr",
+                            "value": "0x1"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_set_egress_br_port",
+            "id": 1,
+            "runtime_data": [
+                {
+                    "name": "br_port",
+                    "bitwidth": 8
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "egress_metadata",
+                                "bridge_port"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_set_vlan",
+            "id": 2,
+            "runtime_data": [
+                {
+                    "name": "vid",
+                    "bitwidth": 12
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ingress_metadata",
+                                "vid"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_forward_set_outIfType",
+            "id": 3,
+            "runtime_data": [
+                {
+                    "name": "out_if",
+                    "bitwidth": 6
+                },
+                {
+                    "name": "out_if_type",
+                    "bitwidth": 1
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "egress_metadata",
+                                "out_if"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "egress_metadata",
+                                "out_if_type"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 1
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "standard_metadata",
+                                "egress_spec"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_set_unknown_unicast",
+            "id": 4,
             "runtime_data": [
                 {
                     "name": "unknown_unicast",
@@ -700,7 +840,7 @@
         },
         {
             "name": "_nop",
-            "id": 1,
+            "id": 5,
             "runtime_data": [],
             "primitives": [
                 {
@@ -711,7 +851,7 @@
         },
         {
             "name": "action_set_lag_l2if",
-            "id": 2,
+            "id": 6,
             "runtime_data": [
                 {
                     "name": "is_lag",
@@ -758,18 +898,9 @@
             ]
         },
         {
-            "name": "action_forward_mc_set_if_list",
-            "id": 3,
-            "runtime_data": [
-                {
-                    "name": "mcast_grp",
-                    "bitwidth": 16
-                },
-                {
-                    "name": "go_to_router",
-                    "bitwidth": 1
-                }
-            ],
+            "name": "action_set_l2if",
+            "id": 7,
+            "runtime_data": [],
             "primitives": [
                 {
                     "op": "modify_field",
@@ -777,29 +908,16 @@
                         {
                             "type": "field",
                             "value": [
-                                "intrinsic_metadata",
-                                "mcast_grp"
+                                "ingress_metadata",
+                                "l2_if"
                             ]
                         },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
-                },
-                {
-                    "op": "modify_field",
-                    "parameters": [
                         {
                             "type": "field",
                             "value": [
-                                "ingress_metadata",
-                                "go_to_router"
+                                "standard_metadata",
+                                "ingress_port"
                             ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 1
                         }
                     ]
                 }
@@ -807,7 +925,7 @@
         },
         {
             "name": "action_set_egress_stp_state",
-            "id": 4,
+            "id": 8,
             "runtime_data": [
                 {
                     "name": "stp_state",
@@ -834,8 +952,19 @@
             ]
         },
         {
+            "name": "_drop",
+            "id": 9,
+            "runtime_data": [],
+            "primitives": [
+                {
+                    "op": "drop",
+                    "parameters": []
+                }
+            ]
+        },
+        {
             "name": "action_forward_vlan_untag",
-            "id": 5,
+            "id": 10,
             "runtime_data": [],
             "primitives": [
                 {
@@ -870,7 +999,7 @@
         },
         {
             "name": "action_set_pvid",
-            "id": 6,
+            "id": 11,
             "runtime_data": [
                 {
                     "name": "pvid",
@@ -897,19 +1026,8 @@
             ]
         },
         {
-            "name": "_drop",
-            "id": 7,
-            "runtime_data": [],
-            "primitives": [
-                {
-                    "op": "drop",
-                    "parameters": []
-                }
-            ]
-        },
-        {
             "name": "action_forward_vlan_tag",
-            "id": 8,
+            "id": 12,
             "runtime_data": [
                 {
                     "name": "pcp",
@@ -1021,7 +1139,7 @@
         },
         {
             "name": "action_set_packet_vid",
-            "id": 9,
+            "id": 13,
             "runtime_data": [],
             "primitives": [
                 {
@@ -1047,7 +1165,7 @@
         },
         {
             "name": "action_set_out_port",
-            "id": 10,
+            "id": 14,
             "runtime_data": [
                 {
                     "name": "port",
@@ -1075,7 +1193,7 @@
         },
         {
             "name": "action_set_port_mode",
-            "id": 11,
+            "id": 15,
             "runtime_data": [
                 {
                     "name": "mode",
@@ -1103,7 +1221,7 @@
         },
         {
             "name": "action_set_mc_fdb_miss",
-            "id": 12,
+            "id": 16,
             "runtime_data": [],
             "primitives": [
                 {
@@ -1126,7 +1244,7 @@
         },
         {
             "name": "action_set_l2_if_type",
-            "id": 13,
+            "id": 17,
             "runtime_data": [
                 {
                     "name": "l2_if_type",
@@ -1174,7 +1292,7 @@
         },
         {
             "name": "action_set_bridge_id",
-            "id": 14,
+            "id": 18,
             "runtime_data": [
                 {
                     "name": "bridge_id",
@@ -1202,7 +1320,7 @@
         },
         {
             "name": "action_set_bridge_id_vid",
-            "id": 15,
+            "id": 19,
             "runtime_data": [],
             "primitives": [
                 {
@@ -1228,7 +1346,7 @@
         },
         {
             "name": "action_set_mcast_lookup_mode",
-            "id": 16,
+            "id": 20,
             "runtime_data": [
                 {
                     "name": "mcast_mode",
@@ -1255,36 +1373,8 @@
             ]
         },
         {
-            "name": "action_set_stp_state",
-            "id": 17,
-            "runtime_data": [
-                {
-                    "name": "stp_state",
-                    "bitwidth": 3
-                }
-            ],
-            "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "ingress_metadata",
-                                "stp_state"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
-                }
-            ]
-        },
-        {
             "name": "action_set_lag_hash_size",
-            "id": 18,
+            "id": 21,
             "runtime_data": [
                 {
                     "name": "lag_size",
@@ -1319,8 +1409,84 @@
             ]
         },
         {
+            "name": "action_set_stp_state",
+            "id": 22,
+            "runtime_data": [
+                {
+                    "name": "stp_state",
+                    "bitwidth": 3
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ingress_metadata",
+                                "stp_state"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_forward_mc_set_if_list",
+            "id": 23,
+            "runtime_data": [
+                {
+                    "name": "mcast_grp",
+                    "bitwidth": 16
+                },
+                {
+                    "name": "go_to_router",
+                    "bitwidth": 1
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "intrinsic_metadata",
+                                "mcast_grp"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ingress_metadata",
+                                "go_to_router"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "name": "action_set_stp_id",
-            "id": 19,
+            "id": 24,
             "runtime_data": [
                 {
                     "name": "stp_id",
@@ -1336,172 +1502,6 @@
                             "value": [
                                 "ingress_metadata",
                                 "stp_id"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "action_set_l2if",
-            "id": 20,
-            "runtime_data": [],
-            "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "ingress_metadata",
-                                "l2_if"
-                            ]
-                        },
-                        {
-                            "type": "field",
-                            "value": [
-                                "standard_metadata",
-                                "ingress_port"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "action_learn_mac",
-            "id": 21,
-            "runtime_data": [],
-            "primitives": [
-                {
-                    "op": "generate_digest",
-                    "parameters": [
-                        {
-                            "type": "hexstr",
-                            "value": "0x200"
-                        },
-                        {
-                            "type": "hexstr",
-                            "value": "0x1"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "action_set_egress_br_port",
-            "id": 22,
-            "runtime_data": [
-                {
-                    "name": "br_port",
-                    "bitwidth": 8
-                }
-            ],
-            "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "egress_metadata",
-                                "bridge_port"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "action_set_vlan",
-            "id": 23,
-            "runtime_data": [
-                {
-                    "name": "vid",
-                    "bitwidth": 12
-                }
-            ],
-            "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "ingress_metadata",
-                                "vid"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "action_forward_set_outIfType",
-            "id": 24,
-            "runtime_data": [
-                {
-                    "name": "out_if",
-                    "bitwidth": 6
-                },
-                {
-                    "name": "out_if_type",
-                    "bitwidth": 1
-                }
-            ],
-            "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "egress_metadata",
-                                "out_if"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
-                },
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "egress_metadata",
-                                "out_if_type"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 1
-                        }
-                    ]
-                },
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "standard_metadata",
-                                "egress_spec"
                             ]
                         },
                         {
