@@ -94,16 +94,25 @@ public:
          	}
 		return SAI_STATUS_SUCCESS;
 	}
-
 };
 
+std::string parse_param(uint64_t param, uint32_t num_of_bytes) {
+		return std::string(static_cast<char*>(static_cast<void*>(&param)),num_of_bytes);
+	}
 
+	BmMatchParam parse_exact_match_param(uint64_t param, uint32_t num_of_bytes) {
+		BmMatchParam match_param;
+		match_param.type = BmMatchParamType::type::EXACT; 
+		BmMatchParamExact match_param_exact;
+	    match_param_exact.key = parse_param(param, num_of_bytes);
+	    match_param.__set_exact(match_param_exact);
+	    return match_param;
+	}
 
 	sai_status_t sai_object::create_port (sai_object_id_t *port_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list){
 		printf("create port");
 		Port_obj port(*sai_id_map_ptr);
-		printf("port sai_id= %d\n",port.sai_object_id);
-		
+		printf("port sai_id = %d\n",port.sai_object_id);
 		BmEntryHandle handle = 0;
 		//parsing attributes
 		sai_attribute_t attribute;
@@ -121,60 +130,31 @@ public:
           	break;
           }
       }
-
-      	printf("pvid %d, bind_mode %d, hw_port %d", port.pvid, port.bind_mode, port.hw_port);
+      	printf("pvid %d, bind_mode %d, hw_port %d \n", port.pvid, port.bind_mode, port.hw_port);
 	    BmAddEntryOptions options;
+		BmMatchParams match_params;
+        BmActionData action_data;
 
-		BmMatchParam match_param; match_param.type = BmMatchParamType::type::EXACT; BmMatchParamExact match_param_exact;
-	    match_param_exact.key = std::string(port.sai_object_id, sizeof(port.sai_object_id));
-	    //match_param_exact.key = std::string(true, sizeof(true));
-	    match_param.__set_exact(match_param_exact);
+        match_params.push_back(parse_exact_match_param(port.sai_object_id,1));
+        action_data.push_back(parse_param(port.pvid,1));
+        handle=bm_client_ptr->bm_mt_add_entry(cxt_id,"table_port_PVID",match_params, "action_set_pvid" ,action_data, options);
+		printf("pvid handle= %d\n",handle);
 
-	    std::vector<std::string> action_data = {to_string(port.pvid)};
-        handle=bm_client_ptr->bm_mt_add_entry(cxt_id,"table_port_PVID",{match_param}, "action_set_pvid" ,std::move(action_data),options);
-		printf("pvid handle= %d",handle);
 
-		action_data = {to_string(port.bind_mode)};
-        handle=bm_client_ptr->bm_mt_add_entry(cxt_id,"table_port_mode",{match_param},  "action_set_port_mode", action_data ,options);
-		printf("port mode handle= %d",handle);
+		action_data.clear();
+		action_data.push_back(parse_param(port.bind_mode,1));
+        handle=bm_client_ptr->bm_mt_add_entry(cxt_id,"table_port_mode",match_params,  "action_set_port_mode", action_data, options);
+		printf("port mode handle= %d\n",handle);
 
-        action_data = {to_string(port.sai_object_id)};
-        action_data.push_back(to_string(0));
-		
-		BmMatchParam match_param_lag; match_param_lag.type = BmMatchParamType::type::EXACT;
-		match_param_exact.key = std::string(port.hw_port, sizeof(port.hw_port));
-	    match_param_lag.__set_exact(match_param_exact);
-        handle=bm_client_ptr->bm_mt_add_entry(cxt_id,"table_ingress_lag",{match_param_lag}, "action_set_lag_l2if",  action_data,options);
+
+        action_data.clear();
+        match_params.clear();
+        match_params.push_back(parse_exact_match_param(port.hw_port,2));
+        action_data.push_back(parse_param(0,1));
+        action_data.push_back(parse_param(port.sai_object_id,1));
+        handle=bm_client_ptr->bm_mt_add_entry(cxt_id,"table_ingress_lag",match_params, "action_set_lag_l2if",  action_data, options);
         printf("lag handle= %d",handle);
 		*port_id = port.sai_object_id;
 
-		
-
 		return SAI_STATUS_SUCCESS;
 	}
-
-		// test function:
-		//std::string table_name = "table_accepted_frame_type"; 
-	  	//bm_client.bm_mt_delete_entry(cxt_id, table_name, handle);
-	  	//int64_t i;
-	  	//i=bm_client_ptr->bm_mt_get_num_entries(cxt_id,table_name);
-	  	//printf("table has %d entries\n",i);
-    
-
-
-  
-  //   self.cli_client.AddTable('table_ingress_lag', 'action_set_lag_l2if', str(hw_port), list_to_str([0,port]))
-
-
-
-  //   client->bm_mt_add_entry(0, "smac", {match_param},
-  //                           "_nop", std::vector<std::string>(),
-  //                           options);
-
-  //   std::vector<std::string> action_data =
-  //     {std::string(reinterpret_cast<const char *>(&sample->ingress_port), 2)};
-
-  //   client->bm_mt_add_entry(0, "dmac", {match_param},
-  //                           "forward", std::move(action_data),
-  //                           options);
-  // }

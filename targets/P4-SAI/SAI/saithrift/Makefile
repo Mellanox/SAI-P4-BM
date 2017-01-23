@@ -22,7 +22,7 @@ OBJ_DIR    = obj
 
 SAI_SRC =  $(wildcard ${SAI_SRC_DIR}/*.c)
 SAI_OBJS = $(patsubst %.c,${SAI_SRC_DIR}/${OBJ_DIR}/%.o, $(notdir $(SAI_SRC)))
-SAI_OBJ_IF_SRC    = ${SAI_SRC_DIR}/sai_object_interface.cpp
+SAI_OBJ_IF_SRC    = ${SAI_SRC_DIR}/sai_object_interface.cpp 
 SAI_OBJ_IF_OBJ    = $(patsubst %.cpp,${SAI_SRC_DIR}/${OBJ_DIR}/%.o, $(notdir $(SAI_OBJ_IF_SRC)))
 
 GEN_OBJ    = $(patsubst %.cpp,${OBJ_DIR}/%.o, $(GEN_SRC))

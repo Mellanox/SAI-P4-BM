@@ -42,7 +42,7 @@ class Sai_obj {
       printf("sai_object_id is %d\n",sai_object_id);
     }
     ~Sai_obj(){
-    free_id(sai_object_id)
+    //free_id(sai_object_id); TODO: fix this
     }
   
 };
