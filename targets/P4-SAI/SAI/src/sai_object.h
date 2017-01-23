@@ -127,11 +127,11 @@ public:
 
 		BmMatchParam match_param; match_param.type = BmMatchParamType::type::EXACT; BmMatchParamExact match_param_exact;
 	    match_param_exact.key = std::string(port.sai_object_id, sizeof(port.sai_object_id));
-	    match_param_exact.key = std::string(true, sizeof(true));
+	    //match_param_exact.key = std::string(true, sizeof(true));
 	    match_param.__set_exact(match_param_exact);
 
 	    std::vector<std::string> action_data = {to_string(port.pvid)};
-        handle=bm_client_ptr->bm_mt_add_entry(cxt_id,"table_port_PVID",{match_param}, "action_set_pvid" ,action_data,options);
+        handle=bm_client_ptr->bm_mt_add_entry(cxt_id,"table_port_PVID",{match_param}, "action_set_pvid" ,std::move(action_data),options);
 		printf("pvid handle= %d",handle);
 
 		action_data = {to_string(port.bind_mode)};

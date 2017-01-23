@@ -38,12 +38,11 @@ class Sai_obj {
   public:
     sai_object_id_t sai_object_id; // TODO maybe use the map and don't save here
     Sai_obj(sai_id_map_t sai_id_map){
-      printf("sai_object_id gen\n");
       sai_object_id = sai_id_map.get_new_id(this); // sai_id_map. set map to true.
-      printf("sai_object_id gen is %d\n",sai_object_id);
+      printf("sai_object_id is %d\n",sai_object_id);
     }
     ~Sai_obj(){
-    //free_id(sai_object_id)
+    free_id(sai_object_id)
     }
   
 };
