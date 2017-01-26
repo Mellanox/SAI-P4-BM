@@ -39,7 +39,7 @@ const int bm_port = 9090;
 const int32_t cxt_id =0;
 
 // static StandardClient* bm_client_ptr;
-// static sai_id_map_t* sai_id_map_ptr;<
+// static sai_id_map_t* sai_id_map_ptr;
 
 class sai_object {
 public:
@@ -68,9 +68,9 @@ public:
 	  	uint32_t list[]={0,1,2,3,4,5,6,7};
   		switch_metatdata.hw_port_list.list=list;
   		switch_metatdata.hw_port_list.count=8;
-  		extern StandardClient* bm_client_ptr;
+  		// extern StandardClient* bm_client_ptr;
   		bm_client_ptr = &bm_client;
-  		extern sai_id_map_t* sai_id_map_ptr;
+  		// extern sai_id_map_t* sai_id_map_ptr;
   		sai_id_map_ptr = &sai_id_map;
 	  	transport->open();
   		port_api.create_port  = &sai_object::create_port;
