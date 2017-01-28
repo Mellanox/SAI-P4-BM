@@ -64,3 +64,22 @@ std::string parse_param(uint64_t param, uint32_t num_of_bytes) {
 
 		return SAI_STATUS_SUCCESS;
 	}
+
+	sai_status_t sai_object::create_bridge (sai_object_id_t *bridge_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list){
+		BmEntryHandle handle = 0;
+		//parsing attributes
+		sai_attribute_t attribute;
+		sai_bridge_type_t type;
+		for(uint32_t i = 0; i < attr_count; i++) {
+          attribute =attr_list[i];
+          switch (attribute.id) {
+          	case SAI_BRIDGE_ATTR_TYPE:
+          		type = (sai_bridge_type_t) attribute.value.s32;
+          	break;
+          }
+		}
+		Bridge_obj bridge(*sai_id_map_ptr, type);
+		printf("bridge sai_id = %d\n",bridge.sai_object_id);
+	    *bridge_id = bridge.sai_object_id;
+		return SAI_STATUS_SUCCESS;
+	}

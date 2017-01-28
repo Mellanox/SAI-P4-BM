@@ -50,9 +50,11 @@ public:
   	StandardClient bm_client;
 
 	static sai_status_t create_port (sai_object_id_t *port_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+	static sai_status_t create_bridge (sai_object_id_t *bridge_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
 	static StandardClient* bm_client_ptr;
 	static sai_id_map_t* sai_id_map_ptr;
 	sai_port_api_t port_api;
+	sai_bridge_api_t bridge_api;
 	sai_id_map_t sai_id_map;
     switch_metatdata_t switch_metatdata;  // TODO expand to array for multiple switch support
 	
@@ -74,6 +76,7 @@ public:
   		sai_id_map_ptr = &sai_id_map;
 	  	transport->open();
   		port_api.create_port  = &sai_object::create_port;
+  		bridge_api.create_bridge = &sai_object::create_bridge;
     	printf("BM connection started on port %d\n",bm_port); 
 	  }
 	~sai_object(){
@@ -86,6 +89,9 @@ public:
 		switch (sai_api_id) {
             case SAI_API_PORT:
               *api_method_table=&port_api;
+              break;
+             case SAI_API_BRIDGE:
+              *api_method_table=&bridge_api;
               break;
          	default:
          		printf("api requested was %d, while sai_api_port is %d\n",sai_api_id,SAI_API_PORT);

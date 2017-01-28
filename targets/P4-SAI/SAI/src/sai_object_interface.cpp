@@ -18,4 +18,8 @@ extern "C"
 		sai_object* q = (sai_object*) p;
 		return q->sai_api_query(sai_api_id,api_method_table); 
   }
+  sai_status_t sai_obj_create_bridge(S_O_Handle p,sai_object_id_t *bridge_id, sai_object_id_t switch_id, uint32_t attr_count, const sai_attribute_t *attr_list) {
+    sai_object* q = (sai_object*) p;
+    return q->create_bridge(bridge_id,switch_id,attr_count,attr_list); 
+  }
 }

@@ -34,4 +34,8 @@ class ShabiTest(sai_base_test.ThriftInterfaceDataPlane):
         bind_mode = SAI_PORT_BIND_MODE_PORT
         hw_port2 = 1
         port2 = sai_thrift_create_port(self.client, bind_mode, hw_port2, vlan_id)
-        print(format(port2))
+        
+        bridge_type = SAI_BRIDGE_TYPE_1D
+        bridge_attr_value = sai_thrift_attribute_value_t(s32= bridge_type)
+        bridge_attr = sai_thrift_attribute_t(id=SAI_BRIDGE_ATTR_TYPE, value=bridge_attr_value)
+        bridge = self.client.sai_thrift_create_bridge([bridge_attr])

@@ -150,11 +150,39 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
           }
       }
   }
-
+  void sai_thrift_parse_bridge_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+          attribute = (sai_thrift_attribute_t)*it;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+              case SAI_BRIDGE_ATTR_TYPE:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
+              default:
+                  break;
+          }
+      }
+  }
 
   sai_thrift_object_id_t sai_thrift_create_bridge(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
-    // Your implementation goes here
     printf("sai_thrift_create_bridge\n");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_bridge_api_t *bridge_api;
+    sai_attribute_t attr;
+    status = sai_api_query(SAI_API_BRIDGE, (void **) &bridge_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        printf("sai_api_query failed!!!\n");
+        return 999; // TODO mark as error
+    }
+    sai_thrift_parse_bridge_attributes(thrift_attr_list, &attr );
+    //switch_metatdata.switch_id.sai_object_id
+    sai_object_id_t s_id=0;
+    uint32_t count = thrift_attr_list.size();
+    sai_object_id_t brdige_id =1;
+    status = bridge_api->create_bridge(&brdige_id,s_id,count,&attr);
+    return brdige_id;
   }
 
   sai_thrift_status_t sai_thrift_remove_bridge(const sai_thrift_object_id_t bridge_id) {
