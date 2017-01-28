@@ -22,7 +22,7 @@ import sys
 sys.path.append('../sai_thrift_src/gen-py/')
 from switch_sai.ttypes import *
 import random
-# from sai_enums import *
+from sai_types import *
  
 @group('l2')
 class L21DBridgeBasicTest(sai_base_test.ThriftInterfaceDataPlane):

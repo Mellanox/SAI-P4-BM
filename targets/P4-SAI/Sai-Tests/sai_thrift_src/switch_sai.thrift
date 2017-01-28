@@ -34,110 +34,16 @@ typedef i32 sai_thrift_port_stat_counter_t
 typedef i32 sai_thrift_queue_stat_counter_t
 typedef i32 sai_thrift_pg_stat_counter_t
 
-enum sai_switch_attr {
-    SAI_SWITCH_ATTR_PORT_NUMBER,
-    SAI_SWITCH_ATTR_PORT_LIST
-}
-
-
-enum sai_bridge_port_type {
-    SAI_BRIDGE_PORT_TYPE_PORT,
-    SAI_BRIDGE_PORT_TYPE_SUB_PORT,
-    SAI_BRIDGE_PORT_TYPE_1Q_ROUTER,
-    SAI_BRIDGE_PORT_TYPE_1D_ROUTER,
-    SAI_BRIDGE_PORT_TYPE_TUNNEL
-}
-
-enum sai_bridge_port_attr {
-    SAI_BRIDGE_PORT_ATTR_TYPE,
-    SAI_BRIDGE_PORT_ATTR_PORT_ID,
-    SAI_BRIDGE_PORT_ATTR_VLAN_ID,
-    SAI_BRIDGE_PORT_ATTR_RIF_ID,
-    SAI_BRIDGE_PORT_ATTR_TUNNEL_ID,
-    SAI_BRIDGE_PORT_ATTR_BRIDGE_ID,
-    SAI_BRIDGE_PORT_ATTR_FDB_LEARNING_MODE,
-}
-
-enum sai_lag_member_attr { 
-    SAI_LAG_MEMBER_ATTR_PORT_ID,
-    SAI_LAG_MEMBER_ATTR_LAG_ID
-}
-
-enum sai_fdb_entry_attr {
-    SAI_FDB_ENTRY_ATTR_TYPE,
-    SAI_FDB_ENTRY_ATTR_PACKET_ACTION,
-    SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID,
-    SAI_FDB_ENTRY_ATTR_META_DATA,
-    SAI_FDB_ENTRY_ATTR_END
-}
-enum sai_fdb_entry_type {
-    SAI_FDB_ENTRY_TYPE_DYNAMIC,
-    SAI_FDB_ENTRY_TYPE_STATIC
-}
-enum sai_fdb_flush_attr{
-    SAI_FDB_FLUSH_ATTR_PORT_ID,
-    SAI_FDB_FLUSH_ATTR_VLAN_ID,
-    SAI_FDB_FLUSH_ATTR_ENTRY_TYPE
-}
-
-enum sai_vlan_member_attr {
-    SAI_VLAN_MEMBER_ATTR_VLAN_ID,
-    SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID,
-    SAI_VLAN_MEMBER_ATTR_VLAN_TAGGING_MODE
-}
-
-enum sai_vlan_attr {
-    SAI_VLAN_ATTR_VLAN_ID,
-    SAI_VLAN_ATTR_MEMBER_LIST
-}
-
-enum sai_port_attr {
-    SAI_PORT_ATTR_BIND_MODE,
-    SAI_PORT_ATTR_PORT_VLAN_ID,
-    SAI_PORT_ATTR_HW_LANE_LIST
-}
-
-enum sai_bridge_attr {
-    SAI_BRIDGE_ATTR_TYPE
-}
-
-enum sai_bridge_type {
-    SAI_BRIDGE_TYPE_1Q,
-    SAI_BRIDGE_TYPE_1D
-}
-
-enum sai_port_bind_mode {
-    SAI_PORT_BIND_MODE_PORT,
-    SAI_PORT_BIND_MODE_SUB_PORT
-}
-
-enum sai_fdb_entry_bridge_type
-{
+enum sai_fdb_entry_bridge_type_t {
     SAI_FDB_ENTRY_BRIDGE_TYPE_1Q,
     SAI_FDB_ENTRY_BRIDGE_TYPE_1D
 } 
 
-enum sai_packet_action {
-    SAI_PACKET_ACTION_DROP,
-    SAI_PACKET_ACTION_FORWARD,
-    SAI_PACKET_ACTION_COPY,
-    SAI_PACKET_ACTION_COPY_CANCEL,
-    SAI_PACKET_ACTION_TRAP,
-    SAI_PACKET_ACTION_LOG,
-    SAI_PACKET_ACTION_DENY,
-    SAI_PACKET_ACTION_TRANSIT
-}
-
-enum sai_vlan_tagging_mode {
-    SAI_VLAN_TAGGING_MODE_UNTAGGED ,
-    SAI_VLAN_TAGGING_MODE_TAGGED ,
-    SAI_VLAN_TAGGING_MODE_PRIORITY_TAGGED 
-}
 
 struct sai_thrift_fdb_entry_t {
     1: sai_thrift_mac_t mac_address;
     2: sai_thrift_vlan_id_t vlan_id;
-    3: sai_fdb_entry_bridge_type bridge_type;
+    3: sai_fdb_entry_bridge_type_t bridge_type;
     4: sai_thrift_object_id_t bridge_id;
 }
 
