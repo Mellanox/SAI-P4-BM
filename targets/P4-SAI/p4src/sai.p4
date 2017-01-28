@@ -56,8 +56,11 @@ control control_bridge {
 control control_ingress_port{
 	apply(table_ingress_lag);
 	apply(table_accepted_frame_type);
+
 	if(ingress_metadata.is_tagged==0) { 
 	    apply(table_port_PVID);
+	} else {
+		apply(table_port_set_packet_vid_internal);
 	}
 	//apply(table_ingress_acl); // TODO
 	apply(table_port_mode);

@@ -250,8 +250,7 @@ class SaiHandler():
   def sai_thrift_set_port_attribute(self, port, attr):
     if attr.id == sai_port_attr.SAI_PORT_ATTR_PORT_VLAN_ID:
       vlan_id = attr.value.u16
-    #self.cli_client.AddTable('table_ingress_lag', 'action_set_lag_l2if', str(port), list_to_str([0, 0,port]))  # TODO - this needs to be somehwere else
-    self.cli_client.AddTable('table_accepted_frame_type_default_internal', 'action_set_pvid', str(port), str(vlan_id))
+      self.cli_client.AddTable('table_port_PVID', 'action_set_pvid', str(port), str(vlan_id))
     return 0
 
   # LAG Api

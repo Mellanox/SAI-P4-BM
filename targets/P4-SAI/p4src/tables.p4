@@ -15,7 +15,7 @@ table table_accepted_frame_type {
         ingress_metadata.is_tagged : exact;//matty prio tagged frames will have vlan valid 
 
     }
-    actions {action_set_packet_vid;_drop;_nop;}
+    actions {_drop;_nop;}
 }
 
 table table_port_PVID {  
@@ -24,6 +24,14 @@ table table_port_PVID {
     }
     actions {action_set_pvid;}
     //size : 1; // TODO
+}
+
+table table_port_set_packet_vid_internal {  
+    reads {
+        ingress_metadata.is_tagged : exact;
+    }
+    actions {action_set_packet_vid;}
+    size : 1; 
 }
 
 table table_port_mode {  
