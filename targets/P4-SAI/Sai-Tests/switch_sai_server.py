@@ -109,6 +109,13 @@ class SaiHandler():
     self.lags = {}
 
   def sai_thrift_create_switch(self, thrift_attr_list):
+    self.ports = {}
+    self.vlans = {}
+    self.vlan_members = {}
+    self.bridge_ports = {}
+    self.bridges = {}
+    self.lag_members = {}
+    self.lags = {}
     for port_num in self.hw_port_list:
       port, port_obj = CreateNewItem(self.ports, Port_obj, forbidden_list=self.lags.keys())
       port_obj.hw_port = port_num

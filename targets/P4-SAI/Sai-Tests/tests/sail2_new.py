@@ -32,6 +32,7 @@ class L21DBridgeBasicTest(sai_base_test.ThriftInterfaceDataPlane):
         vlan_id = 10
         mac1 = '00:11:11:11:11:11'
         mac2 = '00:22:22:22:22:22'
+        self.client.sai_thrift_create_switch([])
 
         # Set HW ports
         hw_port1 = 0
