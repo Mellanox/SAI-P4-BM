@@ -33,15 +33,9 @@ class L21DBridgeBasicTest(sai_base_test.ThriftInterfaceDataPlane):
         mac1 = '00:11:11:11:11:11'
         mac2 = '00:22:22:22:22:22'
 
-        # Get HW ports
-        attr_list = [sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_PORT_LIST)]
-        attr_list = self.client.sai_thrift_get_switch_attribute(attr_list)
-        for attr in attr_list.attr_list:
-            if attr.id == SAI_SWITCH_ATTR_PORT_LIST:
-                hw_port_list = attr.value.u32list.u32list
-            # SAI_SWITCH_ATTR_PORT_NUMBER
-        hw_port1 = hw_port_list[0]
-        hw_port2 = hw_port_list[1]
+        # Set HW ports
+        hw_port1 = 0
+        hw_port2 = 1
 
         # Create Ports
         bind_mode = SAI_PORT_BIND_MODE_SUB_PORT
@@ -92,15 +86,9 @@ class L21QBridgeAccess2AccessTest(sai_base_test.ThriftInterfaceDataPlane):
         mac2 = '00:22:22:22:22:22'
         vlan_id = 10
 
-        # Get HW ports
-        attr_list = [sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_PORT_LIST)]
-        attr_list = self.client.sai_thrift_get_switch_attribute(attr_list)
-        for attr in attr_list.attr_list:
-            if attr.id == SAI_SWITCH_ATTR_PORT_LIST:
-                hw_port_list = attr.value.u32list.u32list
-            # SAI_SWITCH_ATTR_PORT_NUMBER
-        hw_port1 = hw_port_list[0]
-        hw_port2 = hw_port_list[1]
+        # Set HW ports
+        hw_port1 = 0
+        hw_port2 = 1
 
         # Create Ports
         bind_mode = SAI_PORT_BIND_MODE_SUB_PORT
@@ -166,18 +154,9 @@ class L21QBridgeAccess2TrunkTest(sai_base_test.ThriftInterfaceDataPlane):
         mac1 = '00:11:11:11:11:11'
         mac2 = '00:22:22:22:22:22'
 
-        # Get HW ports
-        attr_list = [sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_PORT_LIST)]
-        attr_list = self.client.sai_thrift_get_switch_attribute(attr_list)
-        for attr in attr_list.attr_list:
-            if attr.id == SAI_SWITCH_ATTR_PORT_LIST:
-                hw_port_list = attr.value.u32list.u32list
-            # SAI_SWITCH_ATTR_PORT_NUMBER
-        # chosen_hw_ports = random.sample(hw_port_list, 2)
-        # hw_port1 = chosen_hw_ports[0]
-        # hw_port2 = chosen_hw_ports[1]
-        hw_port1 = hw_port_list[0]
-        hw_port2 = hw_port_list[1]
+        # Set HW ports
+        hw_port1 = 0
+        hw_port2 = 1
         print "Sending L2 packet Access(%d) -> Trunk(%d) (trunk vlan=%d)" % (hw_port1, hw_port2, vlan_id)
 
         # Create Ports
@@ -258,18 +237,9 @@ class L21QBridgeTrunk2TrunkTest(sai_base_test.ThriftInterfaceDataPlane):
         mac1 = '00:11:11:11:11:11'
         mac2 = '00:22:22:22:22:22'
 
-        # Get HW ports
-        attr_list = [sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_PORT_LIST)]
-        attr_list = self.client.sai_thrift_get_switch_attribute(attr_list)
-        for attr in attr_list.attr_list:
-            if attr.id == SAI_SWITCH_ATTR_PORT_LIST:
-                hw_port_list = attr.value.u32list.u32list
-            # SAI_SWITCH_ATTR_PORT_NUMBER
-        # chosen_hw_ports = random.sample(hw_port_list, 2)
-        # hw_port1 = chosen_hw_ports[0]
-        # hw_port2 = chosen_hw_ports[1]
-        hw_port1 = hw_port_list[0]
-        hw_port2 = hw_port_list[1]
+        # Set HW ports
+        hw_port1 = 0
+        hw_port2 = 1
         print "Sending L2 packet Trunk(%d) -> Trunk(%d) (trunk vlan=%d)" % (hw_port1, hw_port2, vlan_id)
 
         # Create Ports
@@ -348,18 +318,9 @@ class L21QBridgeTrunk2AccessTest(sai_base_test.ThriftInterfaceDataPlane):
         mac1 = '00:11:11:11:11:11'
         mac2 = '00:22:22:22:22:22'
 
-        # Get HW ports
-        attr_list = [sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_PORT_LIST)]
-        attr_list = self.client.sai_thrift_get_switch_attribute(attr_list)
-        for attr in attr_list.attr_list:
-            if attr.id == SAI_SWITCH_ATTR_PORT_LIST:
-                hw_port_list = attr.value.u32list.u32list
-            # SAI_SWITCH_ATTR_PORT_NUMBER
-        # chosen_hw_ports = random.sample(hw_port_list, 2)
-        # hw_port1 = chosen_hw_ports[0]
-        # hw_port2 = chosen_hw_ports[1]
-        hw_port1 = hw_port_list[0]
-        hw_port2 = hw_port_list[1]
+        # Set HW ports
+        hw_port1 = 0
+        hw_port2 = 1
         print "Sending L2 packet Trunk(%d) -> Access(%d) (trunk vlan=%d)" % (hw_port1, hw_port2, vlan_id)
 
         # Create Ports
@@ -437,17 +398,11 @@ class L21DLagTest(sai_base_test.ThriftInterfaceDataPlane):
         mac1 = '00:11:11:11:11:11'
         mac2 = '00:22:22:22:22:22'
 
-        # Get HW ports
-        attr_list = [sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_PORT_LIST)]
-        attr_list = self.client.sai_thrift_get_switch_attribute(attr_list)
-        for attr in attr_list.attr_list:
-            if attr.id == SAI_SWITCH_ATTR_PORT_LIST:
-                hw_port_list = attr.value.u32list.u32list
-            # SAI_SWITCH_ATTR_PORT_NUMBER
-        hw_port1 = hw_port_list[0]
-        hw_port2 = hw_port_list[1]
-        hw_port3 = hw_port_list[2]
-        hw_port4 = hw_port_list[3]
+        # Set HW ports
+        hw_port1 = 0
+        hw_port2 = 1
+        hw_port3 = 2
+        hw_port4 = 3
 
         # Create Ports
         bind_mode = SAI_PORT_BIND_MODE_SUB_PORT
@@ -524,17 +479,11 @@ class L21QLagTest(sai_base_test.ThriftInterfaceDataPlane):
         mac1 = '00:11:11:11:11:11'
         mac2 = '00:22:22:22:22:22'
 
-        # Get HW ports
-        attr_list = [sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_PORT_LIST)]
-        attr_list = self.client.sai_thrift_get_switch_attribute(attr_list)
-        for attr in attr_list.attr_list:
-            if attr.id == SAI_SWITCH_ATTR_PORT_LIST:
-                hw_port_list = attr.value.u32list.u32list
-            # SAI_SWITCH_ATTR_PORT_NUMBER
-        hw_port1 = hw_port_list[0]
-        hw_port2 = hw_port_list[1]
-        hw_port3 = hw_port_list[2]
-        hw_port4 = hw_port_list[3]
+        # Set HW ports
+        hw_port1 = 0
+        hw_port2 = 1
+        hw_port3 = 2
+        hw_port4 = 3
 
         # Create Ports
         bind_mode = SAI_PORT_BIND_MODE_SUB_PORT

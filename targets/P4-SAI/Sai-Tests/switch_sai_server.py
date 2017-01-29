@@ -39,7 +39,7 @@ class Sai_obj():
 
 
 class Port_obj(Sai_obj):
-    def __init__(self, id, hw_port=0, pvid=1, bind_mode=0, mtu=1512, drop_tagged=0, drop_untagged=0):
+    def __init__(self, id, hw_port=0, pvid=1, mtu=1512, drop_tagged=0, drop_untagged=0, bind_mode=SAI_PORT_ATTR_BIND_MODE):
         Sai_obj.__init__(self, id)
         self.hw_port = hw_port
         self.pvid = pvid
@@ -79,7 +79,7 @@ class Vlan_obj(Sai_obj):
 
 
 class BridgePort_obj(Sai_obj):
-    def __init__(self, id, port_id=0, vlan_id=1, br_port_type=0):
+    def __init__(self, id, port_id=0, vlan_id=1, br_port_type=SAI_BRIDGE_PORT_TYPE_PORT):
         Sai_obj.__init__(self, id)
         self.port_id = port_id
         self.vlan_id = vlan_id
@@ -87,9 +87,10 @@ class BridgePort_obj(Sai_obj):
 
 
 class Bridge_obj(Sai_obj):
-    def __init__(self, id, bridge_type=0):
+    def __init__(self, id, bridge_type=SAI_BRIDGE_TYPE_1Q, bridge_port_list=[]):
         Sai_obj.__init__(self, id)
         self.bridge_type = bridge_type
+        self.bridge_port_list = bridge_port_list
 
 
 class SaiHandler():
@@ -103,22 +104,19 @@ class SaiHandler():
     self.vlans = {}
     self.vlan_members = {}
     self.bridge_ports = {}
-    self.bridge_ids = {}
+    self.bridges = {}
     self.lag_members = {}
     self.lags = {}
 
   def sai_thrift_create_switch(self, thrift_attr_list):
+    for port_num in self.hw_port_list:
+      port, port_obj = CreateNewItem(self.ports, Port_obj, forbidden_list=self.lags.keys())
+      port_obj.hw_port = port_num
+      br_port, br_port_obj = CreateNewItem(self.bridge_ports, BridgePort_obj)
+      br_port_obj.port_id = port
+      bridge_id, bridge_obj = CreateNewItem(self.bridges, Bridge_obj)
+      bridge_obj.bridge_port_list.append(br_port)
     return self.switch_id
-
-  def sai_thrift_get_switch_attribute(self, thrift_attr_list):
-    hw_port_list = sai_thrift_u32_list_t(u32list=self.hw_port_list, count=len(self.hw_port_list))
-    for attr in thrift_attr_list:
-      if attr.id == SAI_SWITCH_ATTR_PORT_LIST:
-        attr.value = sai_thrift_attribute_value_t(u32list=hw_port_list)
-        new_attr = sai_thrift_attribute_t(id=attr.id, value=attr.value)
-    new_attr_list = sai_thrift_attribute_list_t(attr_list = [new_attr], attr_count=1)
-    return new_attr_list
-
 
   # FDB API
   def sai_thrift_create_fdb_entry(self, thrift_fdb_entry, thrift_attr_list):
@@ -304,7 +302,7 @@ class SaiHandler():
 
   # Bridge API
   def sai_thrift_create_bridge(self, thrift_attr_list):
-    bridge_id, bridge_obj = CreateNewItem(self.bridge_ids, Bridge_obj)
+    bridge_id, bridge_obj = CreateNewItem(self.bridges, Bridge_obj)
     for attr in thrift_attr_list:
       if attr.id == SAI_BRIDGE_ATTR_TYPE:
         bridge_type = attr.value.s32
@@ -312,7 +310,7 @@ class SaiHandler():
     return bridge_id
 
   def sai_thrift_remove_bridge(self, bridge_id):
-    self.bridge_ids.pop(bridge_id, None)
+    self.bridges.pop(bridge_id, None)
     return 0
 
   def sai_thrift_create_bridge_port(self, thrift_attr_list):
