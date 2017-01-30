@@ -5,5 +5,5 @@ sudo ./simple_switch -i 0@sw_port0 -i 1@sw_port1 -i 2@sw_port2 -i 3@sw_port3 -i 
 # sudo ./simple_switch -i 0@sw_port0 -i 1@sw_port1 -i 2@sw_port2 -i 3@sw_port3 -i 4@sw_port4 -i 5@sw_port5 -i 6@sw_port6 -i 7@sw_port7 --log-file log --log-flush --pcap sai.json &
 
 sleep 1
-#./runtime_CLI --pre SimplePreLAG < p4src/DefaultConfig.txt
+./runtime_CLI --pre SimplePreLAG < p4src/DefaultConfig.txt
 fg
