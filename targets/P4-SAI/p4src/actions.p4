@@ -20,15 +20,22 @@ action action_set_l2if() {
 	ingress_metadata.l2_if =standard_metadata.ingress_port;
 }
 
-action action_set_pvid(in bit<12> pvid){
-	ingress_metadata.vid 	=	pvid;
-}
+// action action_set_pvid(in bit<12> pvid){
+// 	ingress_metadata.vid = pvid;
+// }
 action action_set_packet_vid(){
-	ingress_metadata.vid 	=	vlan.vid;
+	ingress_metadata.vid = vlan.vid;
 }
 
-action action_set_port_mode(in bit <1> mode){
-	ingress_metadata.port_mode 	= mode;
+// action action_set_port_mode(in bit <1> mode){
+// 	ingress_metadata.port_mode 	= mode;
+// }
+action action_set_port_configurations(in bit<12> pvid, in bit bind_mode, in bit<32> mtu, in bit drop_tagged, in bit drop_untagged) {
+	ingress_metadata.vid = pvid;
+	ingress_metadata.bind_mode = bind_mode;
+	ingress_metadata.mtu = mtu;
+	ingress_metadata.drop_tagged = drop_tagged;
+	ingress_metadata.drop_untagged = drop_untagged;
 }
 
 action action_set_l2_if_type(in bit<2> l2_if_type, in bit<8> bridge_port){

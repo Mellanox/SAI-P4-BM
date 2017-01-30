@@ -54,14 +54,22 @@ control control_bridge {
 }
 
 control control_ingress_port{
-	apply(table_ingress_lag);
-	apply(table_accepted_frame_type); //need to add accepted frame type atribute 
-	if(ingress_metadata.vid==0) { //prio tagged frame
-	    apply(table_port_PVID);
+	apply(table_ingress_lag); //TODO: rename table?
+	apply(table_port_configurations);
+	// apply(table_accepted_frame_type);
+	if (ingress_metadata.is_tagged==1) { 
+	    // apply(table_port_PVID);
+	// } else {
+		apply(table_port_set_packet_vid_internal);
+		apply(table_drop_tagged_internal);
+	} else {
+		apply(table_drop_untagged_internal);
 	}
+	// apply(table_port_mode);
+
+	// apply(table_check_port_mtu; //TODO
 	//apply(table_ingress_acl); // TODO
-	apply(table_port_mode);
-	if(ingress_metadata.port_mode ==PORT_MODE_PORT) 
+	if(ingress_metadata.bind_mode == PORT_MODE_PORT) 
 	    apply(table_port_ingress_interface_type);
 	else
 	    apply(table_subport_ingress_interface_type);

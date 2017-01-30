@@ -67,7 +67,7 @@ header_type ingress_metadata_t {
 		bit 	is_tagged;
 		bit 	is_lag;
 		bit<16> lag_id; // LAG_WDT
-		bit     port_mode; 
+		bit     bind_mode; 
 		bit<2> 	l2_if_type;
 		bit<8> 	bridge_port; //L2_BRIDGE_PORT_WDT
 		bit<3> 	bridge_id;	 //L2_BRIDGE_NUM_WDT
@@ -80,6 +80,9 @@ header_type ingress_metadata_t {
         bit     ipmc;
         bit     isip;
         bit     go_to_router;
+        bit<32> mtu;
+        bit     drop_tagged;
+        bit     drop_untagged;
 	}
 }
 

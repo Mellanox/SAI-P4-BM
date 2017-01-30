@@ -9,28 +9,57 @@ table table_ingress_lag {
     size : PHY_PORT_NUM;
 }
 
-table table_accepted_frame_type {
+// table table_accepted_frame_type {
+    // reads {
+        // ingress_metadata.l2_if : exact;
+        // ingress_metadata.is_tagged : exact;//matty prio tagged frames will have vlan valid 
+// 
+    // }
+    // actions {_drop;_nop;}
+// }
+table table_drop_tagged_internal {
     reads {
-         vlan : valid;//matty prio tagged frames will have vlan valid
+        ingress_metadata.drop_tagged : exact;
+    }
+    actions {_drop;_nop;}
+    size: 1;
+}
+table table_drop_untagged_internal {
+    reads {
+        ingress_metadata.drop_untagged : exact;
+    }
+    actions {_drop;_nop;}
+    size: 1;
+}
+
+// table table_port_PVID {  
+//     reads {
+//         ingress_metadata.l2_if : exact;
+//     }
+//     actions {action_set_pvid;}
+//     //size : 1; // TODO
+// }
+table table_port_configurations {
+    reads {
+        ingress_metadata.l2_if : exact;
+    }
+    actions {action_set_port_configurations;}
+}
+table table_port_set_packet_vid_internal {  
+    reads {
+        ingress_metadata.is_tagged : exact;
     }
     actions {action_set_packet_vid;}
+    size : 1; 
 }
 
-table table_port_PVID {  
-    reads {
-        ingress_metadata.l2_if : exact;
-    }
-    actions {action_set_pvid;}
-    //size : 1; // TODO
-}
-
-table table_port_mode {  
-    reads {
-        ingress_metadata.l2_if : exact;
-    }
-    actions {action_set_port_mode;}
-    //size : 1; // TODO
-}
+// table table_port_mode {  
+//     reads {
+//         ingress_metadata.l2_if : exact;
+//     }
+//     actions {action_set_port_mode;}
+//     //size : 1; // TODO
+// }
 
 
 table table_port_ingress_interface_type {// should be 
