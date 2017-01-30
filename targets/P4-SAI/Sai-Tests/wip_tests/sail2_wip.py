@@ -32,15 +32,24 @@ class L2WIP(sai_base_test.ThriftInterfaceDataPlane):
         mac1 = '00:11:11:11:11:11'
         mac2 = '00:22:22:22:22:22'
         vlan_id = 10
+        self.client.sai_thrift_create_switch([])
 
-        attr_list = [SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID]
-        attr_list = self.client.sai_thrift_get_switch_attribute(attr_list)
-        bridge = attr_list[0].value.oid
-        attr_list = [SAI_BRIDGE_ATTR_PORT_LIST]
+        attr_list = []
+        attr_value = sai_thrift_attribute_value_t(oid=0)
+        attr = sai_thrift_attribute_t(id= SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID, value=attr_value)
+        attr_list.append(attr)
+        attr_list = self.client.sai_thrift_get_switch_attribute(thrift_attr_list=attr_list)
+        bridge = attr_list.attr_list[0].value.oid
+
+        attr_list = []
+        attr_value = sai_thrift_attribute_value_t(objlist=None)
+        attr = sai_thrift_attribute_t(id= SAI_BRIDGE_ATTR_PORT_LIST, value=attr_value)
+        attr_list.append(attr)
         attr_list = self.client.sai_thirft_get_bridge_attribute(bridge, attr_list)
-        bridge_port_list = attr_list[0].value.objlist
+        bridge_port_list = attr_list.attr_list[0].value.objlist.object_id_list
         bridge_port1 = bridge_port_list[0]
         bridge_port2 = bridge_port_list[1]
+
         attr_list = [SAI_BRIDGE_PORT_ATTR_PORT_ID]
         attr_list = self.client.sai_thirft_get_bridge_port_attribute(bridge_port1, attr_list)
         port1 = attr_list[0].value.oid
