@@ -108,6 +108,7 @@ class SaiHandler():
     self.lag_members = {}
     self.lags = {}
 
+  # Switch API
   def sai_thrift_create_switch(self, thrift_attr_list):
     self.ports = {}
     self.vlans = {}
@@ -116,14 +117,21 @@ class SaiHandler():
     self.bridges = {}
     self.lag_members = {}
     self.lags = {}
+    bridge_id, bridge_obj = CreateNewItem(self.bridges, Bridge_obj)
     for port_num in self.hw_port_list:
       port, port_obj = CreateNewItem(self.ports, Port_obj, forbidden_list=self.lags.keys())
       port_obj.hw_port = port_num
       br_port, br_port_obj = CreateNewItem(self.bridge_ports, BridgePort_obj)
       br_port_obj.port_id = port
-      bridge_id, bridge_obj = CreateNewItem(self.bridges, Bridge_obj)
       bridge_obj.bridge_port_list.append(br_port)
     return self.switch_id
+
+  def sai_thrift_get_switch_attribute(self, thrift_attr_list):
+    for attr in thrift_attr_list:
+      if attr.id == SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID:
+        attr.value.oid = self.bridges[0].id
+    return sai_thrift_attribute_list_t(attr_list=thrift_attr_list, attr_count = len(thrift_attr_list))
+
 
   # FDB API
   def sai_thrift_create_fdb_entry(self, thrift_fdb_entry, thrift_attr_list):
@@ -378,6 +386,13 @@ class SaiHandler():
     self.cli_client.RemoveTableEntry('table_ingress_l2_interface_type', list_to_str([br_port.port_id, br_port.vlan_id]))
     self.cli_client.RemoveTableEntry('table_egress_br_port_to_if', str(br_port.id))
     return 0
+
+  def sai_thirft_get_bridge_attribute(self, bridge_id, thrift_attr_list):
+    for attr in thrift_attr_list:
+      if attr.id == SAI_BRIDGE_ATTR_PORT_LIST:
+        br_port_list = sai_thrift_object_list_t(object_id_list = self.bridges[bridge_id].bridge_port_list,count = len(self.bridges[bridge_id].bridge_port_list))
+        attr.value.objlist = br_port_list
+    return sai_thrift_attribute_list_t(attr_list=thrift_attr_list, attr_count = len(thrift_attr_list))
 
 
 handler = SaiHandler()
