@@ -49,9 +49,9 @@ class Port_obj(Sai_obj):
         self.drop_untagged = drop_untagged
 
 
-class Lag_obj(Sai_obj):
-    def __init__(self, id, lag_members=[]):
-        Sai_obj.__init__(self, id)
+class Lag_obj(Port_obj):
+    def __init__(self, id, lag_members=[], port_obj=None):
+        Port_obj.__init__(self, id)
         self.lag_members = lag_members
 
 
@@ -264,9 +264,17 @@ class SaiHandler():
     return 0
 
   def sai_thrift_set_port_attribute(self, port, attr):
+    print "port %d" % port
+    print self.ports
+    print self.lags
+    if port in self.ports:
+      port_obj = self.ports[port]
+    else: 
+      port_obj = self.lags[port]
     if attr.id == SAI_PORT_ATTR_PORT_VLAN_ID:
-      vlan_id = attr.value.u16
-      self.cli_client.AddTable('table_port_PVID', 'action_set_pvid', str(port), str(vlan_id))
+      port_obj.pvid = attr.value.u16
+    self.config_port(port_obj, port)
+    
     return 0
 
   # LAG Api
