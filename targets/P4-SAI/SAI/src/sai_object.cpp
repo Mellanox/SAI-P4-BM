@@ -59,7 +59,7 @@ sai_status_t sai_object::create_port (sai_object_id_t *port_id, sai_object_id_t 
   	}
   	printf("pvid %d, bind_mode %d, hw_port %d \n", port.pvid, port.bind_mode, port.hw_port);
     BmAddEntryOptions options;
-	BmMatchParams match_params;
+	  BmMatchParams match_params;
     BmActionData action_data;
 
     action_data.clear();
