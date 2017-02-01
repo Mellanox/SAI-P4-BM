@@ -49,8 +49,8 @@ class sai_id_map_t { // object pointer and it's id
 class Sai_obj {
   public:
     sai_object_id_t sai_object_id; // TODO maybe use the map and don't save here
-    Sai_obj(sai_id_map_t sai_id_map){
-      sai_object_id = sai_id_map.get_new_id(this); // sai_id_map. set map to true.
+    Sai_obj(sai_id_map_t* sai_id_map_ptr){
+      sai_object_id = sai_id_map_ptr->get_new_id(this); // sai_id_map. set map to true.
       printf("sai_object_id is %d\n",sai_object_id);
     }
     ~Sai_obj(){
@@ -71,16 +71,16 @@ class Port_obj : public Sai_obj{
     uint32_t drop_untagged;
     BmEntryHandle handle_lag_if;
     BmEntryHandle handle_port_cfg;
-    Port_obj(sai_id_map_t sai_id_map,uint32_t hw_port, uint32_t pvid) : Sai_obj(sai_id_map) {
-      //printf("create port object\n");
-      this->mtu=1512;
-      this->drop_tagged=0;
-      this->drop_untagged=0;
-      this->hw_port=hw_port;
-      this->pvid=pvid;
-      this->bind_mode=SAI_PORT_BIND_MODE_PORT;
-    }
-    Port_obj(sai_id_map_t sai_id_map): Sai_obj(sai_id_map) {
+    // Port_obj(sai_id_map_t* sai_id_map_ptr,uint32_t hw_port, uint32_t pvid) : Sai_obj(sai_id_map_ptr) {
+    //   //printf("create port object\n");
+    //   this->mtu=1512;
+    //   this->drop_tagged=0;
+    //   this->drop_untagged=0;
+    //   this->hw_port=hw_port;
+    //   this->pvid=pvid;
+    //   this->bind_mode=SAI_PORT_BIND_MODE_PORT;
+    // }
+    Port_obj(sai_id_map_t* sai_id_map_ptr): Sai_obj(sai_id_map_ptr) {
       //printf("create port object\n");
       this->mtu=1512;
       this->drop_tagged=0;
@@ -96,12 +96,12 @@ public:
   sai_object_id_t port_id;
   sai_object_id_t vlan_id;
   sai_port_type_t br_port_type;
-  BridgePort_obj(sai_id_map_t sai_id_map,sai_object_id_t port_id,sai_object_id_t vlan_id, sai_port_type_t br_port_type) : Sai_obj(sai_id_map) {
+  BridgePort_obj(sai_id_map_t* sai_id_map_ptr,sai_object_id_t port_id,sai_object_id_t vlan_id, sai_port_type_t br_port_type) : Sai_obj(sai_id_map_ptr) {
     this->port_id=port_id;
     this->vlan_id=vlan_id;
     this->br_port_type=br_port_type;
   }
-  BridgePort_obj(sai_id_map_t sai_id_map) : Sai_obj(sai_id_map) {
+  BridgePort_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->port_id=0;
     this->vlan_id=1;
     this->br_port_type=SAI_PORT_TYPE_LOGICAL;
@@ -111,7 +111,7 @@ public:
 class Bridge_obj : public Sai_obj {
 public:
   sai_bridge_type_t bridge_type;
-  Bridge_obj(sai_id_map_t sai_id_map,sai_bridge_type_t bridge_type) : Sai_obj(sai_id_map) {
+  Bridge_obj(sai_id_map_t* sai_id_map_ptr,sai_bridge_type_t bridge_type) : Sai_obj(sai_id_map_ptr) {
     this->bridge_type=bridge_type;
   }
 };
@@ -121,7 +121,6 @@ public:
 typedef std::map<sai_object_id_t, BridgePort_obj*>  bridge_port_id_map_t;
 typedef std::map<sai_object_id_t, Port_obj*>        port_id_map_t;
 typedef std::map<sai_object_id_t, Bridge_obj*>      bridge_id_map_t;
-
 
 
 

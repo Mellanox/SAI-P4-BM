@@ -106,24 +106,26 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
       printf("sai_thrift_create_port\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_port_api_t *port_api;
-      sai_attribute_t attr;
+      sai_attribute_t *attr = (sai_attribute_t*) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
       status = sai_api_query(SAI_API_PORT, (void **) &port_api);
       if (status != SAI_STATUS_SUCCESS) {
           printf("sai_api_query failed!!!\n");
           return 999; // TODO mark as error
       }
-      sai_thrift_parse_port_attributes(thrift_attr_list, &attr );
+      uint32_t *lane_list_ptr = sai_thrift_parse_port_attributes(thrift_attr_list, attr );
       //switch_metatdata.switch_id.sai_object_id
       sai_object_id_t s_id=0;
       uint32_t count = thrift_attr_list.size();
       sai_object_id_t port_id =1;
-      status = port_api->create_port(&port_id,s_id,count,&attr);
+      status = port_api->create_port(&port_id,s_id,count,attr);
+      free(lane_list_ptr);
+      free(attr);
       return port_id;
   }
-  void sai_thrift_parse_port_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+  uint32_t* sai_thrift_parse_port_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
       std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
       sai_thrift_attribute_t attribute;
-
+      uint32_t *lane_list_ptr;
       for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
           attribute = (sai_thrift_attribute_t)*it;
           attr_list[i].id = attribute.id;
@@ -144,21 +146,23 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
               case SAI_PORT_ATTR_BIND_MODE:
                   attr_list[i].value.s32 = attribute.value.s32;
                   break;
-              case SAI_PORT_ATTR_HW_LANE_LIST:{
-                  attr_list[i].value.u32list.count = attribute.value.u32list.count;
-                  uint32_t* list_ptr = (uint32_t*) malloc(sizeof(uint32_t) * attribute.value.u32list.u32list.size());
-                  
-                  for (uint32_t j = 0; j < attribute.value.u32list.u32list.size(); j++){
-                    list_ptr[j] = attribute.value.u32list.u32list[j];
-                  }
-                  attr_list[i].value.u32list.list = list_ptr;
-                  break;
+              case SAI_PORT_ATTR_HW_LANE_LIST: {
+                attr_list[i].value.u32list.count = attribute.value.u32list.count;
+                attr_list[i].value.u32list.list = (uint32_t*) malloc(sizeof(uint32_t) * attribute.value.u32list.count);
+                int j;
+                for (j=0;j<=attribute.value.u32list.count;j++) {
+                  attr_list[i].value.u32list.list[j] = attribute.value.u32list.u32list[j];
                 }
+                lane_list_ptr = attr_list[i].value.u32list.list;
+                break;
+              }
               default:
                   break;
           }
       }
+      return lane_list_ptr;
   }
+
   void sai_thrift_parse_bridge_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
       std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
       sai_thrift_attribute_t attribute;
@@ -207,6 +211,11 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
   sai_thrift_status_t sai_thrift_remove_bridge_port(const sai_thrift_object_id_t bridge_port_id) {
     // Your implementation goes here
     printf("sai_thrift_remove_bridge_port\n");
+  }
+
+  void sai_thirft_get_bridge_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t bridge_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+    // Your implementation goes here
+    printf("sai_thirft_get_bridge_attribute\n");
   }
 
   sai_thrift_status_t sai_thrift_create_fdb_entry(const sai_thrift_fdb_entry_t& thrift_fdb_entry, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {

@@ -50,8 +50,9 @@ public:
   	boost::shared_ptr<TProtocol>  bprotocol;
   	boost::shared_ptr<TProtocol>  protocol;
   	StandardClient bm_client;
+  	sai_id_map_t sai_id_map;
 	// generals
-	static sai_id_map_t sai_id_map;
+	static sai_id_map_t* sai_id_map_ptr;
 	//sai_id_map_t* sai_id_map_ptr;
 	static StandardClient* bm_client_ptr;
     static Switch_metadata* switch_metadata_ptr;
@@ -66,7 +67,6 @@ public:
 	//api s
 	sai_port_api_t port_api;
 	sai_bridge_api_t bridge_api;
-	
 
 	sai_object():
 	//  constructor pre initializations
@@ -74,7 +74,7 @@ public:
 	  transport(new TBufferedTransport(socket)),
 	  bprotocol(new TBinaryProtocol(transport)),
 	  protocol (new TMultiplexedProtocol(bprotocol, "standard")),
-	  sai_id_map_ptr(new sai_id_map_t()),
+	  // sai_id_map_ptr(new sai_id_map_t()),
 	  //sai_id_map(),
 	  bm_client(protocol)
 	  {
@@ -89,6 +89,7 @@ public:
   		switch_metadata_ptr->hw_port_list.list=list;
   		switch_metadata_ptr->hw_port_list.count=8;
   		bm_client_ptr = &bm_client;
+  		sai_id_map_ptr = &sai_id_map;
 	  	transport->open();
 
 	  	//api set
@@ -102,7 +103,7 @@ public:
 	 	  //deconstructor
   		transport->close();
   		delete bm_client_ptr;
-  		delete &sai_id_map;
+  		// delete sai_id_map;
   		delete switch_metadata_ptr;
     	printf("BM clients closed\n");
 	 }
