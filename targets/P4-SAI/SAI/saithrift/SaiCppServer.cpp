@@ -201,6 +201,16 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
   sai_thrift_status_t sai_thrift_remove_bridge(const sai_thrift_object_id_t bridge_id) {
     // Your implementation goes here
     printf("sai_thrift_remove_bridge\n");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_bridge_api_t *bridge_api;
+    sai_attribute_t attr;
+    status = sai_api_query(SAI_API_BRIDGE, (void **) &bridge_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        printf("sai_api_query failed!!!\n");
+        return 999; // TODO mark as error
+    }
+    status = bridge_api->remove_bridge(bridge_id);
+    return status;
   }
 
   sai_thrift_object_id_t sai_thrift_create_bridge_port(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {

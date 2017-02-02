@@ -34,7 +34,10 @@ extern "C"
     sai_object* q = (sai_object*) p;
     return q->create_bridge(bridge_id,switch_id,attr_count,attr_list); 
   }
-
+  sai_status_t sai_obj_remove_bridge(S_O_Handle p,sai_object_id_t bridge_id) {
+    sai_object* q = (sai_object*) p;
+    return q->remove_bridge(bridge_id); 
+  }
 
 
 }

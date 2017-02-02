@@ -50,19 +50,20 @@ public:
   	boost::shared_ptr<TProtocol>  bprotocol;
   	boost::shared_ptr<TProtocol>  protocol;
   	StandardClient bm_client;
-  	sai_id_map_t sai_id_map;
 	// generals
+  	sai_id_map_t sai_id_map;
+	Switch_metadata switch_metadata;
 	static sai_id_map_t* sai_id_map_ptr;
-	//sai_id_map_t* sai_id_map_ptr;
 	static StandardClient* bm_client_ptr;
     static Switch_metadata* switch_metadata_ptr;
 
 	//port functions
 	static sai_status_t create_port (sai_object_id_t *port_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
 	static sai_status_t remove_port (sai_object_id_t port_id);
-	static void 		config_port	(Port_obj port);
+	static void 		config_port	(Port_obj* port);
 	//bridge functions
 	static sai_status_t create_bridge (sai_object_id_t *bridge_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+	static sai_status_t remove_bridge (sai_object_id_t bridge_id);
 	
 	//api s
 	sai_port_api_t port_api;
@@ -74,17 +75,11 @@ public:
 	  transport(new TBufferedTransport(socket)),
 	  bprotocol(new TBinaryProtocol(transport)),
 	  protocol (new TMultiplexedProtocol(bprotocol, "standard")),
-	  // sai_id_map_ptr(new sai_id_map_t()),
-	  //sai_id_map(),
 	  bm_client(protocol)
 	  {
 	  	printf("sai_object constructor started\n");
-	  	//sai_id_map_t* 
-	  	//sai_id_map_ptr = new sai_id_map_t;
-	  	//sai_id_map = sai_id_map_t();
-	  	Switch_metadata* switch_metadata_ptr = new Switch_metadata;
-	  	//printf("sai_id_map addr:%d\n",&sai_id_map);
-
+  		
+  		switch_metadata_ptr = &switch_metadata;
   		uint32_t list[]={0,1,2,3,4,5,6,7};
   		switch_metadata_ptr->hw_port_list.list=list;
   		switch_metadata_ptr->hw_port_list.count=8;
@@ -97,13 +92,14 @@ public:
   		port_api.remove_port	= &sai_object::remove_port;
 
   		bridge_api.create_bridge = &sai_object::create_bridge;
+  		bridge_api.remove_bridge = &sai_object::remove_bridge;
     	printf("BM connection started on port %d\n",bm_port); 
 	  }
 	~sai_object(){
 	 	  //deconstructor
   		transport->close();
   		delete bm_client_ptr;
-  		// delete sai_id_map;
+  		delete sai_id_map_ptr;
   		delete switch_metadata_ptr;
     	printf("BM clients closed\n");
 	 }

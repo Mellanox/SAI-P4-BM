@@ -15,7 +15,7 @@ class sai_id_map_t { // object pointer and it's id
     std::vector<sai_object_id_t> unused_id;
   public:
     sai_id_map_t(){
-      printf("sai_id_map_constructor \n",id_map.size(),unused_id.size());
+      //printf("sai_id_map_constructor \n",id_map.size(),unused_id.size());
       // init
       unused_id.clear();
       id_map.clear();
@@ -24,13 +24,13 @@ class sai_id_map_t { // object pointer and it's id
       printf("sai_id_map_destructor, id_map addr: %d \n",&id_map);
     }
     void free_id(sai_object_id_t sai_object_id){
-      printf("freeing id %d\n",sai_object_id);
+      printf("freeing object with sai_id %d\n",sai_object_id);
       delete id_map[sai_object_id];
       id_map.erase(sai_object_id);
       unused_id.push_back(sai_object_id);
     }
     sai_object_id_t get_new_id(void* obj_ptr){//pointer to object
-      printf("get_new_id\n");
+      //printf("get_new_id\n");
       sai_object_id_t id;
       if(!unused_id.empty()){
         id = unused_id.back();
@@ -38,9 +38,9 @@ class sai_id_map_t { // object pointer and it's id
       }
       else { 
         id = id_map.size(); }
-      printf("id_map.size = %d \n", id_map.size());
+      //printf("id_map.size = %d \n", id_map.size());
       id_map[id]=obj_ptr;
-      printf("after insertion : id_map.size = %d \n", id_map.size());
+      //printf("after insertion : id_map.size = %d \n", id_map.size());
       return id;
     }
 };
@@ -110,8 +110,8 @@ public:
 
 class Bridge_obj : public Sai_obj {
 public:
-  sai_bridge_type_t bridge_type;
-  Bridge_obj(sai_id_map_t* sai_id_map_ptr,sai_bridge_type_t bridge_type) : Sai_obj(sai_id_map_ptr) {
+  uint32_t bridge_type; // sai_bridge_type_t
+  Bridge_obj(sai_id_map_t* sai_id_map_ptr,uint32_t bridge_type) : Sai_obj(sai_id_map_ptr) {
     this->bridge_type=bridge_type;
   }
 };
@@ -127,11 +127,16 @@ typedef std::map<sai_object_id_t, Bridge_obj*>      bridge_id_map_t;
 class Switch_metadata { // this object_id is the switch_id
 public:
 //  sai_id_map_t sai_id_map; // TODO should come from higher hirarchy (for multiple switch config)
-  sai_u32_list_t hw_port_list;
-  port_id_map_t ports;
-  bridge_port_id_map_t bridge_ports;
-  bridge_id_map_t bridges;
-    
+  sai_u32_list_t        hw_port_list;
+  port_id_map_t         ports;
+  bridge_port_id_map_t  bridge_ports;
+  bridge_id_map_t       bridges;
+  Switch_metadata(){
+
+    ports.clear();
+    bridge_ports.clear();
+    bridges.clear();
+  }
 };
 // class Switch_metadata : public Sai_obj { // this object_id is the switch_id
 // public:
