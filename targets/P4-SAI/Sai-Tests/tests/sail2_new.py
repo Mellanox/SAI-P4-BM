@@ -86,13 +86,14 @@ class L21QBridgeAccess2AccessTest(sai_base_test.ThriftInterfaceDataPlane):
         mac1 = '00:11:11:11:11:11'
         mac2 = '00:22:22:22:22:22'
         vlan_id = 10
+        self.client.sai_thrift_create_switch([])
 
         # Set HW ports
         hw_port1 = 0
         hw_port2 = 1
 
         # Create Ports
-        bind_mode = SAI_PORT_BIND_MODE_SUB_PORT
+        bind_mode = SAI_PORT_BIND_MODE_PORT
         port1 = sai_thrift_create_port(self.client, bind_mode, hw_port1, vlan_id)
         port2 = sai_thrift_create_port(self.client, bind_mode, hw_port2, vlan_id)
 
@@ -154,6 +155,7 @@ class L21QBridgeAccess2TrunkTest(sai_base_test.ThriftInterfaceDataPlane):
         trunk_pvid = 20
         mac1 = '00:11:11:11:11:11'
         mac2 = '00:22:22:22:22:22'
+        self.client.sai_thrift_create_switch([])
 
         # Set HW ports
         hw_port1 = 0
@@ -161,7 +163,7 @@ class L21QBridgeAccess2TrunkTest(sai_base_test.ThriftInterfaceDataPlane):
         print "Sending L2 packet Access(%d) -> Trunk(%d) (trunk vlan=%d)" % (hw_port1, hw_port2, vlan_id)
 
         # Create Ports
-        bind_mode = SAI_PORT_BIND_MODE_SUB_PORT
+        bind_mode = SAI_PORT_BIND_MODE_PORT
         port1 = sai_thrift_create_port(self.client, bind_mode, hw_port1, vlan_id)
         port2 = sai_thrift_create_port(self.client, bind_mode, hw_port2, vlan_id)
 
@@ -237,6 +239,7 @@ class L21QBridgeTrunk2TrunkTest(sai_base_test.ThriftInterfaceDataPlane):
         trunk_pvid = 20
         mac1 = '00:11:11:11:11:11'
         mac2 = '00:22:22:22:22:22'
+        self.client.sai_thrift_create_switch([])
 
         # Set HW ports
         hw_port1 = 0
@@ -244,7 +247,7 @@ class L21QBridgeTrunk2TrunkTest(sai_base_test.ThriftInterfaceDataPlane):
         print "Sending L2 packet Trunk(%d) -> Trunk(%d) (trunk vlan=%d)" % (hw_port1, hw_port2, vlan_id)
 
         # Create Ports
-        bind_mode = SAI_PORT_BIND_MODE_SUB_PORT
+        bind_mode = SAI_PORT_BIND_MODE_PORT
         port1 = sai_thrift_create_port(self.client, bind_mode, hw_port1, vlan_id)
         port2 = sai_thrift_create_port(self.client, bind_mode, hw_port2, vlan_id)
 
@@ -318,6 +321,7 @@ class L21QBridgeTrunk2AccessTest(sai_base_test.ThriftInterfaceDataPlane):
         trunk_pvid = 20
         mac1 = '00:11:11:11:11:11'
         mac2 = '00:22:22:22:22:22'
+        self.client.sai_thrift_create_switch([])
 
         # Set HW ports
         hw_port1 = 0
@@ -325,7 +329,7 @@ class L21QBridgeTrunk2AccessTest(sai_base_test.ThriftInterfaceDataPlane):
         print "Sending L2 packet Trunk(%d) -> Access(%d) (trunk vlan=%d)" % (hw_port1, hw_port2, vlan_id)
 
         # Create Ports
-        bind_mode = SAI_PORT_BIND_MODE_SUB_PORT #  .1Q
+        bind_mode = SAI_PORT_BIND_MODE_PORT #  .1Q
         port1 = sai_thrift_create_port(self.client, bind_mode, hw_port1, vlan_id)
         port2 = sai_thrift_create_port(self.client, bind_mode, hw_port2, vlan_id)
 
@@ -398,6 +402,7 @@ class L21DLagTest(sai_base_test.ThriftInterfaceDataPlane):
         vid = 15
         mac1 = '00:11:11:11:11:11'
         mac2 = '00:22:22:22:22:22'
+        self.client.sai_thrift_create_switch([])
 
         # Set HW ports
         hw_port1 = 0
@@ -479,7 +484,7 @@ class L21QLagTest(sai_base_test.ThriftInterfaceDataPlane):
         vid = 15
         mac1 = '00:11:11:11:11:11'
         mac2 = '00:22:22:22:22:22'
-
+        self.client.sai_thrift_create_switch([])
         # Set HW ports
         hw_port1 = 0
         hw_port2 = 1
@@ -487,7 +492,7 @@ class L21QLagTest(sai_base_test.ThriftInterfaceDataPlane):
         hw_port4 = 3
 
         # Create Ports
-        bind_mode = SAI_PORT_BIND_MODE_SUB_PORT
+        bind_mode = SAI_PORT_BIND_MODE_PORT
         port1 = sai_thrift_create_port(self.client, bind_mode, hw_port1, vid)
         port2 = sai_thrift_create_port(self.client, bind_mode, hw_port2)
         port3 = sai_thrift_create_port(self.client, bind_mode, hw_port3)
@@ -514,7 +519,7 @@ class L21QLagTest(sai_base_test.ThriftInterfaceDataPlane):
         bridge_port_type = SAI_BRIDGE_PORT_TYPE_PORT
         bridge_port1 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port1, vid, bridge)
         bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, lag, vid, bridge)
-
+        
         # Create VLAN
         vlan_attr_value = sai_thrift_attribute_value_t(u16= vid)
         vlan_attr = sai_thrift_attribute_t(id=SAI_VLAN_ATTR_VLAN_ID, value=vlan_attr_value)
