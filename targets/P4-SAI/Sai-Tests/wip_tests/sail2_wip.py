@@ -28,72 +28,75 @@ from sai_types import *
 class L2WIP(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         print
-        print "Sending L2 packet port 0 -> port 1"
         mac1 = '00:11:11:11:11:11'
         mac2 = '00:22:22:22:22:22'
-        vlan_id = 10
-        # self.client.sai_thrift_create_switch([])
-
-        attr_value = sai_thrift_attribute_value_t(oid=0)
-        attr_list = [sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID, value=attr_value)]
-        attr_list = self.client.sai_thrift_get_switch_attribute(thrift_attr_list=attr_list)
-        bridge = attr_list.attr_list[0].value.oid
-
-        attr_list = []
-        attr_value = sai_thrift_attribute_value_t(objlist=None)
-        attr = sai_thrift_attribute_t(id= SAI_BRIDGE_ATTR_PORT_LIST, value=attr_value)
-        attr_list.append(attr)
-        attr_value = sai_thrift_attribute_value_t(s32=None)
-        attr = sai_thrift_attribute_t(id= SAI_BRIDGE_ATTR_TYPE, value=attr_value)
-        attr_list.append(attr)
-        attr_list = self.client.sai_thirft_get_bridge_attribute(bridge, attr_list)
-        bridge_port_list = attr_list.attr_list[0].value.objlist.object_id_list
-        bridge_port1 = bridge_port_list[0]
-        bridge_port2 = bridge_port_list[1]
-        bridge_type = attr_list.attr_list[1].value.s32
-
-        attr_list = []
-        attr_value = sai_thrift_attribute_value_t(oid=0)
-        attr = sai_thrift_attribute_t(id= SAI_BRIDGE_PORT_ATTR_PORT_ID, value=attr_value)
-        attr_list.append(attr)
-        attr_list = self.client.sai_thirft_get_bridge_port_attribute(bridge_port1, attr_list)
-        port1 = attr_list.attr_list[0].value.oid
-        attr_list = []
-        attr_value = sai_thrift_attribute_value_t(oid=0)
-        attr = sai_thrift_attribute_t(id= SAI_BRIDGE_PORT_ATTR_PORT_ID, value=attr_value)
-        attr_list.append(attr)
-        attr_list = self.client.sai_thirft_get_bridge_port_attribute(bridge_port2, attr_list)
-        port2 = attr_list.attr_list[0].value.oid
-
-        attr_list = []
-        attr_value = sai_thrift_attribute_value_t(u32list=None)
-        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_HW_LANE_LIST, value=attr_value)
-        attr_list.append(attr)
-        attr_list = self.client.sai_thrift_get_port_attribute(port1, attr_list)
-        hw_port1 = attr_list.attr_list[0].value.u32list.u32list[0]
-        attr_list = []
-        attr_value = sai_thrift_attribute_value_t(u32list=None)
-        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_HW_LANE_LIST, value=attr_value)
-        attr_list.append(attr)
-        attr_list = self.client.sai_thrift_get_port_attribute(port2, attr_list)
-        hw_port2 = attr_list.attr_list[0].value.u32list.u32list[0]
-        # TODO:   port1 -> 2 passes tagged drops untagged  port2 -> 1 drops tagged passed untagged
+        vlan_id = 1
+        switch_init2(self.client)
+        hw_port1 = 0
+        hw_port2 = 1
+        port1 = port_list[hw_port1]
+        port2 = port_list[hw_port2]
+        bridge_port1 = br_port_list[port1]
+        bridge_port2 = br_port_list[port2]
         
+        # port2 drops tagged. port1 drops untagged
+        attr_value = sai_thrift_attribute_value_t(booldata=True)
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_DROP_UNTAGGED, value=attr_value) 
+        self.client.sai_thrift_set_port_attribute(port1, attr)
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_DROP_TAGGED, value=attr_value) 
+        self.client.sai_thrift_set_port_attribute(port2, attr)
+
         # Create FDB Entries:
         mac_action = SAI_PACKET_ACTION_FORWARD
         fdb_entry_type = SAI_FDB_ENTRY_TYPE_STATIC
-        sai_thrift_create_fdb(self.client, mac1, bridge_type, vlan_id, bridge, bridge_port1, mac_action, fdb_entry_type)
-        sai_thrift_create_fdb(self.client, mac2, bridge_type, vlan_id, bridge, bridge_port2, mac_action, fdb_entry_type)
+        sai_thrift_create_fdb(self.client, mac1, default_bridge_type, vlan_id, default_bridge, bridge_port1, mac_action, fdb_entry_type)
+        sai_thrift_create_fdb(self.client, mac2, default_bridge_type, vlan_id, default_bridge, bridge_port2, mac_action, fdb_entry_type)
         
-        pkt = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
-                                eth_src='00:11:11:11:11:11',
-                                ip_dst='10.0.0.1',
-                                ip_id=101,
-                                ip_ttl=64)
+        untagged_pkt1 = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
+                                          eth_src='00:11:11:11:11:11',
+                                          ip_dst='10.0.0.1',
+                                          ip_id=101,
+                                          ip_ttl=64)
+        tagged_pkt1 = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
+                                        eth_src='00:11:11:11:11:11',
+                                        ip_dst='10.0.0.1',
+                                        ip_id=101,
+                                        dl_vlan_enable=True,
+                                        vlan_vid=vlan_id,
+                                        ip_ttl=64,
+                                        pktlen=104)
+        untagged_pkt2 = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
+                                          eth_src='00:22:22:22:22:22',
+                                          ip_dst='10.0.0.1',
+                                          ip_id=101,
+                                          ip_ttl=64)
+        tagged_pkt2 = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
+                                        eth_src='00:22:22:22:22:22',
+                                        ip_dst='10.0.0.1',
+                                        ip_id=101,
+                                        dl_vlan_enable=True,
+                                        vlan_vid=vlan_id,
+                                        ip_ttl=64,
+                                        pktlen=104)
 
         try:
-            send_packet(self, hw_port1, str(pkt))
-            verify_packets(self, pkt, [hw_port2])
+            print "Sending tagged packet port 0 -> port 1"
+            send_packet(self, hw_port1, str(tagged_pkt1))
+            verify_packets(self, tagged_pkt1, [hw_port2])
+            print "Sending tagged packet port 1 -> port 0"
+            send_packet(self, hw_port2, str(tagged_pkt2))
+            verify_no_packet_any(self, tagged_pkt2, port_list.keys())
+            print "Sending untagged packet port 0 -> port 1"
+            send_packet(self, hw_port1, str(untagged_pkt1))
+            verify_no_packet_any(self, untagged_pkt1, port_list.keys())
+            print "Sending untagged packet port 1 -> port 0"
+            send_packet(self, hw_port2, str(untagged_pkt2))
+            verify_packets(self, untagged_pkt2, [hw_port1])
         finally:
-            sai_thrift_delete_fdb(self.client, mac1, bridge)
-            sai_thrift_delete_fdb(self.client, mac2, bridge)
+            sai_thrift_delete_fdb(self.client, mac1, default_bridge)
+            sai_thrift_delete_fdb(self.client, mac2, default_bridge)
+            attr_value = sai_thrift_attribute_value_t(booldata=False)
+            attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_DROP_UNTAGGED, value=attr_value) 
+            self.client.sai_thrift_set_port_attribute(port1, attr)
+            attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_DROP_TAGGED, value=attr_value) 
+            self.client.sai_thrift_set_port_attribute(port2, attr)
