@@ -1,5 +1,11 @@
-# SAI BEHAVIORAL MODEL USING P4 
-This repository is ment to provide a conformal behavioral model with SAI interface.  
+# SAI BEHAVIORAL MODEL
+This repository clearly defines widely accepted network switch behaviour.
+The switch behavioral model provides a commom framework for all network vendors and users.
+It meant to describe the standard ethernet switch features and flows.
+both users and vendors can align and check specific
+
+## P4 MODEL
+The Model is meant to provide a conformal behavioural SAI(https://github.com/opencomputeproject/SAI) model.
 It implements SAI 1.0 on top of soft switch coded via P4.  
 The Packet Test Framework (pft) implements test using python.
 
