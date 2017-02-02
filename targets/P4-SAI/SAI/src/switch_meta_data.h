@@ -71,15 +71,6 @@ class Port_obj : public Sai_obj{
     uint32_t drop_untagged;
     BmEntryHandle handle_lag_if;
     BmEntryHandle handle_port_cfg;
-    // Port_obj(sai_id_map_t* sai_id_map_ptr,uint32_t hw_port, uint32_t pvid) : Sai_obj(sai_id_map_ptr) {
-    //   //printf("create port object\n");
-    //   this->mtu=1512;
-    //   this->drop_tagged=0;
-    //   this->drop_untagged=0;
-    //   this->hw_port=hw_port;
-    //   this->pvid=pvid;
-    //   this->bind_mode=SAI_PORT_BIND_MODE_PORT;
-    // }
     Port_obj(sai_id_map_t* sai_id_map_ptr): Sai_obj(sai_id_map_ptr) {
       //printf("create port object\n");
       this->mtu=1512;
@@ -93,18 +84,29 @@ class Port_obj : public Sai_obj{
 
 class BridgePort_obj : public Sai_obj {
 public:
-  sai_object_id_t port_id;
-  sai_object_id_t vlan_id;
-  sai_port_type_t br_port_type;
-  BridgePort_obj(sai_id_map_t* sai_id_map_ptr,sai_object_id_t port_id,sai_object_id_t vlan_id, sai_port_type_t br_port_type) : Sai_obj(sai_id_map_ptr) {
-    this->port_id=port_id;
-    this->vlan_id=vlan_id;
-    this->br_port_type=br_port_type;
-  }
+  uint32_t port_id;
+  uint32_t vlan_id;
+  uint32_t bridge_port_type;
+  BmEntryHandle handle_id_1d;
+  BmEntryHandle handle_id_1q;
+  BmEntryHandle handle_egress_set_vlan;
+  BmEntryHandle handle_egress_br_port_to_if;
+  BmEntryHandle handle_subport_ingress_interface_type;
+  BmEntryHandle handle_port_ingress_interface_type;
+  //BmEntryHandle handle_cfg; // TODO
   BridgePort_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->port_id=0;
     this->vlan_id=1;
-    this->br_port_type=SAI_PORT_TYPE_LOGICAL;
+
+    this->bridge_port_type=SAI_PORT_TYPE_LOGICAL;
+    // TODO 999 is inavlid. consider other notation
+    this->handle_id_1d =999;
+    this->handle_id_1q =999;
+    this->handle_egress_set_vlan =999;
+    this->handle_egress_br_port_to_if =999;
+    this->handle_subport_ingress_interface_type =999;
+    this->handle_port_ingress_interface_type =999;
+
   }
 };
 
@@ -116,42 +118,22 @@ public:
   }
 };
 
-
-
 typedef std::map<sai_object_id_t, BridgePort_obj*>  bridge_port_id_map_t;
 typedef std::map<sai_object_id_t, Port_obj*>        port_id_map_t;
 typedef std::map<sai_object_id_t, Bridge_obj*>      bridge_id_map_t;
 
-
-
-class Switch_metadata { // this object_id is the switch_id
+class Switch_metadata { // TODO:  add default.. // this object_id is the switch_id
 public:
-//  sai_id_map_t sai_id_map; // TODO should come from higher hirarchy (for multiple switch config)
   sai_u32_list_t        hw_port_list;
   port_id_map_t         ports;
   bridge_port_id_map_t  bridge_ports;
   bridge_id_map_t       bridges;
   Switch_metadata(){
-
     ports.clear();
     bridge_ports.clear();
     bridges.clear();
   }
 };
-// class Switch_metadata : public Sai_obj { // this object_id is the switch_id
-// public:
-// //  sai_id_map_t sai_id_map; // TODO should come from higher hirarchy (for multiple switch config)
-//   sai_u32_list_t hw_port_list;
-//   port_id_map_t ports;
-//   bridge_port_id_map_t bridge_ports;
-//   bridge_id_map_t bridges;
-//   Switch_metadata(sai_id_map_t id_map) : Sai_Obj(id_map) {
-
-//   }
-  
-// };
-
 
 #endif
-//
-//
+

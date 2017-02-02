@@ -64,10 +64,16 @@ public:
 	//bridge functions
 	static sai_status_t create_bridge (sai_object_id_t *bridge_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
 	static sai_status_t remove_bridge (sai_object_id_t bridge_id);
-	
+	//bridge_port functions
+	static sai_status_t create_bridge_port (sai_object_id_t *bridge_port_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+	static sai_status_t remove_bridge_port (sai_object_id_t bridge_port_id);
+	//fdb
+	static sai_status_t create_fdb_entry (const sai_fdb_entry_t* fdb_entry,uint32_t attr_count,const sai_attribute_t *attr_list);
+	static sai_status_t remove_fdb_entry (const sai_fdb_entry_t* fdb_entry);	
 	//api s
-	sai_port_api_t port_api;
-	sai_bridge_api_t bridge_api;
+	sai_port_api_t		port_api;
+	sai_bridge_api_t	bridge_api;
+	sai_fdb_api_t		fdb_api;
 
 	sai_object():
 	//  constructor pre initializations
@@ -76,9 +82,7 @@ public:
 	  bprotocol(new TBinaryProtocol(transport)),
 	  protocol (new TMultiplexedProtocol(bprotocol, "standard")),
 	  bm_client(protocol)
-	  {
-	  	printf("sai_object constructor started\n");
-  		
+	  {		
   		switch_metadata_ptr = &switch_metadata;
   		uint32_t list[]={0,1,2,3,4,5,6,7};
   		switch_metadata_ptr->hw_port_list.list=list;
@@ -93,6 +97,12 @@ public:
 
   		bridge_api.create_bridge = &sai_object::create_bridge;
   		bridge_api.remove_bridge = &sai_object::remove_bridge;
+  		bridge_api.create_bridge_port = &sai_object::create_bridge_port;
+  		bridge_api.remove_bridge_port = &sai_object::remove_bridge_port;
+
+  		fdb_api.create_fdb_entry = &sai_object::create_fdb_entry;
+  		fdb_api.remove_fdb_entry = &sai_object::remove_fdb_entry;
+  		//
     	printf("BM connection started on port %d\n",bm_port); 
 	  }
 	~sai_object(){
@@ -111,6 +121,9 @@ public:
               break;
              case SAI_API_BRIDGE:
               *api_method_table=&bridge_api;
+              break;
+              case SAI_API_FDB:
+              *api_method_table=&fdb_api;
               break;
          	default:
          		printf("api requested was %d, while sai_api_port is %d\n",sai_api_id,SAI_API_PORT);
