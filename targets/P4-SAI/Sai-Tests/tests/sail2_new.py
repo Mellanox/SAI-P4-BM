@@ -34,14 +34,30 @@ class L21DBridgeBasicTest(sai_base_test.ThriftInterfaceDataPlane):
         mac2 = '00:22:22:22:22:22'
         self.client.sai_thrift_create_switch([])
 
-        # Set HW ports
-        hw_port1 = 0
-        hw_port2 = 1
-
-        # Create Ports
+        # Ports
+        attr_value = sai_thrift_attribute_value_t(objlist=None)
+        attr_list = [sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_PORT_LIST, value=attr_value)]
+        attr_list = self.client.sai_thrift_get_switch_attribute(attr_list)
+        port1 = attr_list.attr_list[0].value.objlist.object_id_list[0]
+        port2 = attr_list.attr_list[0].value.objlist.object_id_list[1]
+        
         bind_mode = SAI_PORT_BIND_MODE_SUB_PORT
-        port1 = sai_thrift_create_port(self.client, bind_mode, hw_port1, vlan_id)
-        port2 = sai_thrift_create_port(self.client, bind_mode, hw_port2, vlan_id)
+        attr_value = sai_thrift_attribute_value_t(s32=bind_mode)
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_BIND_MODE, value=attr_value)
+        self.client.sai_thrift_set_port_attribute(port1, attr)
+        self.client.sai_thrift_set_port_attribute(port2, attr)
+        attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+        self.client.sai_thrift_set_port_attribute(port1, attr)
+        self.client.sai_thrift_set_port_attribute(port2, attr)
+
+        # Get HW Ports
+        attr_value = sai_thrift_attribute_value_t(u32list=None)
+        attr_list = [sai_thrift_attribute_t(id=SAI_PORT_ATTR_HW_LANE_LIST, value=attr_value)]
+        resp_list = self.client.sai_thrift_get_port_attribute(port1, attr_list)
+        hw_port1 = resp_list.attr_list[0].value.u32list.u32list[0]
+        resp_list = self.client.sai_thrift_get_port_attribute(port2, attr_list)
+        hw_port2 = resp_list.attr_list[0].value.u32list.u32list[0]
 
         # Create 1D Bridge
         bridge_type = SAI_BRIDGE_TYPE_1D

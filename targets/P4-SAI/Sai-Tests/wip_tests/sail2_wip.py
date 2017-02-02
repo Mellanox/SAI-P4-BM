@@ -32,15 +32,12 @@ class L2WIP(sai_base_test.ThriftInterfaceDataPlane):
         mac1 = '00:11:11:11:11:11'
         mac2 = '00:22:22:22:22:22'
         vlan_id = 10
-        self.client.sai_thrift_create_switch([])
+        # self.client.sai_thrift_create_switch([])
 
-        attr_list = []
         attr_value = sai_thrift_attribute_value_t(oid=0)
-        attr = sai_thrift_attribute_t(id= SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID, value=attr_value)
-        attr_list.append(attr)
+        attr_list = [sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID, value=attr_value)]
         attr_list = self.client.sai_thrift_get_switch_attribute(thrift_attr_list=attr_list)
         bridge = attr_list.attr_list[0].value.oid
-        print "default bridge_id = %d" % bridge
 
         attr_list = []
         attr_value = sai_thrift_attribute_value_t(objlist=None)
