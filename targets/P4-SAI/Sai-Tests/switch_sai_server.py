@@ -272,9 +272,6 @@ class SaiHandler():
     return 0
 
   def sai_thrift_set_port_attribute(self, port, attr):
-    print "port %d" % port
-    print self.ports
-    print self.lags
     if port in self.ports:
       port_obj = self.ports[port]
     else: 
@@ -282,8 +279,17 @@ class SaiHandler():
     if attr.id == SAI_PORT_ATTR_PORT_VLAN_ID:
       port_obj.pvid = attr.value.u16
     self.config_port(port_obj, port)
-    
     return 0
+
+  def sai_thrift_get_port_attribute(self, port_id, thrift_attr_list):
+    for attr in thrift_attr_list:
+      if attr.id == SAI_PORT_ATTR_HW_LANE_LIST:
+        if port_id in self.lags:
+          hw_port = self.lags[port_id].hw_port
+        else:
+          hw_port = self.ports[port_id].hw_port
+        attr.value.u32list = sai_thrift_u32_list_t(u32list=[hw_port], count=1)
+    return sai_thrift_attribute_list_t(attr_list=thrift_attr_list, attr_count = len(thrift_attr_list))
 
   # LAG Api
   def sai_thrift_create_lag(self, thrift_attr_list):
@@ -336,6 +342,14 @@ class SaiHandler():
     self.bridges.pop(bridge_id, None)
     return 0
 
+  def sai_thirft_get_bridge_attribute(self, bridge_id, thrift_attr_list):
+    for attr in thrift_attr_list:
+      if attr.id == SAI_BRIDGE_ATTR_PORT_LIST:
+        attr.value.objlist =  sai_thrift_object_list_t(object_id_list = self.bridges[bridge_id].bridge_port_list,count = len(self.bridges[bridge_id].bridge_port_list))
+      if attr.id == SAI_BRIDGE_ATTR_TYPE:
+        attr.value.s32 = self.bridges[bridge_id].bridge_type
+    return sai_thrift_attribute_list_t(attr_list=thrift_attr_list, attr_count = len(thrift_attr_list))
+
   def sai_thrift_create_bridge_port(self, thrift_attr_list):
     for attr in thrift_attr_list:
       if attr.id == SAI_BRIDGE_PORT_ATTR_VLAN_ID:
@@ -387,12 +401,12 @@ class SaiHandler():
     self.cli_client.RemoveTableEntry('table_egress_br_port_to_if', str(br_port.id))
     return 0
 
-  def sai_thirft_get_bridge_attribute(self, bridge_id, thrift_attr_list):
+  def sai_thirft_get_bridge_port_attribute(self, bridge_port_id, thrift_attr_list):
     for attr in thrift_attr_list:
-      if attr.id == SAI_BRIDGE_ATTR_PORT_LIST:
-        br_port_list = sai_thrift_object_list_t(object_id_list = self.bridges[bridge_id].bridge_port_list,count = len(self.bridges[bridge_id].bridge_port_list))
-        attr.value.objlist = br_port_list
+      if attr.id == SAI_BRIDGE_PORT_ATTR_PORT_ID:
+        attr.value.oid = self.bridge_ports[bridge_port_id].port_id
     return sai_thrift_attribute_list_t(attr_list=thrift_attr_list, attr_count = len(thrift_attr_list))
+
 
 
 handler = SaiHandler()

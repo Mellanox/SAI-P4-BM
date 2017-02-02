@@ -40,23 +40,46 @@ class L2WIP(sai_base_test.ThriftInterfaceDataPlane):
         attr_list.append(attr)
         attr_list = self.client.sai_thrift_get_switch_attribute(thrift_attr_list=attr_list)
         bridge = attr_list.attr_list[0].value.oid
+        print "default bridge_id = %d" % bridge
 
         attr_list = []
         attr_value = sai_thrift_attribute_value_t(objlist=None)
         attr = sai_thrift_attribute_t(id= SAI_BRIDGE_ATTR_PORT_LIST, value=attr_value)
         attr_list.append(attr)
+        attr_value = sai_thrift_attribute_value_t(s32=None)
+        attr = sai_thrift_attribute_t(id= SAI_BRIDGE_ATTR_TYPE, value=attr_value)
+        attr_list.append(attr)
         attr_list = self.client.sai_thirft_get_bridge_attribute(bridge, attr_list)
         bridge_port_list = attr_list.attr_list[0].value.objlist.object_id_list
         bridge_port1 = bridge_port_list[0]
         bridge_port2 = bridge_port_list[1]
+        bridge_type = attr_list.attr_list[1].value.s32
 
-        attr_list = [SAI_BRIDGE_PORT_ATTR_PORT_ID]
+        attr_list = []
+        attr_value = sai_thrift_attribute_value_t(oid=0)
+        attr = sai_thrift_attribute_t(id= SAI_BRIDGE_PORT_ATTR_PORT_ID, value=attr_value)
+        attr_list.append(attr)
         attr_list = self.client.sai_thirft_get_bridge_port_attribute(bridge_port1, attr_list)
-        port1 = attr_list[0].value.oid
-        attr_list = [SAI_BRIDGE_PORT_ATTR_PORT_ID]
+        port1 = attr_list.attr_list[0].value.oid
+        attr_list = []
+        attr_value = sai_thrift_attribute_value_t(oid=0)
+        attr = sai_thrift_attribute_t(id= SAI_BRIDGE_PORT_ATTR_PORT_ID, value=attr_value)
+        attr_list.append(attr)
         attr_list = self.client.sai_thirft_get_bridge_port_attribute(bridge_port2, attr_list)
-        port2 = attr_list[0].value.oid
+        port2 = attr_list.attr_list[0].value.oid
 
+        attr_list = []
+        attr_value = sai_thrift_attribute_value_t(u32list=None)
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_HW_LANE_LIST, value=attr_value)
+        attr_list.append(attr)
+        attr_list = self.client.sai_thrift_get_port_attribute(port1, attr_list)
+        hw_port1 = attr_list.attr_list[0].value.u32list.u32list[0]
+        attr_list = []
+        attr_value = sai_thrift_attribute_value_t(u32list=None)
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_HW_LANE_LIST, value=attr_value)
+        attr_list.append(attr)
+        attr_list = self.client.sai_thrift_get_port_attribute(port2, attr_list)
+        hw_port2 = attr_list.attr_list[0].value.u32list.u32list[0]
         # TODO:   port1 -> 2 passes tagged drops untagged  port2 -> 1 drops tagged passed untagged
         
         # Create FDB Entries:
@@ -77,11 +100,3 @@ class L2WIP(sai_base_test.ThriftInterfaceDataPlane):
         finally:
             sai_thrift_delete_fdb(self.client, mac1, bridge)
             sai_thrift_delete_fdb(self.client, mac2, bridge)
-            self.client.sai_thrift_remove_vlan_member(vlan_member1)
-            self.client.sai_thrift_remove_vlan_member(vlan_member2)
-            self.client.sai_thrift_delete_vlan(vlan_oid)
-            self.client.sai_thrift_remove_bridge_port(bridge_port1)
-            self.client.sai_thrift_remove_bridge_port(bridge_port2)
-            self.client.sai_thrift_remove_bridge(bridge)
-            self.client.sai_thrift_remove_port(port1)
-            self.client.sai_thrift_remove_port(port2)

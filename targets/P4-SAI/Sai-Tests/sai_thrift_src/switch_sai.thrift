@@ -201,7 +201,7 @@ struct sai_thrift_attribute_list_t {
 service switch_sai_rpc {
     //port API
     sai_thrift_status_t sai_thrift_set_port_attribute(1: sai_thrift_object_id_t port_id, 2: sai_thrift_attribute_t thrift_attr);
-    sai_thrift_attribute_list_t sai_thrift_get_port_attribute(1: sai_thrift_object_id_t port_id);
+    sai_thrift_attribute_list_t sai_thrift_get_port_attribute(1: sai_thrift_object_id_t port_id, 2: list<sai_thrift_attribute_t> thrift_attr_list);
     list<i64> sai_thrift_get_port_stats(
                              1: sai_thrift_object_id_t port_id,
                              2: list<sai_thrift_port_stat_counter_t> counter_ids,
@@ -214,9 +214,10 @@ service switch_sai_rpc {
     //bridge API
     sai_thrift_object_id_t sai_thrift_create_bridge(1: list<sai_thrift_attribute_t> thrift_attr_list);
     sai_thrift_status_t sai_thrift_remove_bridge(1: sai_thrift_object_id_t bridge_id);
+    sai_thrift_attribute_list_t sai_thirft_get_bridge_attribute(1: sai_thrift_object_id_t bridge_id, 2: list<sai_thrift_attribute_t> thrift_attr_list);
     sai_thrift_object_id_t sai_thrift_create_bridge_port(1: list<sai_thrift_attribute_t> thrift_attr_list);
     sai_thrift_status_t sai_thrift_remove_bridge_port(1: sai_thrift_object_id_t bridge_port_id);
-    sai_thrift_attribute_list_t sai_thirft_get_bridge_attribute(1: sai_thrift_object_id_t bridge_id, 2: list<sai_thrift_attribute_t> thrift_attr_list);
+    sai_thrift_attribute_list_t sai_thirft_get_bridge_port_attribute(1: sai_thrift_object_id_t bridge_port_id, 2: list<sai_thrift_attribute_t> thrift_attr_list);
 
 
     //fdb API
