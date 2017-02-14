@@ -60,10 +60,11 @@ class Lag_obj(Sai_obj):
 
 
 class LagMember_obj(Sai_obj):
-    def __init__(self, sai_object_id, port_id=0,lag_id=0):
+    def __init__(self, sai_object_id, port_id=0,lag_id=0,hw_port=0):
         Sai_obj.__init__(self, sai_object_id)
         self.port_id = port_id
         self.lag_id = lag_id
+        self.hw_port = hw_port
 
 
 class VlanMember_obj(Sai_obj):
@@ -338,13 +339,12 @@ class SaiHandler():
   def sai_thrift_create_lag(self, thrift_attr_list):
     lag_id, lag_obj = CreateNewItem(self.lags, Lag_obj, forbidden_list=self.get_all_oids())
     lag_obj.l2_if = self.get_new_l2_if()
-    print "created lag. l2_if = %d" % lag_obj.l2_if
-    print "test lag. l2_if = %d" % self.lags[lag_id].l2_if
     return lag_id
 
   def sai_thrift_remove_lag(self, lag_id):
-    self.lags.pop(lag_id, None)
-    self.cli_client.RemoveTableEntry('table_port_configurations', str(lag_id))
+    lag = self.lags.pop(lag_id, None)
+    self.cli_client.RemoveTableEntry('table_port_configurations', str(lag.l2_if))
+    self.cli_client.RemoveTableEntry('table_lag_hash',str(lag.l2_if))
     return 0
 
   def sai_thrift_create_lag_member(self, thrift_attr_list):
@@ -360,11 +360,11 @@ class SaiHandler():
         lag = self.lags[lag_id]
         lag.lag_members.append(lag_member_id)
     lag.port_obj = port
-    hw_port = port.hw_port
+    lag_member_obj.hw_port = port.hw_port
     l2_if = lag.l2_if
-    self.cli_client.RemoveTableEntry('table_ingress_lag', str(hw_port))
-    self.cli_client.AddTable('table_ingress_lag', 'action_set_lag_l2if', str(hw_port), list_to_str([1, lag_id]))
-    self.cli_client.AddTable('table_egress_lag', 'action_set_out_port', list_to_str([l2_if, len(self.lags[lag_id].lag_members)-1]), str(hw_port))
+    self.cli_client.RemoveTableEntry('table_ingress_lag', str(lag_member_obj.hw_port))
+    self.cli_client.AddTable('table_ingress_lag', 'action_set_lag_l2if', str(lag_member_obj.hw_port), list_to_str([1, lag_id]))
+    self.cli_client.AddTable('table_egress_lag', 'action_set_out_port', list_to_str([l2_if, len(self.lags[lag_id].lag_members)-1]), str(lag_member_obj.hw_port))
     self.cli_client.RemoveTableEntry('table_lag_hash',str(l2_if))
     self.cli_client.AddTable('table_lag_hash', 'action_set_lag_hash_size', str(l2_if), str(len(self.lags[lag_id].lag_members)))
     self.config_port(lag.port_obj, lag.l2_if)
@@ -374,8 +374,18 @@ class SaiHandler():
     lag_member = self.lag_members.pop(lag_member_id, None)
     if not lag_member:
       return 0
-    self.lags[lag_member.lag_id].lag_members.remove(lag_member_id)
-    # Todo: Update Lag Hash tables
+    lag = self.lags[lag_member.lag_id]
+    hash_ind = lag.lag_members.index(lag_member_id)
+    del lag.lag_members[hash_ind]
+    self.cli_client.RemoveTableEntry('table_lag_hash',str(lag.l2_if))
+    self.cli_client.AddTable('table_lag_hash', 'action_set_lag_hash_size', str(lag.l2_if), str(len(lag.lag_members)))
+    self.cli_client.RemoveTableEntry('table_egress_lag', list_to_str([lag.l2_if, hash_ind]))
+    if len(lag.lag_members) > 0:
+      self.cli_client.RemoveTableEntry('table_egress_lag', list_to_str([lag.l2_if, len(lag.lag_members)]))
+      last_lag_member_id = lag.lag_members.pop()
+      lag.lag_members.insert(hash_ind, last_lag_member_id)
+      last_lag_member = self.lag_members[last_lag_member_id]
+      self.cli_client.AddTable('table_egress_lag', 'action_set_out_port', list_to_str([lag.l2_if, hash_ind]), str(last_lag_member.hw_port))
     return 0
 
 
