@@ -541,7 +541,7 @@ class L21DLagTest(sai_base_test.ThriftInterfaceDataPlane):
         port2 = sai_thrift_create_port(self.client, bind_mode, hw_port2, vlan_id)
         port3 = sai_thrift_create_port(self.client, bind_mode, hw_port3, vlan_id)
         port4 = sai_thrift_create_port(self.client, bind_mode, hw_port4, vlan_id)
-        port4 = sai_thrift_create_port(self.client, bind_mode, hw_port5, vlan_id)
+        port5 = sai_thrift_create_port(self.client, bind_mode, hw_port5, vlan_id)
 
         # Create LAG
         lag = self.client.sai_thrift_create_lag([])
@@ -586,14 +586,13 @@ class L21DLagTest(sai_base_test.ThriftInterfaceDataPlane):
         try:
             send_packet(self, hw_port2, str(pkt))
             verify_packets(self, pkt, [hw_port1])
-            for ip_id in [101,102,103]:
+            for ip_id in [101,103,105,107]:
                 pkt = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
                                     eth_src='00:11:11:11:11:11',
                                     ip_dst='10.0.0.1',
                                     ip_id=ip_id,
                                     ip_ttl=64)
                 send_packet(self, hw_port1, str(pkt))
-                # verify_packets_any(self, pkt, [hw_port2, hw_port3, hw_port4])
                 verify_packets_any(self, pkt, [hw_port2, hw_port4, hw_port5])
         finally:
             sai_thrift_delete_fdb(self.client, mac1, bridge)
@@ -602,7 +601,7 @@ class L21DLagTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_bridge_port(bridge_port2)
             self.client.sai_thrift_remove_bridge(bridge)
             self.client.sai_thrift_remove_lag_member(lag_member1)
-            self.client.sai_thrift_remove_lag_member(lag_member2)
+            self.client.sai_thrift_remove_lag_member(lag_member4)
             self.client.sai_thrift_remove_lag_member(lag_member3)
             self.client.sai_thrift_remove_lag(lag)
 

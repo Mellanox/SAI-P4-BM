@@ -114,7 +114,7 @@ def switch_init2(client):
     attr_list = client.sai_thrift_get_switch_attribute(thrift_attr_list=[attr, attr2])
     bridge = attr_list.attr_list[0].value.oid
     for interface,front in interface_to_front_mapping.iteritems():
-        sai_port_id = client.sai_thrift_get_port_id_by_front_port(front);
+        sai_port_id = client.sai_thrift_get_port_id_by_front_port(front)
         port_list[int(interface)]=sai_port_id
 
 

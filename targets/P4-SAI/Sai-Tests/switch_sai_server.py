@@ -380,7 +380,7 @@ class SaiHandler():
     self.cli_client.RemoveTableEntry('table_lag_hash',str(lag.l2_if))
     self.cli_client.AddTable('table_lag_hash', 'action_set_lag_hash_size', str(lag.l2_if), str(len(lag.lag_members)))
     self.cli_client.RemoveTableEntry('table_egress_lag', list_to_str([lag.l2_if, hash_ind]))
-    if len(lag.lag_members) > 0:
+    if hash_ind!=len(lag.lag_members):
       self.cli_client.RemoveTableEntry('table_egress_lag', list_to_str([lag.l2_if, len(lag.lag_members)]))
       last_lag_member_id = lag.lag_members.pop()
       lag.lag_members.insert(hash_ind, last_lag_member_id)
