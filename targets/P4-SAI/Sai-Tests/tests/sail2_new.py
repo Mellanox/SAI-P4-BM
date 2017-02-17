@@ -610,7 +610,7 @@ class L21QLagTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         print
         print "Sending 3 L2 (1Q Access2Access) Lag packets port 0 -> port 1/2/3"
-        vid = 15
+        vlan_id = 15
         mac1 = '00:11:11:11:11:11'
         mac2 = '00:22:22:22:22:22'
         self.client.sai_thrift_create_switch([])
@@ -668,7 +668,7 @@ class L21QLagTest(sai_base_test.ThriftInterfaceDataPlane):
         bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, lag, vlan_id, bridge)
         
         # Create VLAN
-        vlan_attr_value = sai_thrift_attribute_value_t(u16= vid)
+        vlan_attr_value = sai_thrift_attribute_value_t(u16= vlan_id)
         vlan_attr = sai_thrift_attribute_t(id=SAI_VLAN_ATTR_VLAN_ID, value=vlan_attr_value)
         vlan_oid = self.client.sai_thrift_create_vlan([vlan_attr])
 
@@ -680,8 +680,8 @@ class L21QLagTest(sai_base_test.ThriftInterfaceDataPlane):
         # Create FDB Entries:
         mac_action = SAI_PACKET_ACTION_FORWARD
         fdb_entry_type = SAI_FDB_ENTRY_TYPE_STATIC
-        sai_thrift_create_fdb(self.client, mac1, bridge_type, vid, bridge, bridge_port1, mac_action, fdb_entry_type)
-        sai_thrift_create_fdb(self.client, mac2, bridge_type, vid, bridge, bridge_port2, mac_action, fdb_entry_type)
+        sai_thrift_create_fdb(self.client, mac1, bridge_type, vlan_id, bridge, bridge_port1, mac_action, fdb_entry_type)
+        sai_thrift_create_fdb(self.client, mac2, bridge_type, vlan_id, bridge, bridge_port2, mac_action, fdb_entry_type)
 
         pkt = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
                                 eth_src='00:22:22:22:22:22',

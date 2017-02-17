@@ -198,7 +198,7 @@ class SaiHandler():
         vid = attr.value.u16
     if vid in [x.vid for x in self.vlans]:
       print "vlan id %d already exists" % vid
-      return -1
+      return SAI_STATUS_ITEM_ALREADY_EXISTS
     else:
       print "vlan id %d created" % vid
       vlan_oid, vlan_obj = CreateNewItem(self.vlans, Vlan_obj, forbidden_list=self.get_all_oids())
