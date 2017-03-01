@@ -106,7 +106,7 @@ class SaiHandler():
     self.switch_id = 0
     self.log = {}
     print "connecting to cli thrift"
-    self.cli_client = SwitchThriftClient(json='../sai.json')
+    self.cli_client = SwitchThriftClient(json='../sai.json',default_config='../p4src/DefaultConfig.txt')
     self.hw_port_list = [0, 1, 2, 3, 4, 5, 6, 7]
     self.sai_thrift_create_switch([])
 
@@ -127,6 +127,7 @@ class SaiHandler():
 
   # Switch API
   def sai_thrift_create_switch(self, thrift_attr_list):
+    # self.cli_client.ReloadDefaultConfig()
     self.ports = {}
     self.vlans = {}
     self.vlan_members = {}
@@ -177,8 +178,6 @@ class SaiHandler():
     bridge_id = self.bridges[thrift_fdb_entry.bridge_id].bridge_id
     mac = thrift_fdb_entry.mac_address
     vlan_id = thrift_fdb_entry.vlan_id
-    out_if_type = 0 # port_type (not lag or router). TODO: check how to do it with SAI
-
     match_str = thrift_fdb_entry.mac_address + ' ' + str(bridge_id)
     action_str = str(bridge_port)
     if packet_action == SAI_PACKET_ACTION_FORWARD:
@@ -339,6 +338,8 @@ class SaiHandler():
   def sai_thrift_create_lag(self, thrift_attr_list):
     lag_id, lag_obj = CreateNewItem(self.lags, Lag_obj, forbidden_list=self.get_all_oids())
     lag_obj.l2_if = self.get_new_l2_if()
+    print "another test. lag_id = %d" % lag_id
+    print self.lags
     return lag_id
 
   def sai_thrift_remove_lag(self, lag_id):
@@ -468,20 +469,31 @@ class SaiHandler():
     bridge_port = br_port_obj.bridge_port
     port_id = br_port_obj.port_id
     vlan_id = br_port_obj.vlan_id
+    print "test1"
     self.cli_client.RemoveTableEntry('table_egress_br_port_to_if', str(bridge_port))
+    print "port_id = %d" % port_id
+    print self.lags
+    print self.ports
     if port_id in self.lags:
+      print "test2"
       l2_if = self.lags[port_id].l2_if
       bind_mode = self.lags[port_id].port_obj.bind_mode
+      print "test3"
     else:
+      print "test4"
       l2_if = self.ports[port_id].l2_if
       bind_mode = self.ports[port_id].bind_mode
+      print "test5"
     if bind_mode == SAI_PORT_BIND_MODE_SUB_PORT:
+      print "test6"
       self.cli_client.RemoveTableEntry('table_subport_ingress_interface_type', list_to_str([l2_if, vlan_id]))
     else:
       self.cli_client.RemoveTableEntry('table_port_ingress_interface_type', list_to_str([l2_if]))
     if br_port_obj.br_port_type == SAI_BRIDGE_PORT_TYPE_SUB_PORT: #.1D 
+      print "test7"
       self.cli_client.RemoveTableEntry('table_bridge_id_1d', str(bridge_port))
       self.cli_client.RemoveTableEntry('table_egress_set_vlan', str(bridge_port))
+      print "test8"
     else:
       self.cli_client.RemoveTableEntry('table_bridge_id_1q', str(vlan_id))
     return SAI_STATUS_SUCCESS

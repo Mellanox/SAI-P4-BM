@@ -26,7 +26,7 @@ from subprocess import Popen, call
 import shlex
 
 class SwitchThriftClient():
-    def __init__(self, ip='localhost', port=9090,services=cli.PreType.SimplePre,json='sai.json', default_config='p4src/DefaultConfig.txt'):
+    def __init__(self, ip='localhost', port=9090,services=cli.PreType.SimplePreLAG,json='sai.json', default_config='p4src/DefaultConfig.txt'):
         self.pre = services
         self.standard_client, self.mc_client = self.ConnectToThrift(ip, port, services, json)
         self.json = json
@@ -50,18 +50,16 @@ class SwitchThriftClient():
         return cli.RuntimeAPI(self.pre, self.standard_client, self.mc_client).do_table_delete_entry_from_key('%s %s' % (table_name, match_string))
 
     def ReloadDefaultConfig(self):
-        cli.RuntimeAPI(self.pre, self.standard_client, self.mc_client).do_load_new_config_file(self.json) 
-        # cli.RuntimeAPI(self.pre, self.standard_client, self.mc_client).cmdloop()
-        # with open(self.default_config,'r') as def_file:
-            # print "\n\n\n Yonatan DEBUG:"
-            # print def_file.readline()
-            # print "\n\n\n"
-        call(shlex.split('runtime_CLI < %s' % self.default_config))
+        cli.RuntimeAPI(self.pre, self.standard_client, self.mc_client).do_load_new_config_file(self.json)
+        with open(self.default_config,'r') as def_file:
+            for line in def_file:
+                cli.RuntimeAPI(self.pre, self.standard_client, self.mc_client).onecmd(line.strip('\n'))
+        cli.RuntimeAPI(self.pre, self.standard_client, self.mc_client).do_swap_configs('')
 
 def main():
     args = cli.get_parser().parse_args()
     client = SwitchThriftClient()
-    client.AddTable('table_ingress_lag', 'action_set_l2if', '10', '')
+    client.AddTable('table_ingress_lag', 'action_set_l2if', '20', '')
     client.ReloadDefaultConfig()
     client.AddTable('table_ingress_lag', 'action_set_l2if', '11', '')
     # parse_match_key(0)

@@ -107,12 +107,16 @@ def switch_init(client):
     switch_inited = 1
 
 def switch_init2(client):
+    global switch_inited
+    if switch_inited:
+        return
+    client.sai_thrift_create_switch([])
     attr_value = sai_thrift_attribute_value_t(oid=0)
     attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID, value=attr_value)
     attr_value2 = sai_thrift_attribute_value_t(objlist=0)
     attr2 = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_PORT_LIST, value=attr_value)
     attr_list = client.sai_thrift_get_switch_attribute(thrift_attr_list=[attr, attr2])
-    bridge = attr_list.attr_list[0].value.oid
+    default_bridge = attr_list.attr_list[0].value.oid
     for interface,front in interface_to_front_mapping.iteritems():
         sai_port_id = client.sai_thrift_get_port_id_by_front_port(front)
         port_list[int(interface)]=sai_port_id
@@ -123,7 +127,7 @@ def switch_init2(client):
     attr_list.append(sai_thrift_attribute_t(id= SAI_BRIDGE_ATTR_PORT_LIST, value=attr_value))
     attr_value = sai_thrift_attribute_value_t(s32=None)
     attr_list.append(sai_thrift_attribute_t(id= SAI_BRIDGE_ATTR_TYPE, value=attr_value))
-    attr_list = client.sai_thirft_get_bridge_attribute(bridge, attr_list)
+    attr_list = client.sai_thirft_get_bridge_attribute(default_bridge, attr_list)
     default_bridge_type = attr_list.attr_list[1].value.s32
     for br_port in attr_list.attr_list[0].value.objlist.object_id_list:
         attr_value = sai_thrift_attribute_value_t(oid=None)
@@ -131,6 +135,7 @@ def switch_init2(client):
         port_id = client.sai_thirft_get_bridge_port_attribute(br_port,[attr]).attr_list[0].value.oid
         br_port_list[port_id] = br_port
 
+    switch_inited = 1
     # attr_list = []
     # attr_value = sai_thrift_attribute_value_t(u32list=None)
     # attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_HW_LANE_LIST, value=attr_value)
