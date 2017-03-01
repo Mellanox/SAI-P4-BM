@@ -186,7 +186,7 @@ class SaiHandler():
   	return 0
 
   def sai_thrift_delete_fdb_entry(self, thrift_fdb_entry):
-    match_str = thrift_fdb_entry.mac_address + ' ' + str(thrift_fdb_entry.bridge_id)
+    match_str = thrift_fdb_entry.mac_address + ' ' + str(self.bridges[thrift_fdb_entry.bridge_id].bridge_id)
     self.cli_client.RemoveTableEntry('table_fdb', match_str)
     return 0
 
@@ -338,8 +338,6 @@ class SaiHandler():
   def sai_thrift_create_lag(self, thrift_attr_list):
     lag_id, lag_obj = CreateNewItem(self.lags, Lag_obj, forbidden_list=self.get_all_oids())
     lag_obj.l2_if = self.get_new_l2_if()
-    print "another test. lag_id = %d" % lag_id
-    print self.lags
     return lag_id
 
   def sai_thrift_remove_lag(self, lag_id):
@@ -469,31 +467,20 @@ class SaiHandler():
     bridge_port = br_port_obj.bridge_port
     port_id = br_port_obj.port_id
     vlan_id = br_port_obj.vlan_id
-    print "test1"
     self.cli_client.RemoveTableEntry('table_egress_br_port_to_if', str(bridge_port))
-    print "port_id = %d" % port_id
-    print self.lags
-    print self.ports
     if port_id in self.lags:
-      print "test2"
       l2_if = self.lags[port_id].l2_if
       bind_mode = self.lags[port_id].port_obj.bind_mode
-      print "test3"
     else:
-      print "test4"
       l2_if = self.ports[port_id].l2_if
       bind_mode = self.ports[port_id].bind_mode
-      print "test5"
     if bind_mode == SAI_PORT_BIND_MODE_SUB_PORT:
-      print "test6"
       self.cli_client.RemoveTableEntry('table_subport_ingress_interface_type', list_to_str([l2_if, vlan_id]))
     else:
       self.cli_client.RemoveTableEntry('table_port_ingress_interface_type', list_to_str([l2_if]))
     if br_port_obj.br_port_type == SAI_BRIDGE_PORT_TYPE_SUB_PORT: #.1D 
-      print "test7"
       self.cli_client.RemoveTableEntry('table_bridge_id_1d', str(bridge_port))
       self.cli_client.RemoveTableEntry('table_egress_set_vlan', str(bridge_port))
-      print "test8"
     else:
       self.cli_client.RemoveTableEntry('table_bridge_id_1q', str(vlan_id))
     return SAI_STATUS_SUCCESS
