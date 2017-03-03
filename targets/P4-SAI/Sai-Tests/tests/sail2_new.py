@@ -30,7 +30,7 @@ class L21DBridgeBasicTest(sai_base_test.ThriftInterfaceDataPlane):
         print
         print "Sending L2 packet port 0 -> port 1"
         vlan_id = 10
-        mac1 = '00:11:11:11:11:11'
+        mac1 = '00:11:11:11:11:11'#AA
         mac2 = '00:22:22:22:22:22'
         self.client.sai_thrift_create_switch([])
 
@@ -51,9 +51,9 @@ class L21DBridgeBasicTest(sai_base_test.ThriftInterfaceDataPlane):
 
         # Create Bridge ports
         bridge_port_type = SAI_BRIDGE_PORT_TYPE_SUB_PORT
-        print str(bridge_port_type)+' '+str(port1)+' '+str(vlan_id)+' '+str(bridge)
+       # print str(bridge_port_type)+' '+str(port1)+' '+str(vlan_id)+' '+str(bridge)
         bridge_port1 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port1, vlan_id, bridge)
-        print str(bridge_port_type)+' '+str(port1)+' '+str(vlan_id)+' '+str(bridge)
+       # print str(bridge_port_type)+' '+str(port1)+' '+str(vlan_id)+' '+str(bridge)
         bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port2, vlan_id, bridge)
 
         # Create FDB Entries:

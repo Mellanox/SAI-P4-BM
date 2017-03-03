@@ -1,7 +1,9 @@
 #include <sstream>
 #include <string>
+#include <cstdlib>
 #include "sai_object.h"
 #include "../../../../thrift_src/gen-cpp/bm/standard_types.h"
+#include "../../Sai-Tests/sai_thrift_src/gen-cpp/switch_sai_types.h" // TODO probably need to remove. enum issue with SAI_FDB_ENTRY_ATTR_PACKET_ACTION
 StandardClient* sai_object::bm_client_ptr;
 sai_id_map_t* sai_object::sai_id_map_ptr;
 Switch_metadata* sai_object::switch_metadata_ptr;
@@ -136,30 +138,29 @@ sai_status_t sai_object::remove_bridge(sai_object_id_t bridge_id){
 sai_status_t sai_object::create_bridge_port (sai_object_id_t *bridge_port_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list){
 	printf("create bridge_port\n");
 	BridgePort_obj *bridge_port = new BridgePort_obj(sai_id_map_ptr);
-	printf("created obj\n");
 	//printf("switch_metadata_ptr->bridge_ports.size = %d\n",switch_metadata_ptr->bridge_ports.size());
 	switch_metadata_ptr->bridge_ports[bridge_port->sai_object_id] = bridge_port;
-	printf("added likk in metadata\n");
+	//printf("added br_port link in metadata\n");
 	sai_attribute_t attribute;
 	uint32_t bridge_id;
 	for(uint32_t i = 0; i < attr_count; i++) {
       attribute =attr_list[i];
-      printf("attr id %d\n",attribute.id);
+      //printf("attr id %d\n",attribute.id);
       switch (attribute.id) {
      	case SAI_BRIDGE_PORT_ATTR_VLAN_ID:
-     		printf("br_vlan_id=%d,i=%d\n",attribute.value.s32,i);
+     //		printf("br_vlan_id=%d,i=%d\n",attribute.value.s32,i);
      		bridge_port->vlan_id = attribute.value.s32;
      		break;
      	case SAI_BRIDGE_PORT_ATTR_BRIDGE_ID:
-     		 printf("br_port_br_id=%d, i=%d\n",attribute.value.s32,i);
+     //		 printf("br_port_br_id=%d, i=%d\n",attribute.value.s32,i);
      		bridge_id = attribute.value.s32;
      		break;
      	case SAI_BRIDGE_PORT_ATTR_TYPE:
-     		printf("br_port_type=%d,i=%d\n",attribute.value.s32,i);
+     //		printf("br_port_type=%d,i=%d\n",attribute.value.s32,i);
      		bridge_port->bridge_port_type = attribute.value.s32;
      		break;
      	case SAI_BRIDGE_PORT_ATTR_PORT_ID:
-     	printf("br_port_port_id=%d,i=%d\n",attribute.value.s32,i);
+     //		printf("br_port_port_id=%d,i=%d\n",attribute.value.s32,i);
      		bridge_port->port_id = attribute.value.s32;
      		break;
      }
@@ -198,13 +199,18 @@ sai_status_t sai_object::create_bridge_port (sai_object_id_t *bridge_port_id, sa
   	match_params.push_back(parse_exact_match_param(bridge_port->sai_object_id,1));
   	action_data.clear();
   	Port_obj* port = switch_metadata_ptr->ports[bridge_port->port_id];
-  	action_data.push_back(parse_param(port->hw_port,2));
+  	action_data.push_back(parse_param(port->hw_port,1));
   	action_data.push_back(parse_param(0,1));
+  	// action_data.push_back(parse_param(999999,3));
+  	// action_data.push_back(parse_param(55,3));
+  	// std::cout << "table_egress_br_port_to_if : " <<match_params[0] << endl;
+  	// std::cout << "action 0 "<< action_data[0] << endl;
+  	// std::cout << "action 1 "<< action_data[1] << endl;
   	bridge_port->handle_egress_br_port_to_if = bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_br_port_to_if",match_params, "action_forward_set_outIfType",  action_data, options);
     uint32_t bind_mode = port->bind_mode;
     if (bind_mode == SAI_PORT_BIND_MODE_SUB_PORT){
 		match_params.clear();
-		match_params.push_back(parse_exact_match_param(bridge_port->port_id,2));
+		match_params.push_back(parse_exact_match_param(bridge_port->port_id,1));// TODO p4 table match is on l2_if
 	  	match_params.push_back(parse_exact_match_param(bridge_port->vlan_id,2));
 	  	action_data.clear();
 	  	action_data.push_back(parse_param(l2_if_type,1));
@@ -213,8 +219,9 @@ sai_status_t sai_object::create_bridge_port (sai_object_id_t *bridge_port_id, sa
   	}
     else{
 		match_params.clear();
-	  	match_params.push_back(parse_exact_match_param(bridge_port->port_id,2));
+	  	match_params.push_back(parse_exact_match_param(bridge_port->port_id,1));
 		action_data.clear();
+		action_data.push_back(parse_param(l2_if_type,1));
 		action_data.push_back(parse_param(bridge_port->sai_object_id,1));
     	bridge_port->handle_port_ingress_interface_type=bm_client_ptr->bm_mt_add_entry(cxt_id,"table_port_ingress_interface_type",match_params, "action_set_l2_if_type",  action_data, options);
     }
@@ -258,9 +265,17 @@ sai_status_t sai_object::remove_bridge_port(sai_object_id_t bridge_port_id){
 	return status;
 }
 
+uint64_t parse_mac_64(uint8_t const mac_8[6])
+  {
+    uint64_t mac_64 = 0;
+    memcpy(&mac_64, mac_8, 6);
+    std::cout << "mac_64: " << mac_64 << endl;
+    return mac_64;
+  }
+
 sai_status_t sai_object::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,uint32_t attr_count,const sai_attribute_t *attr_list){
 	sai_status_t status = SAI_STATUS_SUCCESS;
-	printf("create fdb entry");
+	printf("create fdb entry\n");
 	//parsing attributes
 	
 	uint32_t entry_type;
@@ -272,29 +287,34 @@ sai_status_t sai_object::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,uint3
      switch (attribute.id) {
      	case SAI_FDB_ENTRY_ATTR_TYPE:
      		entry_type = attribute.value.s32;
+     		std::cout << "--> attr packet type="<<attribute.value.s32<<endl;
+            std::cout << "--> attr packet_static" << SAI_FDB_ENTRY_TYPE_STATIC <<endl;
 	     	break;
      	case SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID:
      		bridge_port = attribute.value.oid;
      		break;
      	case SAI_FDB_ENTRY_ATTR_PACKET_ACTION:
      		packet_action = attribute.value.s32;
+     		std::cout << "--> attr packet_action="<<attribute.value.s32<<endl;
+            std::cout << "--> attr packet_action_fwd=" << SAI_PACKET_ACTION_FORWARD <<endl;
      		break;
      	default:
+     		std::cout << "attribute.id = " << attribute.id << "was dumped in sai_obj" << endl; 
      		break;
     	}
 	}
 	//out_if_type = 0 # port_type (not lag or router). TODO: check how to do it with SAI
 	if (packet_action == SAI_PACKET_ACTION_FORWARD){
+		std::cout << "SAI_PACKET_ACTION_FORWARD" << endl;
 	      if (entry_type == SAI_FDB_ENTRY_TYPE_STATIC){
+	      	std::cout << "SAI_FDB_ENTRY_TYPE_STATIC" << endl;
 	   		BmAddEntryOptions options;
 	  		BmMatchParams match_params;
 	  		BmActionData action_data;
-			uint64_t mac_address=0;
-			for (int i=0; i<6; ++i){
-    			mac_address= (mac_address << 8) | fdb_entry->mac_address[i];
-			}
+			std::cout << "mac: "<<fdb_entry->mac_address <<endl;
+			uint64_t mac_address = parse_mac_64(fdb_entry->mac_address);
+			std::cout << "add_mac_addr to table: "<< mac_address << endl;	
 			match_params.push_back(parse_exact_match_param(mac_address,6));
-
 			match_params.push_back(parse_exact_match_param(fdb_entry->bridge_id,2));
 			action_data.push_back(parse_param(bridge_port,2));
 	   		BmEntryHandle handle;
@@ -306,19 +326,26 @@ sai_status_t sai_object::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,uint3
 
 sai_status_t sai_object::remove_fdb_entry(const sai_fdb_entry_t *fdb_entry){
 	sai_status_t status = SAI_STATUS_SUCCESS;
-	printf("remove fdb entry");
+	printf("remove fdb entry\n");
 	BmAddEntryOptions options;
 	BmMatchParams match_params;
 	BmActionData action_data;
-	uint64_t mac_address=0;
-	for (int i=0; i<6; ++i){
-    	mac_address= (mac_address << 8) | fdb_entry->mac_address[i];
-	}
+	std::cout << "mac_adder from fdb:"<<fdb_entry->mac_address<<endl;
+	uint64_t mac_address = parse_mac_64(fdb_entry->mac_address);
+	std::cout << "rm_mac_addr parsed: "<< mac_address << endl;
 	match_params.push_back(parse_exact_match_param(mac_address,6));
 	match_params.push_back(parse_exact_match_param(fdb_entry->bridge_id,2));
 
 	BmMtEntry bm_entry;
+	try{
 	bm_client_ptr->bm_mt_get_entry_from_key(bm_entry,cxt_id,"table_fdb",match_params,options);
+	} catch (int e) {
+		printf("Unable to delete table. possible key missmatch:%d\n",mac_address);
+		return SAI_STATUS_FAILURE;
+	};
+	std::cout << "got entry handle"<< endl;
+	std::cout << "entry is " << bm_entry.entry_handle <<endl;
 	bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_fdb",bm_entry.entry_handle);
 	return status;
 }
+
