@@ -377,6 +377,7 @@ class SaiHandler():
     hash_ind = lag.lag_members.index(lag_member_id)
     del lag.lag_members[hash_ind]
     self.cli_client.RemoveTableEntry('table_lag_hash',str(lag.l2_if))
+    self.cli_client.RemoveTableEntry('table_ingress_lag', str(lag_member.hw_port))
     self.cli_client.AddTable('table_lag_hash', 'action_set_lag_hash_size', str(lag.l2_if), str(len(lag.lag_members)))
     self.cli_client.RemoveTableEntry('table_egress_lag', list_to_str([lag.l2_if, hash_ind]))
     if hash_ind!=len(lag.lag_members):
@@ -421,8 +422,8 @@ class SaiHandler():
         bridge_port_type = attr.value.s32
       elif attr.id == SAI_BRIDGE_PORT_ATTR_PORT_ID:
         port_id = attr.value.oid
-    br_port_id, br_port_obj = CreateNewItem(self.bridge_ports, BridgePort_obj, forbidden_list=self.get_all_oids())
     br_port = self.get_new_bridge_port()
+    br_port_id, br_port_obj = CreateNewItem(self.bridge_ports, BridgePort_obj, forbidden_list=self.get_all_oids())
     br_port_obj.bridge_port = br_port
     br_port_obj.port_id = port_id
     br_port_obj.vlan_id = vlan_id

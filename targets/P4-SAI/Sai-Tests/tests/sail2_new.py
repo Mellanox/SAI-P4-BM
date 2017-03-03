@@ -652,14 +652,14 @@ class L21DLagTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_set_port_attribute(port3, attr)
             self.client.sai_thrift_set_port_attribute(port4, attr)
             self.client.sai_thrift_set_port_attribute(port5, attr)
-            self.client.sai_thrift_remove_bridge_port(bridge_port1)
-            self.client.sai_thrift_remove_bridge_port(bridge_port2)
-            self.client.sai_thrift_remove_bridge(bridge)
             bridge_port_type = SAI_BRIDGE_PORT_TYPE_PORT
+            self.client.sai_thrift_remove_bridge_port(bridge_port1)
             bridge_port1 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port1, vlan_id, default_bridge)
+            self.client.sai_thrift_remove_bridge_port(bridge_port2)
             bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port2, vlan_id, default_bridge)
             bridge_port4 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port4, vlan_id, default_bridge)
             bridge_port5 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port5, vlan_id, default_bridge)
+            self.client.sai_thrift_remove_bridge(bridge)
             br_port_list[port1] = bridge_port1
             br_port_list[port2] = bridge_port2
             br_port_list[port4] = bridge_port4
