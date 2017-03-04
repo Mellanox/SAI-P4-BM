@@ -20,15 +20,18 @@ class sai_id_map_t { // object pointer and it's id
       unused_id.clear();
       id_map.clear();
     }
+
     ~sai_id_map_t(){
       printf("sai_id_map_destructor, id_map addr: %d \n",&id_map);
     }
+
     void free_id(sai_object_id_t sai_object_id){
       printf("freeing object with sai_id %d\n",sai_object_id);
       delete id_map[sai_object_id];
       id_map.erase(sai_object_id);
       unused_id.push_back(sai_object_id);
     }
+
     sai_object_id_t get_new_id(void* obj_ptr){//pointer to object
       //printf("get_new_id\n");
       sai_object_id_t id;
@@ -42,6 +45,10 @@ class sai_id_map_t { // object pointer and it's id
       id_map[id]=obj_ptr;
       //printf("after insertion : id_map.size = %d \n", id_map.size());
       return id;
+    }
+
+    void *get_object(sai_object_id_t sai_object_id) {
+      return id_map[sai_object_id];
     }
 };
 
@@ -64,6 +71,7 @@ class Sai_obj {
 class Port_obj : public Sai_obj{
   public:
     uint32_t hw_port;
+    uint32_t l2_if;
     uint32_t pvid;
     uint32_t bind_mode;
     uint32_t mtu;
@@ -77,6 +85,7 @@ class Port_obj : public Sai_obj{
       this->drop_tagged=0;
       this->drop_untagged=0;
       this->hw_port=0;
+      this->l2_if=0;
       this->pvid=1;
       this->bind_mode=SAI_PORT_BIND_MODE_PORT;
     }   
@@ -86,7 +95,8 @@ class BridgePort_obj : public Sai_obj {
 public:
   uint32_t port_id;
   uint32_t vlan_id;
-  uint32_t bridge_port_type;
+  uint32_t bridge_port;
+  sai_bridge_port_type_t bridge_port_type;
   BmEntryHandle handle_id_1d;
   BmEntryHandle handle_id_1q;
   BmEntryHandle handle_egress_set_vlan;
@@ -97,8 +107,8 @@ public:
   BridgePort_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->port_id=0;
     this->vlan_id=1;
-
-    this->bridge_port_type=SAI_PORT_TYPE_LOGICAL;
+    this->bridge_port=0;
+    this->bridge_port_type=SAI_BRIDGE_PORT_TYPE_PORT;
     // TODO 999 is inavlid. consider other notation
     this->handle_id_1d =999;
     this->handle_id_1q =999;
@@ -112,9 +122,11 @@ public:
 
 class Bridge_obj : public Sai_obj {
 public:
-  uint32_t bridge_type; // sai_bridge_type_t
-  Bridge_obj(sai_id_map_t* sai_id_map_ptr,uint32_t bridge_type) : Sai_obj(sai_id_map_ptr) {
+  sai_bridge_type_t bridge_type; // sai_bridge_type_t
+  std::vector<sai_object_id_t> bridge_port_list;
+  Bridge_obj(sai_id_map_t* sai_id_map_ptr,sai_bridge_type_t bridge_type) : Sai_obj(sai_id_map_ptr) {
     this->bridge_type=bridge_type;
+    this->bridge_port_list.clear();
   }
 };
 

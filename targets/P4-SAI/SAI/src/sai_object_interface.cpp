@@ -17,6 +17,11 @@ extern "C"
     sai_object* q = (sai_object*) p;
     return q->sai_api_query(sai_api_id,api_method_table); 
   }
+//SWITCH
+  sai_status_t sai_object_create_switch(S_O_Handle p, sai_object_id_t* switch_id, uint32_t attr_count, const sai_attribute_t *attr_list) {
+    sai_object* q = (sai_object*) p;
+    return q->create_switch(switch_id,attr_count,attr_list); 
+  }
 
 // PORT
   sai_status_t sai_obj_create_port (S_O_Handle p,sai_object_id_t *port_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list) {
@@ -27,6 +32,11 @@ extern "C"
   sai_status_t sai_obj_remove_port (S_O_Handle p, sai_object_id_t port_id) {
       sai_object* q = (sai_object*) p;
       return q->remove_port(port_id); 
+    }
+
+  sai_status_t sai_obj_set_port_attribute (S_O_Handle p, sai_object_id_t port_id, sai_attribute_t *attr) {
+      sai_object* q = (sai_object*) p;
+      return q->set_port_attribute(port_id, attr); 
     }
 
 // BRIDGE

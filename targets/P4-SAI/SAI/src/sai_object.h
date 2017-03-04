@@ -53,14 +53,19 @@ public:
 	// generals
   	sai_id_map_t sai_id_map;
 	Switch_metadata switch_metadata;
+	uint32_t list[8]={0,1,2,3,4,5,6,7};
 	static sai_id_map_t* sai_id_map_ptr;
 	static StandardClient* bm_client_ptr;
     static Switch_metadata* switch_metadata_ptr;
 
+    //switch
+	static sai_status_t create_switch(sai_object_id_t* switch_id, uint32_t attr_count, const sai_attribute_t *attr_list);
 	//port functions
 	static sai_status_t create_port (sai_object_id_t *port_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
 	static sai_status_t remove_port (sai_object_id_t port_id);
+	static sai_status_t set_port_attribute(sai_object_id_t port_id, const sai_attribute_t *attr);
 	static void 		config_port	(Port_obj* port);
+	static void         parse_port_attribute(Port_obj* port, sai_attribute_t attribute);
 	//bridge functions
 	static sai_status_t create_bridge (sai_object_id_t *bridge_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
 	static sai_status_t remove_bridge (sai_object_id_t bridge_id);
@@ -74,6 +79,7 @@ public:
 	sai_port_api_t		port_api;
 	sai_bridge_api_t	bridge_api;
 	sai_fdb_api_t		fdb_api;
+	sai_switch_api_t    switch_api;
 
 	sai_object():
 	//  constructor pre initializations
@@ -84,16 +90,17 @@ public:
 	  bm_client(protocol)
 	  {		
   		switch_metadata_ptr = &switch_metadata;
-  		uint32_t list[]={0,1,2,3,4,5,6,7};
-  		switch_metadata_ptr->hw_port_list.list=list;
-  		switch_metadata_ptr->hw_port_list.count=8;
+  		switch_metadata.hw_port_list.list=list;
+  		switch_metadata.hw_port_list.count=8;
   		bm_client_ptr = &bm_client;
   		sai_id_map_ptr = &sai_id_map;
 	  	transport->open();
 
 	  	//api set
+	  	switch_api.create_switch = &sai_object::create_switch;
   		port_api.create_port  	= &sai_object::create_port;
   		port_api.remove_port	= &sai_object::remove_port;
+  		port_api.set_port_attribute = &sai_object::set_port_attribute;
 
   		bridge_api.create_bridge = &sai_object::create_bridge;
   		bridge_api.remove_bridge = &sai_object::remove_bridge;
@@ -124,6 +131,9 @@ public:
               break;
               case SAI_API_FDB:
               *api_method_table=&fdb_api;
+              break;
+              case SAI_API_SWITCH:
+              *api_method_table=&switch_api;
               break;
          	default:
          		printf("api requested was %d, while sai_api_port is %d\n",sai_api_id,SAI_API_PORT);

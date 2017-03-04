@@ -21,11 +21,73 @@ BmMatchParam parse_exact_match_param(uint64_t param, uint32_t num_of_bytes) {
     return match_param;
 }
 
+sai_status_t sai_object::create_switch(sai_object_id_t* switch_id, uint32_t attr_count, const sai_attribute_t *attr_list) {
+// self.ports = {}
+    // self.vlans = {}
+    // self.vlan_members = {}
+    // self.bridge_ports = {}
+    // self.bridges = {}
+    // self.lag_members = {}
+    // self.lags = {}
+    // self.l2_ifs = []
+    // bridge_object_id, bridge_obj = CreateNewItem(self.bridges, Bridge_obj, forbidden_list=self.get_all_oids())
+    // bridge_obj.bridge_id = 1
+    // for port_num in self.hw_port_list:
+    //   port_id, port_obj = CreateNewItem(self.ports, Port_obj, forbidden_list=self.get_all_oids())
+    //   port_obj.hw_port = port_num
+    //   port_obj.l2_if = port_num
+    //   br_port_id, br_port_obj = CreateNewItem(self.bridge_ports, BridgePort_obj, forbidden_list=self.get_all_oids())
+    //   br_port_obj.port_id = port_id
+    //   br_port_obj.bridge_port = port_num
+    //   bridge_obj.bridge_port_list.append(br_port_id)
+    // return self.switch_id
+    Sai_obj *switch_obj = new Sai_obj(sai_id_map_ptr);
+    Bridge_obj *bridge = new Bridge_obj(sai_id_map_ptr,SAI_BRIDGE_TYPE_1Q);
+	switch_metadata_ptr->bridges[bridge->sai_object_id] = bridge;
+
+    for (int i=0; i<switch_metadata_ptr->hw_port_list.count; i++) {
+    	int hw_port = switch_metadata_ptr->hw_port_list.list[i];
+
+    	Port_obj *port = new Port_obj(sai_id_map_ptr);
+		switch_metadata_ptr->ports[port->sai_object_id] = port;
+		port->hw_port = hw_port;
+		port->l2_if = hw_port;
+
+		BridgePort_obj *bridge_port = new BridgePort_obj(sai_id_map_ptr);
+		switch_metadata_ptr->bridge_ports[bridge_port->sai_object_id] = bridge_port;		
+		bridge_port->port_id = port->sai_object_id;
+		bridge_port->bridge_port = hw_port;
+		bridge->bridge_port_list.push_back(bridge_port->sai_object_id);
+    }
+    return switch_obj->sai_object_id;
+
+}
+
+void sai_object::parse_port_attribute(Port_obj* port, sai_attribute_t attribute) {
+	switch (attribute.id) {
+     	case SAI_PORT_ATTR_PORT_VLAN_ID:
+     		port->pvid = attribute.value.u16;
+     		break;
+     	case SAI_PORT_ATTR_BIND_MODE:
+     		port->bind_mode = attribute.value.s32;
+     		break;
+     	case SAI_PORT_ATTR_HW_LANE_LIST:
+     		port->hw_port = attribute.value.u32list.list[0];
+     		break;
+     	case SAI_PORT_ATTR_DROP_UNTAGGED:
+     		port->drop_untagged = attribute.value.booldata;
+     		break;
+     	case SAI_PORT_ATTR_DROP_TAGGED:
+     		port->drop_tagged = attribute.value.booldata;
+     		break;
+    }
+}
+
 
 void sai_object::config_port(Port_obj* port){
   BmAddEntryOptions options;
-	BmMatchParams match_params;
-	match_params.clear();
+  BmMatchParams match_params;
+  match_params.clear();
   match_params.push_back(parse_exact_match_param(port->hw_port,2));
   BmActionData action_data;
   action_data.clear();
@@ -36,8 +98,14 @@ void sai_object::config_port(Port_obj* port){
   action_data.push_back(parse_param(port->drop_untagged,1));
   try{bm_client_ptr->bm_mt_modify_entry(cxt_id,"table_port_configurations",port->handle_port_cfg,"action_set_port_configurations",action_data);}
   catch(int e) {printf("InvalidTableOperation while removing table_port_configurations entry\n");}
-	printf("port cfg modified, handle= %d\n",port->handle_port_cfg);
-    
+  printf("port cfg modified, handle= %d\n",port->handle_port_cfg);
+}
+
+sai_status_t sai_object::set_port_attribute(sai_object_id_t port_id, const sai_attribute_t *attr) {
+	Port_obj* port = (Port_obj*) sai_id_map_ptr->get_object(port_id);
+	parse_port_attribute(port, *attr);
+	config_port(port);
+	return SAI_STATUS_SUCCESS;
 }
 
 sai_status_t sai_object::create_port (sai_object_id_t *port_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list){
@@ -51,42 +119,31 @@ sai_status_t sai_object::create_port (sai_object_id_t *port_id, sai_object_id_t 
 	//parsing attributes
 	sai_attribute_t attribute;
 	for(uint32_t i = 0; i < attr_count; i++) {
-     attribute =attr_list[i];
-     switch (attribute.id) {
-     	case SAI_PORT_ATTR_PORT_VLAN_ID:
-     		port->pvid = attribute.value.u16;
-     	break;
-     	case SAI_PORT_ATTR_BIND_MODE:
-     		port->bind_mode = attribute.value.s32;
-     	break;
-     	case SAI_PORT_ATTR_HW_LANE_LIST:
-     		port->hw_port = attribute.value.u32list.list[0];
-     	break;
-     }
-  }
-  //printf("pvid %d, bind_mode %d, hw_port %d \n", port->pvid, port->bind_mode, port->hw_port);
-  BmAddEntryOptions options;
-  BmMatchParams match_params;
-  BmActionData action_data;
-
-  action_data.clear();
-  match_params.clear();
-  match_params.push_back(parse_exact_match_param(port->hw_port,2));
-  action_data.push_back(parse_param(0,1));
-  action_data.push_back(parse_param(port->sai_object_id,1));
-  port->handle_lag_if = bm_client_ptr->bm_mt_add_entry(cxt_id,"table_ingress_lag",match_params, "action_set_lag_l2if",  action_data, options);
-  //printf("lag handle= %d, ",port->handle_lag_if);
-
-  action_data.clear();
-  match_params.clear();
-  match_params.push_back(parse_exact_match_param(port->sai_object_id,1));
-  action_data.push_back(parse_param(port->pvid,1));
-  action_data.push_back(parse_param(port->bind_mode,1));
-  action_data.push_back(parse_param(port->mtu,4));
-  action_data.push_back(parse_param(port->drop_tagged,1));
-  action_data.push_back(parse_param(port->drop_untagged,1));
-  port->handle_port_cfg = bm_client_ptr->bm_mt_add_entry(cxt_id,"table_port_configurations",match_params, "action_set_port_configurations",  action_data, options);
-  //printf("port cfg handle= %d\n",port->handle_port_cfg);
+     	attribute =attr_list[i];
+     	parse_port_attribute(port, attribute);
+  	}
+  	//printf("pvid %d, bind_mode %d, hw_port %d \n", port->pvid, port->bind_mode, port->hw_port);
+  	BmAddEntryOptions options;
+  	BmMatchParams match_params;
+  	BmActionData action_data;
+  	action_data.clear();
+  	match_params.clear();
+  	match_params.push_back(parse_exact_match_param(port->hw_port,2));
+  	action_data.push_back(parse_param(0,1));
+  	action_data.push_back(parse_param(port->sai_object_id,1));
+  	port->handle_lag_if = bm_client_ptr->bm_mt_add_entry(cxt_id,"table_ingress_lag",match_params, "action_set_lag_l2if",  action_data, options);
+  	//printf("lag handle= %d, ",port->handle_lag_if);
+  	// config_port(port); Todo: Change to this
+  	action_data.clear();
+  	match_params.clear();
+  	match_params.push_back(parse_exact_match_param(port->sai_object_id,1));
+  	action_data.push_back(parse_param(port->pvid,1));
+  	action_data.push_back(parse_param(port->bind_mode,1));
+  	action_data.push_back(parse_param(port->mtu,4));
+  	action_data.push_back(parse_param(port->drop_tagged,1));
+  	action_data.push_back(parse_param(port->drop_untagged,1));
+  	port->handle_port_cfg = bm_client_ptr->bm_mt_add_entry(cxt_id,"table_port_configurations",match_params, "action_set_port_configurations",  action_data, options);
+  	//printf("port cfg handle= %d\n",port->handle_port_cfg);
 	*port_id = port->sai_object_id;
 	return SAI_STATUS_SUCCESS;
 }
@@ -108,7 +165,7 @@ sai_status_t sai_object::remove_port(sai_object_id_t port_id){
 
 sai_status_t sai_object::create_bridge (sai_object_id_t *bridge_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list){
 	printf("create bridge\n");
-	Bridge_obj *bridge = new Bridge_obj(sai_id_map_ptr,0);
+	Bridge_obj *bridge = new Bridge_obj(sai_id_map_ptr, SAI_BRIDGE_TYPE_1Q);
 	switch_metadata_ptr->bridges[bridge->sai_object_id] = bridge;
 	//parsing attributes
 	sai_attribute_t attribute;
@@ -116,7 +173,7 @@ sai_status_t sai_object::create_bridge (sai_object_id_t *bridge_id, sai_object_i
      attribute =attr_list[i];
      switch (attribute.id) {
      	case SAI_BRIDGE_ATTR_TYPE:
-     		bridge->bridge_type = attribute.value.s32;
+     		bridge->bridge_type = (sai_bridge_type_t) attribute.value.s32;
      	break;
      }
   }
@@ -157,7 +214,7 @@ sai_status_t sai_object::create_bridge_port (sai_object_id_t *bridge_port_id, sa
      		break;
      	case SAI_BRIDGE_PORT_ATTR_TYPE:
      //		printf("br_port_type=%d,i=%d\n",attribute.value.s32,i);
-     		bridge_port->bridge_port_type = attribute.value.s32;
+     		bridge_port->bridge_port_type = (sai_bridge_port_type_t) attribute.value.s32;
      		break;
      	case SAI_BRIDGE_PORT_ATTR_PORT_ID:
      //		printf("br_port_port_id=%d,i=%d\n",attribute.value.s32,i);
