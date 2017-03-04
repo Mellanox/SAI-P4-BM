@@ -255,6 +255,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
     uint32_t count = thrift_attr_list.size();
     sai_object_id_t bridge_id =1;
     status = bridge_api->create_bridge(&bridge_id,s_id,count,attr);
+    free(attr);
     return bridge_id;
   }
 
@@ -289,6 +290,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
     sai_object_id_t bridge_port_id =1;
     bridge_api->create_bridge_port(&bridge_port_id,s_id,count,attr);
     printf("%d %d\n",bridge_port_id,(sai_thrift_object_id_t)bridge_port_id);
+    free(attr);
     return (sai_thrift_object_id_t)bridge_port_id;
   }
 
@@ -297,7 +299,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
     printf("sai_thrift_remove_bridge_port\n");
     sai_status_t status = SAI_STATUS_SUCCESS;
     sai_bridge_api_t *bridge_api;
-    sai_attribute_t attr;
     status = sai_api_query(SAI_API_BRIDGE, (void **) &bridge_api);
     if (status != SAI_STATUS_SUCCESS) {
         printf("sai_api_query failed!!!\n");
