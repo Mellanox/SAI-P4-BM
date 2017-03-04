@@ -117,15 +117,15 @@ def sai_thrift_create_bridge_port(client, bridge_port_type, port_id, vlan_id, br
     vport_attr = sai_thrift_attribute_t(id= SAI_BRIDGE_PORT_ATTR_TYPE, value=vport_attr_value)
     vport_attr_list.append(vport_attr)
 
-    vport_attr_value = sai_thrift_attribute_value_t(s32=port_id)
+    vport_attr_value = sai_thrift_attribute_value_t(oid=port_id)
     vport_attr = sai_thrift_attribute_t(id= SAI_BRIDGE_PORT_ATTR_PORT_ID, value=vport_attr_value)
     vport_attr_list.append(vport_attr)
 
-    vport_attr_value = sai_thrift_attribute_value_t(s32=vlan_id)
+    vport_attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
     vport_attr = sai_thrift_attribute_t(id= SAI_BRIDGE_PORT_ATTR_VLAN_ID, value=vport_attr_value)
     vport_attr_list.append(vport_attr)
 
-    vport_attr_value = sai_thrift_attribute_value_t(s32=bridge_id)
+    vport_attr_value = sai_thrift_attribute_value_t(oid=bridge_id)
     vport_attr = sai_thrift_attribute_t(id= SAI_BRIDGE_PORT_ATTR_BRIDGE_ID, value=vport_attr_value)
     vport_attr_list.append(vport_attr)
 

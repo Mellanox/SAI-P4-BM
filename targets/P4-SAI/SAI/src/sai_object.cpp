@@ -149,11 +149,11 @@ sai_status_t sai_object::create_bridge_port (sai_object_id_t *bridge_port_id, sa
       switch (attribute.id) {
      	case SAI_BRIDGE_PORT_ATTR_VLAN_ID:
      //		printf("br_vlan_id=%d,i=%d\n",attribute.value.s32,i);
-     		bridge_port->vlan_id = attribute.value.s32;
+     		bridge_port->vlan_id = attribute.value.u16;
      		break;
      	case SAI_BRIDGE_PORT_ATTR_BRIDGE_ID:
      //		 printf("br_port_br_id=%d, i=%d\n",attribute.value.s32,i);
-     		bridge_id = attribute.value.s32;
+     		bridge_id = attribute.value.oid;
      		break;
      	case SAI_BRIDGE_PORT_ATTR_TYPE:
      //		printf("br_port_type=%d,i=%d\n",attribute.value.s32,i);
@@ -161,7 +161,7 @@ sai_status_t sai_object::create_bridge_port (sai_object_id_t *bridge_port_id, sa
      		break;
      	case SAI_BRIDGE_PORT_ATTR_PORT_ID:
      //		printf("br_port_port_id=%d,i=%d\n",attribute.value.s32,i);
-     		bridge_port->port_id = attribute.value.s32;
+     		bridge_port->port_id = attribute.value.oid;
      		break;
      }
   }
@@ -283,26 +283,27 @@ sai_status_t sai_object::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,uint3
 	uint32_t packet_action;
 	sai_attribute_t attribute;
 	for(uint32_t i = 0; i < attr_count; i++) {
-     attribute =attr_list[i];
-     switch (attribute.id) {
-     	case SAI_FDB_ENTRY_ATTR_TYPE:
-     		entry_type = attribute.value.s32;
-     		std::cout << "--> attr packet type="<<attribute.value.s32<<endl;
-            std::cout << "--> attr packet_static" << SAI_FDB_ENTRY_TYPE_STATIC <<endl;
-	     	break;
-     	case SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID:
-     		bridge_port = attribute.value.oid;
-     		break;
-     	case SAI_FDB_ENTRY_ATTR_PACKET_ACTION:
-     		packet_action = attribute.value.s32;
-     		std::cout << "--> attr packet_action="<<attribute.value.s32<<endl;
-            std::cout << "--> attr packet_action_fwd=" << SAI_PACKET_ACTION_FORWARD <<endl;
-     		break;
-     	default:
-     		std::cout << "attribute.id = " << attribute.id << "was dumped in sai_obj" << endl; 
-     		break;
+    	attribute =attr_list[i];
+    	switch (attribute.id) {
+	        case SAI_FDB_ENTRY_ATTR_TYPE:
+                entry_type = attribute.value.s32;
+                std::cout << "--> attr packet type="<<attribute.value.s32<<endl;
+                std::cout << "--> attr packet_static" << SAI_FDB_ENTRY_TYPE_STATIC <<endl;
+                break;
+             case SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID:
+                bridge_port = attribute.value.oid;
+                break;
+             case SAI_FDB_ENTRY_ATTR_PACKET_ACTION:
+                packet_action = attribute.value.s32;
+                std::cout << "--> attr packet_action="<<attribute.value.s32<<endl;
+                std::cout << "--> attr packet_action_fwd=" << SAI_PACKET_ACTION_FORWARD <<endl;
+                break;
+             default:
+                std::cout << "attribute.id = " << attribute.id << "was dumped in sai_obj" << endl; 
+                break;
     	}
-	}
+    }
+    std::cout << "Finished parsing attr" << endl;
 	//out_if_type = 0 # port_type (not lag or router). TODO: check how to do it with SAI
 	if (packet_action == SAI_PACKET_ACTION_FORWARD){
 		std::cout << "SAI_PACKET_ACTION_FORWARD" << endl;
@@ -311,12 +312,11 @@ sai_status_t sai_object::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,uint3
 	   		BmAddEntryOptions options;
 	  		BmMatchParams match_params;
 	  		BmActionData action_data;
-			std::cout << "mac: "<<fdb_entry->mac_address <<endl;
 			uint64_t mac_address = parse_mac_64(fdb_entry->mac_address);
 			std::cout << "add_mac_addr to table: "<< mac_address << endl;	
 			match_params.push_back(parse_exact_match_param(mac_address,6));
 			match_params.push_back(parse_exact_match_param(fdb_entry->bridge_id,2));
-			action_data.push_back(parse_param(bridge_port,2));
+			action_data.push_back(parse_param(bridge_port,1));
 	   		BmEntryHandle handle;
 	   		bm_client_ptr->bm_mt_add_entry(cxt_id,"table_fdb",match_params, "action_set_egress_br_port",  action_data, options);
 	      }

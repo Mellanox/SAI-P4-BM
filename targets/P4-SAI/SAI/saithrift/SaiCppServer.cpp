@@ -174,11 +174,12 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
           switch (attribute.id) {
             case SAI_BRIDGE_PORT_ATTR_VLAN_ID:
           //  printf("br_vlan_id=%d,i=%d\n",attribute.value.s32,i);
-              attr_list[i].value.s32 = attribute.value.s32;
+              attr_list[i].value.u16 = attribute.value.u16;
               break;
             case SAI_BRIDGE_PORT_ATTR_BRIDGE_ID:
           //    printf("br_port_br_id=%d, i=%d\n",attribute.value.s32,i);
-              attr_list[i].value.s32 = attribute.value.s32;
+              attr_list[i].value.oid = attribute.value.oid;
+              printf("sai_thrift_parse_bridge_port_attributes. bridge_id = %d\n", attr_list[i].value.oid);
               break; 
             case SAI_BRIDGE_PORT_ATTR_TYPE:
           //    printf("br_port_type=%d,i=%d\n",attribute.value.s32,i);
@@ -186,7 +187,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
               break; 
             case SAI_BRIDGE_PORT_ATTR_PORT_ID:
           //    printf("br_port_p_id=%d,i=%d\n",attribute.value.s32,i);
-              attr_list[i].value.s32 = attribute.value.s32;
+              attr_list[i].value.oid = attribute.value.oid;
               break;
             default:
               break; 
@@ -316,8 +317,12 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
   sai_fdb_entry.switch_id=0;
   printf("mac string size:%d\n",thrift_fdb_entry.mac_address.length());
   std::cout << "mac_addr thrift: " << thrift_fdb_entry.mac_address << endl;
-  parse_mac_str(thrift_fdb_entry.mac_address,sai_fdb_entry.mac_address);  
-  std::cout << "mac addr parsed: " << sai_fdb_entry.mac_address << endl;
+  parse_mac_str(thrift_fdb_entry.mac_address, sai_fdb_entry.mac_address);  
+  std::cout << "mac addr parsed: " << endl;
+  for (int i=0; i<6; i++) {
+    printf("mac[%d] = %d |",i, sai_fdb_entry.mac_address[i]);
+  }
+  std::cout << endl;
   sai_fdb_entry.vlan_id       =thrift_fdb_entry.vlan_id;
   sai_fdb_entry.bridge_type   =(sai_fdb_entry_bridge_type_t)thrift_fdb_entry.bridge_type;
   sai_fdb_entry.bridge_id     =thrift_fdb_entry.bridge_id;
@@ -329,18 +334,18 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     printf("sai_thrift_create_fdb_entry\n");
     sai_status_t status = SAI_STATUS_SUCCESS;
     sai_fdb_api_t *fdb_api;
-    sai_attribute_t attr;
+    sai_attribute_t *attr= (sai_attribute_t*) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
     status = sai_api_query(SAI_API_FDB, (void **) &fdb_api);
     if (status != SAI_STATUS_SUCCESS) {
         printf("sai_api_query failed!!!\n");
         return SAI_STATUS_NOT_IMPLEMENTED; 
     }
-    sai_thrift_parse_fdb_entry_attributes(thrift_attr_list, &attr );
+    sai_thrift_parse_fdb_entry_attributes(thrift_attr_list, attr );
     uint32_t count = thrift_attr_list.size();
     std::cout << "--> create fdb attr count = "<< count << endl;
     sai_fdb_entry_t sai_fdb_entry;
     sai_fdb_entry = parse_thrift_fdb_entry(thrift_fdb_entry);
-    return fdb_api->create_fdb_entry(&sai_fdb_entry,count,&attr);
+    return fdb_api->create_fdb_entry(&sai_fdb_entry,count,attr);
   }
 
   sai_thrift_status_t sai_thrift_delete_fdb_entry(const sai_thrift_fdb_entry_t& thrift_fdb_entry) {
@@ -348,7 +353,6 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     printf("sai_thrift_delete_fdb_entry\n");
     sai_status_t status = SAI_STATUS_SUCCESS;
     sai_fdb_api_t *fdb_api;
-    sai_attribute_t attr;
     status = sai_api_query(SAI_API_FDB, (void **) &fdb_api);
     if (status != SAI_STATUS_SUCCESS) {
         printf("sai_api_query failed!!!\n");
@@ -712,20 +716,11 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
   // GENERAL
   void parse_mac_str(const std::string& mac_str, uint8_t mac[6])
   {
-    static const char* const lut = "0123456789ABCDEF";
     int l=mac_str.length();
     int j=0;
-    for (int i=0; i<l ; ++i){
-      if((mac_str[i] ==':') && i%3==2 && l>12){ // mac is ':' spaced. XX:YY:ZZ:WW:QQ:UU
-      }
-      else{
-        const unsigned char c = mac_str[i];
-        mac[j]=(lut[c >> 4] & 0x0F);j++;
-        mac[j]=(lut[c & 15]);j++;
-        //sai_fdb_entry.mac_address[j]= (uint8_t)thrift_fdb_entry.mac_address[i];
-      }
+    for (int i=0; i<l ; i+=3){
+      mac[j] = (uint8_t) std::stoi(mac_str.substr(i,2),NULL,16);j++;
     }
-    if (j!=12){std::cout<<"possible corrupted mac addres:" << mac << " bytes num "<< j << endl;}
   }
 };
 

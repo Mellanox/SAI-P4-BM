@@ -13,15 +13,15 @@
 
 namespace switch_sai {
 
-int _ksai_fdb_entry_bridge_type_tValues[] = {
-  sai_fdb_entry_bridge_type_t::SAI_FDB_ENTRY_BRIDGE_TYPE_1Q,
-  sai_fdb_entry_bridge_type_t::SAI_FDB_ENTRY_BRIDGE_TYPE_1D
+int _ksai_thrift_fdb_entry_bridge_type_tValues[] = {
+  sai_thrift_fdb_entry_bridge_type_t::SAI_FDB_ENTRY_BRIDGE_TYPE_1Q,
+  sai_thrift_fdb_entry_bridge_type_t::SAI_FDB_ENTRY_BRIDGE_TYPE_1D
 };
-const char* _ksai_fdb_entry_bridge_type_tNames[] = {
+const char* _ksai_thrift_fdb_entry_bridge_type_tNames[] = {
   "SAI_FDB_ENTRY_BRIDGE_TYPE_1Q",
   "SAI_FDB_ENTRY_BRIDGE_TYPE_1D"
 };
-const std::map<int, const char*> _sai_fdb_entry_bridge_type_t_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _ksai_fdb_entry_bridge_type_tValues, _ksai_fdb_entry_bridge_type_tNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _sai_thrift_fdb_entry_bridge_type_t_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _ksai_thrift_fdb_entry_bridge_type_tValues, _ksai_thrift_fdb_entry_bridge_type_tNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 
 sai_thrift_fdb_entry_t::~sai_thrift_fdb_entry_t() throw() {
@@ -36,7 +36,7 @@ void sai_thrift_fdb_entry_t::__set_vlan_id(const sai_thrift_vlan_id_t val) {
   this->vlan_id = val;
 }
 
-void sai_thrift_fdb_entry_t::__set_bridge_type(const sai_fdb_entry_bridge_type_t::type val) {
+void sai_thrift_fdb_entry_t::__set_bridge_type(const sai_thrift_fdb_entry_bridge_type_t::type val) {
   this->bridge_type = val;
 }
 
@@ -87,7 +87,7 @@ uint32_t sai_thrift_fdb_entry_t::read(::apache::thrift::protocol::TProtocol* ipr
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast0;
           xfer += iprot->readI32(ecast0);
-          this->bridge_type = (sai_fdb_entry_bridge_type_t::type)ecast0;
+          this->bridge_type = (sai_thrift_fdb_entry_bridge_type_t::type)ecast0;
           this->__isset.bridge_type = true;
         } else {
           xfer += iprot->skip(ftype);

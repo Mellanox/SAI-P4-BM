@@ -19,14 +19,14 @@
 
 namespace switch_sai {
 
-struct sai_fdb_entry_bridge_type_t {
+struct sai_thrift_fdb_entry_bridge_type_t {
   enum type {
     SAI_FDB_ENTRY_BRIDGE_TYPE_1Q = 0,
     SAI_FDB_ENTRY_BRIDGE_TYPE_1D = 1
   };
 };
 
-extern const std::map<int, const char*> _sai_fdb_entry_bridge_type_t_VALUES_TO_NAMES;
+extern const std::map<int, const char*> _sai_thrift_fdb_entry_bridge_type_t_VALUES_TO_NAMES;
 
 typedef int64_t sai_thrift_object_id_t;
 
@@ -118,13 +118,13 @@ class sai_thrift_fdb_entry_t {
 
   sai_thrift_fdb_entry_t(const sai_thrift_fdb_entry_t&);
   sai_thrift_fdb_entry_t& operator=(const sai_thrift_fdb_entry_t&);
-  sai_thrift_fdb_entry_t() : mac_address(), vlan_id(0), bridge_type((sai_fdb_entry_bridge_type_t::type)0), bridge_id(0) {
+  sai_thrift_fdb_entry_t() : mac_address(), vlan_id(0), bridge_type((sai_thrift_fdb_entry_bridge_type_t::type)0), bridge_id(0) {
   }
 
   virtual ~sai_thrift_fdb_entry_t() throw();
   sai_thrift_mac_t mac_address;
   sai_thrift_vlan_id_t vlan_id;
-  sai_fdb_entry_bridge_type_t::type bridge_type;
+  sai_thrift_fdb_entry_bridge_type_t::type bridge_type;
   sai_thrift_object_id_t bridge_id;
 
   _sai_thrift_fdb_entry_t__isset __isset;
@@ -133,7 +133,7 @@ class sai_thrift_fdb_entry_t {
 
   void __set_vlan_id(const sai_thrift_vlan_id_t val);
 
-  void __set_bridge_type(const sai_fdb_entry_bridge_type_t::type val);
+  void __set_bridge_type(const sai_thrift_fdb_entry_bridge_type_t::type val);
 
   void __set_bridge_id(const sai_thrift_object_id_t val);
 
