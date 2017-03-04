@@ -51,6 +51,7 @@ sai_status_t sai_api_uninitialize(void);
 }
 // globals 
 const int sai_port = 9092;
+// int s_id=1;
 
 
 class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
@@ -560,16 +561,54 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     return s_id;
   }
 
-  void sai_thrift_get_switch_attribute(sai_thrift_attribute_list_t& _return, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
-    // Your implementation goes here
-    // for attr in thrift_attr_list:
-    //   if attr.id == SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID:
-    //     attr.value.oid = self.bridges[0].sai_object_id
-    // for attr in thrift_attr_list:
-    //   if attr.id == SAI_SWITCH_ATTR_PORT_LIST:
-    //     attr.value.objlist = sai_thrift_object_list_t(count=len(self.ports.keys()), object_id_list=self.ports.keys())
+  sai_attribute_t parse_switch_attribute(sai_thrift_attribute_t thrift_attr) {
+    sai_attribute_t sai_attr;
+    sai_attr.id = thrift_attr.id;
+    if (thrift_attr.id == SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID) {
+      sai_attr.value.oid = thrift_attr.value.oid;
+    }
+    if (thrift_attr.id == SAI_SWITCH_ATTR_PORT_LIST) {
+      sai_attr.value.objlist = thrift_attr.value.objlist;
+    }
+    return sai_attr;
+  }
 
+  sai_thrift_attribute_t parse_switch_thrift_attribute(sai_attribute_t sai_attr) {
+    sai_thrift_attribute_t thrift_attr;
+    thrift_attr.id = sai_attr.id;
+    if (sai_attr.id == SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID) {
+      thrift_attr.value.oid = sai_attr.value.oid;
+    }
+    if (sai_attr.id == SAI_SWITCH_ATTR_PORT_LIST) {
+      thrift_attr.value.objlist = sai_attr.value.objlist;
+    }
+    return thrift_attr;
+  }
+
+  void sai_thrift_get_switch_attribute(sai_thrift_attribute_list_t& _return, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
     printf("sai_thrift_get_switch_attribute\n");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_switch_api_t *switch_api;
+    status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        printf("sai_api_query failed!!!\n");
+        return; 
+    }
+
+    uint32_t count = thrift_attr_list.size();
+    sai_attribute_t *attr = (sai_attribute_t*) malloc(sizeof(sai_attribute_t) * count);
+    int i;
+    for (i=0; i<count;i++) {
+      *(attr+i) = parse_switch_attribute(thrift_attr_list[i]);
+    }
+    sai_object_id_t s_id =1;
+    status = switch_api->get_switch_attribute(s_id,count,attr);
+    _return.attr_count = count;
+    for (i=0; i<count;i++) {
+      _return.attr_list[i] = parse_switch_thrift_attribute(*(attr+i));
+    }
+    free(attr);
+    return;
   }
 
   void sai_thrift_get_port_list_by_front_port(sai_thrift_attribute_t& _return) {

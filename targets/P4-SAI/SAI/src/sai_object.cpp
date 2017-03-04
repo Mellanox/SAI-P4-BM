@@ -22,29 +22,10 @@ BmMatchParam parse_exact_match_param(uint64_t param, uint32_t num_of_bytes) {
 }
 
 sai_status_t sai_object::create_switch(sai_object_id_t* switch_id, uint32_t attr_count, const sai_attribute_t *attr_list) {
-// self.ports = {}
-    // self.vlans = {}
-    // self.vlan_members = {}
-    // self.bridge_ports = {}
-    // self.bridges = {}
-    // self.lag_members = {}
-    // self.lags = {}
-    // self.l2_ifs = []
-    // bridge_object_id, bridge_obj = CreateNewItem(self.bridges, Bridge_obj, forbidden_list=self.get_all_oids())
-    // bridge_obj.bridge_id = 1
-    // for port_num in self.hw_port_list:
-    //   port_id, port_obj = CreateNewItem(self.ports, Port_obj, forbidden_list=self.get_all_oids())
-    //   port_obj.hw_port = port_num
-    //   port_obj.l2_if = port_num
-    //   br_port_id, br_port_obj = CreateNewItem(self.bridge_ports, BridgePort_obj, forbidden_list=self.get_all_oids())
-    //   br_port_obj.port_id = port_id
-    //   br_port_obj.bridge_port = port_num
-    //   bridge_obj.bridge_port_list.append(br_port_id)
-    // return self.switch_id
     Sai_obj *switch_obj = new Sai_obj(sai_id_map_ptr);
     Bridge_obj *bridge = new Bridge_obj(sai_id_map_ptr,SAI_BRIDGE_TYPE_1Q);
 	switch_metadata_ptr->bridges[bridge->sai_object_id] = bridge;
-
+	switch_metadata_ptr->default_bridge_id = bridge->sai_object_id;
     for (int i=0; i<switch_metadata_ptr->hw_port_list.count; i++) {
     	int hw_port = switch_metadata_ptr->hw_port_list.list[i];
 
@@ -60,7 +41,27 @@ sai_status_t sai_object::create_switch(sai_object_id_t* switch_id, uint32_t attr
 		bridge->bridge_port_list.push_back(bridge_port->sai_object_id);
     }
     return switch_obj->sai_object_id;
+}
 
+sai_status_t sai_object::get_switch_attribute(sai_object_id_t switch_id, sai_uint32_t attr_count, sai_attribute_t *attr_list) {
+	int i;
+	for (i=0;i<attr_count;i++) {
+		if ((attr_list+i)->id == SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID) {
+			(attr_list+i)->value.oid = switch_metadata_ptr->default_bridge_id;
+		}
+		if ((attr_list+i)->id == SAI_SWITCH_ATTR_PORT_LIST) {
+			for (port_id_map_t::iterator it=switch_metadata_ptr->ports.begin(); it!=switch_metadata_ptr->ports.end(); ++it) {
+    			std::cout << it->first << " => " << it->second << '\n';
+			}
+			// (attr_list+i)->value.objlist = switch_metadata_ptr->default_bridge_id;
+		}
+	}
+    // for attr in thrift_attr_list:
+    //   if attr.id == SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID:
+    //     attr.value.oid = self.bridges[0].sai_object_id
+    // for attr in thrift_attr_list:
+    //   if attr.id == SAI_SWITCH_ATTR_PORT_LIST:
+    //     attr.value.objlist = sai_thrift_object_list_t(count=len(self.ports.keys()), object_id_list=self.ports.keys())
 }
 
 void sai_object::parse_port_attribute(Port_obj* port, sai_attribute_t attribute) {

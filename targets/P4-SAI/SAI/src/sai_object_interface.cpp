@@ -22,6 +22,10 @@ extern "C"
     sai_object* q = (sai_object*) p;
     return q->create_switch(switch_id,attr_count,attr_list); 
   }
+  sai_status_t sai_object_get_switch_attribute(S_O_Handle p, sai_object_id_t switch_id, sai_uint32_t attr_count, sai_attribute_t *attr_list) {
+    sai_object* q = (sai_object*) p;
+    return q->get_switch_attribute(switch_id,attr_count,attr_list); 
+  }
 
 // PORT
   sai_status_t sai_obj_create_port (S_O_Handle p,sai_object_id_t *port_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list) {

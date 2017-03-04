@@ -140,6 +140,7 @@ public:
   port_id_map_t         ports;
   bridge_port_id_map_t  bridge_ports;
   bridge_id_map_t       bridges;
+  sai_object_id_t       default_bridge_id;
   Switch_metadata(){
     ports.clear();
     bridge_ports.clear();
