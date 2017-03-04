@@ -1,20 +1,13 @@
 
 #include <iostream>
-#include <list>
-#include <algorithm>
+#include <vector>
 /// thrift sai server
 #include "../sai_thrift_src/gen-cpp/switch_sai_rpc.h"
-
+#include "sai_object.h"
 #include <thrift/server/TSimpleServer.h>
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TBufferTransports.h>
 #include <thrift/transport/TTransportUtils.h>
-#include "../../../../thrift_src/gen-cpp/bm/Standard.h"
-
-// thrift bm clinet
-#include <thrift/protocol/TBinaryProtocol.h>
-#include <thrift/protocol/TMultiplexedProtocol.h>
-#include <thrift/transport/TSocket.h>
 
 //SAI
 #ifdef __cplusplus
@@ -34,12 +27,6 @@ extern "C" {
 #include <saimirror.h>
 #include <saistatus.h>
 
-// INTERNAL
-#include "switch_meta_data.h"
-
-
-
-
 using namespace std;
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -47,38 +34,27 @@ using namespace ::apache::thrift::transport;
 using namespace ::apache::thrift::server;
 
 using boost::shared_ptr;
-using namespace bm_runtime::standard;
 using namespace  ::switch_sai;
 
 // globals 
-const int bm_port = 9090;
 const int sai_port = 9092;
-const int32_t cxt_id =0;
 
-class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
+
+class switch_sai_rpcHandler : virtual public switch_sai_rpcIf, public sai_object{
+
  public:
+//  static sai_object sai_obj;
 
   ~switch_sai_rpcHandler() {
-  //deconstructor
-    transport->close();
-    cout << "BM clients closed\n";
+    // deconstructor
   }
-  switch_sai_rpcHandler():
-  //constructor pre initializations
-  socket(new TSocket("localhost", bm_port)),
-  transport(new TBufferedTransport(socket)),
-  bprotocol(new TBinaryProtocol(transport)),
-  protocol (new TMultiplexedProtocol(bprotocol, "standard")),
-  bm_client(protocol),
-  active_vlans{}
-      {
-  // initialization   
-    transport->open();
-    cout << "BM connection started\n"; 
-  //
-
+  switch_sai_rpcHandler(){
+    // initialization   
+    
+  
   }
-
+ 
+  // Your implementation goes here
   sai_thrift_status_t sai_thrift_set_port_attribute(const sai_thrift_object_id_t port_id, const sai_thrift_attribute_t& thrift_attr) {
     // Your implementation goes here
     printf("sai_thrift_set_port_attribute\n");
@@ -99,6 +75,100 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
     printf("sai_thrift_clear_port_all_stats\n");
   }
 
+  sai_thrift_status_t sai_thrift_remove_port(const sai_thrift_object_id_t port_id) {
+    printf("sai_thrift_remove_port\n");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_port_api_t *port_api;
+    sai_attribute_t attr;
+    status = sai_api_query(SAI_API_PORT, (void **) &port_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        printf("sai_api_query failed!!!\n");
+        return status;
+    }
+    //sai_object_id_t s_id=0;
+    //sai_object_id_t port_id =1;
+    status = port_api->remove_port(port_id,s_id,count,&attr);
+    return status;
+  }
+
+  sai_thrift_object_id_t sai_thrift_create_port(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+      printf("sai_thrift_create_port\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_port_api_t *port_api;
+      sai_attribute_t attr;
+      status = sai_api_query(SAI_API_PORT, (void **) &port_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          printf("sai_api_query failed!!!\n");
+          return status;
+      }
+      sai_thrift_parse_port_attributes(thrift_attr_list, &attr );
+      sai_object_id_t s_id=0;
+      uint32_t count = thrift_attr_list.size();
+      sai_object_id_t port_id =1;
+      status = port_api->create_port(&port_id,s_id,count,&attr);
+      return status;
+  }
+  void sai_thrift_parse_port_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+          attribute = (sai_thrift_attribute_t)*it;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+              case SAI_PORT_ATTR_ADMIN_STATE:
+              case SAI_PORT_ATTR_UPDATE_DSCP:
+                  attr_list[i].value.booldata = attribute.value.booldata;
+                  break;
+              case SAI_PORT_ATTR_PORT_VLAN_ID:
+                  attr_list[i].value.u16 = attribute.value.u16;
+                  break;
+              case SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL:
+              case SAI_PORT_ATTR_QOS_DEFAULT_TC:
+                  attr_list[i].value.u8 = attribute.value.u8;
+                  break;
+              case SAI_PORT_ATTR_QOS_INGRESS_BUFFER_PROFILE_LIST:
+              case SAI_PORT_ATTR_QOS_EGRESS_BUFFER_PROFILE_LIST:
+              case SAI_PORT_ATTR_BIND_MODE:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
+              case SAI_PORT_ATTR_HW_LANE_LIST:{
+                  attr_list[i].value.u32list.count = attribute.value.u32list.count;
+                  uint32_t* list_ptr = (uint32_t*) malloc(sizeof(uint32_t) * attribute.value.u32list.u32list.size());
+                  
+                  for (uint32_t j = 0; j < attribute.value.u32list.u32list.size(); j++){
+                    list_ptr[j] = attribute.value.u32list.u32list[j];
+                  }
+                  attr_list[i].value.u32list.list = list_ptr;
+                  break;
+                }
+              default:
+                  break;
+          }
+      }
+  }
+
+
+  sai_thrift_object_id_t sai_thrift_create_bridge(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+    // Your implementation goes here
+    printf("sai_thrift_create_bridge\n");
+  }
+
+  sai_thrift_status_t sai_thrift_remove_bridge(const sai_thrift_object_id_t bridge_id) {
+    // Your implementation goes here
+    printf("sai_thrift_remove_bridge\n");
+  }
+
+  sai_thrift_object_id_t sai_thrift_create_bridge_port(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+    // Your implementation goes here
+    printf("sai_thrift_create_bridge_port\n");
+  }
+
+  sai_thrift_status_t sai_thrift_remove_bridge_port(const sai_thrift_object_id_t bridge_port_id) {
+    // Your implementation goes here
+    printf("sai_thrift_remove_bridge_port\n");
+  }
+
   sai_thrift_status_t sai_thrift_create_fdb_entry(const sai_thrift_fdb_entry_t& thrift_fdb_entry, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
     // Your implementation goes here
     printf("sai_thrift_create_fdb_entry\n");
@@ -114,32 +184,12 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
     printf("sai_thrift_flush_fdb_entries\n");
   }
 
-  sai_thrift_status_t sai_thrift_create_vlan(const sai_thrift_vlan_id_t vlan_id) {
-  
-  // Your implementation goes here
-    auto it = std::find_if( std::begin( active_vlans ),
-                            std::end( active_vlans ),
-                            vlan_id );
-
-    if ( myList.end() == it )
-    {
-        std::cout << "creating vlan" << std::endl;
-    }
-    else
-    {
-        const int pos = std::distance( myList.begin(), it ) + 1;
-        printf("vlan id %d already exists \n",vlan_id);
-    }
-  //  std::string table_name = "table_ingress_lag"; 
-  //  BmEntryHandle handle = 0;
-  
-  //  bm_client.bm_mt_delete_entry(cxt_id, table_name, handle);
-
+  sai_thrift_object_id_t sai_thrift_create_vlan(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+    // Your implementation goes here
     printf("sai_thrift_create_vlan\n");
-    return 0;
   }
 
-  sai_thrift_status_t sai_thrift_delete_vlan(const sai_thrift_vlan_id_t vlan_id) {
+  sai_thrift_status_t sai_thrift_delete_vlan(const sai_thrift_object_id_t vlan_id) {
     // Your implementation goes here
     printf("sai_thrift_delete_vlan\n");
   }
@@ -274,7 +324,12 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
     printf("sai_thrift_remove_neighbor_entry\n");
   }
 
-  void sai_thrift_get_switch_attribute(sai_thrift_attribute_list_t& _return) {
+  sai_thrift_object_id_t sai_thrift_create_switch(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+    // Your implementation goes here
+    printf("sai_thrift_create_switch\n");
+  }
+
+  void sai_thrift_get_switch_attribute(sai_thrift_attribute_list_t& _return, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
     // Your implementation goes here
     printf("sai_thrift_get_switch_attribute\n");
   }
@@ -473,17 +528,9 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
     // Your implementation goes here
     printf("sai_thrift_remove_qos_map\n");
   }
-private:
-  boost::shared_ptr<TTransport> socket;
-  boost::shared_ptr<TTransport> transport;
-  boost::shared_ptr<TProtocol>  bprotocol;
-  boost::shared_ptr<TProtocol>  protocol;
-  std::list<sai_thrift_vlan_id_t> active_vlans;
-
-public:
-  StandardClient bm_client;
+   
 };
-
+//sai_object switch_sai_rpcHandler::sai_obj = sai_object();
 
 int main(int argc, char **argv) {
   // open server to sai functions
@@ -497,9 +544,7 @@ int main(int argc, char **argv) {
   TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);
   printf("sai server started \n");
   server.serve();
-  
-  
   printf("thrift done\n");
-    return 0;
+  return 0;
 }
 

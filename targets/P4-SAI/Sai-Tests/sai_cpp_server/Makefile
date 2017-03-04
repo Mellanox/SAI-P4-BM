@@ -5,7 +5,7 @@ SAI_DIR    = ../SAI/inc/
 INCS_DIRS  =-I${USR_DIR}/include -I${THRIFT_DIR}/include/thrift -I${SAI_DIR}
 LIBS_DIRS  =-L${USR_DIR}/lib -L${USR_DIR}/${THRIFT_VER}/lib -L../inc 
 CPP_DEFS   =-D=HAVE_CONFIG_H
-CPP_OPTS   =-Wall -O2 -std=c++11
+CPP_OPTS   =-Wall -O2 -std=c++11 -w
 LIBS       =-lthrift
 BM_DIR     = ../../../../thrift_src/gen-cpp/bm
 
