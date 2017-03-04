@@ -33,8 +33,8 @@ class ShabiTest(sai_base_test.ThriftInterfaceDataPlane):
         mac2 = '00:22:22:22:22:22'
         bind_mode = SAI_PORT_BIND_MODE_PORT
         hw_port0 = 0
-        port0 = sai_thrift_create_port(self.client, bind_mode, hw_port0, vlan_id)
         hw_port1 = 1
+        port0 = sai_thrift_create_port(self.client, bind_mode, hw_port0, vlan_id)
         port1 = sai_thrift_create_port(self.client, bind_mode, hw_port1, vlan_id)
         print "port0 %d. port 1 %d" % (port0, port1)
         
