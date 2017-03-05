@@ -22,25 +22,6 @@ BmMatchParam parse_exact_match_param(uint64_t param, uint32_t num_of_bytes) {
 }
 
 sai_status_t sai_object::create_switch(sai_object_id_t* switch_id, uint32_t attr_count, const sai_attribute_t *attr_list) {
-// self.ports = {}
-    // self.vlans = {}
-    // self.vlan_members = {}
-    // self.bridge_ports = {}
-    // self.bridges = {}
-    // self.lag_members = {}
-    // self.lags = {}
-    // self.l2_ifs = []
-    // bridge_object_id, bridge_obj = CreateNewItem(self.bridges, Bridge_obj, forbidden_list=self.get_all_oids())
-    // bridge_obj.bridge_id = 1
-    // for port_num in self.hw_port_list:
-    //   port_id, port_obj = CreateNewItem(self.ports, Port_obj, forbidden_list=self.get_all_oids())
-    //   port_obj.hw_port = port_num
-    //   port_obj.l2_if = port_num
-    //   br_port_id, br_port_obj = CreateNewItem(self.bridge_ports, BridgePort_obj, forbidden_list=self.get_all_oids())
-    //   br_port_obj.port_id = port_id
-    //   br_port_obj.bridge_port = port_num
-    //   bridge_obj.bridge_port_list.append(br_port_id)
-    // return self.switch_id
     Sai_obj *switch_obj = new Sai_obj(sai_id_map_ptr);
     Bridge_obj *bridge = new Bridge_obj(sai_id_map_ptr,SAI_BRIDGE_TYPE_1Q);
 	switch_metadata_ptr->bridges[bridge->sai_object_id] = bridge;
@@ -406,3 +387,30 @@ sai_status_t sai_object::remove_fdb_entry(const sai_fdb_entry_t *fdb_entry){
 	return status;
 }
 
+
+sai_status_t sai_object::create_vlan (sai_object_id_t *vlan_id , sai_object_id_t switch_id, uint32_t attr_count,const sai_attribute_t *attr_list){
+	printf("create vlan\n");
+	Vlan_obj *vlan = new Vlan_obj(sai_id_map_ptr);
+	switch_metadata_ptr->vlans[vlan->sai_object_id] = vlan;
+	//parsing attributes
+	sai_attribute_t attribute;
+	for(uint32_t i = 0; i < attr_count; i++) {
+     attribute =attr_list[i];
+     switch (attribute.id) {
+     	case :SAI_VLAN_ATTR_VLAN_ID
+     		vlan->vid = (uint32_t) attribute.value.u16; // TODO correct casting type
+     	break;
+     }
+  }
+	*vlan_id = bridge->sai_object_id;
+	return SAI_STATUS_SUCCESS;
+}
+
+sai_status_t sai_object::remove_vlan(sai_object_id_t vlan_id){
+	printf("remove_vlan, vlan_id = %d\n",vlan_id);
+	Bridge_obj* vlan = switch_metadata_ptr->vlans[vlan_id];
+	switch_metadata_ptr->vlans.erase(vlan->sai_object_id);
+	sai_id_map_ptr->free_id(vlan->sai_object_id);
+	//printf("vlans.size=%d\n",switch_metadata_ptr->vlans.size());
+	return SAI_STATUS_SUCCESS;
+}

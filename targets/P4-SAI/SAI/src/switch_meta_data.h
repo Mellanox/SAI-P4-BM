@@ -122,7 +122,7 @@ public:
 
 class Bridge_obj : public Sai_obj {
 public:
-  sai_bridge_type_t bridge_type; // sai_bridge_type_t
+  sai_bridge_type_t bridge_type;
   std::vector<sai_object_id_t> bridge_port_list;
   Bridge_obj(sai_id_map_t* sai_id_map_ptr,sai_bridge_type_t bridge_type) : Sai_obj(sai_id_map_ptr) {
     this->bridge_type=bridge_type;
@@ -130,9 +130,27 @@ public:
   }
 };
 
+class Vlan_obj : public Sai_obj {
+public:
+  uint32_t vid;
+  std::vector<sai_object_id_t, Vlan_member*> vlan_members;
+  Vlan_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
+    this->vlan_members.clear();
+    this->vid = 0;
+  }
+}
+
+class Vlan_member_obj : public Sai_obj {
+public:
+  Vlan_member_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr){
+
+  }
+}
+
 typedef std::map<sai_object_id_t, BridgePort_obj*>  bridge_port_id_map_t;
 typedef std::map<sai_object_id_t, Port_obj*>        port_id_map_t;
 typedef std::map<sai_object_id_t, Bridge_obj*>      bridge_id_map_t;
+typedef std::map<sai_object_id_t, Vlan_obj*>        vlan_id_map_t;
 
 class Switch_metadata { // TODO:  add default.. // this object_id is the switch_id
 public:
@@ -140,10 +158,13 @@ public:
   port_id_map_t         ports;
   bridge_port_id_map_t  bridge_ports;
   bridge_id_map_t       bridges;
+  vlan_id_map_t         vlans;
+
   Switch_metadata(){
     ports.clear();
     bridge_ports.clear();
     bridges.clear();
+    vlans.clear();
   }
 };
 
