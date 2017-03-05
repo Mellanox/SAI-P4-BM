@@ -124,8 +124,8 @@ class Bridge_obj : public Sai_obj {
 public:
   sai_bridge_type_t bridge_type; // sai_bridge_type_t
   std::vector<sai_object_id_t> bridge_port_list;
-  Bridge_obj(sai_id_map_t* sai_id_map_ptr,sai_bridge_type_t bridge_type) : Sai_obj(sai_id_map_ptr) {
-    this->bridge_type=bridge_type;
+  Bridge_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
+    this->bridge_type=SAI_BRIDGE_TYPE_1Q;
     this->bridge_port_list.clear();
   }
 };

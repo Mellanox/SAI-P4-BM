@@ -43,6 +43,11 @@ extern "C"
       return q->set_port_attribute(port_id, attr); 
     }
 
+  sai_status_t sai_obj_get_port_attribute(S_O_Handle p, sai_object_id_t port_id, uint32_t attr_count, sai_attribute_t *attr_list) {
+    sai_object* q = (sai_object*) p;
+    return q->get_port_attribute(port_id, attr_count, attr_list); 
+  }
+
 // BRIDGE
   sai_status_t sai_obj_create_bridge(S_O_Handle p,sai_object_id_t *bridge_id, sai_object_id_t switch_id, uint32_t attr_count, const sai_attribute_t *attr_list) {
     sai_object* q = (sai_object*) p;
@@ -51,6 +56,10 @@ extern "C"
   sai_status_t sai_obj_remove_bridge(S_O_Handle p,sai_object_id_t bridge_id) {
     sai_object* q = (sai_object*) p;
     return q->remove_bridge(bridge_id); 
+  }
+  sai_status_t get_bridge_attribute(S_O_Handle p, sai_object_id_t bridge_id, uint32_t attr_count, sai_attribute_t *attr_list) {
+    sai_object* q = (sai_object*) p;
+    return q->get_bridge_attribute(bridge_id, attr_count, attr_list); 
   }
 
 // BRIDGE PORT
@@ -61,6 +70,10 @@ extern "C"
   sai_status_t sai_obj_remove_bridge_port(S_O_Handle p,sai_object_id_t bridge_port_id) {
     sai_object* q = (sai_object*) p;
     return q->remove_bridge_port(bridge_port_id); 
+  }
+  sai_status_t get_bridge_port_attribute(S_O_Handle p, sai_object_id_t bridge_port_id, uint32_t attr_count, sai_attribute_t *attr_list) {
+    sai_object* q = (sai_object*) p;
+    return q->get_bridge_port_attribute(bridge_port_id, attr_count, attr_list); 
   }
 
 // FDB

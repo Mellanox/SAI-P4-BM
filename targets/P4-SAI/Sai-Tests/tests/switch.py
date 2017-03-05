@@ -130,6 +130,8 @@ def switch_init2(client):
     attr_list.append(sai_thrift_attribute_t(id= SAI_BRIDGE_ATTR_TYPE, value=attr_value))
     attr_list = client.sai_thirft_get_bridge_attribute(default_bridge, attr_list)
     default_bridge_type = attr_list.attr_list[1].value.s32
+    print "bridge_port list:"
+    print attr_list.attr_list[0].value.objlist.object_id_list
     for br_port in attr_list.attr_list[0].value.objlist.object_id_list:
         attr_value = sai_thrift_attribute_value_t(oid=None)
         attr = sai_thrift_attribute_t(id= SAI_BRIDGE_PORT_ATTR_PORT_ID, value=attr_value)

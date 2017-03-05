@@ -65,14 +65,19 @@ public:
 	static sai_status_t create_port (sai_object_id_t *port_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
 	static sai_status_t remove_port (sai_object_id_t port_id);
 	static sai_status_t set_port_attribute(sai_object_id_t port_id, const sai_attribute_t *attr);
+	static sai_status_t get_port_attribute(sai_object_id_t port_id, uint32_t attr_count, sai_attribute_t *attr_list);
 	static void 		config_port	(Port_obj* port);
-	static void         parse_port_attribute(Port_obj* port, sai_attribute_t attribute);
+	static void         set_parsed_port_attribute(Port_obj* port, sai_attribute_t attribute);
+	static void         get_parsed_port_attribute(Port_obj* port, sai_attribute_t *attribute);
 	//bridge functions
 	static sai_status_t create_bridge (sai_object_id_t *bridge_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
 	static sai_status_t remove_bridge (sai_object_id_t bridge_id);
+	static sai_status_t get_bridge_attribute(sai_object_id_t bridge_id, uint32_t attr_count, sai_attribute_t *attr_list);
+	
 	//bridge_port functions
 	static sai_status_t create_bridge_port (sai_object_id_t *bridge_port_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
 	static sai_status_t remove_bridge_port (sai_object_id_t bridge_port_id);
+	static sai_status_t get_bridge_port_attribute(sai_object_id_t bridge_port_id, uint32_t attr_count, sai_attribute_t *attr_list);
 	//fdb
 	static sai_status_t create_fdb_entry (const sai_fdb_entry_t* fdb_entry,uint32_t attr_count,const sai_attribute_t *attr_list);
 	static sai_status_t remove_fdb_entry (const sai_fdb_entry_t* fdb_entry);	
@@ -103,11 +108,14 @@ public:
   		port_api.create_port  	= &sai_object::create_port;
   		port_api.remove_port	= &sai_object::remove_port;
   		port_api.set_port_attribute = &sai_object::set_port_attribute;
+  		port_api.get_port_attribute = &sai_object::get_port_attribute;
 
   		bridge_api.create_bridge = &sai_object::create_bridge;
   		bridge_api.remove_bridge = &sai_object::remove_bridge;
+  		bridge_api.get_bridge_attribute = &sai_object::get_bridge_attribute;
   		bridge_api.create_bridge_port = &sai_object::create_bridge_port;
   		bridge_api.remove_bridge_port = &sai_object::remove_bridge_port;
+  		bridge_api.get_bridge_port_attribute = &sai_object::get_bridge_port_attribute;
 
   		fdb_api.create_fdb_entry = &sai_object::create_fdb_entry;
   		fdb_api.remove_fdb_entry = &sai_object::remove_fdb_entry;

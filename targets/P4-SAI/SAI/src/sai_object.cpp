@@ -22,8 +22,9 @@ BmMatchParam parse_exact_match_param(uint64_t param, uint32_t num_of_bytes) {
 }
 
 sai_status_t sai_object::create_switch(sai_object_id_t* switch_id, uint32_t attr_count, const sai_attribute_t *attr_list) {
+    Bridge_obj *bridge = new Bridge_obj(sai_id_map_ptr);
+    printf("created default bridge, at id: %d\n", bridge->sai_object_id);
     Sai_obj *switch_obj = new Sai_obj(sai_id_map_ptr);
-    Bridge_obj *bridge = new Bridge_obj(sai_id_map_ptr,SAI_BRIDGE_TYPE_1Q);
 	switch_metadata_ptr->bridges[bridge->sai_object_id] = bridge;
 	switch_metadata_ptr->default_bridge_id = bridge->sai_object_id;
     for (int i=0; i<switch_metadata_ptr->hw_port_list.count; i++) {
@@ -45,17 +46,22 @@ sai_status_t sai_object::create_switch(sai_object_id_t* switch_id, uint32_t attr
 
 sai_status_t sai_object::get_switch_attribute(sai_object_id_t switch_id, sai_uint32_t attr_count, sai_attribute_t *attr_list) {
 	int i;
-  printf("get_switch_attribute. attr_count = %d\n", attr_count);
+	int index = 0;
 	for (i=0;i<attr_count;i++) {
-		if ((attr_list+i)->id == SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID) {
+		switch ((attr_list+i)->id) {
+		case SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID:
 			(attr_list+i)->value.oid = switch_metadata_ptr->default_bridge_id;
-      printf("default bridge_id = %d\n",switch_metadata_ptr->default_bridge_id);
-		}
-		if ((attr_list+i)->id == SAI_SWITCH_ATTR_PORT_LIST) {
+      		break;
+		case SAI_SWITCH_ATTR_PORT_LIST:
 			for (port_id_map_t::iterator it=switch_metadata_ptr->ports.begin(); it!=switch_metadata_ptr->ports.end(); ++it) {
-    			std::cout << it->first << " => " << it->second << '\n';
+    			(attr_list+i)->value.objlist.list[index] = it->first;
+    			index +=1;
 			}
+			break;
 			// (attr_list+i)->value.objlist = switch_metadata_ptr->default_bridge_id;
+		case SAI_SWITCH_ATTR_PORT_NUMBER:
+			(attr_list+i)->value.u32 = switch_metadata_ptr->hw_port_list.count;
+			break;
 		}
 	}
   return SAI_STATUS_SUCCESS;
@@ -67,7 +73,7 @@ sai_status_t sai_object::get_switch_attribute(sai_object_id_t switch_id, sai_uin
     //     attr.value.objlist = sai_thrift_object_list_t(count=len(self.ports.keys()), object_id_list=self.ports.keys())
 }
 
-void sai_object::parse_port_attribute(Port_obj* port, sai_attribute_t attribute) {
+void sai_object::set_parsed_port_attribute(Port_obj* port, sai_attribute_t attribute) {
 	switch (attribute.id) {
      	case SAI_PORT_ATTR_PORT_VLAN_ID:
      		port->pvid = attribute.value.u16;
@@ -87,6 +93,26 @@ void sai_object::parse_port_attribute(Port_obj* port, sai_attribute_t attribute)
     }
 }
 
+void sai_object::get_parsed_port_attribute(Port_obj* port, sai_attribute_t *attribute) {
+	switch (attribute->id) {
+     	case SAI_PORT_ATTR_PORT_VLAN_ID:
+     		attribute->value.u16 = port->pvid;
+     		break;
+     	case SAI_PORT_ATTR_BIND_MODE:
+     		attribute->value.s32 = port->bind_mode;
+     		break;
+     	case SAI_PORT_ATTR_HW_LANE_LIST:
+     		attribute->value.u32list.count = 1;
+     		attribute->value.u32list.list[0] = port->hw_port;
+     		break;
+     	case SAI_PORT_ATTR_DROP_UNTAGGED:
+     		attribute->value.booldata = port->drop_untagged;
+     		break;
+     	case SAI_PORT_ATTR_DROP_TAGGED:
+     		attribute->value.booldata = port->drop_tagged;
+     		break;
+    }
+}
 
 void sai_object::config_port(Port_obj* port){
   BmAddEntryOptions options;
@@ -107,8 +133,16 @@ void sai_object::config_port(Port_obj* port){
 
 sai_status_t sai_object::set_port_attribute(sai_object_id_t port_id, const sai_attribute_t *attr) {
 	Port_obj* port = (Port_obj*) sai_id_map_ptr->get_object(port_id);
-	parse_port_attribute(port, *attr);
+	set_parsed_port_attribute(port, *attr);
 	config_port(port);
+	return SAI_STATUS_SUCCESS;
+}
+
+sai_status_t sai_object::get_port_attribute(sai_object_id_t port_id, uint32_t attr_count, sai_attribute_t *attr_list) {
+	Port_obj* port = (Port_obj*) sai_id_map_ptr->get_object(port_id);
+	for (int i=0;i<attr_count;i++) {
+		get_parsed_port_attribute(port, attr_list+i);
+	}
 	return SAI_STATUS_SUCCESS;
 }
 
@@ -124,7 +158,7 @@ sai_status_t sai_object::create_port (sai_object_id_t *port_id, sai_object_id_t 
 	sai_attribute_t attribute;
 	for(uint32_t i = 0; i < attr_count; i++) {
      	attribute =attr_list[i];
-     	parse_port_attribute(port, attribute);
+     	set_parsed_port_attribute(port, attribute);
   	}
   	//printf("pvid %d, bind_mode %d, hw_port %d \n", port->pvid, port->bind_mode, port->hw_port);
   	BmAddEntryOptions options;
@@ -169,7 +203,7 @@ sai_status_t sai_object::remove_port(sai_object_id_t port_id){
 
 sai_status_t sai_object::create_bridge (sai_object_id_t *bridge_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list){
 	printf("create bridge\n");
-	Bridge_obj *bridge = new Bridge_obj(sai_id_map_ptr, SAI_BRIDGE_TYPE_1Q);
+	Bridge_obj *bridge = new Bridge_obj(sai_id_map_ptr);
 	switch_metadata_ptr->bridges[bridge->sai_object_id] = bridge;
 	//parsing attributes
 	sai_attribute_t attribute;
@@ -324,6 +358,26 @@ sai_status_t sai_object::remove_bridge_port(sai_object_id_t bridge_port_id){
 	sai_id_map_ptr->free_id(bridge_port->sai_object_id);
 	//printf("ports.size=%d\n",switch_metadata_ptr->ports.size());
 	return status;
+}
+
+sai_status_t sai_object::get_bridge_port_attribute(sai_object_id_t bridge_port_id, uint32_t attr_count, sai_attribute_t *attr_list) {
+	printf("BRPORTATTR\n");
+}
+
+sai_status_t sai_object::get_bridge_attribute(sai_object_id_t bridge_id, uint32_t attr_count, sai_attribute_t *attr_list) {
+	printf("BRATTR. bridge_id = %d\n", bridge_id);
+	int i;
+	Bridge_obj* bridge = (Bridge_obj*) sai_id_map_ptr->get_object(bridge_id);
+	for (i=0; i<attr_count; i++) {
+		switch ((attr_list+i)->id) {
+			case SAI_BRIDGE_ATTR_TYPE:
+				(attr_list+i)->value.s32 = bridge->bridge_type;
+				break;
+			case SAI_BRIDGE_ATTR_PORT_LIST:
+				// GET PORT LIST
+				
+		}
+	}
 }
 
 uint64_t parse_mac_64(uint8_t const mac_8[6])
