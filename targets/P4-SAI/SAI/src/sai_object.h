@@ -99,6 +99,7 @@ public:
 
 	  	//api set
 	  	switch_api.create_switch = &sai_object::create_switch;
+	  	switch_api.get_switch_attribute = &sai_object::get_switch_attribute;
   		port_api.create_port  	= &sai_object::create_port;
   		port_api.remove_port	= &sai_object::remove_port;
   		port_api.set_port_attribute = &sai_object::set_port_attribute;

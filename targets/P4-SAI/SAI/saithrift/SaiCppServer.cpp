@@ -594,25 +594,30 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     printf("sai_thrift_get_switch_attribute\n");
     sai_status_t status = SAI_STATUS_SUCCESS;
     sai_switch_api_t *switch_api;
+    printf("test1\n");
     status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
     if (status != SAI_STATUS_SUCCESS) {
         printf("sai_api_query failed!!!\n");
         return; 
     }
-
+    printf("test2\n");
     uint32_t count = thrift_attr_list.size();
     sai_attribute_t *attr = (sai_attribute_t*) malloc(sizeof(sai_attribute_t) * count);
     int i;
     for (i=0; i<count;i++) {
       *(attr+i) = parse_switch_attribute(thrift_attr_list[i]);
     }
+    printf("test3\n");
     sai_object_id_t s_id =1;
     status = switch_api->get_switch_attribute(s_id,count,attr);
+    printf("test4\n");
     _return.attr_count = count;
+    printf("test5. count = %d\n", _return.attr_count);
     for (i=0; i<count;i++) {
       _return.attr_list[i] = parse_switch_thrift_attribute(*(attr+i));
     }
     free(attr);
+    printf("count = %d. return, attr_id = %d. DefaultBRIDGE = %d. value = %d\n", count, _return.attr_list[0].id, SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID,_return.attr_list[0].value.s32);
     return;
   }
 

@@ -45,9 +45,11 @@ sai_status_t sai_object::create_switch(sai_object_id_t* switch_id, uint32_t attr
 
 sai_status_t sai_object::get_switch_attribute(sai_object_id_t switch_id, sai_uint32_t attr_count, sai_attribute_t *attr_list) {
 	int i;
+  printf("get_switch_attribute. attr_count = %d\n", attr_count);
 	for (i=0;i<attr_count;i++) {
 		if ((attr_list+i)->id == SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID) {
 			(attr_list+i)->value.oid = switch_metadata_ptr->default_bridge_id;
+      printf("default bridge_id = %d\n",switch_metadata_ptr->default_bridge_id);
 		}
 		if ((attr_list+i)->id == SAI_SWITCH_ATTR_PORT_LIST) {
 			for (port_id_map_t::iterator it=switch_metadata_ptr->ports.begin(); it!=switch_metadata_ptr->ports.end(); ++it) {
@@ -56,6 +58,7 @@ sai_status_t sai_object::get_switch_attribute(sai_object_id_t switch_id, sai_uin
 			// (attr_list+i)->value.objlist = switch_metadata_ptr->default_bridge_id;
 		}
 	}
+  return SAI_STATUS_SUCCESS;
     // for attr in thrift_attr_list:
     //   if attr.id == SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID:
     //     attr.value.oid = self.bridges[0].sai_object_id
