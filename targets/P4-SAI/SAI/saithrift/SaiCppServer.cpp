@@ -568,7 +568,8 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
       sai_attr.value.oid = thrift_attr.value.oid;
     }
     if (thrift_attr.id == SAI_SWITCH_ATTR_PORT_LIST) {
-      sai_attr.value.objlist = thrift_attr.value.objlist;
+      sai_attr.value.objlist.count = thrift_attr.value.objlist.count;
+      sai_attr.value.objlist.list = (uint64_t*) &thrift_attr.value.objlist.object_id_list[0];
     }
     return sai_attr;
   }
@@ -580,7 +581,11 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
       thrift_attr.value.oid = sai_attr.value.oid;
     }
     if (sai_attr.id == SAI_SWITCH_ATTR_PORT_LIST) {
-      thrift_attr.value.objlist = sai_attr.value.objlist;
+      thrift_attr.value.objlist.object_id_list.clear();
+      thrift_attr.value.objlist.count = sai_attr.value.objlist.count;
+      for (int j=0;j<sai_attr.value.objlist.count;j++) {
+        thrift_attr.value.objlist.object_id_list.push_back(sai_attr.value.objlist.list[j]);
+      }
     }
     return thrift_attr;
   }
