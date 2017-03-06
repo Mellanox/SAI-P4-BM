@@ -22,12 +22,15 @@
 import sys
 sys.path.append('../../tools/')
 import runtime_CLI as cli
-
+from subprocess import Popen, call
+import shlex
 
 class SwitchThriftClient():
-    def __init__(self, ip='localhost', port=9090,services=cli.PreType.SimplePre,json='sai.json'):
+    def __init__(self, ip='localhost', port=9090,services=cli.PreType.SimplePreLAG,json='sai.json', default_config='p4src/DefaultConfig.txt'):
         self.pre = services
         self.standard_client, self.mc_client = self.ConnectToThrift(ip, port, services, json)
+        self.json = json
+        self.default_config = default_config
 
     def ConnectToThrift(self, ip, port, services, json):
         standard_client, mc_client = cli.thrift_connect(
@@ -46,10 +49,19 @@ class SwitchThriftClient():
     def RemoveTableEntry(self, table_name, match_string):
         return cli.RuntimeAPI(self.pre, self.standard_client, self.mc_client).do_table_delete_entry_from_key('%s %s' % (table_name, match_string))
 
+    def ReloadDefaultConfig(self):
+        cli.RuntimeAPI(self.pre, self.standard_client, self.mc_client).do_load_new_config_file(self.json)
+        with open(self.default_config,'r') as def_file:
+            for line in def_file:
+                cli.RuntimeAPI(self.pre, self.standard_client, self.mc_client).onecmd(line.strip('\n'))
+        cli.RuntimeAPI(self.pre, self.standard_client, self.mc_client).do_swap_configs('')
+
 def main():
     args = cli.get_parser().parse_args()
     client = SwitchThriftClient()
-    client.AddTable('table_ingress_lag', 'action_set_lag_l2if', '0', '0 0 0')
+    client.AddTable('table_ingress_lag', 'action_set_l2if', '20', '')
+    client.ReloadDefaultConfig()
+    client.AddTable('table_ingress_lag', 'action_set_l2if', '11', '')
     # parse_match_key(0)
     # entry_handle = standard_client.bm_mt_add_entry(
             # 0, 'table_ingress_lag', 0, 'action_set_lag_l2if', [0, 0, 0],

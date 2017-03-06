@@ -108,6 +108,14 @@ class Iface:
     """
     pass
 
+  def sai_thrift_set_bridge_port_attribute(self, bridge_port_id, thrift_attr):
+    """
+    Parameters:
+     - bridge_port_id
+     - thrift_attr
+    """
+    pass
+
   def sai_thrift_create_fdb_entry(self, thrift_fdb_entry, thrift_attr_list):
     """
     Parameters:
@@ -1009,6 +1017,39 @@ class Client(Iface):
     if result.success is not None:
       return result.success
     raise TApplicationException(TApplicationException.MISSING_RESULT, "sai_thirft_get_bridge_port_attribute failed: unknown result");
+
+  def sai_thrift_set_bridge_port_attribute(self, bridge_port_id, thrift_attr):
+    """
+    Parameters:
+     - bridge_port_id
+     - thrift_attr
+    """
+    self.send_sai_thrift_set_bridge_port_attribute(bridge_port_id, thrift_attr)
+    return self.recv_sai_thrift_set_bridge_port_attribute()
+
+  def send_sai_thrift_set_bridge_port_attribute(self, bridge_port_id, thrift_attr):
+    self._oprot.writeMessageBegin('sai_thrift_set_bridge_port_attribute', TMessageType.CALL, self._seqid)
+    args = sai_thrift_set_bridge_port_attribute_args()
+    args.bridge_port_id = bridge_port_id
+    args.thrift_attr = thrift_attr
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_sai_thrift_set_bridge_port_attribute(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = sai_thrift_set_bridge_port_attribute_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "sai_thrift_set_bridge_port_attribute failed: unknown result");
 
   def sai_thrift_create_fdb_entry(self, thrift_fdb_entry, thrift_attr_list):
     """
@@ -3283,6 +3324,7 @@ class Processor(Iface, TProcessor):
     self._processMap["sai_thrift_create_bridge_port"] = Processor.process_sai_thrift_create_bridge_port
     self._processMap["sai_thrift_remove_bridge_port"] = Processor.process_sai_thrift_remove_bridge_port
     self._processMap["sai_thirft_get_bridge_port_attribute"] = Processor.process_sai_thirft_get_bridge_port_attribute
+    self._processMap["sai_thrift_set_bridge_port_attribute"] = Processor.process_sai_thrift_set_bridge_port_attribute
     self._processMap["sai_thrift_create_fdb_entry"] = Processor.process_sai_thrift_create_fdb_entry
     self._processMap["sai_thrift_delete_fdb_entry"] = Processor.process_sai_thrift_delete_fdb_entry
     self._processMap["sai_thrift_flush_fdb_entries"] = Processor.process_sai_thrift_flush_fdb_entries
@@ -3499,6 +3541,17 @@ class Processor(Iface, TProcessor):
     result = sai_thirft_get_bridge_port_attribute_result()
     result.success = self._handler.sai_thirft_get_bridge_port_attribute(args.bridge_port_id, args.thrift_attr_list)
     oprot.writeMessageBegin("sai_thirft_get_bridge_port_attribute", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_sai_thrift_set_bridge_port_attribute(self, seqid, iprot, oprot):
+    args = sai_thrift_set_bridge_port_attribute_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = sai_thrift_set_bridge_port_attribute_result()
+    result.success = self._handler.sai_thrift_set_bridge_port_attribute(args.bridge_port_id, args.thrift_attr)
+    oprot.writeMessageBegin("sai_thrift_set_bridge_port_attribute", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -5974,6 +6027,149 @@ class sai_thirft_get_bridge_port_attribute_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.STRUCT, 0)
       self.success.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class sai_thrift_set_bridge_port_attribute_args:
+  """
+  Attributes:
+   - bridge_port_id
+   - thrift_attr
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.I64, 'bridge_port_id', None, None, ), # 1
+    (2, TType.STRUCT, 'thrift_attr', (sai_thrift_attribute_t, sai_thrift_attribute_t.thrift_spec), None, ), # 2
+  )
+
+  def __init__(self, bridge_port_id=None, thrift_attr=None,):
+    self.bridge_port_id = bridge_port_id
+    self.thrift_attr = thrift_attr
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.I64:
+          self.bridge_port_id = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.thrift_attr = sai_thrift_attribute_t()
+          self.thrift_attr.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('sai_thrift_set_bridge_port_attribute_args')
+    if self.bridge_port_id is not None:
+      oprot.writeFieldBegin('bridge_port_id', TType.I64, 1)
+      oprot.writeI64(self.bridge_port_id)
+      oprot.writeFieldEnd()
+    if self.thrift_attr is not None:
+      oprot.writeFieldBegin('thrift_attr', TType.STRUCT, 2)
+      self.thrift_attr.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.bridge_port_id)
+    value = (value * 31) ^ hash(self.thrift_attr)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class sai_thrift_set_bridge_port_attribute_result:
+  """
+  Attributes:
+   - success
+  """
+
+  thrift_spec = (
+    (0, TType.I32, 'success', None, None, ), # 0
+  )
+
+  def __init__(self, success=None,):
+    self.success = success
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.I32:
+          self.success = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('sai_thrift_set_bridge_port_attribute_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.I32, 0)
+      oprot.writeI32(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()

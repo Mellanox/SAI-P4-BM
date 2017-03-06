@@ -34,7 +34,7 @@ typedef i32 sai_thrift_port_stat_counter_t
 typedef i32 sai_thrift_queue_stat_counter_t
 typedef i32 sai_thrift_pg_stat_counter_t
 
-enum sai_fdb_entry_bridge_type_t {
+enum sai_thrift_fdb_entry_bridge_type_t {
     SAI_FDB_ENTRY_BRIDGE_TYPE_1Q,
     SAI_FDB_ENTRY_BRIDGE_TYPE_1D
 } 
@@ -43,7 +43,7 @@ enum sai_fdb_entry_bridge_type_t {
 struct sai_thrift_fdb_entry_t {
     1: sai_thrift_mac_t mac_address;
     2: sai_thrift_vlan_id_t vlan_id;
-    3: sai_fdb_entry_bridge_type_t bridge_type;
+    3: sai_thrift_fdb_entry_bridge_type_t bridge_type;
     4: sai_thrift_object_id_t bridge_id;
 }
 
@@ -218,6 +218,8 @@ service switch_sai_rpc {
     sai_thrift_object_id_t sai_thrift_create_bridge_port(1: list<sai_thrift_attribute_t> thrift_attr_list);
     sai_thrift_status_t sai_thrift_remove_bridge_port(1: sai_thrift_object_id_t bridge_port_id);
     sai_thrift_attribute_list_t sai_thirft_get_bridge_port_attribute(1: sai_thrift_object_id_t bridge_port_id, 2: list<sai_thrift_attribute_t> thrift_attr_list);
+    sai_thrift_status_t sai_thrift_set_bridge_port_attribute(1: sai_thrift_object_id_t bridge_port_id, 2: sai_thrift_attribute_t thrift_attr);
+
 
 
     //fdb API

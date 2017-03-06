@@ -16,7 +16,7 @@ except:
   fastbinary = None
 
 
-class sai_fdb_entry_bridge_type_t:
+class sai_thrift_fdb_entry_bridge_type_t:
   SAI_FDB_ENTRY_BRIDGE_TYPE_1Q = 0
   SAI_FDB_ENTRY_BRIDGE_TYPE_1D = 1
 

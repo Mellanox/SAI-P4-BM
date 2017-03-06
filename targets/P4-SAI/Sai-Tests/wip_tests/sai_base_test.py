@@ -77,7 +77,7 @@ class ThriftInterface(BaseTest):
         global interface_to_front_mapping
         BaseTest.setUp(self)
         self.test_params = testutils.test_params_get()
-        #self.loadPortMap()
+        self.loadPortMap()
         self.createRpcClient()
         return
 
