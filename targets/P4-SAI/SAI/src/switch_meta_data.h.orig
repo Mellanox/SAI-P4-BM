@@ -195,9 +195,13 @@ public:
   port_id_map_t         ports;
   bridge_port_id_map_t  bridge_ports;
   bridge_id_map_t       bridges;
+<<<<<<< HEAD
+  sai_object_id_t       default_bridge_id;
+=======
   vlan_id_map_t         vlans;
   lag_id_map_t          lags;
-  sai_object_id_t       default_bridge_id;
+
+>>>>>>> c_OmerS
   Switch_metadata(){
     ports.clear();
     bridge_ports.clear();

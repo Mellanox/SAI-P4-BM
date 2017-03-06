@@ -51,6 +51,7 @@ sai_status_t sai_api_uninitialize(void);
 }
 // globals 
 const int sai_port = 9092;
+// int s_id=1;
 
 
 class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
@@ -249,6 +250,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
           attr_list[i].id = attribute.id;
           switch (attribute.id) {
               case SAI_BRIDGE_ATTR_TYPE:
+<<<<<<< HEAD
                   attr_list[i].value.s32 = attribute.value.s32;
                   break;
               case SAI_BRIDGE_ATTR_PORT_LIST:
@@ -256,8 +258,13 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
                   attr_list[i].value.objlist.list = (sai_object_id_t*) malloc (sizeof(sai_object_id_t) * MAX_BRIDGE_PORTS);
                   list_ind = i;
                   break;
+=======
+                attr_list[i].value.s32 = attribute.value.s32;
+                break;
+>>>>>>> c_OmerS
               default:
-                  break;
+                std::cout << "--> while parsing bridge_attr: attribute.id = " << attribute.id << " was dumped in sai_cpp_server" << endl; 
+                break;
           }
       }
       return list_ind;

@@ -114,6 +114,7 @@ public:
 	  	transport->open();
 
 	  	//api set
+<<<<<<< HEAD
 	  	switch_api.create_switch = &sai_object::create_switch;
 	  	switch_api.get_switch_attribute = &sai_object::get_switch_attribute;
   		port_api.create_port  	= &sai_object::create_port;
@@ -128,6 +129,19 @@ public:
   		bridge_api.remove_bridge_port = &sai_object::remove_bridge_port;
   		bridge_api.get_bridge_port_attribute = &sai_object::get_bridge_port_attribute;
 
+  		fdb_api.create_fdb_entry = &sai_object::create_fdb_entry;
+  		fdb_api.remove_fdb_entry = &sai_object::remove_fdb_entry;
+=======
+	  	switch_api.create_switch 		= &sai_object::create_switch;
+  		port_api.create_port  			= &sai_object::create_port;
+  		port_api.remove_port			= &sai_object::remove_port;
+  		port_api.set_port_attribute 	= &sai_object::set_port_attribute;
+
+  		bridge_api.create_bridge 		= &sai_object::create_bridge;
+  		bridge_api.remove_bridge 		= &sai_object::remove_bridge;
+  		bridge_api.create_bridge_port 	= &sai_object::create_bridge_port;
+  		bridge_api.remove_bridge_port 	= &sai_object::remove_bridge_port;
+
   		fdb_api.create_fdb_entry 		= &sai_object::create_fdb_entry;
   		fdb_api.remove_fdb_entry 		= &sai_object::remove_fdb_entry;
   		
@@ -141,6 +155,7 @@ public:
   		vlan_api.sai_get_vlan_member_attribute = &sai_object::sai_get_vlan_member_attribute;
   		vlan_api.sai_get_vlan_stats 	= &sai_object::sai_get_vlan_stats;
   		vlan_api.sai_clear_vlan_stats 	= &sai_object::sai_clear_vlan_stats;
+>>>>>>> c_OmerS
   		//
     	printf("BM connection started on port %d\n",bm_port); 
 	  }

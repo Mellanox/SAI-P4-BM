@@ -34,6 +34,17 @@ sai_status_t    get_bridge_port_attribute(S_O_Handle, sai_object_id_t bridge_por
 sai_status_t 	sai_obj_create_fdb_entry(S_O_Handle, sai_fdb_entry_t*,uint32_t,const sai_attribute_t*);
 sai_status_t 	sai_obj_remove_fdb_entry(S_O_Handle, sai_fdb_entry_t*);
 
+// VLAN
+sai_status_t 	sai_obj_create_vlan(S_O_Handle ,sai_object_id_t * , sai_object_id_t , uint32_t ,const sai_attribute_t*);
+sai_status_t 	sai_obj_remove_vlan(S_O_Handle ,sai_object_id_t *);
+sai_status_t 	sai_obj_set_vlan_attribute(S_O_Handle ,sai_object_id_t , const sai_attribute_t *);
+sai_status_t 	sai_obj_get_vlan_attribute(S_O_Handle ,sai_object_id_t , const uint32_t , ai_attribute_t *);
+sai_status_t 	sai_obj_create_vlan_member(S_O_Handle ,sai_object_id_t , sai_object_id_t , uint32_t ,const sai_attribute_t *);
+sai_status_t 	sai_obj_remove_vlan_member(S_O_Handle ,sai_object_id_t *);
+sai_status_t 	sai_obj_set_vlan_member_attribute(S_O_Handle ,sai_object_id_t , const sai_attribute_t *);
+sai_status_t 	sai_obj_get_vlan_member_attribute(S_O_Handle ,sai_object_id_t , const uint32_t , sai_attribute_t *);
+sai_status_t 	sai_obj_get_vlan_stats(S_O_Handle ,sai_object_id_t , const sai_vlan_stat_t *, uint32_t , uint64_t *);
+sai_status_t 	sai_obj_clear_vlan_stats(S_O_Handle ,sai_object_id_t , const sai_vlan_stat_t *, uint32_t);
 
 #ifdef __cplusplus
 }
