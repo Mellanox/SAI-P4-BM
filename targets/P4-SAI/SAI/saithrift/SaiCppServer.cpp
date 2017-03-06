@@ -51,7 +51,6 @@ sai_status_t sai_api_uninitialize(void);
 }
 // globals 
 const int sai_port = 9092;
-// int s_id=1;
 
 
 class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
@@ -272,19 +271,19 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
         switch (attribute.id) {
             case SAI_FDB_ENTRY_ATTR_TYPE:
                 attr_list[i].value.s32 = attribute.value.s32;
-                std::cout << "--> attr packet type="<<attribute.value.s32<<endl;
-                std::cout << "--> attr packet_static" << SAI_FDB_ENTRY_TYPE_STATIC <<endl;
+                //td::cout << "--> attr packet type="<<attribute.value.s32<<endl;
+                //std::cout << "--> attr packet_static" << SAI_FDB_ENTRY_TYPE_STATIC <<endl;
                 break;
             case SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID:
                 attr_list[i].value.oid = attribute.value.oid;
                 break;
             case SAI_FDB_ENTRY_ATTR_PACKET_ACTION:
                 attr_list[i].value.s32 = attribute.value.s32;
-                std::cout << "--> attr packet_action="<<attribute.value.s32<<endl;
-                std::cout << "--> attr packet_action_fwd=" << SAI_PACKET_ACTION_FORWARD <<endl;
+                //std::cout << "--> attr packet_action="<<attribute.value.s32<<endl;
+                //std::cout << "--> attr packet_action_fwd=" << SAI_PACKET_ACTION_FORWARD <<endl;
                 break;
             default:
-                std::cout << "attribute.id = " << attribute.id << " was dumped in sai_cpp_server" << endl; 
+                std::cout << "--> while parsing fdb_attr: attribute.id = " << attribute.id << " was dumped in sai_cpp_server" << endl; 
                 break;
         }
     }
@@ -314,7 +313,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
   }
 
   sai_thrift_status_t sai_thrift_remove_bridge(const sai_thrift_object_id_t bridge_id) {
-    // Your implementation goes here
     printf("sai_thrift_remove_bridge\n");
     sai_status_t status = SAI_STATUS_SUCCESS;
     sai_bridge_api_t *bridge_api;
@@ -371,7 +369,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
   }
 
   sai_thrift_object_id_t sai_thrift_create_bridge_port(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
-    // Your implementation goes here
     printf("sai_thrift_create_bridge_port\n");
     sai_status_t status = SAI_STATUS_SUCCESS;
     sai_bridge_api_t *bridge_api;
@@ -386,7 +383,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
     sai_object_id_t s_id=0;
     sai_object_id_t bridge_port_id =1;
     bridge_api->create_bridge_port(&bridge_port_id,s_id,count,attr);
-    printf("%d %d\n",bridge_port_id,(sai_thrift_object_id_t)bridge_port_id);
     free(attr);
     return (sai_thrift_object_id_t)bridge_port_id;
   }
@@ -405,7 +401,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
   }
 
   void sai_thirft_get_bridge_port_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t bridge_port_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
-    // Your implementation goes here
     printf("sai_thirft_get_bridge_port_attribute\n");
     sai_bridge_api_t *bridge_api;
     sai_status_t status = sai_api_query(SAI_API_BRIDGE, (void **) &bridge_api);
@@ -434,14 +429,7 @@ sai_thrift_status_t sai_thrift_set_bridge_port_attribute(const sai_thrift_object
 sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_entry){
   sai_fdb_entry_t sai_fdb_entry;
   sai_fdb_entry.switch_id=0;
-  printf("mac string size:%d\n",thrift_fdb_entry.mac_address.length());
-  std::cout << "mac_addr thrift: " << thrift_fdb_entry.mac_address << endl;
   parse_mac_str(thrift_fdb_entry.mac_address, sai_fdb_entry.mac_address);  
-  std::cout << "mac addr parsed: " << endl;
-  for (int i=0; i<6; i++) {
-    printf("mac[%d] = %d |",i, sai_fdb_entry.mac_address[i]);
-  }
-  std::cout << endl;
   sai_fdb_entry.vlan_id       =thrift_fdb_entry.vlan_id;
   sai_fdb_entry.bridge_type   =(sai_fdb_entry_bridge_type_t)thrift_fdb_entry.bridge_type;
   sai_fdb_entry.bridge_id     =thrift_fdb_entry.bridge_id;
@@ -450,7 +438,6 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
 
 
   sai_thrift_status_t sai_thrift_create_fdb_entry(const sai_thrift_fdb_entry_t& thrift_fdb_entry, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
-    // Your implementation goes here
     printf("sai_thrift_create_fdb_entry\n");
     sai_status_t status = SAI_STATUS_SUCCESS;
     sai_fdb_api_t *fdb_api;
@@ -462,14 +449,12 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     }
     sai_thrift_parse_fdb_entry_attributes(thrift_attr_list, attr );
     uint32_t count = thrift_attr_list.size();
-    std::cout << "--> create fdb attr count = "<< count << endl;
     sai_fdb_entry_t sai_fdb_entry;
     sai_fdb_entry = parse_thrift_fdb_entry(thrift_fdb_entry);
     return fdb_api->create_fdb_entry(&sai_fdb_entry,count,attr);
   }
 
   sai_thrift_status_t sai_thrift_delete_fdb_entry(const sai_thrift_fdb_entry_t& thrift_fdb_entry) {
-    // Your implementation goes here
     printf("sai_thrift_delete_fdb_entry\n");
     sai_status_t status = SAI_STATUS_SUCCESS;
     sai_fdb_api_t *fdb_api;
@@ -488,14 +473,54 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     printf("sai_thrift_flush_fdb_entries\n");
   }
 
+
+
+  void sai_thrift_parse_vlan_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+          attribute = (sai_thrift_attribute_t)*it;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+              case SAI_VLAN_ATTR_VLAN_ID:
+                attr_list[i].value.u16 = attribute.value.u16;
+                break;
+              default:
+                std::cout << "--> while parsing vlan_attr: attribute.id = " << attribute.id << " was dumped in sai_cpp_server" << endl; 
+                break;
+          }
+      }
+  }
   sai_thrift_object_id_t sai_thrift_create_vlan(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
-    // Your implementation goes here
     printf("sai_thrift_create_vlan\n");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_vlan_api_t *vlan_api;
+    sai_attribute_t *attr= (sai_attribute_t*) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+    status = sai_api_query(SAI_API_VLAN, (void **) &vlan_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        printf("sai_api_query failed!!!\n");
+        //return SAI_STATUS_NOT_IMPLEMENTED; 
+    }
+    sai_thrift_parse_vlan_attributes(thrift_attr_list, attr );
+    uint32_t count = thrift_attr_list.size();
+    sai_object_id_t s_id=0;
+    sai_object_id_t vlan_id =1;
+    vlan_api->create_vlan(&vlan_id,s_id,count,attr);
+    free(attr);
+    return (sai_thrift_object_id_t)vlan_id;
   }
 
   sai_thrift_status_t sai_thrift_delete_vlan(const sai_thrift_object_id_t vlan_id) {
-    // Your implementation goes here
     printf("sai_thrift_delete_vlan\n");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_vlan_api_t *vlan_api;
+    status = sai_api_query(SAI_API_VLAN, (void **) &vlan_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        printf("sai_api_query failed!!!\n");
+        return SAI_STATUS_NOT_IMPLEMENTED; 
+    }
+    status = vlan_api->remove_vlan(vlan_id);
+    return status;
   }
 
   void sai_thrift_get_vlan_stats(std::vector<int64_t> & _return, const sai_thrift_vlan_id_t vlan_id, const std::vector<sai_thrift_vlan_stat_counter_t> & counter_ids, const int32_t number_of_counters) {
@@ -503,9 +528,45 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     printf("sai_thrift_get_vlan_stats\n");
   }
 
+  void sai_thrift_parse_vlan_member_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+          attribute = (sai_thrift_attribute_t)*it;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+              case SAI_VLAN_MEMBER_ATTR_VLAN_ID:
+                attr_list[i].value.oid = attribute.value.oid;
+                break;
+              case SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID:
+                attr_list[i].value.oid = attribute.value.oid;
+                break;
+              case SAI_VLAN_MEMBER_ATTR_VLAN_TAGGING_MODE:
+                attr_list[i].value.s32 = attribute.value.s32;
+                break; 
+              default:
+                std::cout << "--> while parsing vlan_member_attr: attribute.id = " << attribute.id << " was dumped in sai_cpp_server" << endl; 
+                break;
+          }
+      }
+  }
   sai_thrift_object_id_t sai_thrift_create_vlan_member(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
-    // Your implementation goes here
     printf("sai_thrift_create_vlan_member\n");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_vlan_api_t *vlan_api;
+    sai_attribute_t *attr= (sai_attribute_t*) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+    status = sai_api_query(SAI_API_VLAN, (void **) &vlan_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        printf("sai_api_query failed!!!\n");
+        //return SAI_STATUS_NOT_IMPLEMENTED; 
+    }
+    sai_thrift_parse_vlan_member_attributes(thrift_attr_list, attr );
+    uint32_t count = thrift_attr_list.size();
+    sai_object_id_t s_id=0;
+    sai_object_id_t vlan_member_id =1;
+    vlan_api->create_vlan_member(&vlan_member_id,s_id,count,attr);
+    free(attr);
+    return (sai_thrift_object_id_t)vlan_member_id;
   }
 
   sai_thrift_status_t sai_thrift_remove_vlan_member(const sai_thrift_object_id_t vlan_member_id) {
@@ -629,8 +690,6 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
   }
 
   sai_thrift_object_id_t sai_thrift_create_switch(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
-    // Your implementation goes here
-    printf("sai_thrift_create_port\n");
     //TODO: Currently not caring about attr_list.
     // sai_attribute_t *attr = (sai_attribute_t*) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
     sai_status_t status = SAI_STATUS_SUCCESS;
@@ -763,7 +822,6 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
       if (hw_lane_list_attr.value.u32list.list[0] == hw_port) {
         port_id = port_list_object_attribute.value.objlist.list[i];
         found = true;
-        printf("port_id %d. hw_port = %d\n", port_id, hw_port);
       }
     }
     free(hw_lane_list_attr.value.u32list.list);

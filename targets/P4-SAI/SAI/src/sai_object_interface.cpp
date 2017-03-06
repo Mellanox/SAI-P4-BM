@@ -85,5 +85,49 @@ extern "C"
     sai_object* q = (sai_object*) p;
     return q->remove_fdb_entry(fdb_entry); 
   }
+  
+// VLAN
+  sai_status_t sai_obj_create_vlan(S_O_Handle p,sai_object_id_t *vlan_id , sai_object_id_t switch_id, uint32_t attr_count,const sai_attribute_t *attr_list){
+    sai_object* q = (sai_object*) p;
+    return q->create_vlan(vlan_id ,switch_id,attr_count,attr_list);
+  }
+  sai_status_t sai_obj_remove_vlan(S_O_Handle p,sai_object_id_t vlan_id){
+    sai_object* q = (sai_object*) p;
+    return q->remove_vlan(vlan_id);
+  }
 
+  sai_status_t sai_obj_set_vlan_attribute(S_O_Handle p,sai_object_id_t vlan_id, const sai_attribute_t *attr){
+    sai_object* q = (sai_object*) p;
+    return q->set_vlan_attribute(vlan_id, attr);
+  }
+
+  sai_status_t sai_obj_get_vlan_attribute(S_O_Handle p,sai_object_id_t vlan_id, const uint32_t attr_count, sai_attribute_t *attr_list) {
+    sai_object* q = (sai_object*) p;
+    return q->get_vlan_attribute(vlan_id, attr_count, attr_list);
+  }
+  
+  sai_status_t sai_obj_create_vlan_member(S_O_Handle p,sai_object_id_t *vlan_member_id, sai_object_id_t switch_id, uint32_t attr_count, const sai_attribute_t *attr_list) {
+    sai_object* q = (sai_object*) p;
+    return q->create_vlan_member(vlan_member_id, switch_id, attr_count,attr_list);
+  }
+  sai_status_t sai_obj_remove_vlan_member(S_O_Handle p,sai_object_id_t vlan_member_id){
+    sai_object* q = (sai_object*) p;
+    return q->remove_vlan_member(vlan_member_id);
+  }
+  sai_status_t sai_obj_set_vlan_member_attribute(S_O_Handle p,sai_object_id_t vlan_member_id, const sai_attribute_t *attr){
+    sai_object* q = (sai_object*) p;
+    return q->set_vlan_member_attribute( vlan_member_id, attr);
+  }
+  sai_status_t sai_obj_get_vlan_member_attribute(S_O_Handle p,sai_object_id_t vlan_member_id, const uint32_t attr_count, sai_attribute_t *attr_list){
+    sai_object* q = (sai_object*) p;
+    return q->get_vlan_member_attribute(vlan_member_id, attr_count, attr_list);
+  }
+  sai_status_t sai_obj_get_vlan_stats(S_O_Handle p,sai_object_id_t vlan_id, const sai_vlan_stat_t *counter_ids, uint32_t number_of_counters, uint64_t *counters){
+    sai_object* q = (sai_object*) p;
+    return q->get_vlan_stats(vlan_id, counter_ids, number_of_counters, counters);
+  }
+  sai_status_t sai_obj_clear_vlan_stats(S_O_Handle p,sai_object_id_t vlan_id, const sai_vlan_stat_t *counter_ids, uint32_t number_of_counters){
+    sai_object* q = (sai_object*) p;
+    return q->clear_vlan_stats(vlan_id, counter_ids, number_of_counters);
+  }
 }
