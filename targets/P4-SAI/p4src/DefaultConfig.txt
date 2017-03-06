@@ -33,7 +33,7 @@ table_add table_egress_br_port_to_if action_forward_set_outIfType 6 => 6 0
 table_add table_egress_br_port_to_if action_forward_set_outIfType 7 => 7 0
 
 
-table_add table_port_ingress_interface_type  action_set_packet_vid 1 =>
+table_add table_port_set_packet_vid_internal action_set_packet_vid 1 =>
 table_add table_ingress_vlan_filtering _nop 0 1 =>
 table_add table_ingress_vlan_filtering _nop 1 1 =>
 table_add table_ingress_vlan_filtering _nop 2 1 =>

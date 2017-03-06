@@ -58,11 +58,9 @@ class Sai_obj {
     sai_object_id_t sai_object_id; // TODO maybe use the map and don't save here
     Sai_obj(sai_id_map_t* sai_id_map_ptr){
       sai_object_id = sai_id_map_ptr->get_new_id(this); // sai_id_map. set map to true.
-      printf("sai_object_id is %d\n",sai_object_id);
     }
     ~Sai_obj(){
-    printf("sai_object_destructor %d \n",this->sai_object_id);
-    //free_id(sai_object_id); TODO: fix this
+      //free_id(sai_object_id); TODO: fix this
     }
   
 };
@@ -202,12 +200,39 @@ public:
   vlan_member_id_map_t  vlan_members;
   lag_id_map_t          lags;
   sai_object_id_t       default_bridge_id;
+
   Switch_metadata(){
     ports.clear();
     bridge_ports.clear();
     bridges.clear();
     vlans.clear();
     lags.clear();
+  }
+
+  uint32_t GetNewBridgePort() {
+    std::vector<uint32_t> bridge_port_nums;
+    for (bridge_port_id_map_t::iterator it=bridge_ports.begin(); it!=bridge_ports.end(); ++it) {
+      bridge_port_nums.push_back(it->second->bridge_port);
+    }
+    for (int i=0; i<bridge_port_nums.size(); ++i) {
+      if (std::find(bridge_port_nums.begin(), bridge_port_nums.end(), i) == bridge_port_nums.end()) {
+        return i;
+      }
+    }
+    return bridge_port_nums.size();
+  }
+
+  uint32_t GetNewBridgeID() {
+    std::vector<uint32_t> bridge_ids;
+    for (bridge_id_map_t::iterator it=bridges.begin(); it!=bridges.end(); ++it) {
+      bridge_ids.push_back(it->second->bridge_id);
+    }
+    for (int i=0; i<bridge_ids.size(); ++i) {
+      if (std::find(bridge_ids.begin(), bridge_ids.end(), i) == bridge_ids.end()) {
+        return i;
+      }
+    }
+    return bridge_ids.size();
   }
 };
 
