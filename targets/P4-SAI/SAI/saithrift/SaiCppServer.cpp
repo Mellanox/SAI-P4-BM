@@ -417,7 +417,7 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
   }
   sai_thrift_object_id_t sai_thrift_create_vlan(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
     printf("sai_thrift_create_vlan\n");
-        sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_status_t status = SAI_STATUS_SUCCESS;
     sai_vlan_api_t *vlan_api;
     sai_attribute_t *attr= (sai_attribute_t*) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
     status = sai_api_query(SAI_API_VLAN, (void **) &vlan_api);
@@ -430,7 +430,7 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     std::cout << "--> create vlan attr count = "<< count << endl;
     sai_object_id_t s_id=0;
     sai_object_id_t vlan_id =1;
-    bridge_api->create_bridge_port(&vlan_id,s_id,count,attr);
+    bridge_api->create_vlan(&vlan_id,s_id,count,attr);
     free(attr);
     return (sai_thrift_object_id_t)vlan_id;
   }
@@ -453,9 +453,46 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     printf("sai_thrift_get_vlan_stats\n");
   }
 
+  void sai_thrift_parse_vlan_member_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+          attribute = (sai_thrift_attribute_t)*it;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+              case SAI_VLAN_MEMBER_ATTR_VLAN_ID:
+                attr_list[i].value.oid = attribute.value.oid;
+                break;
+              case SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID:
+                attr_list[i].value.oid = attribute.value.oid;
+                break;
+              case SAI_VLAN_MEMBER_ATTR_VLAN_TAGGING_MODE:
+                attr_list[i].value.s32 = attribute.value.s32;
+                break; 
+              default:
+                std::cout << "--> while parsing vlan_member_attr: attribute.id = " << attribute.id << " was dumped in sai_cpp_server" << endl; 
+                break;
+          }
+      }
+  }
   sai_thrift_object_id_t sai_thrift_create_vlan_member(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
-    // Your implementation goes here
     printf("sai_thrift_create_vlan_member\n");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_vlan_api_t *vlan_api;
+    sai_attribute_t *attr= (sai_attribute_t*) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+    status = sai_api_query(SAI_API_VLAN, (void **) &vlan_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        printf("sai_api_query failed!!!\n");
+        //return SAI_STATUS_NOT_IMPLEMENTED; 
+    }
+    sai_thrift_parse_vlan_member_attributes(thrift_attr_list, attr );
+    uint32_t count = thrift_attr_list.size();
+    std::cout << "--> create vlan_member attr count = "<< count << endl;
+    sai_object_id_t s_id=0;
+    sai_object_id_t vlan_member_id =1;
+    bridge_api->create_create_vlan_member(&vlan_member_id,s_id,count,attr);
+    free(attr);
+    return (sai_thrift_object_id_t)vlan_member_id;
   }
 
   sai_thrift_status_t sai_thrift_remove_vlan_member(const sai_thrift_object_id_t vlan_member_id) {

@@ -131,19 +131,49 @@ public:
 };
 
 class Vlan_obj : public Sai_obj {
-public:
-  uint32_t vid;
-  std::vector<sai_object_id_t, Vlan_member*> vlan_members;
-  Vlan_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
-    this->vlan_members.clear();
-    this->vid = 0;
-  }
+  public:
+    uint16_t vid;
+    std::vector<sai_object_id_t, Vlan_member*> vlan_members;
+    Vlan_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
+      this->vlan_members.clear();
+      this->vid = 0;
+    }
 }
 
 class Vlan_member_obj : public Sai_obj {
-public:
-  Vlan_member_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr){
+  public:
+    sai_object_id_t bridge_port_id;
+    sai_object_id_t vlan_oid;
+    uint32_t tagging_mode;
+    uint16_t vid;
+    Vlan_member_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr){
+      this->vid = 999;
+      this->vlan_oid = 999;// TODO needed? consider remove.
+      this->tagging_mode = SAI_VLAN_TAGGING_MODE_UNTAGGED;
+      this->bridge_port_id=999;
+    }
+}
 
+class Lag_obj : public Sai_obj {
+public:
+  l2_if;
+  std::vector<sai_object_id_t, Lag_member*> lag_members;
+  Port_obj* port_obj;
+  Lag_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr){
+    this->lag_members.clear();
+    this->l2_if=0;
+    this->port_obj=NULL;
+  }
+}
+
+class Lag_member_obj : public Sai_obj{
+  uint32_t port_id;
+  uint32_t lag_id;
+  uint32_t hw_port;
+  Lag_member_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr){
+    this->port_id=0;
+    this->lag_id=0;
+    this->hw_port=0;
   }
 }
 
@@ -151,6 +181,7 @@ typedef std::map<sai_object_id_t, BridgePort_obj*>  bridge_port_id_map_t;
 typedef std::map<sai_object_id_t, Port_obj*>        port_id_map_t;
 typedef std::map<sai_object_id_t, Bridge_obj*>      bridge_id_map_t;
 typedef std::map<sai_object_id_t, Vlan_obj*>        vlan_id_map_t;
+typedef std::map<sai_object_id_t, Lag_obj*>         lag_id_map_t;
 
 class Switch_metadata { // TODO:  add default.. // this object_id is the switch_id
 public:
@@ -159,12 +190,14 @@ public:
   bridge_port_id_map_t  bridge_ports;
   bridge_id_map_t       bridges;
   vlan_id_map_t         vlans;
+  lag_id_map_t          lags;
 
   Switch_metadata(){
     ports.clear();
     bridge_ports.clear();
     bridges.clear();
     vlans.clear();
+    lags.clear();
   }
 };
 

@@ -207,46 +207,50 @@ sai_status_t sai_object::create_bridge_port (sai_object_id_t *bridge_port_id, sa
   BmMatchParams match_params;
   BmActionData action_data;
   int32_t l2_if_type;
-  // 1D
-  if(bridge_port->bridge_port_type==SAI_BRIDGE_PORT_TYPE_SUB_PORT){ 
-  	match_params.push_back(parse_exact_match_param(bridge_port->sai_object_id,1));
-  	action_data.push_back(parse_param(bridge_id,2));
-  	bridge_port->handle_id_1d = bm_client_ptr->bm_mt_add_entry(cxt_id,"table_bridge_id_1d",match_params, "action_set_bridge_id",  action_data, options);
-  	action_data.clear();
-  	action_data.push_back(parse_param(bridge_port->vlan_id,2));
-  	bridge_port->handle_egress_set_vlan = bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_set_vlan",match_params, "action_set_vlan",  action_data, options);
-  	l2_if_type=2;
-  }
-  // 1Q
-  else{
-  	match_params.clear();
-  	match_params.push_back(parse_exact_match_param(bridge_port->vlan_id,2));
-  	action_data.clear();
-  	action_data.push_back(parse_param(bridge_id,2));
+	  // 1D
+	if(bridge_port->bridge_port_type==SAI_BRIDGE_PORT_TYPE_SUB_PORT){ 
+		match_params.push_back(parse_exact_match_param(bridge_port->sai_object_id,1));
+	  	action_data.push_back(parse_param(bridge_id,2));
+	  	bridge_port->handle_id_1d = bm_client_ptr->bm_mt_add_entry(cxt_id,"table_bridge_id_1d",match_params, "action_set_bridge_id",  action_data, options);
+	  	action_data.clear();
+	  	action_data.push_back(parse_param(bridge_port->vlan_id,2));
+	  	bridge_port->handle_egress_set_vlan = bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_set_vlan",match_params, "action_set_vlan",  action_data, options);
+	  	l2_if_type=2;
+	}
+	// 1Q
+	else{
+	  	match_params.clear();
+	  	match_params.push_back(parse_exact_match_param(bridge_port->vlan_id,2));
+	  	action_data.clear();
+	  	action_data.push_back(parse_param(bridge_id,2));
 
-  	bridge_port->handle_id_1q = bm_client_ptr->bm_mt_add_entry(cxt_id,"table_bridge_id_1q",match_params, "action_set_bridge_id",  action_data, options);
-	l2_if_type=3;
-  }
-  // TODO add lag check here
-  	//if port_id in self.lags.keys(): # LAG
-      // self.cli_client.AddTable('table_egress_br_port_to_if', 'action_forward_set_outIfType', str(br_port), list_to_str([port_id, 1]))
-      // bind_mode = self.ports[self.lag_members[self.lags[port_id].lag_members[0]].port_id].bind_mode
-    //else: # port
-
-	match_params.clear();
-  	match_params.push_back(parse_exact_match_param(bridge_port->sai_object_id,1));
-  	action_data.clear();
-  	Port_obj* port = switch_metadata_ptr->ports[bridge_port->port_id];
-  	action_data.push_back(parse_param(port->hw_port,1));
-  	action_data.push_back(parse_param(0,1));
-  	// action_data.push_back(parse_param(999999,3));
-  	// action_data.push_back(parse_param(55,3));
-  	// std::cout << "table_egress_br_port_to_if : " <<match_params[0] << endl;
-  	// std::cout << "action 0 "<< action_data[0] << endl;
-  	// std::cout << "action 1 "<< action_data[1] << endl;
-  	bridge_port->handle_egress_br_port_to_if = bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_br_port_to_if",match_params, "action_forward_set_outIfType",  action_data, options);
-    uint32_t bind_mode = port->bind_mode;
-    if (bind_mode == SAI_PORT_BIND_MODE_SUB_PORT){
+	  	bridge_port->handle_id_1q = bm_client_ptr->bm_mt_add_entry(cxt_id,"table_bridge_id_1q",match_params, "action_set_bridge_id",  action_data, options);
+		l2_if_type=3;
+	}
+	// LAG
+	if (lags.find(bridge_port->port_id)==lags.end()){ // look in lags map for port id. else == found.
+		uint32_t l2_if = lags[bridge_port->port_id]->l2_if;
+      	match_params.clear();
+	  	match_params.push_back(parse_exact_match_param(bridge_port->sai_object_id,1));
+	  	action_data.clear();
+	  	Port_obj* port = switch_metadata_ptr->ports[bridge_port->port_id];
+	  	action_data.push_back(parse_param(l2_if,1));
+	  	action_data.push_back(parse_param(1,1));
+	  	bridge_port->handle_egress_br_port_to_if = bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_br_port_to_if",match_params, "action_forward_set_outIfType",  action_data, options);
+        uint32_t bind_mode = ports[lag_members[lags[bridge_port->port_id].lag_members[0]].port_id]->bind_mode;
+    // PORT
+	}
+	else{
+		match_params.clear();
+	  	match_params.push_back(parse_exact_match_param(bridge_port->sai_object_id,1));
+	  	action_data.clear();
+	  	Port_obj* port = switch_metadata_ptr->ports[bridge_port->port_id];
+	  	action_data.push_back(parse_param(port->hw_port,1));
+	  	action_data.push_back(parse_param(0,1));
+	  	bridge_port->handle_egress_br_port_to_if = bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_br_port_to_if",match_params, "action_forward_set_outIfType",  action_data, options);
+	    uint32_t bind_mode = port->bind_mode;
+	}
+	if (bind_mode == SAI_PORT_BIND_MODE_SUB_PORT){
 		match_params.clear();
 		match_params.push_back(parse_exact_match_param(bridge_port->port_id,1));// TODO p4 table match is on l2_if
 	  	match_params.push_back(parse_exact_match_param(bridge_port->vlan_id,2));
@@ -254,7 +258,7 @@ sai_status_t sai_object::create_bridge_port (sai_object_id_t *bridge_port_id, sa
 	  	action_data.push_back(parse_param(l2_if_type,1));
 	  	action_data.push_back(parse_param(bridge_port->sai_object_id,1));
 	    bridge_port->handle_subport_ingress_interface_type=bm_client_ptr->bm_mt_add_entry(cxt_id,"table_subport_ingress_interface_type",match_params, "action_set_l2_if_type",  action_data, options);
-  	}
+		}
     else{
 		match_params.clear();
 	  	match_params.push_back(parse_exact_match_param(bridge_port->port_id,1));
@@ -325,16 +329,16 @@ sai_status_t sai_object::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,uint3
     	switch (attribute.id) {
 	        case SAI_FDB_ENTRY_ATTR_TYPE:
                 entry_type = attribute.value.s32;
-                std::cout << "--> attr packet type="<<attribute.value.s32<<endl;
-                std::cout << "--> attr packet_static" << SAI_FDB_ENTRY_TYPE_STATIC <<endl;
+                //std::cout << "--> attr packet type="<<attribute.value.s32<<endl;
+                //std::cout << "--> attr packet_static" << SAI_FDB_ENTRY_TYPE_STATIC <<endl;
                 break;
              case SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID:
                 bridge_port = attribute.value.oid;
                 break;
              case SAI_FDB_ENTRY_ATTR_PACKET_ACTION:
                 packet_action = attribute.value.s32;
-                std::cout << "--> attr packet_action="<<attribute.value.s32<<endl;
-                std::cout << "--> attr packet_action_fwd=" << SAI_PACKET_ACTION_FORWARD <<endl;
+                //std::cout << "--> attr packet_action="<<attribute.value.s32<<endl;
+                //std::cout << "--> attr packet_action_fwd=" << SAI_PACKET_ACTION_FORWARD <<endl;
                 break;
              default:
                 std::cout << "attribute.id = " << attribute.id << "was dumped in sai_obj" << endl; 
@@ -376,13 +380,14 @@ sai_status_t sai_object::remove_fdb_entry(const sai_fdb_entry_t *fdb_entry){
 
 	BmMtEntry bm_entry;
 	try{
-	bm_client_ptr->bm_mt_get_entry_from_key(bm_entry,cxt_id,"table_fdb",match_params,options);
-	} catch (int e) {
+		bm_client_ptr->bm_mt_get_entry_from_key(bm_entry,cxt_id,"table_fdb",match_params,options);
+	} 
+	catch (int e) {
 		printf("Unable to delete table. possible key missmatch:%d\n",mac_address);
 		return SAI_STATUS_FAILURE;
 	};
-	std::cout << "got entry handle"<< endl;
-	std::cout << "entry is " << bm_entry.entry_handle <<endl;
+	//std::cout << "got entry handle"<< endl;
+	std::cout << "got entry handle: " << bm_entry.entry_handle <<endl;
 	bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_fdb",bm_entry.entry_handle);
 	return status;
 }
@@ -412,5 +417,64 @@ sai_status_t sai_object::remove_vlan(sai_object_id_t vlan_id){
 	switch_metadata_ptr->vlans.erase(vlan->sai_object_id);
 	sai_id_map_ptr->free_id(vlan->sai_object_id);
 	//printf("vlans.size=%d\n",switch_metadata_ptr->vlans.size());
+	return SAI_STATUS_SUCCESS;
+}
+
+sai_status_t sai_object::create_vlan_member (sai_object_id_t *vlan_member_id , sai_object_id_t switch_id, uint32_t attr_count,const sai_attribute_t *attr_list){
+	printf("create vlan_member\n");
+	Vlan_member_obj *vlan_member = new Vlan_memeber_obj(sai_id_map_ptr);
+	switch_metadata_ptr->vlans[vlan->sai_object_id] = vlan;
+	//parsing attributes
+	sai_attribute_t attribute;
+	for(uint32_t i = 0; i < attr_count; i++) {
+     	attribute =attr_list[i];
+     	switch (attribute.id) {
+	     	case : SAI_VLAN_MEMBER_ATTR_VLAN_ID
+	     		vlan_member->vlan_oid = (sai_object_id_t) attribute.value.oid;
+	     		break;
+	     	case :
+	     		vlan_member->bridge_port_id = (sai_object_id_t) attribute.value.oid;
+	     		break;
+	     	case : SAI_VLAN_MEMBER_ATTR_VLAN_TAGGING_MODE
+	     		vlan_member->tagging_mode = (uint32_t) attribute.value.s32;
+	     		break;
+	     	default:
+		     	std::cout << "while parsing vlan member, attribute.id = " << attribute.id << "was dumped in sai_obj" << endl; 
+	        	break;
+
+    }
+    Vlan_obj* vlan = vlans[vlan_member->vlan_oid];
+    vlan_member->vid = vlan->vid;
+    vlan->vlan_members.push_back(vlan_member->sai_object_id);
+    uint32_t port_id=bridge_ports[vlan_member->bridge_port_id];
+    if(lags.find(port_id)==lags.end()){
+    	uint32_t out_if = lags[port_id]->l2_if;
+    }
+    else{
+    	uint32_t out_if = ports[port_id]->hw_port;
+    }
+    BmAddEntryOptions options;
+	BmMatchParams match_params;
+	BmActionData action_data;
+    if(vlan_member->tagging_mode == SAI_VLAN_TAGGING_MODE_TAGGED){
+    	uint32_t vlan_pcp = 0;
+    	uint32_t vlan_cfi = 0;
+		match_params.push_back(parse_exact_match_param(out_if,6));
+		match_params.push_back(parse_exact_match_param(vlan_member->vid,2));
+		match_params.push_back(parse_exact_match_param(0,1));
+		action_data.push_back(parse_param(bridge_port,1));
+		BmEntryHandle handle;
+   		bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_vlan_lag",match_params, "action_forward_vlan_tag",  action_data, options);
+    }
+    else if (vlan_member->tagging_mode == SAI_VLAN_TAGGING_MODE_PRIORITY_TAGGED) {
+    	uint32_t vlan_pcp = 0;
+    	uint32_t vlan_cfi = 0;
+    }
+    else{
+
+    }
+
+  }
+	*vlan_id = bridge->sai_object_id;
 	return SAI_STATUS_SUCCESS;
 }
