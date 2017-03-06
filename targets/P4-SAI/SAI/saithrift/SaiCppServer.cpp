@@ -516,7 +516,7 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     std::cout << "--> create vlan attr count = "<< count << endl;
     sai_object_id_t s_id=0;
     sai_object_id_t vlan_id =1;
-    bridge_api->create_vlan(&vlan_id,s_id,count,attr);
+    vlan_api->create_vlan(&vlan_id,s_id,count,attr);
     free(attr);
     return (sai_thrift_object_id_t)vlan_id;
   }
@@ -524,13 +524,13 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
   sai_thrift_status_t sai_thrift_delete_vlan(const sai_thrift_object_id_t vlan_id) {
     printf("sai_thrift_delete_vlan\n");
     sai_status_t status = SAI_STATUS_SUCCESS;
-    sai_bridge_api_t *vlan_api;
+    sai_vlan_api_t *vlan_api;
     status = sai_api_query(SAI_API_VLAN, (void **) &vlan_api);
     if (status != SAI_STATUS_SUCCESS) {
         printf("sai_api_query failed!!!\n");
         return SAI_STATUS_NOT_IMPLEMENTED; 
     }
-    status = bridge_api->remove_vlan(vlan_id);
+    status = vlan_api->remove_vlan(vlan_id);
     return status;
   }
 
@@ -576,7 +576,7 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     std::cout << "--> create vlan_member attr count = "<< count << endl;
     sai_object_id_t s_id=0;
     sai_object_id_t vlan_member_id =1;
-    bridge_api->create_create_vlan_member(&vlan_member_id,s_id,count,attr);
+    vlan_api->create_vlan_member(&vlan_member_id,s_id,count,attr);
     free(attr);
     return (sai_thrift_object_id_t)vlan_member_id;
   }

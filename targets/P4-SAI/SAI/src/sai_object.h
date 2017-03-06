@@ -9,14 +9,14 @@ extern "C" {
 }
 #endif
 
-#include <saifdb.h>
-#include <saivlan.h>
-#include <sairouter.h>
-#include <sairouterintf.h>
-#include <sairoute.h>
-#include <saiswitch.h>
-#include <saimirror.h>
-#include <saistatus.h>
+// #include <saifdb.h>
+// #include <saivlan.h>
+// #include <sairouter.h>
+// #include <sairouterintf.h>
+// #include <sairoute.h>
+// #include <saiswitch.h>
+// #include <saimirror.h>
+// #include <saistatus.h>
 
 // INTERNAL
 #include "switch_meta_data.h"
@@ -84,14 +84,14 @@ public:
 	//vlan
 	static sai_status_t create_vlan (sai_object_id_t *vlan_id , sai_object_id_t switch_id, uint32_t attr_count,const sai_attribute_t *attr_list);
 	static sai_status_t remove_vlan (sai_object_id_t vlan_id);
-	static sai_status_t set_vlan_atrribute (sai_object_id_t vlan_id, const sai_attribute_t *attr);
-	static sai_status_t get_vlan_attribute (sai_object_id_t vlan_id, const uint32_t attr_count, ai_attribute_t *attr_list);
-	static sai_status_t create_vlan_member (sai_object_id_t vlan_id, sai_object_id_t switch_id, uint32_t attr_count,const sai_attribute_t *attr_list);
-	static sai_status_t remove_vlan_member (sai_object_id_t vlan_id);
-	static sai_status_t sai_set_vlan_member_attribute (sai_object_id_t vlan_member_id, const sai_attribute_t *attr);
-	static sai_status_t sai_get_vlan_member_attribute (sai_object_id_t vlan_member_id, const uint32_t attr_count, sai_attribute_t *attr_list);
-	static sai_status_t sai_get_vlan_stats (sai_object_id_t vlan_id, const sai_vlan_stat_t *counter_ids, uint32_t number_of_counters, uint64_t *counters);
-	static sai_status_t sai_clear_vlan_stats (sai_object_id_t vlan_id, const sai_vlan_stat_t *counter_ids, uint32_t number_of_counters);
+	static sai_status_t set_vlan_attribute (sai_object_id_t vlan_id, const sai_attribute_t *attr);
+	static sai_status_t get_vlan_attribute (sai_object_id_t vlan_id, const uint32_t attr_count, sai_attribute_t *attr_list);
+	static sai_status_t create_vlan_member (sai_object_id_t *vlan_member_id, sai_object_id_t switch_id, uint32_t attr_count, const sai_attribute_t *attr_list);
+	static sai_status_t remove_vlan_member (sai_object_id_t vlan_member_id);
+	static sai_status_t set_vlan_member_attribute (sai_object_id_t vlan_member_id, const sai_attribute_t *attr);
+	static sai_status_t get_vlan_member_attribute (sai_object_id_t vlan_member_id, const uint32_t attr_count, sai_attribute_t *attr_list);
+	static sai_status_t get_vlan_stats (sai_object_id_t vlan_id, const sai_vlan_stat_t *counter_ids, uint32_t number_of_counters, uint64_t *counters);
+	static sai_status_t clear_vlan_stats (sai_object_id_t vlan_id, const sai_vlan_stat_t *counter_ids, uint32_t number_of_counters);
 	//api s
 	sai_port_api_t		port_api;
 	sai_bridge_api_t	bridge_api;
@@ -133,14 +133,14 @@ public:
   		
   		vlan_api.create_vlan 			= &sai_object::create_vlan;
   		vlan_api.remove_vlan 			= &sai_object::remove_vlan;
-  		vlan_api.set_vlan_atrribute 	= &sai_object::set_vlan_atrribute;
+  		vlan_api.set_vlan_attribute 	= &sai_object::set_vlan_attribute;
   		vlan_api.get_vlan_attribute 	= &sai_object::get_vlan_attribute;
   		vlan_api.create_vlan_member 	= &sai_object::create_vlan_member;
   		vlan_api.remove_vlan_member 	= &sai_object::remove_vlan_member;
-  		vlan_api.sai_set_vlan_member_attribute = &sai_object::sai_set_vlan_member_attribute;
-  		vlan_api.sai_get_vlan_member_attribute = &sai_object::sai_get_vlan_member_attribute;
-  		vlan_api.sai_get_vlan_stats 	= &sai_object::sai_get_vlan_stats;
-  		vlan_api.sai_clear_vlan_stats 	= &sai_object::sai_clear_vlan_stats;
+  		vlan_api.set_vlan_member_attribute = &sai_object::set_vlan_member_attribute;
+  		vlan_api.get_vlan_member_attribute = &sai_object::get_vlan_member_attribute;
+  		vlan_api.get_vlan_stats 	= &sai_object::get_vlan_stats;
+  		vlan_api.clear_vlan_stats 	= &sai_object::clear_vlan_stats;
   		//
     	printf("BM connection started on port %d\n",bm_port); 
 	  }

@@ -495,20 +495,20 @@ sai_status_t sai_object::create_vlan (sai_object_id_t *vlan_id , sai_object_id_t
 	//parsing attributes
 	sai_attribute_t attribute;
 	for(uint32_t i = 0; i < attr_count; i++) {
-     attribute =attr_list[i];
-     switch (attribute.id) {
-     	case :SAI_VLAN_ATTR_VLAN_ID
+      attribute = attr_list[i];
+      switch (attribute.id) {
+     	case SAI_VLAN_ATTR_VLAN_ID:
      		vlan->vid = (uint32_t) attribute.value.u16; // TODO correct casting type
      	break;
-     }
-  }
-	*vlan_id = bridge->sai_object_id;
+      }
+    }
+    *vlan_id = vlan->sai_object_id;
 	return SAI_STATUS_SUCCESS;
 }
 
 sai_status_t sai_object::remove_vlan(sai_object_id_t vlan_id){
 	printf("remove_vlan, vlan_id = %d\n",vlan_id);
-	Bridge_obj* vlan = switch_metadata_ptr->vlans[vlan_id];
+	Vlan_obj* vlan = switch_metadata_ptr->vlans[vlan_id];
 	switch_metadata_ptr->vlans.erase(vlan->sai_object_id);
 	sai_id_map_ptr->free_id(vlan->sai_object_id);
 	//printf("vlans.size=%d\n",switch_metadata_ptr->vlans.size());
@@ -517,20 +517,20 @@ sai_status_t sai_object::remove_vlan(sai_object_id_t vlan_id){
 
 sai_status_t sai_object::create_vlan_member (sai_object_id_t *vlan_member_id , sai_object_id_t switch_id, uint32_t attr_count,const sai_attribute_t *attr_list){
 	printf("create vlan_member\n");
-	Vlan_member_obj *vlan_member = new Vlan_memeber_obj(sai_id_map_ptr);
-	switch_metadata_ptr->vlans[vlan->sai_object_id] = vlan;
+	Vlan_member_obj *vlan_member = new Vlan_member_obj(sai_id_map_ptr);
+	switch_metadata_ptr->vlan_members[vlan_member->sai_object_id] = vlan_member;
 	//parsing attributes
 	sai_attribute_t attribute;
 	for(uint32_t i = 0; i < attr_count; i++) {
      	attribute =attr_list[i];
      	switch (attribute.id) {
-	     	case : SAI_VLAN_MEMBER_ATTR_VLAN_ID
+	     	case SAI_VLAN_MEMBER_ATTR_VLAN_ID:
 	     		vlan_member->vlan_oid = (sai_object_id_t) attribute.value.oid;
 	     		break;
-	     	case :
+	     	case SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID:
 	     		vlan_member->bridge_port_id = (sai_object_id_t) attribute.value.oid;
 	     		break;
-	     	case : SAI_VLAN_MEMBER_ATTR_VLAN_TAGGING_MODE
+	     	case SAI_VLAN_MEMBER_ATTR_VLAN_TAGGING_MODE:
 	     		vlan_member->tagging_mode = (uint32_t) attribute.value.s32;
 	     		break;
 	     	default:
@@ -538,38 +538,66 @@ sai_status_t sai_object::create_vlan_member (sai_object_id_t *vlan_member_id , s
 	        	break;
 
     }
-    Vlan_obj* vlan = vlans[vlan_member->vlan_oid];
+    Vlan_obj* vlan = switch_metadata_ptr->vlans[vlan_member->vlan_oid];
     vlan_member->vid = vlan->vid;
     vlan->vlan_members.push_back(vlan_member->sai_object_id);
-    uint32_t port_id=bridge_ports[vlan_member->bridge_port_id];
-    if(lags.find(port_id)==lags.end()){
-    	uint32_t out_if = lags[port_id]->l2_if;
-    }
-    else{
-    	uint32_t out_if = ports[port_id]->hw_port;
-    }
-    BmAddEntryOptions options;
-	BmMatchParams match_params;
-	BmActionData action_data;
-    if(vlan_member->tagging_mode == SAI_VLAN_TAGGING_MODE_TAGGED){
-    	uint32_t vlan_pcp = 0;
-    	uint32_t vlan_cfi = 0;
-		match_params.push_back(parse_exact_match_param(out_if,6));
-		match_params.push_back(parse_exact_match_param(vlan_member->vid,2));
-		match_params.push_back(parse_exact_match_param(0,1));
-		action_data.push_back(parse_param(bridge_port,1));
-		BmEntryHandle handle;
-   		bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_vlan_lag",match_params, "action_forward_vlan_tag",  action_data, options);
-    }
-    else if (vlan_member->tagging_mode == SAI_VLAN_TAGGING_MODE_PRIORITY_TAGGED) {
-    	uint32_t vlan_pcp = 0;
-    	uint32_t vlan_cfi = 0;
-    }
-    else{
 
-    }
+    sai_object_id_t port_id = switch_metadata_ptr->bridge_ports[vlan_member->bridge_port_id]->port_id;
+    Port_obj* port = switch_metadata_ptr->ports[port_id];
+
+    // TODO: change to is_lag? not sure..
+    uint32_t out_if = 0;
+    // if (lags.find(port_id)==lags.end()){
+    // 	out_if = lags[port_id]->l2_if;
+    // }
+    // else{
+    // 	out_if = ports[port_id]->hw_port;
+    // }
+ //    BmAddEntryOptions options;
+	// BmMatchParams match_params;
+	// BmActionData action_data;
+ //    if(vlan_member->tagging_mode == SAI_VLAN_TAGGING_MODE_TAGGED){
+ //    	uint32_t vlan_pcp = 0;
+ //    	uint32_t vlan_cfi = 0;
+	// 	match_params.push_back(parse_exact_match_param(out_if,6));
+	// 	match_params.push_back(parse_exact_match_param(vlan_member->vid,2));
+	// 	match_params.push_back(parse_exact_match_param(0,1));
+	// 	action_data.push_back(parse_param(bridge_port,1));
+	// 	BmEntryHandle handle;
+ //   		bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_vlan_lag",match_params, "action_forward_vlan_tag",  action_data, options);
+ //    }
+ //    else if (vlan_member->tagging_mode == SAI_VLAN_TAGGING_MODE_PRIORITY_TAGGED) {
+ //    	uint32_t vlan_pcp = 0;
+ //    	uint32_t vlan_cfi = 0;
+ //    }
+ //    else{
+
+ //    }
 
   }
-	*vlan_id = bridge->sai_object_id;
+	*vlan_member_id = vlan_member->sai_object_id;
 	return SAI_STATUS_SUCCESS;
+}
+
+
+sai_status_t sai_object::set_vlan_attribute (sai_object_id_t vlan_id, const sai_attribute_t *attr) {
+	// implementation
+}
+sai_status_t sai_object::get_vlan_attribute (sai_object_id_t vlan_id, const uint32_t attr_count, sai_attribute_t *attr_list) {
+	// implementation
+}
+sai_status_t sai_object::remove_vlan_member (sai_object_id_t vlan_member_id) {
+	// implementation
+}
+sai_status_t sai_object::set_vlan_member_attribute (sai_object_id_t vlan_member_id, const sai_attribute_t *attr) {
+	// implementation
+}
+sai_status_t sai_object::get_vlan_member_attribute (sai_object_id_t vlan_member_id, const uint32_t attr_count, sai_attribute_t *attr_list) {
+	// implementation
+}
+sai_status_t sai_object::get_vlan_stats (sai_object_id_t vlan_id, const sai_vlan_stat_t *counter_ids, uint32_t number_of_counters, uint64_t *counters) {
+	// implementation
+}
+sai_status_t sai_object::clear_vlan_stats (sai_object_id_t vlan_id, const sai_vlan_stat_t *counter_ids, uint32_t number_of_counters) {
+	// implementation
 }

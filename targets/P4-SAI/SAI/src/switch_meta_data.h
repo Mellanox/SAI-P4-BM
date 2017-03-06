@@ -78,6 +78,7 @@ class Port_obj : public Sai_obj{
     uint32_t drop_tagged;
     uint32_t drop_untagged;
     bool is_default;
+    bool is_lag;
     BmEntryHandle handle_lag_if;
     BmEntryHandle handle_port_cfg;
     Port_obj(sai_id_map_t* sai_id_map_ptr): Sai_obj(sai_id_map_ptr) {
@@ -90,6 +91,7 @@ class Port_obj : public Sai_obj{
       this->pvid=1;
       this->bind_mode=SAI_PORT_BIND_MODE_PORT;
       this->is_default=true;
+      this->is_lag=false;
     }   
 };
 
@@ -139,12 +141,12 @@ public:
 class Vlan_obj : public Sai_obj {
   public:
     uint16_t vid;
-    std::vector<sai_object_id_t, Vlan_member*> vlan_members;
+    std::vector<sai_object_id_t> vlan_members;
     Vlan_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
       this->vlan_members.clear();
       this->vid = 0;
     }
-}
+};
 
 class Vlan_member_obj : public Sai_obj {
   public:
@@ -158,19 +160,19 @@ class Vlan_member_obj : public Sai_obj {
       this->tagging_mode = SAI_VLAN_TAGGING_MODE_UNTAGGED;
       this->bridge_port_id=999;
     }
-}
+};
 
 class Lag_obj : public Sai_obj {
 public:
-  l2_if;
-  std::vector<sai_object_id_t, Lag_member*> lag_members;
+  uint32_t l2_if;
+  std::vector<sai_object_id_t> lag_members;
   Port_obj* port_obj;
   Lag_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr){
     this->lag_members.clear();
     this->l2_if=0;
     this->port_obj=NULL;
   }
-}
+};
 
 class Lag_member_obj : public Sai_obj{
   uint32_t port_id;
@@ -181,12 +183,13 @@ class Lag_member_obj : public Sai_obj{
     this->lag_id=0;
     this->hw_port=0;
   }
-}
+};
 
 typedef std::map<sai_object_id_t, BridgePort_obj*>  bridge_port_id_map_t;
 typedef std::map<sai_object_id_t, Port_obj*>        port_id_map_t;
 typedef std::map<sai_object_id_t, Bridge_obj*>      bridge_id_map_t;
 typedef std::map<sai_object_id_t, Vlan_obj*>        vlan_id_map_t;
+typedef std::map<sai_object_id_t, Vlan_member_obj*> vlan_member_id_map_t;
 typedef std::map<sai_object_id_t, Lag_obj*>         lag_id_map_t;
 
 class Switch_metadata { // TODO:  add default.. // this object_id is the switch_id
@@ -196,6 +199,7 @@ public:
   bridge_port_id_map_t  bridge_ports;
   bridge_id_map_t       bridges;
   vlan_id_map_t         vlans;
+  vlan_member_id_map_t  vlan_members;
   lag_id_map_t          lags;
   sai_object_id_t       default_bridge_id;
   Switch_metadata(){
