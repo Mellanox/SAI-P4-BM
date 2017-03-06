@@ -77,6 +77,7 @@ class Port_obj : public Sai_obj{
     uint32_t mtu;
     uint32_t drop_tagged;
     uint32_t drop_untagged;
+    bool is_default;
     BmEntryHandle handle_lag_if;
     BmEntryHandle handle_port_cfg;
     Port_obj(sai_id_map_t* sai_id_map_ptr): Sai_obj(sai_id_map_ptr) {
@@ -88,6 +89,7 @@ class Port_obj : public Sai_obj{
       this->l2_if=0;
       this->pvid=1;
       this->bind_mode=SAI_PORT_BIND_MODE_PORT;
+      this->is_default=true;
     }   
 };
 
@@ -97,6 +99,7 @@ public:
   uint32_t vlan_id;
   uint32_t bridge_port;
   sai_bridge_port_type_t bridge_port_type;
+  sai_object_id_t bridge_id;
   BmEntryHandle handle_id_1d;
   BmEntryHandle handle_id_1q;
   BmEntryHandle handle_egress_set_vlan;
@@ -108,6 +111,7 @@ public:
     this->port_id=0;
     this->vlan_id=1;
     this->bridge_port=0;
+    this->bridge_id=0;
     this->bridge_port_type=SAI_BRIDGE_PORT_TYPE_PORT;
     // TODO 999 is inavlid. consider other notation
     this->handle_id_1d =999;
@@ -124,9 +128,11 @@ class Bridge_obj : public Sai_obj {
 public:
   sai_bridge_type_t bridge_type; // sai_bridge_type_t
   std::vector<sai_object_id_t> bridge_port_list;
+  uint32_t bridge_id;
   Bridge_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->bridge_type=SAI_BRIDGE_TYPE_1Q;
     this->bridge_port_list.clear();
+    this->bridge_id=1;
   }
 };
 
