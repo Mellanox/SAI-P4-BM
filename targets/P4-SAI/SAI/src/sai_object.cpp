@@ -491,6 +491,7 @@ sai_status_t sai_object::remove_fdb_entry(const sai_fdb_entry_t *fdb_entry){
 }
 
 sai_status_t sai_object::create_vlan (sai_object_id_t *vlan_id , sai_object_id_t switch_id, uint32_t attr_count,const sai_attribute_t *attr_list){
+	printf("create_vlan \n");
 	Vlan_obj *vlan = new Vlan_obj(sai_id_map_ptr);
 	switch_metadata_ptr->vlans[vlan->sai_object_id] = vlan;
 	//parsing attributes
@@ -508,6 +509,7 @@ sai_status_t sai_object::create_vlan (sai_object_id_t *vlan_id , sai_object_id_t
 }
 
 sai_status_t sai_object::remove_vlan(sai_object_id_t vlan_id){
+	printf("remove_vlan: %d\n",vlan_id);
 	Vlan_obj* vlan = switch_metadata_ptr->vlans[vlan_id];
 	switch_metadata_ptr->vlans.erase(vlan->sai_object_id);
 	sai_id_map_ptr->free_id(vlan->sai_object_id);
@@ -516,8 +518,11 @@ sai_status_t sai_object::remove_vlan(sai_object_id_t vlan_id){
 }
 
 sai_status_t sai_object::create_vlan_member (sai_object_id_t *vlan_member_id , sai_object_id_t switch_id, uint32_t attr_count,const sai_attribute_t *attr_list){
+	printf("create_vlan_member\n");
 	Vlan_member_obj *vlan_member = new Vlan_member_obj(sai_id_map_ptr);
+	printf("1\n");
 	switch_metadata_ptr->vlan_members[vlan_member->sai_object_id] = vlan_member;
+	printf("2\n");
 	//parsing attributes
 	sai_attribute_t attribute;
 	for(uint32_t i = 0; i < attr_count; i++) {
@@ -535,25 +540,36 @@ sai_status_t sai_object::create_vlan_member (sai_object_id_t *vlan_member_id , s
 	     	default:
 		     	std::cout << "while parsing vlan member, attribute.id = " << attribute.id << "was dumped in sai_obj" << endl; 
 	        	break;
-	        }
+	    }
+	    printf("->p\n");
+
     }
+    printf("3\n");
     Vlan_obj* vlan = switch_metadata_ptr->vlans[vlan_member->vlan_oid];
+    printf("4\n");
     vlan_member->vid = vlan->vid;
+    printf("5\n");
     vlan->vlan_members.push_back(vlan_member->sai_object_id);
+    printf("6\n");
     uint32_t port_id=switch_metadata_ptr->bridge_ports[vlan_member->bridge_port_id]->port_id;
+    printf("7\n");
     uint32_t bridge_port=switch_metadata_ptr->bridge_ports[vlan_member->bridge_port_id]->bridge_port;
+    printf("8\n");
 
     uint32_t out_if;
-    if(switch_metadata_ptr->lags.find(port_id)==switch_metadata_ptr->lags.end()){
+    if(switch_metadata_ptr->lags.find(port_id)!=switch_metadata_ptr->lags.end()){
+    	printf("9\n");
     	out_if = switch_metadata_ptr->lags[port_id]->l2_if;
     }
     else{
+    	printf("9.5\n");
     	out_if = switch_metadata_ptr->ports[port_id]->hw_port;
     }
     BmAddEntryOptions options;
 	BmMatchParams match_params;
 	BmActionData action_data;
     if(vlan_member->tagging_mode == SAI_VLAN_TAGGING_MODE_TAGGED){
+    	printf("10.1\n");
     	uint32_t vlan_pcp = 0;
     	uint32_t vlan_cfi = 0;
 		match_params.push_back(parse_exact_match_param(out_if,1));
@@ -561,9 +577,11 @@ sai_status_t sai_object::create_vlan_member (sai_object_id_t *vlan_member_id , s
 		match_params.push_back(parse_exact_match_param(0,1));
 		action_data.push_back(parse_param(bridge_port,1));
    		vlan_member->handle_egress_vlan_tag =
-   			bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_vlan_lag",match_params, "action_forward_vlan_tag",  action_data, options);
+   			bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_vlan_tag",match_params, "action_forward_vlan_tag",  action_data, options);
+   		printf("10.11\n");	
     }
     else if (vlan_member->tagging_mode == SAI_VLAN_TAGGING_MODE_PRIORITY_TAGGED) {
+    	printf("10.2\n");
     	uint32_t vlan_pcp = 0;
     	uint32_t vlan_cfi = 0;
     	match_params.push_back(parse_exact_match_param(out_if,1));
@@ -571,15 +589,20 @@ sai_status_t sai_object::create_vlan_member (sai_object_id_t *vlan_member_id , s
 		match_params.push_back(parse_exact_match_param(0,1));
 		action_data.push_back(parse_param(bridge_port,1));
 		vlan_member->handle_egress_vlan_tag =
-   			bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_vlan_lag",match_params, "action_forward_vlan_tag",  action_data, options);
+   			bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_vlan_tag",match_params, "action_forward_vlan_tag",  action_data, options);
+   			printf("10.22\n");
     }
     else{
+    	printf("10.3\n");
     	match_params.push_back(parse_exact_match_param(out_if,1));
 		match_params.push_back(parse_exact_match_param(vlan_member->vid,2));
 		match_params.push_back(parse_exact_match_param(1,1));
+		action_data.clear();
 		vlan_member->handle_egress_vlan_tag =
-   			bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_vlan_lag",match_params, "action_forward_vlan_untag",  action_data, options);	
+   			bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_vlan_tag",match_params, "action_forward_vlan_untag",  action_data, options);	
+   		printf("10.33\n");
     }
+    printf("11\n");
     match_params.clear();
     match_params.push_back(parse_exact_match_param(bridge_port,1));
 	match_params.push_back(parse_exact_match_param(vlan_member->vid,2));
@@ -588,6 +611,7 @@ sai_status_t sai_object::create_vlan_member (sai_object_id_t *vlan_member_id , s
     	bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_vlan_filtering",match_params, "_nop",  action_data, options);	
     vlan_member->handle_egress_vlan_filtering =
     	bm_client_ptr->bm_mt_add_entry(cxt_id,"table_ingress_vlan_filtering",match_params, "_nop",  action_data, options);	
+    	printf("12\n");
 	*vlan_member_id = vlan_member->sai_object_id;
 	return SAI_STATUS_SUCCESS;
 }
@@ -654,6 +678,7 @@ sai_status_t sai_object::clear_vlan_stats (sai_object_id_t vlan_id, const sai_vl
 }
 
 sai_status_t sai_object::create_lag(sai_object_id_t *lag_id,sai_object_id_t switch_id, uint32_t attr_count,const sai_attribute_t *attr_list){
+	printf("create_lag\n");
 	Lag_obj *lag = new Lag_obj(sai_id_map_ptr);
 	lag->l2_if = switch_metadata_ptr->GetNewL2IF();
 	switch_metadata_ptr->lags[lag->sai_object_id] = lag;
@@ -661,6 +686,7 @@ sai_status_t sai_object::create_lag(sai_object_id_t *lag_id,sai_object_id_t swit
 	return SAI_STATUS_SUCCESS;
 }
 sai_status_t sai_object::remove_lag(sai_object_id_t lag_id){
+	printf("remove_lag: %d\n",lag_id);
 	sai_status_t status = SAI_STATUS_SUCCESS;
 	Lag_obj* lag = switch_metadata_ptr->lags[lag_id];
 	try{
@@ -681,6 +707,7 @@ sai_status_t sai_object::remove_lag(sai_object_id_t lag_id){
 	return status;
 }
 sai_status_t sai_object::create_lag_member(sai_object_id_t *lag_member_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list){
+	printf("create_lag_member \n");
 	Lag_member_obj *lag_member = new Lag_member_obj(sai_id_map_ptr);
 	switch_metadata_ptr->lag_members[lag_member->sai_object_id] = lag_member;
 	//parsing attributes

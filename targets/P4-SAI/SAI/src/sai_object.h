@@ -171,19 +171,21 @@ public:
             case SAI_API_PORT:
               *api_method_table=&port_api;
               break;
-             case SAI_API_BRIDGE:
+            case SAI_API_BRIDGE:
               *api_method_table=&bridge_api;
               break;
-              case SAI_API_FDB:
+            case SAI_API_FDB:
               *api_method_table=&fdb_api;
               break;
-              case SAI_API_SWITCH:
+            case SAI_API_SWITCH:
               *api_method_table=&switch_api;
               break;
-              case SAI_API_VLAN:
+            case SAI_API_VLAN:
               *api_method_table=&vlan_api;
-              case SAI_API_LAG:
+              break;
+            case SAI_API_LAG:
               *api_method_table =&lag_api;
+              break;
          	default:
          		printf("api requested was %d, while sai_api_port is %d\n",sai_api_id,SAI_API_PORT);
          		return SAI_STATUS_FAILURE;
