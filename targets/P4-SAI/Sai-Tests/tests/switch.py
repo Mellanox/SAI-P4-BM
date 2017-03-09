@@ -113,9 +113,10 @@ def switch_init2(client):
     client.sai_thrift_create_switch([])
     attr_value = sai_thrift_attribute_value_t(oid=0)
     attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID, value=attr_value)
-    attr_value2 = sai_thrift_attribute_value_t(objlist=0)
-    attr2 = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_PORT_LIST, value=attr_value)
-    attr_list = client.sai_thrift_get_switch_attribute(thrift_attr_list=[attr, attr2])
+    # attr_value2 = sai_thrift_attribute_value_t(objlist=0)
+    # attr2 = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_PORT_LIST, value=attr_value)
+    # attr_list = client.sai_thrift_get_switch_attribute(thrift_attr_list=[attr, attr2])
+    attr_list = client.sai_thrift_get_switch_attribute(thrift_attr_list=[attr])
     default_bridge = attr_list.attr_list[0].value.oid
     for interface,front in interface_to_front_mapping.iteritems():
         sai_port_id = client.sai_thrift_get_port_id_by_front_port(front)

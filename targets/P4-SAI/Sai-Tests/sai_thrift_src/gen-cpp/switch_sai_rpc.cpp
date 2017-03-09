@@ -243,6 +243,26 @@ uint32_t switch_sai_rpc_sai_thrift_get_port_attribute_args::read(::apache::thrif
           xfer += iprot->skip(ftype);
         }
         break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->thrift_attr_list.clear();
+            uint32_t _size73;
+            ::apache::thrift::protocol::TType _etype76;
+            xfer += iprot->readListBegin(_etype76, _size73);
+            this->thrift_attr_list.resize(_size73);
+            uint32_t _i77;
+            for (_i77 = 0; _i77 < _size73; ++_i77)
+            {
+              xfer += this->thrift_attr_list[_i77].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.thrift_attr_list = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -264,6 +284,18 @@ uint32_t switch_sai_rpc_sai_thrift_get_port_attribute_args::write(::apache::thri
   xfer += oprot->writeI64(this->port_id);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 2);
+  {
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter78;
+    for (_iter78 = this->thrift_attr_list.begin(); _iter78 != this->thrift_attr_list.end(); ++_iter78)
+    {
+      xfer += (*_iter78).write(oprot);
+    }
+    xfer += oprot->writeListEnd();
+  }
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   oprot->decrementRecursionDepth();
@@ -282,6 +314,18 @@ uint32_t switch_sai_rpc_sai_thrift_get_port_attribute_pargs::write(::apache::thr
 
   xfer += oprot->writeFieldBegin("port_id", ::apache::thrift::protocol::T_I64, 1);
   xfer += oprot->writeI64((*(this->port_id)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 2);
+  {
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter79;
+    for (_iter79 = (*(this->thrift_attr_list)).begin(); _iter79 != (*(this->thrift_attr_list)).end(); ++_iter79)
+    {
+      xfer += (*_iter79).write(oprot);
+    }
+    xfer += oprot->writeListEnd();
+  }
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -433,14 +477,14 @@ uint32_t switch_sai_rpc_sai_thrift_get_port_stats_args::read(::apache::thrift::p
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->counter_ids.clear();
-            uint32_t _size73;
-            ::apache::thrift::protocol::TType _etype76;
-            xfer += iprot->readListBegin(_etype76, _size73);
-            this->counter_ids.resize(_size73);
-            uint32_t _i77;
-            for (_i77 = 0; _i77 < _size73; ++_i77)
+            uint32_t _size80;
+            ::apache::thrift::protocol::TType _etype83;
+            xfer += iprot->readListBegin(_etype83, _size80);
+            this->counter_ids.resize(_size80);
+            uint32_t _i84;
+            for (_i84 = 0; _i84 < _size80; ++_i84)
             {
-              xfer += iprot->readI32(this->counter_ids[_i77]);
+              xfer += iprot->readI32(this->counter_ids[_i84]);
             }
             xfer += iprot->readListEnd();
           }
@@ -481,10 +525,10 @@ uint32_t switch_sai_rpc_sai_thrift_get_port_stats_args::write(::apache::thrift::
   xfer += oprot->writeFieldBegin("counter_ids", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I32, static_cast<uint32_t>(this->counter_ids.size()));
-    std::vector<sai_thrift_port_stat_counter_t> ::const_iterator _iter78;
-    for (_iter78 = this->counter_ids.begin(); _iter78 != this->counter_ids.end(); ++_iter78)
+    std::vector<sai_thrift_port_stat_counter_t> ::const_iterator _iter85;
+    for (_iter85 = this->counter_ids.begin(); _iter85 != this->counter_ids.end(); ++_iter85)
     {
-      xfer += oprot->writeI32((*_iter78));
+      xfer += oprot->writeI32((*_iter85));
     }
     xfer += oprot->writeListEnd();
   }
@@ -517,10 +561,10 @@ uint32_t switch_sai_rpc_sai_thrift_get_port_stats_pargs::write(::apache::thrift:
   xfer += oprot->writeFieldBegin("counter_ids", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I32, static_cast<uint32_t>((*(this->counter_ids)).size()));
-    std::vector<sai_thrift_port_stat_counter_t> ::const_iterator _iter79;
-    for (_iter79 = (*(this->counter_ids)).begin(); _iter79 != (*(this->counter_ids)).end(); ++_iter79)
+    std::vector<sai_thrift_port_stat_counter_t> ::const_iterator _iter86;
+    for (_iter86 = (*(this->counter_ids)).begin(); _iter86 != (*(this->counter_ids)).end(); ++_iter86)
     {
-      xfer += oprot->writeI32((*_iter79));
+      xfer += oprot->writeI32((*_iter86));
     }
     xfer += oprot->writeListEnd();
   }
@@ -565,14 +609,14 @@ uint32_t switch_sai_rpc_sai_thrift_get_port_stats_result::read(::apache::thrift:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size80;
-            ::apache::thrift::protocol::TType _etype83;
-            xfer += iprot->readListBegin(_etype83, _size80);
-            this->success.resize(_size80);
-            uint32_t _i84;
-            for (_i84 = 0; _i84 < _size80; ++_i84)
+            uint32_t _size87;
+            ::apache::thrift::protocol::TType _etype90;
+            xfer += iprot->readListBegin(_etype90, _size87);
+            this->success.resize(_size87);
+            uint32_t _i91;
+            for (_i91 = 0; _i91 < _size87; ++_i91)
             {
-              xfer += iprot->readI64(this->success[_i84]);
+              xfer += iprot->readI64(this->success[_i91]);
             }
             xfer += iprot->readListEnd();
           }
@@ -603,10 +647,10 @@ uint32_t switch_sai_rpc_sai_thrift_get_port_stats_result::write(::apache::thrift
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I64, static_cast<uint32_t>(this->success.size()));
-      std::vector<int64_t> ::const_iterator _iter85;
-      for (_iter85 = this->success.begin(); _iter85 != this->success.end(); ++_iter85)
+      std::vector<int64_t> ::const_iterator _iter92;
+      for (_iter92 = this->success.begin(); _iter92 != this->success.end(); ++_iter92)
       {
-        xfer += oprot->writeI64((*_iter85));
+        xfer += oprot->writeI64((*_iter92));
       }
       xfer += oprot->writeListEnd();
     }
@@ -646,14 +690,14 @@ uint32_t switch_sai_rpc_sai_thrift_get_port_stats_presult::read(::apache::thrift
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size86;
-            ::apache::thrift::protocol::TType _etype89;
-            xfer += iprot->readListBegin(_etype89, _size86);
-            (*(this->success)).resize(_size86);
-            uint32_t _i90;
-            for (_i90 = 0; _i90 < _size86; ++_i90)
+            uint32_t _size93;
+            ::apache::thrift::protocol::TType _etype96;
+            xfer += iprot->readListBegin(_etype96, _size93);
+            (*(this->success)).resize(_size93);
+            uint32_t _i97;
+            for (_i97 = 0; _i97 < _size93; ++_i97)
             {
-              xfer += iprot->readI64((*(this->success))[_i90]);
+              xfer += iprot->readI64((*(this->success))[_i97]);
             }
             xfer += iprot->readListEnd();
           }
@@ -1075,14 +1119,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_port_args::read(::apache::thrift::prot
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size91;
-            ::apache::thrift::protocol::TType _etype94;
-            xfer += iprot->readListBegin(_etype94, _size91);
-            this->thrift_attr_list.resize(_size91);
-            uint32_t _i95;
-            for (_i95 = 0; _i95 < _size91; ++_i95)
+            uint32_t _size98;
+            ::apache::thrift::protocol::TType _etype101;
+            xfer += iprot->readListBegin(_etype101, _size98);
+            this->thrift_attr_list.resize(_size98);
+            uint32_t _i102;
+            for (_i102 = 0; _i102 < _size98; ++_i102)
             {
-              xfer += this->thrift_attr_list[_i95].read(iprot);
+              xfer += this->thrift_attr_list[_i102].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1111,10 +1155,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_port_args::write(::apache::thrift::pro
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter96;
-    for (_iter96 = this->thrift_attr_list.begin(); _iter96 != this->thrift_attr_list.end(); ++_iter96)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter103;
+    for (_iter103 = this->thrift_attr_list.begin(); _iter103 != this->thrift_attr_list.end(); ++_iter103)
     {
-      xfer += (*_iter96).write(oprot);
+      xfer += (*_iter103).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -1139,10 +1183,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_port_pargs::write(::apache::thrift::pr
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter97;
-    for (_iter97 = (*(this->thrift_attr_list)).begin(); _iter97 != (*(this->thrift_attr_list)).end(); ++_iter97)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter104;
+    for (_iter104 = (*(this->thrift_attr_list)).begin(); _iter104 != (*(this->thrift_attr_list)).end(); ++_iter104)
     {
-      xfer += (*_iter97).write(oprot);
+      xfer += (*_iter104).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -1289,14 +1333,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_bridge_args::read(::apache::thrift::pr
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size98;
-            ::apache::thrift::protocol::TType _etype101;
-            xfer += iprot->readListBegin(_etype101, _size98);
-            this->thrift_attr_list.resize(_size98);
-            uint32_t _i102;
-            for (_i102 = 0; _i102 < _size98; ++_i102)
+            uint32_t _size105;
+            ::apache::thrift::protocol::TType _etype108;
+            xfer += iprot->readListBegin(_etype108, _size105);
+            this->thrift_attr_list.resize(_size105);
+            uint32_t _i109;
+            for (_i109 = 0; _i109 < _size105; ++_i109)
             {
-              xfer += this->thrift_attr_list[_i102].read(iprot);
+              xfer += this->thrift_attr_list[_i109].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1325,10 +1369,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_bridge_args::write(::apache::thrift::p
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter103;
-    for (_iter103 = this->thrift_attr_list.begin(); _iter103 != this->thrift_attr_list.end(); ++_iter103)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter110;
+    for (_iter110 = this->thrift_attr_list.begin(); _iter110 != this->thrift_attr_list.end(); ++_iter110)
     {
-      xfer += (*_iter103).write(oprot);
+      xfer += (*_iter110).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -1353,10 +1397,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_bridge_pargs::write(::apache::thrift::
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter104;
-    for (_iter104 = (*(this->thrift_attr_list)).begin(); _iter104 != (*(this->thrift_attr_list)).end(); ++_iter104)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter111;
+    for (_iter111 = (*(this->thrift_attr_list)).begin(); _iter111 != (*(this->thrift_attr_list)).end(); ++_iter111)
     {
-      xfer += (*_iter104).write(oprot);
+      xfer += (*_iter111).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -1661,6 +1705,236 @@ uint32_t switch_sai_rpc_sai_thrift_remove_bridge_presult::read(::apache::thrift:
 }
 
 
+switch_sai_rpc_sai_thirft_get_bridge_attribute_args::~switch_sai_rpc_sai_thirft_get_bridge_attribute_args() throw() {
+}
+
+
+uint32_t switch_sai_rpc_sai_thirft_get_bridge_attribute_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->bridge_id);
+          this->__isset.bridge_id = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->thrift_attr_list.clear();
+            uint32_t _size112;
+            ::apache::thrift::protocol::TType _etype115;
+            xfer += iprot->readListBegin(_etype115, _size112);
+            this->thrift_attr_list.resize(_size112);
+            uint32_t _i116;
+            for (_i116 = 0; _i116 < _size112; ++_i116)
+            {
+              xfer += this->thrift_attr_list[_i116].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.thrift_attr_list = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t switch_sai_rpc_sai_thirft_get_bridge_attribute_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  oprot->incrementRecursionDepth();
+  xfer += oprot->writeStructBegin("switch_sai_rpc_sai_thirft_get_bridge_attribute_args");
+
+  xfer += oprot->writeFieldBegin("bridge_id", ::apache::thrift::protocol::T_I64, 1);
+  xfer += oprot->writeI64(this->bridge_id);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 2);
+  {
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter117;
+    for (_iter117 = this->thrift_attr_list.begin(); _iter117 != this->thrift_attr_list.end(); ++_iter117)
+    {
+      xfer += (*_iter117).write(oprot);
+    }
+    xfer += oprot->writeListEnd();
+  }
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  oprot->decrementRecursionDepth();
+  return xfer;
+}
+
+
+switch_sai_rpc_sai_thirft_get_bridge_attribute_pargs::~switch_sai_rpc_sai_thirft_get_bridge_attribute_pargs() throw() {
+}
+
+
+uint32_t switch_sai_rpc_sai_thirft_get_bridge_attribute_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  oprot->incrementRecursionDepth();
+  xfer += oprot->writeStructBegin("switch_sai_rpc_sai_thirft_get_bridge_attribute_pargs");
+
+  xfer += oprot->writeFieldBegin("bridge_id", ::apache::thrift::protocol::T_I64, 1);
+  xfer += oprot->writeI64((*(this->bridge_id)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 2);
+  {
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter118;
+    for (_iter118 = (*(this->thrift_attr_list)).begin(); _iter118 != (*(this->thrift_attr_list)).end(); ++_iter118)
+    {
+      xfer += (*_iter118).write(oprot);
+    }
+    xfer += oprot->writeListEnd();
+  }
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  oprot->decrementRecursionDepth();
+  return xfer;
+}
+
+
+switch_sai_rpc_sai_thirft_get_bridge_attribute_result::~switch_sai_rpc_sai_thirft_get_bridge_attribute_result() throw() {
+}
+
+
+uint32_t switch_sai_rpc_sai_thirft_get_bridge_attribute_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->success.read(iprot);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t switch_sai_rpc_sai_thirft_get_bridge_attribute_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("switch_sai_rpc_sai_thirft_get_bridge_attribute_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRUCT, 0);
+    xfer += this->success.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+switch_sai_rpc_sai_thirft_get_bridge_attribute_presult::~switch_sai_rpc_sai_thirft_get_bridge_attribute_presult() throw() {
+}
+
+
+uint32_t switch_sai_rpc_sai_thirft_get_bridge_attribute_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += (*(this->success)).read(iprot);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+
 switch_sai_rpc_sai_thrift_create_bridge_port_args::~switch_sai_rpc_sai_thrift_create_bridge_port_args() throw() {
 }
 
@@ -1689,14 +1963,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_bridge_port_args::read(::apache::thrif
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size105;
-            ::apache::thrift::protocol::TType _etype108;
-            xfer += iprot->readListBegin(_etype108, _size105);
-            this->thrift_attr_list.resize(_size105);
-            uint32_t _i109;
-            for (_i109 = 0; _i109 < _size105; ++_i109)
+            uint32_t _size119;
+            ::apache::thrift::protocol::TType _etype122;
+            xfer += iprot->readListBegin(_etype122, _size119);
+            this->thrift_attr_list.resize(_size119);
+            uint32_t _i123;
+            for (_i123 = 0; _i123 < _size119; ++_i123)
             {
-              xfer += this->thrift_attr_list[_i109].read(iprot);
+              xfer += this->thrift_attr_list[_i123].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1725,10 +1999,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_bridge_port_args::write(::apache::thri
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter110;
-    for (_iter110 = this->thrift_attr_list.begin(); _iter110 != this->thrift_attr_list.end(); ++_iter110)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter124;
+    for (_iter124 = this->thrift_attr_list.begin(); _iter124 != this->thrift_attr_list.end(); ++_iter124)
     {
-      xfer += (*_iter110).write(oprot);
+      xfer += (*_iter124).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -1753,10 +2027,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_bridge_port_pargs::write(::apache::thr
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter111;
-    for (_iter111 = (*(this->thrift_attr_list)).begin(); _iter111 != (*(this->thrift_attr_list)).end(); ++_iter111)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter125;
+    for (_iter125 = (*(this->thrift_attr_list)).begin(); _iter125 != (*(this->thrift_attr_list)).end(); ++_iter125)
     {
-      xfer += (*_iter111).write(oprot);
+      xfer += (*_iter125).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -2061,11 +2335,11 @@ uint32_t switch_sai_rpc_sai_thrift_remove_bridge_port_presult::read(::apache::th
 }
 
 
-switch_sai_rpc_sai_thirft_get_bridge_attribute_args::~switch_sai_rpc_sai_thirft_get_bridge_attribute_args() throw() {
+switch_sai_rpc_sai_thirft_get_bridge_port_attribute_args::~switch_sai_rpc_sai_thirft_get_bridge_port_attribute_args() throw() {
 }
 
 
-uint32_t switch_sai_rpc_sai_thirft_get_bridge_attribute_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t switch_sai_rpc_sai_thirft_get_bridge_port_attribute_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2087,8 +2361,8 @@ uint32_t switch_sai_rpc_sai_thirft_get_bridge_attribute_args::read(::apache::thr
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_I64) {
-          xfer += iprot->readI64(this->bridge_id);
-          this->__isset.bridge_id = true;
+          xfer += iprot->readI64(this->bridge_port_id);
+          this->__isset.bridge_port_id = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -2097,14 +2371,14 @@ uint32_t switch_sai_rpc_sai_thirft_get_bridge_attribute_args::read(::apache::thr
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size112;
-            ::apache::thrift::protocol::TType _etype115;
-            xfer += iprot->readListBegin(_etype115, _size112);
-            this->thrift_attr_list.resize(_size112);
-            uint32_t _i116;
-            for (_i116 = 0; _i116 < _size112; ++_i116)
+            uint32_t _size126;
+            ::apache::thrift::protocol::TType _etype129;
+            xfer += iprot->readListBegin(_etype129, _size126);
+            this->thrift_attr_list.resize(_size126);
+            uint32_t _i130;
+            for (_i130 = 0; _i130 < _size126; ++_i130)
             {
-              xfer += this->thrift_attr_list[_i116].read(iprot);
+              xfer += this->thrift_attr_list[_i130].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2125,22 +2399,22 @@ uint32_t switch_sai_rpc_sai_thirft_get_bridge_attribute_args::read(::apache::thr
   return xfer;
 }
 
-uint32_t switch_sai_rpc_sai_thirft_get_bridge_attribute_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t switch_sai_rpc_sai_thirft_get_bridge_port_attribute_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("switch_sai_rpc_sai_thirft_get_bridge_attribute_args");
+  xfer += oprot->writeStructBegin("switch_sai_rpc_sai_thirft_get_bridge_port_attribute_args");
 
-  xfer += oprot->writeFieldBegin("bridge_id", ::apache::thrift::protocol::T_I64, 1);
-  xfer += oprot->writeI64(this->bridge_id);
+  xfer += oprot->writeFieldBegin("bridge_port_id", ::apache::thrift::protocol::T_I64, 1);
+  xfer += oprot->writeI64(this->bridge_port_id);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter117;
-    for (_iter117 = this->thrift_attr_list.begin(); _iter117 != this->thrift_attr_list.end(); ++_iter117)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter131;
+    for (_iter131 = this->thrift_attr_list.begin(); _iter131 != this->thrift_attr_list.end(); ++_iter131)
     {
-      xfer += (*_iter117).write(oprot);
+      xfer += (*_iter131).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -2153,26 +2427,26 @@ uint32_t switch_sai_rpc_sai_thirft_get_bridge_attribute_args::write(::apache::th
 }
 
 
-switch_sai_rpc_sai_thirft_get_bridge_attribute_pargs::~switch_sai_rpc_sai_thirft_get_bridge_attribute_pargs() throw() {
+switch_sai_rpc_sai_thirft_get_bridge_port_attribute_pargs::~switch_sai_rpc_sai_thirft_get_bridge_port_attribute_pargs() throw() {
 }
 
 
-uint32_t switch_sai_rpc_sai_thirft_get_bridge_attribute_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t switch_sai_rpc_sai_thirft_get_bridge_port_attribute_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("switch_sai_rpc_sai_thirft_get_bridge_attribute_pargs");
+  xfer += oprot->writeStructBegin("switch_sai_rpc_sai_thirft_get_bridge_port_attribute_pargs");
 
-  xfer += oprot->writeFieldBegin("bridge_id", ::apache::thrift::protocol::T_I64, 1);
-  xfer += oprot->writeI64((*(this->bridge_id)));
+  xfer += oprot->writeFieldBegin("bridge_port_id", ::apache::thrift::protocol::T_I64, 1);
+  xfer += oprot->writeI64((*(this->bridge_port_id)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter118;
-    for (_iter118 = (*(this->thrift_attr_list)).begin(); _iter118 != (*(this->thrift_attr_list)).end(); ++_iter118)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter132;
+    for (_iter132 = (*(this->thrift_attr_list)).begin(); _iter132 != (*(this->thrift_attr_list)).end(); ++_iter132)
     {
-      xfer += (*_iter118).write(oprot);
+      xfer += (*_iter132).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -2185,11 +2459,11 @@ uint32_t switch_sai_rpc_sai_thirft_get_bridge_attribute_pargs::write(::apache::t
 }
 
 
-switch_sai_rpc_sai_thirft_get_bridge_attribute_result::~switch_sai_rpc_sai_thirft_get_bridge_attribute_result() throw() {
+switch_sai_rpc_sai_thirft_get_bridge_port_attribute_result::~switch_sai_rpc_sai_thirft_get_bridge_port_attribute_result() throw() {
 }
 
 
-uint32_t switch_sai_rpc_sai_thirft_get_bridge_attribute_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t switch_sai_rpc_sai_thirft_get_bridge_port_attribute_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2229,11 +2503,11 @@ uint32_t switch_sai_rpc_sai_thirft_get_bridge_attribute_result::read(::apache::t
   return xfer;
 }
 
-uint32_t switch_sai_rpc_sai_thirft_get_bridge_attribute_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t switch_sai_rpc_sai_thirft_get_bridge_port_attribute_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("switch_sai_rpc_sai_thirft_get_bridge_attribute_result");
+  xfer += oprot->writeStructBegin("switch_sai_rpc_sai_thirft_get_bridge_port_attribute_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRUCT, 0);
@@ -2246,11 +2520,11 @@ uint32_t switch_sai_rpc_sai_thirft_get_bridge_attribute_result::write(::apache::
 }
 
 
-switch_sai_rpc_sai_thirft_get_bridge_attribute_presult::~switch_sai_rpc_sai_thirft_get_bridge_attribute_presult() throw() {
+switch_sai_rpc_sai_thirft_get_bridge_port_attribute_presult::~switch_sai_rpc_sai_thirft_get_bridge_port_attribute_presult() throw() {
 }
 
 
-uint32_t switch_sai_rpc_sai_thirft_get_bridge_attribute_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t switch_sai_rpc_sai_thirft_get_bridge_port_attribute_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2273,6 +2547,208 @@ uint32_t switch_sai_rpc_sai_thirft_get_bridge_attribute_presult::read(::apache::
       case 0:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += (*(this->success)).read(iprot);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+
+switch_sai_rpc_sai_thrift_set_bridge_port_attribute_args::~switch_sai_rpc_sai_thrift_set_bridge_port_attribute_args() throw() {
+}
+
+
+uint32_t switch_sai_rpc_sai_thrift_set_bridge_port_attribute_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->bridge_port_id);
+          this->__isset.bridge_port_id = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->thrift_attr.read(iprot);
+          this->__isset.thrift_attr = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t switch_sai_rpc_sai_thrift_set_bridge_port_attribute_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  oprot->incrementRecursionDepth();
+  xfer += oprot->writeStructBegin("switch_sai_rpc_sai_thrift_set_bridge_port_attribute_args");
+
+  xfer += oprot->writeFieldBegin("bridge_port_id", ::apache::thrift::protocol::T_I64, 1);
+  xfer += oprot->writeI64(this->bridge_port_id);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("thrift_attr", ::apache::thrift::protocol::T_STRUCT, 2);
+  xfer += this->thrift_attr.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  oprot->decrementRecursionDepth();
+  return xfer;
+}
+
+
+switch_sai_rpc_sai_thrift_set_bridge_port_attribute_pargs::~switch_sai_rpc_sai_thrift_set_bridge_port_attribute_pargs() throw() {
+}
+
+
+uint32_t switch_sai_rpc_sai_thrift_set_bridge_port_attribute_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  oprot->incrementRecursionDepth();
+  xfer += oprot->writeStructBegin("switch_sai_rpc_sai_thrift_set_bridge_port_attribute_pargs");
+
+  xfer += oprot->writeFieldBegin("bridge_port_id", ::apache::thrift::protocol::T_I64, 1);
+  xfer += oprot->writeI64((*(this->bridge_port_id)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("thrift_attr", ::apache::thrift::protocol::T_STRUCT, 2);
+  xfer += (*(this->thrift_attr)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  oprot->decrementRecursionDepth();
+  return xfer;
+}
+
+
+switch_sai_rpc_sai_thrift_set_bridge_port_attribute_result::~switch_sai_rpc_sai_thrift_set_bridge_port_attribute_result() throw() {
+}
+
+
+uint32_t switch_sai_rpc_sai_thrift_set_bridge_port_attribute_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t switch_sai_rpc_sai_thrift_set_bridge_port_attribute_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("switch_sai_rpc_sai_thrift_set_bridge_port_attribute_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I32, 0);
+    xfer += oprot->writeI32(this->success);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+switch_sai_rpc_sai_thrift_set_bridge_port_attribute_presult::~switch_sai_rpc_sai_thrift_set_bridge_port_attribute_presult() throw() {
+}
+
+
+uint32_t switch_sai_rpc_sai_thrift_set_bridge_port_attribute_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32((*(this->success)));
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -2327,14 +2803,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_fdb_entry_args::read(::apache::thrift:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size119;
-            ::apache::thrift::protocol::TType _etype122;
-            xfer += iprot->readListBegin(_etype122, _size119);
-            this->thrift_attr_list.resize(_size119);
-            uint32_t _i123;
-            for (_i123 = 0; _i123 < _size119; ++_i123)
+            uint32_t _size133;
+            ::apache::thrift::protocol::TType _etype136;
+            xfer += iprot->readListBegin(_etype136, _size133);
+            this->thrift_attr_list.resize(_size133);
+            uint32_t _i137;
+            for (_i137 = 0; _i137 < _size133; ++_i137)
             {
-              xfer += this->thrift_attr_list[_i123].read(iprot);
+              xfer += this->thrift_attr_list[_i137].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2367,10 +2843,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_fdb_entry_args::write(::apache::thrift
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter124;
-    for (_iter124 = this->thrift_attr_list.begin(); _iter124 != this->thrift_attr_list.end(); ++_iter124)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter138;
+    for (_iter138 = this->thrift_attr_list.begin(); _iter138 != this->thrift_attr_list.end(); ++_iter138)
     {
-      xfer += (*_iter124).write(oprot);
+      xfer += (*_iter138).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -2399,10 +2875,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_fdb_entry_pargs::write(::apache::thrif
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter125;
-    for (_iter125 = (*(this->thrift_attr_list)).begin(); _iter125 != (*(this->thrift_attr_list)).end(); ++_iter125)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter139;
+    for (_iter139 = (*(this->thrift_attr_list)).begin(); _iter139 != (*(this->thrift_attr_list)).end(); ++_iter139)
     {
-      xfer += (*_iter125).write(oprot);
+      xfer += (*_iter139).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -2735,14 +3211,14 @@ uint32_t switch_sai_rpc_sai_thrift_flush_fdb_entries_args::read(::apache::thrift
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size126;
-            ::apache::thrift::protocol::TType _etype129;
-            xfer += iprot->readListBegin(_etype129, _size126);
-            this->thrift_attr_list.resize(_size126);
-            uint32_t _i130;
-            for (_i130 = 0; _i130 < _size126; ++_i130)
+            uint32_t _size140;
+            ::apache::thrift::protocol::TType _etype143;
+            xfer += iprot->readListBegin(_etype143, _size140);
+            this->thrift_attr_list.resize(_size140);
+            uint32_t _i144;
+            for (_i144 = 0; _i144 < _size140; ++_i144)
             {
-              xfer += this->thrift_attr_list[_i130].read(iprot);
+              xfer += this->thrift_attr_list[_i144].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2771,10 +3247,10 @@ uint32_t switch_sai_rpc_sai_thrift_flush_fdb_entries_args::write(::apache::thrif
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter131;
-    for (_iter131 = this->thrift_attr_list.begin(); _iter131 != this->thrift_attr_list.end(); ++_iter131)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter145;
+    for (_iter145 = this->thrift_attr_list.begin(); _iter145 != this->thrift_attr_list.end(); ++_iter145)
     {
-      xfer += (*_iter131).write(oprot);
+      xfer += (*_iter145).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -2799,10 +3275,10 @@ uint32_t switch_sai_rpc_sai_thrift_flush_fdb_entries_pargs::write(::apache::thri
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter132;
-    for (_iter132 = (*(this->thrift_attr_list)).begin(); _iter132 != (*(this->thrift_attr_list)).end(); ++_iter132)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter146;
+    for (_iter146 = (*(this->thrift_attr_list)).begin(); _iter146 != (*(this->thrift_attr_list)).end(); ++_iter146)
     {
-      xfer += (*_iter132).write(oprot);
+      xfer += (*_iter146).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -2949,14 +3425,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_vlan_args::read(::apache::thrift::prot
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size133;
-            ::apache::thrift::protocol::TType _etype136;
-            xfer += iprot->readListBegin(_etype136, _size133);
-            this->thrift_attr_list.resize(_size133);
-            uint32_t _i137;
-            for (_i137 = 0; _i137 < _size133; ++_i137)
+            uint32_t _size147;
+            ::apache::thrift::protocol::TType _etype150;
+            xfer += iprot->readListBegin(_etype150, _size147);
+            this->thrift_attr_list.resize(_size147);
+            uint32_t _i151;
+            for (_i151 = 0; _i151 < _size147; ++_i151)
             {
-              xfer += this->thrift_attr_list[_i137].read(iprot);
+              xfer += this->thrift_attr_list[_i151].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2985,10 +3461,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_vlan_args::write(::apache::thrift::pro
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter138;
-    for (_iter138 = this->thrift_attr_list.begin(); _iter138 != this->thrift_attr_list.end(); ++_iter138)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter152;
+    for (_iter152 = this->thrift_attr_list.begin(); _iter152 != this->thrift_attr_list.end(); ++_iter152)
     {
-      xfer += (*_iter138).write(oprot);
+      xfer += (*_iter152).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -3013,10 +3489,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_vlan_pargs::write(::apache::thrift::pr
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter139;
-    for (_iter139 = (*(this->thrift_attr_list)).begin(); _iter139 != (*(this->thrift_attr_list)).end(); ++_iter139)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter153;
+    for (_iter153 = (*(this->thrift_attr_list)).begin(); _iter153 != (*(this->thrift_attr_list)).end(); ++_iter153)
     {
-      xfer += (*_iter139).write(oprot);
+      xfer += (*_iter153).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -3357,14 +3833,14 @@ uint32_t switch_sai_rpc_sai_thrift_get_vlan_stats_args::read(::apache::thrift::p
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->counter_ids.clear();
-            uint32_t _size140;
-            ::apache::thrift::protocol::TType _etype143;
-            xfer += iprot->readListBegin(_etype143, _size140);
-            this->counter_ids.resize(_size140);
-            uint32_t _i144;
-            for (_i144 = 0; _i144 < _size140; ++_i144)
+            uint32_t _size154;
+            ::apache::thrift::protocol::TType _etype157;
+            xfer += iprot->readListBegin(_etype157, _size154);
+            this->counter_ids.resize(_size154);
+            uint32_t _i158;
+            for (_i158 = 0; _i158 < _size154; ++_i158)
             {
-              xfer += iprot->readI32(this->counter_ids[_i144]);
+              xfer += iprot->readI32(this->counter_ids[_i158]);
             }
             xfer += iprot->readListEnd();
           }
@@ -3405,10 +3881,10 @@ uint32_t switch_sai_rpc_sai_thrift_get_vlan_stats_args::write(::apache::thrift::
   xfer += oprot->writeFieldBegin("counter_ids", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I32, static_cast<uint32_t>(this->counter_ids.size()));
-    std::vector<sai_thrift_vlan_stat_counter_t> ::const_iterator _iter145;
-    for (_iter145 = this->counter_ids.begin(); _iter145 != this->counter_ids.end(); ++_iter145)
+    std::vector<sai_thrift_vlan_stat_counter_t> ::const_iterator _iter159;
+    for (_iter159 = this->counter_ids.begin(); _iter159 != this->counter_ids.end(); ++_iter159)
     {
-      xfer += oprot->writeI32((*_iter145));
+      xfer += oprot->writeI32((*_iter159));
     }
     xfer += oprot->writeListEnd();
   }
@@ -3441,10 +3917,10 @@ uint32_t switch_sai_rpc_sai_thrift_get_vlan_stats_pargs::write(::apache::thrift:
   xfer += oprot->writeFieldBegin("counter_ids", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I32, static_cast<uint32_t>((*(this->counter_ids)).size()));
-    std::vector<sai_thrift_vlan_stat_counter_t> ::const_iterator _iter146;
-    for (_iter146 = (*(this->counter_ids)).begin(); _iter146 != (*(this->counter_ids)).end(); ++_iter146)
+    std::vector<sai_thrift_vlan_stat_counter_t> ::const_iterator _iter160;
+    for (_iter160 = (*(this->counter_ids)).begin(); _iter160 != (*(this->counter_ids)).end(); ++_iter160)
     {
-      xfer += oprot->writeI32((*_iter146));
+      xfer += oprot->writeI32((*_iter160));
     }
     xfer += oprot->writeListEnd();
   }
@@ -3489,14 +3965,14 @@ uint32_t switch_sai_rpc_sai_thrift_get_vlan_stats_result::read(::apache::thrift:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size147;
-            ::apache::thrift::protocol::TType _etype150;
-            xfer += iprot->readListBegin(_etype150, _size147);
-            this->success.resize(_size147);
-            uint32_t _i151;
-            for (_i151 = 0; _i151 < _size147; ++_i151)
+            uint32_t _size161;
+            ::apache::thrift::protocol::TType _etype164;
+            xfer += iprot->readListBegin(_etype164, _size161);
+            this->success.resize(_size161);
+            uint32_t _i165;
+            for (_i165 = 0; _i165 < _size161; ++_i165)
             {
-              xfer += iprot->readI64(this->success[_i151]);
+              xfer += iprot->readI64(this->success[_i165]);
             }
             xfer += iprot->readListEnd();
           }
@@ -3527,10 +4003,10 @@ uint32_t switch_sai_rpc_sai_thrift_get_vlan_stats_result::write(::apache::thrift
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I64, static_cast<uint32_t>(this->success.size()));
-      std::vector<int64_t> ::const_iterator _iter152;
-      for (_iter152 = this->success.begin(); _iter152 != this->success.end(); ++_iter152)
+      std::vector<int64_t> ::const_iterator _iter166;
+      for (_iter166 = this->success.begin(); _iter166 != this->success.end(); ++_iter166)
       {
-        xfer += oprot->writeI64((*_iter152));
+        xfer += oprot->writeI64((*_iter166));
       }
       xfer += oprot->writeListEnd();
     }
@@ -3570,14 +4046,14 @@ uint32_t switch_sai_rpc_sai_thrift_get_vlan_stats_presult::read(::apache::thrift
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size153;
-            ::apache::thrift::protocol::TType _etype156;
-            xfer += iprot->readListBegin(_etype156, _size153);
-            (*(this->success)).resize(_size153);
-            uint32_t _i157;
-            for (_i157 = 0; _i157 < _size153; ++_i157)
+            uint32_t _size167;
+            ::apache::thrift::protocol::TType _etype170;
+            xfer += iprot->readListBegin(_etype170, _size167);
+            (*(this->success)).resize(_size167);
+            uint32_t _i171;
+            for (_i171 = 0; _i171 < _size167; ++_i171)
             {
-              xfer += iprot->readI64((*(this->success))[_i157]);
+              xfer += iprot->readI64((*(this->success))[_i171]);
             }
             xfer += iprot->readListEnd();
           }
@@ -3627,14 +4103,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_vlan_member_args::read(::apache::thrif
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size158;
-            ::apache::thrift::protocol::TType _etype161;
-            xfer += iprot->readListBegin(_etype161, _size158);
-            this->thrift_attr_list.resize(_size158);
-            uint32_t _i162;
-            for (_i162 = 0; _i162 < _size158; ++_i162)
+            uint32_t _size172;
+            ::apache::thrift::protocol::TType _etype175;
+            xfer += iprot->readListBegin(_etype175, _size172);
+            this->thrift_attr_list.resize(_size172);
+            uint32_t _i176;
+            for (_i176 = 0; _i176 < _size172; ++_i176)
             {
-              xfer += this->thrift_attr_list[_i162].read(iprot);
+              xfer += this->thrift_attr_list[_i176].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -3663,10 +4139,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_vlan_member_args::write(::apache::thri
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter163;
-    for (_iter163 = this->thrift_attr_list.begin(); _iter163 != this->thrift_attr_list.end(); ++_iter163)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter177;
+    for (_iter177 = this->thrift_attr_list.begin(); _iter177 != this->thrift_attr_list.end(); ++_iter177)
     {
-      xfer += (*_iter163).write(oprot);
+      xfer += (*_iter177).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -3691,10 +4167,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_vlan_member_pargs::write(::apache::thr
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter164;
-    for (_iter164 = (*(this->thrift_attr_list)).begin(); _iter164 != (*(this->thrift_attr_list)).end(); ++_iter164)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter178;
+    for (_iter178 = (*(this->thrift_attr_list)).begin(); _iter178 != (*(this->thrift_attr_list)).end(); ++_iter178)
     {
-      xfer += (*_iter164).write(oprot);
+      xfer += (*_iter178).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -4213,14 +4689,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_virtual_router_args::read(::apache::th
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size165;
-            ::apache::thrift::protocol::TType _etype168;
-            xfer += iprot->readListBegin(_etype168, _size165);
-            this->thrift_attr_list.resize(_size165);
-            uint32_t _i169;
-            for (_i169 = 0; _i169 < _size165; ++_i169)
+            uint32_t _size179;
+            ::apache::thrift::protocol::TType _etype182;
+            xfer += iprot->readListBegin(_etype182, _size179);
+            this->thrift_attr_list.resize(_size179);
+            uint32_t _i183;
+            for (_i183 = 0; _i183 < _size179; ++_i183)
             {
-              xfer += this->thrift_attr_list[_i169].read(iprot);
+              xfer += this->thrift_attr_list[_i183].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -4249,10 +4725,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_virtual_router_args::write(::apache::t
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter170;
-    for (_iter170 = this->thrift_attr_list.begin(); _iter170 != this->thrift_attr_list.end(); ++_iter170)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter184;
+    for (_iter184 = this->thrift_attr_list.begin(); _iter184 != this->thrift_attr_list.end(); ++_iter184)
     {
-      xfer += (*_iter170).write(oprot);
+      xfer += (*_iter184).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -4277,10 +4753,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_virtual_router_pargs::write(::apache::
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter171;
-    for (_iter171 = (*(this->thrift_attr_list)).begin(); _iter171 != (*(this->thrift_attr_list)).end(); ++_iter171)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter185;
+    for (_iter185 = (*(this->thrift_attr_list)).begin(); _iter185 != (*(this->thrift_attr_list)).end(); ++_iter185)
     {
-      xfer += (*_iter171).write(oprot);
+      xfer += (*_iter185).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -4621,14 +5097,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_route_args::read(::apache::thrift::pro
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size172;
-            ::apache::thrift::protocol::TType _etype175;
-            xfer += iprot->readListBegin(_etype175, _size172);
-            this->thrift_attr_list.resize(_size172);
-            uint32_t _i176;
-            for (_i176 = 0; _i176 < _size172; ++_i176)
+            uint32_t _size186;
+            ::apache::thrift::protocol::TType _etype189;
+            xfer += iprot->readListBegin(_etype189, _size186);
+            this->thrift_attr_list.resize(_size186);
+            uint32_t _i190;
+            for (_i190 = 0; _i190 < _size186; ++_i190)
             {
-              xfer += this->thrift_attr_list[_i176].read(iprot);
+              xfer += this->thrift_attr_list[_i190].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -4661,10 +5137,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_route_args::write(::apache::thrift::pr
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter177;
-    for (_iter177 = this->thrift_attr_list.begin(); _iter177 != this->thrift_attr_list.end(); ++_iter177)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter191;
+    for (_iter191 = this->thrift_attr_list.begin(); _iter191 != this->thrift_attr_list.end(); ++_iter191)
     {
-      xfer += (*_iter177).write(oprot);
+      xfer += (*_iter191).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -4693,10 +5169,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_route_pargs::write(::apache::thrift::p
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter178;
-    for (_iter178 = (*(this->thrift_attr_list)).begin(); _iter178 != (*(this->thrift_attr_list)).end(); ++_iter178)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter192;
+    for (_iter192 = (*(this->thrift_attr_list)).begin(); _iter192 != (*(this->thrift_attr_list)).end(); ++_iter192)
     {
-      xfer += (*_iter178).write(oprot);
+      xfer += (*_iter192).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -5029,14 +5505,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_router_interface_args::read(::apache::
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size179;
-            ::apache::thrift::protocol::TType _etype182;
-            xfer += iprot->readListBegin(_etype182, _size179);
-            this->thrift_attr_list.resize(_size179);
-            uint32_t _i183;
-            for (_i183 = 0; _i183 < _size179; ++_i183)
+            uint32_t _size193;
+            ::apache::thrift::protocol::TType _etype196;
+            xfer += iprot->readListBegin(_etype196, _size193);
+            this->thrift_attr_list.resize(_size193);
+            uint32_t _i197;
+            for (_i197 = 0; _i197 < _size193; ++_i197)
             {
-              xfer += this->thrift_attr_list[_i183].read(iprot);
+              xfer += this->thrift_attr_list[_i197].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -5065,10 +5541,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_router_interface_args::write(::apache:
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter184;
-    for (_iter184 = this->thrift_attr_list.begin(); _iter184 != this->thrift_attr_list.end(); ++_iter184)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter198;
+    for (_iter198 = this->thrift_attr_list.begin(); _iter198 != this->thrift_attr_list.end(); ++_iter198)
     {
-      xfer += (*_iter184).write(oprot);
+      xfer += (*_iter198).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -5093,10 +5569,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_router_interface_pargs::write(::apache
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter185;
-    for (_iter185 = (*(this->thrift_attr_list)).begin(); _iter185 != (*(this->thrift_attr_list)).end(); ++_iter185)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter199;
+    for (_iter199 = (*(this->thrift_attr_list)).begin(); _iter199 != (*(this->thrift_attr_list)).end(); ++_iter199)
     {
-      xfer += (*_iter185).write(oprot);
+      xfer += (*_iter199).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -5429,14 +5905,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_next_hop_args::read(::apache::thrift::
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size186;
-            ::apache::thrift::protocol::TType _etype189;
-            xfer += iprot->readListBegin(_etype189, _size186);
-            this->thrift_attr_list.resize(_size186);
-            uint32_t _i190;
-            for (_i190 = 0; _i190 < _size186; ++_i190)
+            uint32_t _size200;
+            ::apache::thrift::protocol::TType _etype203;
+            xfer += iprot->readListBegin(_etype203, _size200);
+            this->thrift_attr_list.resize(_size200);
+            uint32_t _i204;
+            for (_i204 = 0; _i204 < _size200; ++_i204)
             {
-              xfer += this->thrift_attr_list[_i190].read(iprot);
+              xfer += this->thrift_attr_list[_i204].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -5465,10 +5941,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_next_hop_args::write(::apache::thrift:
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter191;
-    for (_iter191 = this->thrift_attr_list.begin(); _iter191 != this->thrift_attr_list.end(); ++_iter191)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter205;
+    for (_iter205 = this->thrift_attr_list.begin(); _iter205 != this->thrift_attr_list.end(); ++_iter205)
     {
-      xfer += (*_iter191).write(oprot);
+      xfer += (*_iter205).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -5493,10 +5969,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_next_hop_pargs::write(::apache::thrift
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter192;
-    for (_iter192 = (*(this->thrift_attr_list)).begin(); _iter192 != (*(this->thrift_attr_list)).end(); ++_iter192)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter206;
+    for (_iter206 = (*(this->thrift_attr_list)).begin(); _iter206 != (*(this->thrift_attr_list)).end(); ++_iter206)
     {
-      xfer += (*_iter192).write(oprot);
+      xfer += (*_iter206).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -5829,14 +6305,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_next_hop_group_args::read(::apache::th
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size193;
-            ::apache::thrift::protocol::TType _etype196;
-            xfer += iprot->readListBegin(_etype196, _size193);
-            this->thrift_attr_list.resize(_size193);
-            uint32_t _i197;
-            for (_i197 = 0; _i197 < _size193; ++_i197)
+            uint32_t _size207;
+            ::apache::thrift::protocol::TType _etype210;
+            xfer += iprot->readListBegin(_etype210, _size207);
+            this->thrift_attr_list.resize(_size207);
+            uint32_t _i211;
+            for (_i211 = 0; _i211 < _size207; ++_i211)
             {
-              xfer += this->thrift_attr_list[_i197].read(iprot);
+              xfer += this->thrift_attr_list[_i211].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -5865,10 +6341,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_next_hop_group_args::write(::apache::t
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter198;
-    for (_iter198 = this->thrift_attr_list.begin(); _iter198 != this->thrift_attr_list.end(); ++_iter198)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter212;
+    for (_iter212 = this->thrift_attr_list.begin(); _iter212 != this->thrift_attr_list.end(); ++_iter212)
     {
-      xfer += (*_iter198).write(oprot);
+      xfer += (*_iter212).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -5893,10 +6369,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_next_hop_group_pargs::write(::apache::
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter199;
-    for (_iter199 = (*(this->thrift_attr_list)).begin(); _iter199 != (*(this->thrift_attr_list)).end(); ++_iter199)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter213;
+    for (_iter213 = (*(this->thrift_attr_list)).begin(); _iter213 != (*(this->thrift_attr_list)).end(); ++_iter213)
     {
-      xfer += (*_iter199).write(oprot);
+      xfer += (*_iter213).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -6237,14 +6713,14 @@ uint32_t switch_sai_rpc_sai_thrift_add_next_hop_to_group_args::read(::apache::th
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_nexthops.clear();
-            uint32_t _size200;
-            ::apache::thrift::protocol::TType _etype203;
-            xfer += iprot->readListBegin(_etype203, _size200);
-            this->thrift_nexthops.resize(_size200);
-            uint32_t _i204;
-            for (_i204 = 0; _i204 < _size200; ++_i204)
+            uint32_t _size214;
+            ::apache::thrift::protocol::TType _etype217;
+            xfer += iprot->readListBegin(_etype217, _size214);
+            this->thrift_nexthops.resize(_size214);
+            uint32_t _i218;
+            for (_i218 = 0; _i218 < _size214; ++_i218)
             {
-              xfer += iprot->readI64(this->thrift_nexthops[_i204]);
+              xfer += iprot->readI64(this->thrift_nexthops[_i218]);
             }
             xfer += iprot->readListEnd();
           }
@@ -6277,10 +6753,10 @@ uint32_t switch_sai_rpc_sai_thrift_add_next_hop_to_group_args::write(::apache::t
   xfer += oprot->writeFieldBegin("thrift_nexthops", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I64, static_cast<uint32_t>(this->thrift_nexthops.size()));
-    std::vector<sai_thrift_object_id_t> ::const_iterator _iter205;
-    for (_iter205 = this->thrift_nexthops.begin(); _iter205 != this->thrift_nexthops.end(); ++_iter205)
+    std::vector<sai_thrift_object_id_t> ::const_iterator _iter219;
+    for (_iter219 = this->thrift_nexthops.begin(); _iter219 != this->thrift_nexthops.end(); ++_iter219)
     {
-      xfer += oprot->writeI64((*_iter205));
+      xfer += oprot->writeI64((*_iter219));
     }
     xfer += oprot->writeListEnd();
   }
@@ -6309,10 +6785,10 @@ uint32_t switch_sai_rpc_sai_thrift_add_next_hop_to_group_pargs::write(::apache::
   xfer += oprot->writeFieldBegin("thrift_nexthops", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I64, static_cast<uint32_t>((*(this->thrift_nexthops)).size()));
-    std::vector<sai_thrift_object_id_t> ::const_iterator _iter206;
-    for (_iter206 = (*(this->thrift_nexthops)).begin(); _iter206 != (*(this->thrift_nexthops)).end(); ++_iter206)
+    std::vector<sai_thrift_object_id_t> ::const_iterator _iter220;
+    for (_iter220 = (*(this->thrift_nexthops)).begin(); _iter220 != (*(this->thrift_nexthops)).end(); ++_iter220)
     {
-      xfer += oprot->writeI64((*_iter206));
+      xfer += oprot->writeI64((*_iter220));
     }
     xfer += oprot->writeListEnd();
   }
@@ -6467,14 +6943,14 @@ uint32_t switch_sai_rpc_sai_thrift_remove_next_hop_from_group_args::read(::apach
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_nexthops.clear();
-            uint32_t _size207;
-            ::apache::thrift::protocol::TType _etype210;
-            xfer += iprot->readListBegin(_etype210, _size207);
-            this->thrift_nexthops.resize(_size207);
-            uint32_t _i211;
-            for (_i211 = 0; _i211 < _size207; ++_i211)
+            uint32_t _size221;
+            ::apache::thrift::protocol::TType _etype224;
+            xfer += iprot->readListBegin(_etype224, _size221);
+            this->thrift_nexthops.resize(_size221);
+            uint32_t _i225;
+            for (_i225 = 0; _i225 < _size221; ++_i225)
             {
-              xfer += iprot->readI64(this->thrift_nexthops[_i211]);
+              xfer += iprot->readI64(this->thrift_nexthops[_i225]);
             }
             xfer += iprot->readListEnd();
           }
@@ -6507,10 +6983,10 @@ uint32_t switch_sai_rpc_sai_thrift_remove_next_hop_from_group_args::write(::apac
   xfer += oprot->writeFieldBegin("thrift_nexthops", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I64, static_cast<uint32_t>(this->thrift_nexthops.size()));
-    std::vector<sai_thrift_object_id_t> ::const_iterator _iter212;
-    for (_iter212 = this->thrift_nexthops.begin(); _iter212 != this->thrift_nexthops.end(); ++_iter212)
+    std::vector<sai_thrift_object_id_t> ::const_iterator _iter226;
+    for (_iter226 = this->thrift_nexthops.begin(); _iter226 != this->thrift_nexthops.end(); ++_iter226)
     {
-      xfer += oprot->writeI64((*_iter212));
+      xfer += oprot->writeI64((*_iter226));
     }
     xfer += oprot->writeListEnd();
   }
@@ -6539,10 +7015,10 @@ uint32_t switch_sai_rpc_sai_thrift_remove_next_hop_from_group_pargs::write(::apa
   xfer += oprot->writeFieldBegin("thrift_nexthops", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I64, static_cast<uint32_t>((*(this->thrift_nexthops)).size()));
-    std::vector<sai_thrift_object_id_t> ::const_iterator _iter213;
-    for (_iter213 = (*(this->thrift_nexthops)).begin(); _iter213 != (*(this->thrift_nexthops)).end(); ++_iter213)
+    std::vector<sai_thrift_object_id_t> ::const_iterator _iter227;
+    for (_iter227 = (*(this->thrift_nexthops)).begin(); _iter227 != (*(this->thrift_nexthops)).end(); ++_iter227)
     {
-      xfer += oprot->writeI64((*_iter213));
+      xfer += oprot->writeI64((*_iter227));
     }
     xfer += oprot->writeListEnd();
   }
@@ -6689,14 +7165,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_lag_args::read(::apache::thrift::proto
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size214;
-            ::apache::thrift::protocol::TType _etype217;
-            xfer += iprot->readListBegin(_etype217, _size214);
-            this->thrift_attr_list.resize(_size214);
-            uint32_t _i218;
-            for (_i218 = 0; _i218 < _size214; ++_i218)
+            uint32_t _size228;
+            ::apache::thrift::protocol::TType _etype231;
+            xfer += iprot->readListBegin(_etype231, _size228);
+            this->thrift_attr_list.resize(_size228);
+            uint32_t _i232;
+            for (_i232 = 0; _i232 < _size228; ++_i232)
             {
-              xfer += this->thrift_attr_list[_i218].read(iprot);
+              xfer += this->thrift_attr_list[_i232].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -6725,10 +7201,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_lag_args::write(::apache::thrift::prot
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter219;
-    for (_iter219 = this->thrift_attr_list.begin(); _iter219 != this->thrift_attr_list.end(); ++_iter219)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter233;
+    for (_iter233 = this->thrift_attr_list.begin(); _iter233 != this->thrift_attr_list.end(); ++_iter233)
     {
-      xfer += (*_iter219).write(oprot);
+      xfer += (*_iter233).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -6753,10 +7229,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_lag_pargs::write(::apache::thrift::pro
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter220;
-    for (_iter220 = (*(this->thrift_attr_list)).begin(); _iter220 != (*(this->thrift_attr_list)).end(); ++_iter220)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter234;
+    for (_iter234 = (*(this->thrift_attr_list)).begin(); _iter234 != (*(this->thrift_attr_list)).end(); ++_iter234)
     {
-      xfer += (*_iter220).write(oprot);
+      xfer += (*_iter234).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -7089,14 +7565,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_lag_member_args::read(::apache::thrift
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size221;
-            ::apache::thrift::protocol::TType _etype224;
-            xfer += iprot->readListBegin(_etype224, _size221);
-            this->thrift_attr_list.resize(_size221);
-            uint32_t _i225;
-            for (_i225 = 0; _i225 < _size221; ++_i225)
+            uint32_t _size235;
+            ::apache::thrift::protocol::TType _etype238;
+            xfer += iprot->readListBegin(_etype238, _size235);
+            this->thrift_attr_list.resize(_size235);
+            uint32_t _i239;
+            for (_i239 = 0; _i239 < _size235; ++_i239)
             {
-              xfer += this->thrift_attr_list[_i225].read(iprot);
+              xfer += this->thrift_attr_list[_i239].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -7125,10 +7601,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_lag_member_args::write(::apache::thrif
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter226;
-    for (_iter226 = this->thrift_attr_list.begin(); _iter226 != this->thrift_attr_list.end(); ++_iter226)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter240;
+    for (_iter240 = this->thrift_attr_list.begin(); _iter240 != this->thrift_attr_list.end(); ++_iter240)
     {
-      xfer += (*_iter226).write(oprot);
+      xfer += (*_iter240).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -7153,10 +7629,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_lag_member_pargs::write(::apache::thri
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter227;
-    for (_iter227 = (*(this->thrift_attr_list)).begin(); _iter227 != (*(this->thrift_attr_list)).end(); ++_iter227)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter241;
+    for (_iter241 = (*(this->thrift_attr_list)).begin(); _iter241 != (*(this->thrift_attr_list)).end(); ++_iter241)
     {
-      xfer += (*_iter227).write(oprot);
+      xfer += (*_iter241).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -7489,14 +7965,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_stp_entry_args::read(::apache::thrift:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size228;
-            ::apache::thrift::protocol::TType _etype231;
-            xfer += iprot->readListBegin(_etype231, _size228);
-            this->thrift_attr_list.resize(_size228);
-            uint32_t _i232;
-            for (_i232 = 0; _i232 < _size228; ++_i232)
+            uint32_t _size242;
+            ::apache::thrift::protocol::TType _etype245;
+            xfer += iprot->readListBegin(_etype245, _size242);
+            this->thrift_attr_list.resize(_size242);
+            uint32_t _i246;
+            for (_i246 = 0; _i246 < _size242; ++_i246)
             {
-              xfer += this->thrift_attr_list[_i232].read(iprot);
+              xfer += this->thrift_attr_list[_i246].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -7525,10 +8001,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_stp_entry_args::write(::apache::thrift
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter233;
-    for (_iter233 = this->thrift_attr_list.begin(); _iter233 != this->thrift_attr_list.end(); ++_iter233)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter247;
+    for (_iter247 = this->thrift_attr_list.begin(); _iter247 != this->thrift_attr_list.end(); ++_iter247)
     {
-      xfer += (*_iter233).write(oprot);
+      xfer += (*_iter247).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -7553,10 +8029,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_stp_entry_pargs::write(::apache::thrif
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter234;
-    for (_iter234 = (*(this->thrift_attr_list)).begin(); _iter234 != (*(this->thrift_attr_list)).end(); ++_iter234)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter248;
+    for (_iter248 = (*(this->thrift_attr_list)).begin(); _iter248 != (*(this->thrift_attr_list)).end(); ++_iter248)
     {
-      xfer += (*_iter234).write(oprot);
+      xfer += (*_iter248).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -8317,14 +8793,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_neighbor_entry_args::read(::apache::th
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size235;
-            ::apache::thrift::protocol::TType _etype238;
-            xfer += iprot->readListBegin(_etype238, _size235);
-            this->thrift_attr_list.resize(_size235);
-            uint32_t _i239;
-            for (_i239 = 0; _i239 < _size235; ++_i239)
+            uint32_t _size249;
+            ::apache::thrift::protocol::TType _etype252;
+            xfer += iprot->readListBegin(_etype252, _size249);
+            this->thrift_attr_list.resize(_size249);
+            uint32_t _i253;
+            for (_i253 = 0; _i253 < _size249; ++_i253)
             {
-              xfer += this->thrift_attr_list[_i239].read(iprot);
+              xfer += this->thrift_attr_list[_i253].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -8357,10 +8833,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_neighbor_entry_args::write(::apache::t
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter240;
-    for (_iter240 = this->thrift_attr_list.begin(); _iter240 != this->thrift_attr_list.end(); ++_iter240)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter254;
+    for (_iter254 = this->thrift_attr_list.begin(); _iter254 != this->thrift_attr_list.end(); ++_iter254)
     {
-      xfer += (*_iter240).write(oprot);
+      xfer += (*_iter254).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -8389,10 +8865,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_neighbor_entry_pargs::write(::apache::
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter241;
-    for (_iter241 = (*(this->thrift_attr_list)).begin(); _iter241 != (*(this->thrift_attr_list)).end(); ++_iter241)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter255;
+    for (_iter255 = (*(this->thrift_attr_list)).begin(); _iter255 != (*(this->thrift_attr_list)).end(); ++_iter255)
     {
-      xfer += (*_iter241).write(oprot);
+      xfer += (*_iter255).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -8725,14 +9201,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_switch_args::read(::apache::thrift::pr
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size242;
-            ::apache::thrift::protocol::TType _etype245;
-            xfer += iprot->readListBegin(_etype245, _size242);
-            this->thrift_attr_list.resize(_size242);
-            uint32_t _i246;
-            for (_i246 = 0; _i246 < _size242; ++_i246)
+            uint32_t _size256;
+            ::apache::thrift::protocol::TType _etype259;
+            xfer += iprot->readListBegin(_etype259, _size256);
+            this->thrift_attr_list.resize(_size256);
+            uint32_t _i260;
+            for (_i260 = 0; _i260 < _size256; ++_i260)
             {
-              xfer += this->thrift_attr_list[_i246].read(iprot);
+              xfer += this->thrift_attr_list[_i260].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -8761,10 +9237,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_switch_args::write(::apache::thrift::p
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter247;
-    for (_iter247 = this->thrift_attr_list.begin(); _iter247 != this->thrift_attr_list.end(); ++_iter247)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter261;
+    for (_iter261 = this->thrift_attr_list.begin(); _iter261 != this->thrift_attr_list.end(); ++_iter261)
     {
-      xfer += (*_iter247).write(oprot);
+      xfer += (*_iter261).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -8789,10 +9265,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_switch_pargs::write(::apache::thrift::
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter248;
-    for (_iter248 = (*(this->thrift_attr_list)).begin(); _iter248 != (*(this->thrift_attr_list)).end(); ++_iter248)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter262;
+    for (_iter262 = (*(this->thrift_attr_list)).begin(); _iter262 != (*(this->thrift_attr_list)).end(); ++_iter262)
     {
-      xfer += (*_iter248).write(oprot);
+      xfer += (*_iter262).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -8939,14 +9415,14 @@ uint32_t switch_sai_rpc_sai_thrift_get_switch_attribute_args::read(::apache::thr
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size249;
-            ::apache::thrift::protocol::TType _etype252;
-            xfer += iprot->readListBegin(_etype252, _size249);
-            this->thrift_attr_list.resize(_size249);
-            uint32_t _i253;
-            for (_i253 = 0; _i253 < _size249; ++_i253)
+            uint32_t _size263;
+            ::apache::thrift::protocol::TType _etype266;
+            xfer += iprot->readListBegin(_etype266, _size263);
+            this->thrift_attr_list.resize(_size263);
+            uint32_t _i267;
+            for (_i267 = 0; _i267 < _size263; ++_i267)
             {
-              xfer += this->thrift_attr_list[_i253].read(iprot);
+              xfer += this->thrift_attr_list[_i267].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -8975,10 +9451,10 @@ uint32_t switch_sai_rpc_sai_thrift_get_switch_attribute_args::write(::apache::th
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter254;
-    for (_iter254 = this->thrift_attr_list.begin(); _iter254 != this->thrift_attr_list.end(); ++_iter254)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter268;
+    for (_iter268 = this->thrift_attr_list.begin(); _iter268 != this->thrift_attr_list.end(); ++_iter268)
     {
-      xfer += (*_iter254).write(oprot);
+      xfer += (*_iter268).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -9003,10 +9479,10 @@ uint32_t switch_sai_rpc_sai_thrift_get_switch_attribute_pargs::write(::apache::t
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter255;
-    for (_iter255 = (*(this->thrift_attr_list)).begin(); _iter255 != (*(this->thrift_attr_list)).end(); ++_iter255)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter269;
+    for (_iter269 = (*(this->thrift_attr_list)).begin(); _iter269 != (*(this->thrift_attr_list)).end(); ++_iter269)
     {
-      xfer += (*_iter255).write(oprot);
+      xfer += (*_iter269).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -10185,14 +10661,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_hostif_args::read(::apache::thrift::pr
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size256;
-            ::apache::thrift::protocol::TType _etype259;
-            xfer += iprot->readListBegin(_etype259, _size256);
-            this->thrift_attr_list.resize(_size256);
-            uint32_t _i260;
-            for (_i260 = 0; _i260 < _size256; ++_i260)
+            uint32_t _size270;
+            ::apache::thrift::protocol::TType _etype273;
+            xfer += iprot->readListBegin(_etype273, _size270);
+            this->thrift_attr_list.resize(_size270);
+            uint32_t _i274;
+            for (_i274 = 0; _i274 < _size270; ++_i274)
             {
-              xfer += this->thrift_attr_list[_i260].read(iprot);
+              xfer += this->thrift_attr_list[_i274].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -10221,10 +10697,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_hostif_args::write(::apache::thrift::p
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter261;
-    for (_iter261 = this->thrift_attr_list.begin(); _iter261 != this->thrift_attr_list.end(); ++_iter261)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter275;
+    for (_iter275 = this->thrift_attr_list.begin(); _iter275 != this->thrift_attr_list.end(); ++_iter275)
     {
-      xfer += (*_iter261).write(oprot);
+      xfer += (*_iter275).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -10249,10 +10725,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_hostif_pargs::write(::apache::thrift::
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter262;
-    for (_iter262 = (*(this->thrift_attr_list)).begin(); _iter262 != (*(this->thrift_attr_list)).end(); ++_iter262)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter276;
+    for (_iter276 = (*(this->thrift_attr_list)).begin(); _iter276 != (*(this->thrift_attr_list)).end(); ++_iter276)
     {
-      xfer += (*_iter262).write(oprot);
+      xfer += (*_iter276).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -10585,14 +11061,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_hostif_trap_group_args::read(::apache:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size263;
-            ::apache::thrift::protocol::TType _etype266;
-            xfer += iprot->readListBegin(_etype266, _size263);
-            this->thrift_attr_list.resize(_size263);
-            uint32_t _i267;
-            for (_i267 = 0; _i267 < _size263; ++_i267)
+            uint32_t _size277;
+            ::apache::thrift::protocol::TType _etype280;
+            xfer += iprot->readListBegin(_etype280, _size277);
+            this->thrift_attr_list.resize(_size277);
+            uint32_t _i281;
+            for (_i281 = 0; _i281 < _size277; ++_i281)
             {
-              xfer += this->thrift_attr_list[_i267].read(iprot);
+              xfer += this->thrift_attr_list[_i281].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -10621,10 +11097,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_hostif_trap_group_args::write(::apache
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter268;
-    for (_iter268 = this->thrift_attr_list.begin(); _iter268 != this->thrift_attr_list.end(); ++_iter268)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter282;
+    for (_iter282 = this->thrift_attr_list.begin(); _iter282 != this->thrift_attr_list.end(); ++_iter282)
     {
-      xfer += (*_iter268).write(oprot);
+      xfer += (*_iter282).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -10649,10 +11125,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_hostif_trap_group_pargs::write(::apach
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter269;
-    for (_iter269 = (*(this->thrift_attr_list)).begin(); _iter269 != (*(this->thrift_attr_list)).end(); ++_iter269)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter283;
+    for (_iter283 = (*(this->thrift_attr_list)).begin(); _iter283 != (*(this->thrift_attr_list)).end(); ++_iter283)
     {
-      xfer += (*_iter269).write(oprot);
+      xfer += (*_iter283).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -10985,14 +11461,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_hostif_trap_args::read(::apache::thrif
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size270;
-            ::apache::thrift::protocol::TType _etype273;
-            xfer += iprot->readListBegin(_etype273, _size270);
-            this->thrift_attr_list.resize(_size270);
-            uint32_t _i274;
-            for (_i274 = 0; _i274 < _size270; ++_i274)
+            uint32_t _size284;
+            ::apache::thrift::protocol::TType _etype287;
+            xfer += iprot->readListBegin(_etype287, _size284);
+            this->thrift_attr_list.resize(_size284);
+            uint32_t _i288;
+            for (_i288 = 0; _i288 < _size284; ++_i288)
             {
-              xfer += this->thrift_attr_list[_i274].read(iprot);
+              xfer += this->thrift_attr_list[_i288].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -11021,10 +11497,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_hostif_trap_args::write(::apache::thri
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter275;
-    for (_iter275 = this->thrift_attr_list.begin(); _iter275 != this->thrift_attr_list.end(); ++_iter275)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter289;
+    for (_iter289 = this->thrift_attr_list.begin(); _iter289 != this->thrift_attr_list.end(); ++_iter289)
     {
-      xfer += (*_iter275).write(oprot);
+      xfer += (*_iter289).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -11049,10 +11525,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_hostif_trap_pargs::write(::apache::thr
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter276;
-    for (_iter276 = (*(this->thrift_attr_list)).begin(); _iter276 != (*(this->thrift_attr_list)).end(); ++_iter276)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter290;
+    for (_iter290 = (*(this->thrift_attr_list)).begin(); _iter290 != (*(this->thrift_attr_list)).end(); ++_iter290)
     {
-      xfer += (*_iter276).write(oprot);
+      xfer += (*_iter290).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -11789,14 +12265,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_acl_table_args::read(::apache::thrift:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size277;
-            ::apache::thrift::protocol::TType _etype280;
-            xfer += iprot->readListBegin(_etype280, _size277);
-            this->thrift_attr_list.resize(_size277);
-            uint32_t _i281;
-            for (_i281 = 0; _i281 < _size277; ++_i281)
+            uint32_t _size291;
+            ::apache::thrift::protocol::TType _etype294;
+            xfer += iprot->readListBegin(_etype294, _size291);
+            this->thrift_attr_list.resize(_size291);
+            uint32_t _i295;
+            for (_i295 = 0; _i295 < _size291; ++_i295)
             {
-              xfer += this->thrift_attr_list[_i281].read(iprot);
+              xfer += this->thrift_attr_list[_i295].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -11825,10 +12301,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_acl_table_args::write(::apache::thrift
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter282;
-    for (_iter282 = this->thrift_attr_list.begin(); _iter282 != this->thrift_attr_list.end(); ++_iter282)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter296;
+    for (_iter296 = this->thrift_attr_list.begin(); _iter296 != this->thrift_attr_list.end(); ++_iter296)
     {
-      xfer += (*_iter282).write(oprot);
+      xfer += (*_iter296).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -11853,10 +12329,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_acl_table_pargs::write(::apache::thrif
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter283;
-    for (_iter283 = (*(this->thrift_attr_list)).begin(); _iter283 != (*(this->thrift_attr_list)).end(); ++_iter283)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter297;
+    for (_iter297 = (*(this->thrift_attr_list)).begin(); _iter297 != (*(this->thrift_attr_list)).end(); ++_iter297)
     {
-      xfer += (*_iter283).write(oprot);
+      xfer += (*_iter297).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -12189,14 +12665,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_acl_entry_args::read(::apache::thrift:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size284;
-            ::apache::thrift::protocol::TType _etype287;
-            xfer += iprot->readListBegin(_etype287, _size284);
-            this->thrift_attr_list.resize(_size284);
-            uint32_t _i288;
-            for (_i288 = 0; _i288 < _size284; ++_i288)
+            uint32_t _size298;
+            ::apache::thrift::protocol::TType _etype301;
+            xfer += iprot->readListBegin(_etype301, _size298);
+            this->thrift_attr_list.resize(_size298);
+            uint32_t _i302;
+            for (_i302 = 0; _i302 < _size298; ++_i302)
             {
-              xfer += this->thrift_attr_list[_i288].read(iprot);
+              xfer += this->thrift_attr_list[_i302].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -12225,10 +12701,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_acl_entry_args::write(::apache::thrift
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter289;
-    for (_iter289 = this->thrift_attr_list.begin(); _iter289 != this->thrift_attr_list.end(); ++_iter289)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter303;
+    for (_iter303 = this->thrift_attr_list.begin(); _iter303 != this->thrift_attr_list.end(); ++_iter303)
     {
-      xfer += (*_iter289).write(oprot);
+      xfer += (*_iter303).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -12253,10 +12729,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_acl_entry_pargs::write(::apache::thrif
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter290;
-    for (_iter290 = (*(this->thrift_attr_list)).begin(); _iter290 != (*(this->thrift_attr_list)).end(); ++_iter290)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter304;
+    for (_iter304 = (*(this->thrift_attr_list)).begin(); _iter304 != (*(this->thrift_attr_list)).end(); ++_iter304)
     {
-      xfer += (*_iter290).write(oprot);
+      xfer += (*_iter304).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -12589,14 +13065,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_acl_counter_args::read(::apache::thrif
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size291;
-            ::apache::thrift::protocol::TType _etype294;
-            xfer += iprot->readListBegin(_etype294, _size291);
-            this->thrift_attr_list.resize(_size291);
-            uint32_t _i295;
-            for (_i295 = 0; _i295 < _size291; ++_i295)
+            uint32_t _size305;
+            ::apache::thrift::protocol::TType _etype308;
+            xfer += iprot->readListBegin(_etype308, _size305);
+            this->thrift_attr_list.resize(_size305);
+            uint32_t _i309;
+            for (_i309 = 0; _i309 < _size305; ++_i309)
             {
-              xfer += this->thrift_attr_list[_i295].read(iprot);
+              xfer += this->thrift_attr_list[_i309].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -12625,10 +13101,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_acl_counter_args::write(::apache::thri
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter296;
-    for (_iter296 = this->thrift_attr_list.begin(); _iter296 != this->thrift_attr_list.end(); ++_iter296)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter310;
+    for (_iter310 = this->thrift_attr_list.begin(); _iter310 != this->thrift_attr_list.end(); ++_iter310)
     {
-      xfer += (*_iter296).write(oprot);
+      xfer += (*_iter310).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -12653,10 +13129,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_acl_counter_pargs::write(::apache::thr
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter297;
-    for (_iter297 = (*(this->thrift_attr_list)).begin(); _iter297 != (*(this->thrift_attr_list)).end(); ++_iter297)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter311;
+    for (_iter311 = (*(this->thrift_attr_list)).begin(); _iter311 != (*(this->thrift_attr_list)).end(); ++_iter311)
     {
-      xfer += (*_iter297).write(oprot);
+      xfer += (*_iter311).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -12997,14 +13473,14 @@ uint32_t switch_sai_rpc_sai_thrift_get_acl_counter_attribute_args::read(::apache
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_ids.clear();
-            uint32_t _size298;
-            ::apache::thrift::protocol::TType _etype301;
-            xfer += iprot->readListBegin(_etype301, _size298);
-            this->thrift_attr_ids.resize(_size298);
-            uint32_t _i302;
-            for (_i302 = 0; _i302 < _size298; ++_i302)
+            uint32_t _size312;
+            ::apache::thrift::protocol::TType _etype315;
+            xfer += iprot->readListBegin(_etype315, _size312);
+            this->thrift_attr_ids.resize(_size312);
+            uint32_t _i316;
+            for (_i316 = 0; _i316 < _size312; ++_i316)
             {
-              xfer += iprot->readI32(this->thrift_attr_ids[_i302]);
+              xfer += iprot->readI32(this->thrift_attr_ids[_i316]);
             }
             xfer += iprot->readListEnd();
           }
@@ -13037,10 +13513,10 @@ uint32_t switch_sai_rpc_sai_thrift_get_acl_counter_attribute_args::write(::apach
   xfer += oprot->writeFieldBegin("thrift_attr_ids", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I32, static_cast<uint32_t>(this->thrift_attr_ids.size()));
-    std::vector<int32_t> ::const_iterator _iter303;
-    for (_iter303 = this->thrift_attr_ids.begin(); _iter303 != this->thrift_attr_ids.end(); ++_iter303)
+    std::vector<int32_t> ::const_iterator _iter317;
+    for (_iter317 = this->thrift_attr_ids.begin(); _iter317 != this->thrift_attr_ids.end(); ++_iter317)
     {
-      xfer += oprot->writeI32((*_iter303));
+      xfer += oprot->writeI32((*_iter317));
     }
     xfer += oprot->writeListEnd();
   }
@@ -13069,10 +13545,10 @@ uint32_t switch_sai_rpc_sai_thrift_get_acl_counter_attribute_pargs::write(::apac
   xfer += oprot->writeFieldBegin("thrift_attr_ids", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I32, static_cast<uint32_t>((*(this->thrift_attr_ids)).size()));
-    std::vector<int32_t> ::const_iterator _iter304;
-    for (_iter304 = (*(this->thrift_attr_ids)).begin(); _iter304 != (*(this->thrift_attr_ids)).end(); ++_iter304)
+    std::vector<int32_t> ::const_iterator _iter318;
+    for (_iter318 = (*(this->thrift_attr_ids)).begin(); _iter318 != (*(this->thrift_attr_ids)).end(); ++_iter318)
     {
-      xfer += oprot->writeI32((*_iter304));
+      xfer += oprot->writeI32((*_iter318));
     }
     xfer += oprot->writeListEnd();
   }
@@ -13113,14 +13589,14 @@ uint32_t switch_sai_rpc_sai_thrift_get_acl_counter_attribute_result::read(::apac
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size305;
-            ::apache::thrift::protocol::TType _etype308;
-            xfer += iprot->readListBegin(_etype308, _size305);
-            this->success.resize(_size305);
-            uint32_t _i309;
-            for (_i309 = 0; _i309 < _size305; ++_i309)
+            uint32_t _size319;
+            ::apache::thrift::protocol::TType _etype322;
+            xfer += iprot->readListBegin(_etype322, _size319);
+            this->success.resize(_size319);
+            uint32_t _i323;
+            for (_i323 = 0; _i323 < _size319; ++_i323)
             {
-              xfer += this->success[_i309].read(iprot);
+              xfer += this->success[_i323].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -13151,10 +13627,10 @@ uint32_t switch_sai_rpc_sai_thrift_get_acl_counter_attribute_result::write(::apa
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector<sai_thrift_attribute_value_t> ::const_iterator _iter310;
-      for (_iter310 = this->success.begin(); _iter310 != this->success.end(); ++_iter310)
+      std::vector<sai_thrift_attribute_value_t> ::const_iterator _iter324;
+      for (_iter324 = this->success.begin(); _iter324 != this->success.end(); ++_iter324)
       {
-        xfer += (*_iter310).write(oprot);
+        xfer += (*_iter324).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -13194,14 +13670,14 @@ uint32_t switch_sai_rpc_sai_thrift_get_acl_counter_attribute_presult::read(::apa
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size311;
-            ::apache::thrift::protocol::TType _etype314;
-            xfer += iprot->readListBegin(_etype314, _size311);
-            (*(this->success)).resize(_size311);
-            uint32_t _i315;
-            for (_i315 = 0; _i315 < _size311; ++_i315)
+            uint32_t _size325;
+            ::apache::thrift::protocol::TType _etype328;
+            xfer += iprot->readListBegin(_etype328, _size325);
+            (*(this->success)).resize(_size325);
+            uint32_t _i329;
+            for (_i329 = 0; _i329 < _size325; ++_i329)
             {
-              xfer += (*(this->success))[_i315].read(iprot);
+              xfer += (*(this->success))[_i329].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -13251,14 +13727,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_mirror_session_args::read(::apache::th
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size316;
-            ::apache::thrift::protocol::TType _etype319;
-            xfer += iprot->readListBegin(_etype319, _size316);
-            this->thrift_attr_list.resize(_size316);
-            uint32_t _i320;
-            for (_i320 = 0; _i320 < _size316; ++_i320)
+            uint32_t _size330;
+            ::apache::thrift::protocol::TType _etype333;
+            xfer += iprot->readListBegin(_etype333, _size330);
+            this->thrift_attr_list.resize(_size330);
+            uint32_t _i334;
+            for (_i334 = 0; _i334 < _size330; ++_i334)
             {
-              xfer += this->thrift_attr_list[_i320].read(iprot);
+              xfer += this->thrift_attr_list[_i334].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -13287,10 +13763,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_mirror_session_args::write(::apache::t
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter321;
-    for (_iter321 = this->thrift_attr_list.begin(); _iter321 != this->thrift_attr_list.end(); ++_iter321)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter335;
+    for (_iter335 = this->thrift_attr_list.begin(); _iter335 != this->thrift_attr_list.end(); ++_iter335)
     {
-      xfer += (*_iter321).write(oprot);
+      xfer += (*_iter335).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -13315,10 +13791,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_mirror_session_pargs::write(::apache::
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter322;
-    for (_iter322 = (*(this->thrift_attr_list)).begin(); _iter322 != (*(this->thrift_attr_list)).end(); ++_iter322)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter336;
+    for (_iter336 = (*(this->thrift_attr_list)).begin(); _iter336 != (*(this->thrift_attr_list)).end(); ++_iter336)
     {
-      xfer += (*_iter322).write(oprot);
+      xfer += (*_iter336).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -13651,14 +14127,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_policer_args::read(::apache::thrift::p
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size323;
-            ::apache::thrift::protocol::TType _etype326;
-            xfer += iprot->readListBegin(_etype326, _size323);
-            this->thrift_attr_list.resize(_size323);
-            uint32_t _i327;
-            for (_i327 = 0; _i327 < _size323; ++_i327)
+            uint32_t _size337;
+            ::apache::thrift::protocol::TType _etype340;
+            xfer += iprot->readListBegin(_etype340, _size337);
+            this->thrift_attr_list.resize(_size337);
+            uint32_t _i341;
+            for (_i341 = 0; _i341 < _size337; ++_i341)
             {
-              xfer += this->thrift_attr_list[_i327].read(iprot);
+              xfer += this->thrift_attr_list[_i341].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -13687,10 +14163,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_policer_args::write(::apache::thrift::
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter328;
-    for (_iter328 = this->thrift_attr_list.begin(); _iter328 != this->thrift_attr_list.end(); ++_iter328)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter342;
+    for (_iter342 = this->thrift_attr_list.begin(); _iter342 != this->thrift_attr_list.end(); ++_iter342)
     {
-      xfer += (*_iter328).write(oprot);
+      xfer += (*_iter342).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -13715,10 +14191,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_policer_pargs::write(::apache::thrift:
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter329;
-    for (_iter329 = (*(this->thrift_attr_list)).begin(); _iter329 != (*(this->thrift_attr_list)).end(); ++_iter329)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter343;
+    for (_iter343 = (*(this->thrift_attr_list)).begin(); _iter343 != (*(this->thrift_attr_list)).end(); ++_iter343)
     {
-      xfer += (*_iter329).write(oprot);
+      xfer += (*_iter343).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -14059,14 +14535,14 @@ uint32_t switch_sai_rpc_sai_thrift_get_policer_stats_args::read(::apache::thrift
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->counter_ids.clear();
-            uint32_t _size330;
-            ::apache::thrift::protocol::TType _etype333;
-            xfer += iprot->readListBegin(_etype333, _size330);
-            this->counter_ids.resize(_size330);
-            uint32_t _i334;
-            for (_i334 = 0; _i334 < _size330; ++_i334)
+            uint32_t _size344;
+            ::apache::thrift::protocol::TType _etype347;
+            xfer += iprot->readListBegin(_etype347, _size344);
+            this->counter_ids.resize(_size344);
+            uint32_t _i348;
+            for (_i348 = 0; _i348 < _size344; ++_i348)
             {
-              xfer += iprot->readI32(this->counter_ids[_i334]);
+              xfer += iprot->readI32(this->counter_ids[_i348]);
             }
             xfer += iprot->readListEnd();
           }
@@ -14099,10 +14575,10 @@ uint32_t switch_sai_rpc_sai_thrift_get_policer_stats_args::write(::apache::thrif
   xfer += oprot->writeFieldBegin("counter_ids", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I32, static_cast<uint32_t>(this->counter_ids.size()));
-    std::vector<sai_thrift_policer_stat_counter_t> ::const_iterator _iter335;
-    for (_iter335 = this->counter_ids.begin(); _iter335 != this->counter_ids.end(); ++_iter335)
+    std::vector<sai_thrift_policer_stat_counter_t> ::const_iterator _iter349;
+    for (_iter349 = this->counter_ids.begin(); _iter349 != this->counter_ids.end(); ++_iter349)
     {
-      xfer += oprot->writeI32((*_iter335));
+      xfer += oprot->writeI32((*_iter349));
     }
     xfer += oprot->writeListEnd();
   }
@@ -14131,10 +14607,10 @@ uint32_t switch_sai_rpc_sai_thrift_get_policer_stats_pargs::write(::apache::thri
   xfer += oprot->writeFieldBegin("counter_ids", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I32, static_cast<uint32_t>((*(this->counter_ids)).size()));
-    std::vector<sai_thrift_policer_stat_counter_t> ::const_iterator _iter336;
-    for (_iter336 = (*(this->counter_ids)).begin(); _iter336 != (*(this->counter_ids)).end(); ++_iter336)
+    std::vector<sai_thrift_policer_stat_counter_t> ::const_iterator _iter350;
+    for (_iter350 = (*(this->counter_ids)).begin(); _iter350 != (*(this->counter_ids)).end(); ++_iter350)
     {
-      xfer += oprot->writeI32((*_iter336));
+      xfer += oprot->writeI32((*_iter350));
     }
     xfer += oprot->writeListEnd();
   }
@@ -14175,14 +14651,14 @@ uint32_t switch_sai_rpc_sai_thrift_get_policer_stats_result::read(::apache::thri
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size337;
-            ::apache::thrift::protocol::TType _etype340;
-            xfer += iprot->readListBegin(_etype340, _size337);
-            this->success.resize(_size337);
-            uint32_t _i341;
-            for (_i341 = 0; _i341 < _size337; ++_i341)
+            uint32_t _size351;
+            ::apache::thrift::protocol::TType _etype354;
+            xfer += iprot->readListBegin(_etype354, _size351);
+            this->success.resize(_size351);
+            uint32_t _i355;
+            for (_i355 = 0; _i355 < _size351; ++_i355)
             {
-              xfer += iprot->readI64(this->success[_i341]);
+              xfer += iprot->readI64(this->success[_i355]);
             }
             xfer += iprot->readListEnd();
           }
@@ -14213,10 +14689,10 @@ uint32_t switch_sai_rpc_sai_thrift_get_policer_stats_result::write(::apache::thr
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I64, static_cast<uint32_t>(this->success.size()));
-      std::vector<int64_t> ::const_iterator _iter342;
-      for (_iter342 = this->success.begin(); _iter342 != this->success.end(); ++_iter342)
+      std::vector<int64_t> ::const_iterator _iter356;
+      for (_iter356 = this->success.begin(); _iter356 != this->success.end(); ++_iter356)
       {
-        xfer += oprot->writeI64((*_iter342));
+        xfer += oprot->writeI64((*_iter356));
       }
       xfer += oprot->writeListEnd();
     }
@@ -14256,14 +14732,14 @@ uint32_t switch_sai_rpc_sai_thrift_get_policer_stats_presult::read(::apache::thr
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size343;
-            ::apache::thrift::protocol::TType _etype346;
-            xfer += iprot->readListBegin(_etype346, _size343);
-            (*(this->success)).resize(_size343);
-            uint32_t _i347;
-            for (_i347 = 0; _i347 < _size343; ++_i347)
+            uint32_t _size357;
+            ::apache::thrift::protocol::TType _etype360;
+            xfer += iprot->readListBegin(_etype360, _size357);
+            (*(this->success)).resize(_size357);
+            uint32_t _i361;
+            for (_i361 = 0; _i361 < _size357; ++_i361)
             {
-              xfer += iprot->readI64((*(this->success))[_i347]);
+              xfer += iprot->readI64((*(this->success))[_i361]);
             }
             xfer += iprot->readListEnd();
           }
@@ -14313,14 +14789,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_scheduler_profile_args::read(::apache:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size348;
-            ::apache::thrift::protocol::TType _etype351;
-            xfer += iprot->readListBegin(_etype351, _size348);
-            this->thrift_attr_list.resize(_size348);
-            uint32_t _i352;
-            for (_i352 = 0; _i352 < _size348; ++_i352)
+            uint32_t _size362;
+            ::apache::thrift::protocol::TType _etype365;
+            xfer += iprot->readListBegin(_etype365, _size362);
+            this->thrift_attr_list.resize(_size362);
+            uint32_t _i366;
+            for (_i366 = 0; _i366 < _size362; ++_i366)
             {
-              xfer += this->thrift_attr_list[_i352].read(iprot);
+              xfer += this->thrift_attr_list[_i366].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -14349,10 +14825,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_scheduler_profile_args::write(::apache
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter353;
-    for (_iter353 = this->thrift_attr_list.begin(); _iter353 != this->thrift_attr_list.end(); ++_iter353)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter367;
+    for (_iter367 = this->thrift_attr_list.begin(); _iter367 != this->thrift_attr_list.end(); ++_iter367)
     {
-      xfer += (*_iter353).write(oprot);
+      xfer += (*_iter367).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -14377,10 +14853,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_scheduler_profile_pargs::write(::apach
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter354;
-    for (_iter354 = (*(this->thrift_attr_list)).begin(); _iter354 != (*(this->thrift_attr_list)).end(); ++_iter354)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter368;
+    for (_iter368 = (*(this->thrift_attr_list)).begin(); _iter368 != (*(this->thrift_attr_list)).end(); ++_iter368)
     {
-      xfer += (*_iter354).write(oprot);
+      xfer += (*_iter368).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -14721,14 +15197,14 @@ uint32_t switch_sai_rpc_sai_thrift_get_queue_stats_args::read(::apache::thrift::
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->counter_ids.clear();
-            uint32_t _size355;
-            ::apache::thrift::protocol::TType _etype358;
-            xfer += iprot->readListBegin(_etype358, _size355);
-            this->counter_ids.resize(_size355);
-            uint32_t _i359;
-            for (_i359 = 0; _i359 < _size355; ++_i359)
+            uint32_t _size369;
+            ::apache::thrift::protocol::TType _etype372;
+            xfer += iprot->readListBegin(_etype372, _size369);
+            this->counter_ids.resize(_size369);
+            uint32_t _i373;
+            for (_i373 = 0; _i373 < _size369; ++_i373)
             {
-              xfer += iprot->readI32(this->counter_ids[_i359]);
+              xfer += iprot->readI32(this->counter_ids[_i373]);
             }
             xfer += iprot->readListEnd();
           }
@@ -14769,10 +15245,10 @@ uint32_t switch_sai_rpc_sai_thrift_get_queue_stats_args::write(::apache::thrift:
   xfer += oprot->writeFieldBegin("counter_ids", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I32, static_cast<uint32_t>(this->counter_ids.size()));
-    std::vector<sai_thrift_queue_stat_counter_t> ::const_iterator _iter360;
-    for (_iter360 = this->counter_ids.begin(); _iter360 != this->counter_ids.end(); ++_iter360)
+    std::vector<sai_thrift_queue_stat_counter_t> ::const_iterator _iter374;
+    for (_iter374 = this->counter_ids.begin(); _iter374 != this->counter_ids.end(); ++_iter374)
     {
-      xfer += oprot->writeI32((*_iter360));
+      xfer += oprot->writeI32((*_iter374));
     }
     xfer += oprot->writeListEnd();
   }
@@ -14805,10 +15281,10 @@ uint32_t switch_sai_rpc_sai_thrift_get_queue_stats_pargs::write(::apache::thrift
   xfer += oprot->writeFieldBegin("counter_ids", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I32, static_cast<uint32_t>((*(this->counter_ids)).size()));
-    std::vector<sai_thrift_queue_stat_counter_t> ::const_iterator _iter361;
-    for (_iter361 = (*(this->counter_ids)).begin(); _iter361 != (*(this->counter_ids)).end(); ++_iter361)
+    std::vector<sai_thrift_queue_stat_counter_t> ::const_iterator _iter375;
+    for (_iter375 = (*(this->counter_ids)).begin(); _iter375 != (*(this->counter_ids)).end(); ++_iter375)
     {
-      xfer += oprot->writeI32((*_iter361));
+      xfer += oprot->writeI32((*_iter375));
     }
     xfer += oprot->writeListEnd();
   }
@@ -14853,14 +15329,14 @@ uint32_t switch_sai_rpc_sai_thrift_get_queue_stats_result::read(::apache::thrift
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size362;
-            ::apache::thrift::protocol::TType _etype365;
-            xfer += iprot->readListBegin(_etype365, _size362);
-            this->success.resize(_size362);
-            uint32_t _i366;
-            for (_i366 = 0; _i366 < _size362; ++_i366)
+            uint32_t _size376;
+            ::apache::thrift::protocol::TType _etype379;
+            xfer += iprot->readListBegin(_etype379, _size376);
+            this->success.resize(_size376);
+            uint32_t _i380;
+            for (_i380 = 0; _i380 < _size376; ++_i380)
             {
-              xfer += iprot->readI64(this->success[_i366]);
+              xfer += iprot->readI64(this->success[_i380]);
             }
             xfer += iprot->readListEnd();
           }
@@ -14891,10 +15367,10 @@ uint32_t switch_sai_rpc_sai_thrift_get_queue_stats_result::write(::apache::thrif
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I64, static_cast<uint32_t>(this->success.size()));
-      std::vector<int64_t> ::const_iterator _iter367;
-      for (_iter367 = this->success.begin(); _iter367 != this->success.end(); ++_iter367)
+      std::vector<int64_t> ::const_iterator _iter381;
+      for (_iter381 = this->success.begin(); _iter381 != this->success.end(); ++_iter381)
       {
-        xfer += oprot->writeI64((*_iter367));
+        xfer += oprot->writeI64((*_iter381));
       }
       xfer += oprot->writeListEnd();
     }
@@ -14934,14 +15410,14 @@ uint32_t switch_sai_rpc_sai_thrift_get_queue_stats_presult::read(::apache::thrif
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size368;
-            ::apache::thrift::protocol::TType _etype371;
-            xfer += iprot->readListBegin(_etype371, _size368);
-            (*(this->success)).resize(_size368);
-            uint32_t _i372;
-            for (_i372 = 0; _i372 < _size368; ++_i372)
+            uint32_t _size382;
+            ::apache::thrift::protocol::TType _etype385;
+            xfer += iprot->readListBegin(_etype385, _size382);
+            (*(this->success)).resize(_size382);
+            uint32_t _i386;
+            for (_i386 = 0; _i386 < _size382; ++_i386)
             {
-              xfer += iprot->readI64((*(this->success))[_i372]);
+              xfer += iprot->readI64((*(this->success))[_i386]);
             }
             xfer += iprot->readListEnd();
           }
@@ -14999,14 +15475,14 @@ uint32_t switch_sai_rpc_sai_thrift_clear_queue_stats_args::read(::apache::thrift
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->counter_ids.clear();
-            uint32_t _size373;
-            ::apache::thrift::protocol::TType _etype376;
-            xfer += iprot->readListBegin(_etype376, _size373);
-            this->counter_ids.resize(_size373);
-            uint32_t _i377;
-            for (_i377 = 0; _i377 < _size373; ++_i377)
+            uint32_t _size387;
+            ::apache::thrift::protocol::TType _etype390;
+            xfer += iprot->readListBegin(_etype390, _size387);
+            this->counter_ids.resize(_size387);
+            uint32_t _i391;
+            for (_i391 = 0; _i391 < _size387; ++_i391)
             {
-              xfer += iprot->readI32(this->counter_ids[_i377]);
+              xfer += iprot->readI32(this->counter_ids[_i391]);
             }
             xfer += iprot->readListEnd();
           }
@@ -15047,10 +15523,10 @@ uint32_t switch_sai_rpc_sai_thrift_clear_queue_stats_args::write(::apache::thrif
   xfer += oprot->writeFieldBegin("counter_ids", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I32, static_cast<uint32_t>(this->counter_ids.size()));
-    std::vector<sai_thrift_queue_stat_counter_t> ::const_iterator _iter378;
-    for (_iter378 = this->counter_ids.begin(); _iter378 != this->counter_ids.end(); ++_iter378)
+    std::vector<sai_thrift_queue_stat_counter_t> ::const_iterator _iter392;
+    for (_iter392 = this->counter_ids.begin(); _iter392 != this->counter_ids.end(); ++_iter392)
     {
-      xfer += oprot->writeI32((*_iter378));
+      xfer += oprot->writeI32((*_iter392));
     }
     xfer += oprot->writeListEnd();
   }
@@ -15083,10 +15559,10 @@ uint32_t switch_sai_rpc_sai_thrift_clear_queue_stats_pargs::write(::apache::thri
   xfer += oprot->writeFieldBegin("counter_ids", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I32, static_cast<uint32_t>((*(this->counter_ids)).size()));
-    std::vector<sai_thrift_queue_stat_counter_t> ::const_iterator _iter379;
-    for (_iter379 = (*(this->counter_ids)).begin(); _iter379 != (*(this->counter_ids)).end(); ++_iter379)
+    std::vector<sai_thrift_queue_stat_counter_t> ::const_iterator _iter393;
+    for (_iter393 = (*(this->counter_ids)).begin(); _iter393 != (*(this->counter_ids)).end(); ++_iter393)
     {
-      xfer += oprot->writeI32((*_iter379));
+      xfer += oprot->writeI32((*_iter393));
     }
     xfer += oprot->writeListEnd();
   }
@@ -15439,14 +15915,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_buffer_profile_args::read(::apache::th
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size380;
-            ::apache::thrift::protocol::TType _etype383;
-            xfer += iprot->readListBegin(_etype383, _size380);
-            this->thrift_attr_list.resize(_size380);
-            uint32_t _i384;
-            for (_i384 = 0; _i384 < _size380; ++_i384)
+            uint32_t _size394;
+            ::apache::thrift::protocol::TType _etype397;
+            xfer += iprot->readListBegin(_etype397, _size394);
+            this->thrift_attr_list.resize(_size394);
+            uint32_t _i398;
+            for (_i398 = 0; _i398 < _size394; ++_i398)
             {
-              xfer += this->thrift_attr_list[_i384].read(iprot);
+              xfer += this->thrift_attr_list[_i398].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -15475,10 +15951,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_buffer_profile_args::write(::apache::t
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter385;
-    for (_iter385 = this->thrift_attr_list.begin(); _iter385 != this->thrift_attr_list.end(); ++_iter385)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter399;
+    for (_iter399 = this->thrift_attr_list.begin(); _iter399 != this->thrift_attr_list.end(); ++_iter399)
     {
-      xfer += (*_iter385).write(oprot);
+      xfer += (*_iter399).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -15503,10 +15979,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_buffer_profile_pargs::write(::apache::
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter386;
-    for (_iter386 = (*(this->thrift_attr_list)).begin(); _iter386 != (*(this->thrift_attr_list)).end(); ++_iter386)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter400;
+    for (_iter400 = (*(this->thrift_attr_list)).begin(); _iter400 != (*(this->thrift_attr_list)).end(); ++_iter400)
     {
-      xfer += (*_iter386).write(oprot);
+      xfer += (*_iter400).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -15653,14 +16129,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_pool_profile_args::read(::apache::thri
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size387;
-            ::apache::thrift::protocol::TType _etype390;
-            xfer += iprot->readListBegin(_etype390, _size387);
-            this->thrift_attr_list.resize(_size387);
-            uint32_t _i391;
-            for (_i391 = 0; _i391 < _size387; ++_i391)
+            uint32_t _size401;
+            ::apache::thrift::protocol::TType _etype404;
+            xfer += iprot->readListBegin(_etype404, _size401);
+            this->thrift_attr_list.resize(_size401);
+            uint32_t _i405;
+            for (_i405 = 0; _i405 < _size401; ++_i405)
             {
-              xfer += this->thrift_attr_list[_i391].read(iprot);
+              xfer += this->thrift_attr_list[_i405].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -15689,10 +16165,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_pool_profile_args::write(::apache::thr
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter392;
-    for (_iter392 = this->thrift_attr_list.begin(); _iter392 != this->thrift_attr_list.end(); ++_iter392)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter406;
+    for (_iter406 = this->thrift_attr_list.begin(); _iter406 != this->thrift_attr_list.end(); ++_iter406)
     {
-      xfer += (*_iter392).write(oprot);
+      xfer += (*_iter406).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -15717,10 +16193,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_pool_profile_pargs::write(::apache::th
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter393;
-    for (_iter393 = (*(this->thrift_attr_list)).begin(); _iter393 != (*(this->thrift_attr_list)).end(); ++_iter393)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter407;
+    for (_iter407 = (*(this->thrift_attr_list)).begin(); _iter407 != (*(this->thrift_attr_list)).end(); ++_iter407)
     {
-      xfer += (*_iter393).write(oprot);
+      xfer += (*_iter407).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -16077,14 +16553,14 @@ uint32_t switch_sai_rpc_sai_thrift_get_pg_stats_args::read(::apache::thrift::pro
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->counter_ids.clear();
-            uint32_t _size394;
-            ::apache::thrift::protocol::TType _etype397;
-            xfer += iprot->readListBegin(_etype397, _size394);
-            this->counter_ids.resize(_size394);
-            uint32_t _i398;
-            for (_i398 = 0; _i398 < _size394; ++_i398)
+            uint32_t _size408;
+            ::apache::thrift::protocol::TType _etype411;
+            xfer += iprot->readListBegin(_etype411, _size408);
+            this->counter_ids.resize(_size408);
+            uint32_t _i412;
+            for (_i412 = 0; _i412 < _size408; ++_i412)
             {
-              xfer += iprot->readI32(this->counter_ids[_i398]);
+              xfer += iprot->readI32(this->counter_ids[_i412]);
             }
             xfer += iprot->readListEnd();
           }
@@ -16125,10 +16601,10 @@ uint32_t switch_sai_rpc_sai_thrift_get_pg_stats_args::write(::apache::thrift::pr
   xfer += oprot->writeFieldBegin("counter_ids", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I32, static_cast<uint32_t>(this->counter_ids.size()));
-    std::vector<sai_thrift_pg_stat_counter_t> ::const_iterator _iter399;
-    for (_iter399 = this->counter_ids.begin(); _iter399 != this->counter_ids.end(); ++_iter399)
+    std::vector<sai_thrift_pg_stat_counter_t> ::const_iterator _iter413;
+    for (_iter413 = this->counter_ids.begin(); _iter413 != this->counter_ids.end(); ++_iter413)
     {
-      xfer += oprot->writeI32((*_iter399));
+      xfer += oprot->writeI32((*_iter413));
     }
     xfer += oprot->writeListEnd();
   }
@@ -16161,10 +16637,10 @@ uint32_t switch_sai_rpc_sai_thrift_get_pg_stats_pargs::write(::apache::thrift::p
   xfer += oprot->writeFieldBegin("counter_ids", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I32, static_cast<uint32_t>((*(this->counter_ids)).size()));
-    std::vector<sai_thrift_pg_stat_counter_t> ::const_iterator _iter400;
-    for (_iter400 = (*(this->counter_ids)).begin(); _iter400 != (*(this->counter_ids)).end(); ++_iter400)
+    std::vector<sai_thrift_pg_stat_counter_t> ::const_iterator _iter414;
+    for (_iter414 = (*(this->counter_ids)).begin(); _iter414 != (*(this->counter_ids)).end(); ++_iter414)
     {
-      xfer += oprot->writeI32((*_iter400));
+      xfer += oprot->writeI32((*_iter414));
     }
     xfer += oprot->writeListEnd();
   }
@@ -16209,14 +16685,14 @@ uint32_t switch_sai_rpc_sai_thrift_get_pg_stats_result::read(::apache::thrift::p
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size401;
-            ::apache::thrift::protocol::TType _etype404;
-            xfer += iprot->readListBegin(_etype404, _size401);
-            this->success.resize(_size401);
-            uint32_t _i405;
-            for (_i405 = 0; _i405 < _size401; ++_i405)
+            uint32_t _size415;
+            ::apache::thrift::protocol::TType _etype418;
+            xfer += iprot->readListBegin(_etype418, _size415);
+            this->success.resize(_size415);
+            uint32_t _i419;
+            for (_i419 = 0; _i419 < _size415; ++_i419)
             {
-              xfer += iprot->readI64(this->success[_i405]);
+              xfer += iprot->readI64(this->success[_i419]);
             }
             xfer += iprot->readListEnd();
           }
@@ -16247,10 +16723,10 @@ uint32_t switch_sai_rpc_sai_thrift_get_pg_stats_result::write(::apache::thrift::
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I64, static_cast<uint32_t>(this->success.size()));
-      std::vector<int64_t> ::const_iterator _iter406;
-      for (_iter406 = this->success.begin(); _iter406 != this->success.end(); ++_iter406)
+      std::vector<int64_t> ::const_iterator _iter420;
+      for (_iter420 = this->success.begin(); _iter420 != this->success.end(); ++_iter420)
       {
-        xfer += oprot->writeI64((*_iter406));
+        xfer += oprot->writeI64((*_iter420));
       }
       xfer += oprot->writeListEnd();
     }
@@ -16290,14 +16766,14 @@ uint32_t switch_sai_rpc_sai_thrift_get_pg_stats_presult::read(::apache::thrift::
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size407;
-            ::apache::thrift::protocol::TType _etype410;
-            xfer += iprot->readListBegin(_etype410, _size407);
-            (*(this->success)).resize(_size407);
-            uint32_t _i411;
-            for (_i411 = 0; _i411 < _size407; ++_i411)
+            uint32_t _size421;
+            ::apache::thrift::protocol::TType _etype424;
+            xfer += iprot->readListBegin(_etype424, _size421);
+            (*(this->success)).resize(_size421);
+            uint32_t _i425;
+            for (_i425 = 0; _i425 < _size421; ++_i425)
             {
-              xfer += iprot->readI64((*(this->success))[_i411]);
+              xfer += iprot->readI64((*(this->success))[_i425]);
             }
             xfer += iprot->readListEnd();
           }
@@ -16347,14 +16823,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_wred_profile_args::read(::apache::thri
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size412;
-            ::apache::thrift::protocol::TType _etype415;
-            xfer += iprot->readListBegin(_etype415, _size412);
-            this->thrift_attr_list.resize(_size412);
-            uint32_t _i416;
-            for (_i416 = 0; _i416 < _size412; ++_i416)
+            uint32_t _size426;
+            ::apache::thrift::protocol::TType _etype429;
+            xfer += iprot->readListBegin(_etype429, _size426);
+            this->thrift_attr_list.resize(_size426);
+            uint32_t _i430;
+            for (_i430 = 0; _i430 < _size426; ++_i430)
             {
-              xfer += this->thrift_attr_list[_i416].read(iprot);
+              xfer += this->thrift_attr_list[_i430].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -16383,10 +16859,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_wred_profile_args::write(::apache::thr
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter417;
-    for (_iter417 = this->thrift_attr_list.begin(); _iter417 != this->thrift_attr_list.end(); ++_iter417)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter431;
+    for (_iter431 = this->thrift_attr_list.begin(); _iter431 != this->thrift_attr_list.end(); ++_iter431)
     {
-      xfer += (*_iter417).write(oprot);
+      xfer += (*_iter431).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -16411,10 +16887,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_wred_profile_pargs::write(::apache::th
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter418;
-    for (_iter418 = (*(this->thrift_attr_list)).begin(); _iter418 != (*(this->thrift_attr_list)).end(); ++_iter418)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter432;
+    for (_iter432 = (*(this->thrift_attr_list)).begin(); _iter432 != (*(this->thrift_attr_list)).end(); ++_iter432)
     {
-      xfer += (*_iter418).write(oprot);
+      xfer += (*_iter432).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -16747,14 +17223,14 @@ uint32_t switch_sai_rpc_sai_thrift_create_qos_map_args::read(::apache::thrift::p
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->thrift_attr_list.clear();
-            uint32_t _size419;
-            ::apache::thrift::protocol::TType _etype422;
-            xfer += iprot->readListBegin(_etype422, _size419);
-            this->thrift_attr_list.resize(_size419);
-            uint32_t _i423;
-            for (_i423 = 0; _i423 < _size419; ++_i423)
+            uint32_t _size433;
+            ::apache::thrift::protocol::TType _etype436;
+            xfer += iprot->readListBegin(_etype436, _size433);
+            this->thrift_attr_list.resize(_size433);
+            uint32_t _i437;
+            for (_i437 = 0; _i437 < _size433; ++_i437)
             {
-              xfer += this->thrift_attr_list[_i423].read(iprot);
+              xfer += this->thrift_attr_list[_i437].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -16783,10 +17259,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_qos_map_args::write(::apache::thrift::
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->thrift_attr_list.size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter424;
-    for (_iter424 = this->thrift_attr_list.begin(); _iter424 != this->thrift_attr_list.end(); ++_iter424)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter438;
+    for (_iter438 = this->thrift_attr_list.begin(); _iter438 != this->thrift_attr_list.end(); ++_iter438)
     {
-      xfer += (*_iter424).write(oprot);
+      xfer += (*_iter438).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -16811,10 +17287,10 @@ uint32_t switch_sai_rpc_sai_thrift_create_qos_map_pargs::write(::apache::thrift:
   xfer += oprot->writeFieldBegin("thrift_attr_list", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->thrift_attr_list)).size()));
-    std::vector<sai_thrift_attribute_t> ::const_iterator _iter425;
-    for (_iter425 = (*(this->thrift_attr_list)).begin(); _iter425 != (*(this->thrift_attr_list)).end(); ++_iter425)
+    std::vector<sai_thrift_attribute_t> ::const_iterator _iter439;
+    for (_iter439 = (*(this->thrift_attr_list)).begin(); _iter439 != (*(this->thrift_attr_list)).end(); ++_iter439)
     {
-      xfer += (*_iter425).write(oprot);
+      xfer += (*_iter439).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -17177,19 +17653,20 @@ sai_thrift_status_t switch_sai_rpcClient::recv_sai_thrift_set_port_attribute()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "sai_thrift_set_port_attribute failed: unknown result");
 }
 
-void switch_sai_rpcClient::sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t port_id)
+void switch_sai_rpcClient::sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t port_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list)
 {
-  send_sai_thrift_get_port_attribute(port_id);
+  send_sai_thrift_get_port_attribute(port_id, thrift_attr_list);
   recv_sai_thrift_get_port_attribute(_return);
 }
 
-void switch_sai_rpcClient::send_sai_thrift_get_port_attribute(const sai_thrift_object_id_t port_id)
+void switch_sai_rpcClient::send_sai_thrift_get_port_attribute(const sai_thrift_object_id_t port_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("sai_thrift_get_port_attribute", ::apache::thrift::protocol::T_CALL, cseqid);
 
   switch_sai_rpc_sai_thrift_get_port_attribute_pargs args;
   args.port_id = &port_id;
+  args.thrift_attr_list = &thrift_attr_list;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -17585,6 +18062,65 @@ sai_thrift_status_t switch_sai_rpcClient::recv_sai_thrift_remove_bridge()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "sai_thrift_remove_bridge failed: unknown result");
 }
 
+void switch_sai_rpcClient::sai_thirft_get_bridge_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t bridge_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list)
+{
+  send_sai_thirft_get_bridge_attribute(bridge_id, thrift_attr_list);
+  recv_sai_thirft_get_bridge_attribute(_return);
+}
+
+void switch_sai_rpcClient::send_sai_thirft_get_bridge_attribute(const sai_thrift_object_id_t bridge_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("sai_thirft_get_bridge_attribute", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  switch_sai_rpc_sai_thirft_get_bridge_attribute_pargs args;
+  args.bridge_id = &bridge_id;
+  args.thrift_attr_list = &thrift_attr_list;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void switch_sai_rpcClient::recv_sai_thirft_get_bridge_attribute(sai_thrift_attribute_list_t& _return)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("sai_thirft_get_bridge_attribute") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  switch_sai_rpc_sai_thirft_get_bridge_attribute_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "sai_thirft_get_bridge_attribute failed: unknown result");
+}
+
 sai_thrift_object_id_t switch_sai_rpcClient::sai_thrift_create_bridge_port(const std::vector<sai_thrift_attribute_t> & thrift_attr_list)
 {
   send_sai_thrift_create_bridge_port(thrift_attr_list);
@@ -17701,19 +18237,19 @@ sai_thrift_status_t switch_sai_rpcClient::recv_sai_thrift_remove_bridge_port()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "sai_thrift_remove_bridge_port failed: unknown result");
 }
 
-void switch_sai_rpcClient::sai_thirft_get_bridge_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t bridge_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list)
+void switch_sai_rpcClient::sai_thirft_get_bridge_port_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t bridge_port_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list)
 {
-  send_sai_thirft_get_bridge_attribute(bridge_id, thrift_attr_list);
-  recv_sai_thirft_get_bridge_attribute(_return);
+  send_sai_thirft_get_bridge_port_attribute(bridge_port_id, thrift_attr_list);
+  recv_sai_thirft_get_bridge_port_attribute(_return);
 }
 
-void switch_sai_rpcClient::send_sai_thirft_get_bridge_attribute(const sai_thrift_object_id_t bridge_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list)
+void switch_sai_rpcClient::send_sai_thirft_get_bridge_port_attribute(const sai_thrift_object_id_t bridge_port_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("sai_thirft_get_bridge_attribute", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("sai_thirft_get_bridge_port_attribute", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  switch_sai_rpc_sai_thirft_get_bridge_attribute_pargs args;
-  args.bridge_id = &bridge_id;
+  switch_sai_rpc_sai_thirft_get_bridge_port_attribute_pargs args;
+  args.bridge_port_id = &bridge_port_id;
   args.thrift_attr_list = &thrift_attr_list;
   args.write(oprot_);
 
@@ -17722,7 +18258,7 @@ void switch_sai_rpcClient::send_sai_thirft_get_bridge_attribute(const sai_thrift
   oprot_->getTransport()->flush();
 }
 
-void switch_sai_rpcClient::recv_sai_thirft_get_bridge_attribute(sai_thrift_attribute_list_t& _return)
+void switch_sai_rpcClient::recv_sai_thirft_get_bridge_port_attribute(sai_thrift_attribute_list_t& _return)
 {
 
   int32_t rseqid = 0;
@@ -17742,12 +18278,12 @@ void switch_sai_rpcClient::recv_sai_thirft_get_bridge_attribute(sai_thrift_attri
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("sai_thirft_get_bridge_attribute") != 0) {
+  if (fname.compare("sai_thirft_get_bridge_port_attribute") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  switch_sai_rpc_sai_thirft_get_bridge_attribute_presult result;
+  switch_sai_rpc_sai_thirft_get_bridge_port_attribute_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -17757,7 +18293,66 @@ void switch_sai_rpcClient::recv_sai_thirft_get_bridge_attribute(sai_thrift_attri
     // _return pointer has now been filled
     return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "sai_thirft_get_bridge_attribute failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "sai_thirft_get_bridge_port_attribute failed: unknown result");
+}
+
+sai_thrift_status_t switch_sai_rpcClient::sai_thrift_set_bridge_port_attribute(const sai_thrift_object_id_t bridge_port_id, const sai_thrift_attribute_t& thrift_attr)
+{
+  send_sai_thrift_set_bridge_port_attribute(bridge_port_id, thrift_attr);
+  return recv_sai_thrift_set_bridge_port_attribute();
+}
+
+void switch_sai_rpcClient::send_sai_thrift_set_bridge_port_attribute(const sai_thrift_object_id_t bridge_port_id, const sai_thrift_attribute_t& thrift_attr)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("sai_thrift_set_bridge_port_attribute", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  switch_sai_rpc_sai_thrift_set_bridge_port_attribute_pargs args;
+  args.bridge_port_id = &bridge_port_id;
+  args.thrift_attr = &thrift_attr;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+sai_thrift_status_t switch_sai_rpcClient::recv_sai_thrift_set_bridge_port_attribute()
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("sai_thrift_set_bridge_port_attribute") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  sai_thrift_status_t _return;
+  switch_sai_rpc_sai_thrift_set_bridge_port_attribute_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    return _return;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "sai_thrift_set_bridge_port_attribute failed: unknown result");
 }
 
 sai_thrift_status_t switch_sai_rpcClient::sai_thrift_create_fdb_entry(const sai_thrift_fdb_entry_t& thrift_fdb_entry, const std::vector<sai_thrift_attribute_t> & thrift_attr_list)
@@ -22050,7 +22645,7 @@ void switch_sai_rpcProcessor::process_sai_thrift_get_port_attribute(int32_t seqi
 
   switch_sai_rpc_sai_thrift_get_port_attribute_result result;
   try {
-    iface_->sai_thrift_get_port_attribute(result.success, args.port_id);
+    iface_->sai_thrift_get_port_attribute(result.success, args.port_id, args.thrift_attr_list);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
@@ -22405,6 +23000,60 @@ void switch_sai_rpcProcessor::process_sai_thrift_remove_bridge(int32_t seqid, ::
   }
 }
 
+void switch_sai_rpcProcessor::process_sai_thirft_get_bridge_attribute(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("switch_sai_rpc.sai_thirft_get_bridge_attribute", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "switch_sai_rpc.sai_thirft_get_bridge_attribute");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "switch_sai_rpc.sai_thirft_get_bridge_attribute");
+  }
+
+  switch_sai_rpc_sai_thirft_get_bridge_attribute_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "switch_sai_rpc.sai_thirft_get_bridge_attribute", bytes);
+  }
+
+  switch_sai_rpc_sai_thirft_get_bridge_attribute_result result;
+  try {
+    iface_->sai_thirft_get_bridge_attribute(result.success, args.bridge_id, args.thrift_attr_list);
+    result.__isset.success = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "switch_sai_rpc.sai_thirft_get_bridge_attribute");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("sai_thirft_get_bridge_attribute", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "switch_sai_rpc.sai_thirft_get_bridge_attribute");
+  }
+
+  oprot->writeMessageBegin("sai_thirft_get_bridge_attribute", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "switch_sai_rpc.sai_thirft_get_bridge_attribute", bytes);
+  }
+}
+
 void switch_sai_rpcProcessor::process_sai_thrift_create_bridge_port(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
@@ -22513,38 +23162,38 @@ void switch_sai_rpcProcessor::process_sai_thrift_remove_bridge_port(int32_t seqi
   }
 }
 
-void switch_sai_rpcProcessor::process_sai_thirft_get_bridge_attribute(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void switch_sai_rpcProcessor::process_sai_thirft_get_bridge_port_attribute(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("switch_sai_rpc.sai_thirft_get_bridge_attribute", callContext);
+    ctx = this->eventHandler_->getContext("switch_sai_rpc.sai_thirft_get_bridge_port_attribute", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "switch_sai_rpc.sai_thirft_get_bridge_attribute");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "switch_sai_rpc.sai_thirft_get_bridge_port_attribute");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "switch_sai_rpc.sai_thirft_get_bridge_attribute");
+    this->eventHandler_->preRead(ctx, "switch_sai_rpc.sai_thirft_get_bridge_port_attribute");
   }
 
-  switch_sai_rpc_sai_thirft_get_bridge_attribute_args args;
+  switch_sai_rpc_sai_thirft_get_bridge_port_attribute_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "switch_sai_rpc.sai_thirft_get_bridge_attribute", bytes);
+    this->eventHandler_->postRead(ctx, "switch_sai_rpc.sai_thirft_get_bridge_port_attribute", bytes);
   }
 
-  switch_sai_rpc_sai_thirft_get_bridge_attribute_result result;
+  switch_sai_rpc_sai_thirft_get_bridge_port_attribute_result result;
   try {
-    iface_->sai_thirft_get_bridge_attribute(result.success, args.bridge_id, args.thrift_attr_list);
+    iface_->sai_thirft_get_bridge_port_attribute(result.success, args.bridge_port_id, args.thrift_attr_list);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "switch_sai_rpc.sai_thirft_get_bridge_attribute");
+      this->eventHandler_->handlerError(ctx, "switch_sai_rpc.sai_thirft_get_bridge_port_attribute");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("sai_thirft_get_bridge_attribute", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("sai_thirft_get_bridge_port_attribute", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -22553,17 +23202,71 @@ void switch_sai_rpcProcessor::process_sai_thirft_get_bridge_attribute(int32_t se
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "switch_sai_rpc.sai_thirft_get_bridge_attribute");
+    this->eventHandler_->preWrite(ctx, "switch_sai_rpc.sai_thirft_get_bridge_port_attribute");
   }
 
-  oprot->writeMessageBegin("sai_thirft_get_bridge_attribute", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("sai_thirft_get_bridge_port_attribute", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "switch_sai_rpc.sai_thirft_get_bridge_attribute", bytes);
+    this->eventHandler_->postWrite(ctx, "switch_sai_rpc.sai_thirft_get_bridge_port_attribute", bytes);
+  }
+}
+
+void switch_sai_rpcProcessor::process_sai_thrift_set_bridge_port_attribute(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("switch_sai_rpc.sai_thrift_set_bridge_port_attribute", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "switch_sai_rpc.sai_thrift_set_bridge_port_attribute");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "switch_sai_rpc.sai_thrift_set_bridge_port_attribute");
+  }
+
+  switch_sai_rpc_sai_thrift_set_bridge_port_attribute_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "switch_sai_rpc.sai_thrift_set_bridge_port_attribute", bytes);
+  }
+
+  switch_sai_rpc_sai_thrift_set_bridge_port_attribute_result result;
+  try {
+    result.success = iface_->sai_thrift_set_bridge_port_attribute(args.bridge_port_id, args.thrift_attr);
+    result.__isset.success = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "switch_sai_rpc.sai_thrift_set_bridge_port_attribute");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("sai_thrift_set_bridge_port_attribute", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "switch_sai_rpc.sai_thrift_set_bridge_port_attribute");
+  }
+
+  oprot->writeMessageBegin("sai_thrift_set_bridge_port_attribute", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "switch_sai_rpc.sai_thrift_set_bridge_port_attribute", bytes);
   }
 }
 

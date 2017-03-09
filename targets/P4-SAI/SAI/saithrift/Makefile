@@ -21,6 +21,7 @@ SRC_DIR    = ../../Sai-Tests/sai_thrift_src/gen-cpp
 OBJ_DIR    = obj
 
 SAI_SRC =  $(wildcard ${SAI_SRC_DIR}/*.c)
+SAI_SRC_HEADERS = $(wildcard ${SAI_SRC_DIR}/*.h)
 SAI_OBJS = $(patsubst %.c,${SAI_SRC_DIR}/${OBJ_DIR}/%.o, $(notdir $(SAI_SRC)))
 SAI_OBJ_IF_SRC    = ${SAI_SRC_DIR}/sai_object_interface.cpp ${SAI_SRC_DIR}/sai_object.cpp 
 SAI_OBJ_IF_OBJ    = $(patsubst %.cpp,${SAI_SRC_DIR}/${OBJ_DIR}/%.o, $(notdir $(SAI_OBJ_IF_SRC)))
@@ -30,7 +31,7 @@ SERVER_INC = -I{BM_DIR} -I../inc -I{SAI_INC_DIR}
 			
 default: server
 
-${OBJ_DIR}/%.o: ${SRC_DIR}/%.cpp
+${OBJ_DIR}/%.o: ${SRC_DIR}/%.cpp 
 	g++ ${CPP_OPTS} ${CPP_DEFS} $(INC_DIRS) -c $< -o $@
 
 ${BM_DIR}/%.o: ${BM_DIR}/%.cpp
@@ -39,7 +40,7 @@ ${BM_DIR}/%.o: ${BM_DIR}/%.cpp
 ${SAI_SRC_DIR}/${OBJ_DIR}%.o: ${SAI_SRC_DIR}/%.c
 	gcc ${CPP_OPTS} ${CPP_DEFS} $(INC_DIRS) -c $< -o $@
 
-${SAI_SRC_DIR}/${OBJ_DIR}/%.o: ${SAI_SRC_DIR}/%.cpp
+${SAI_SRC_DIR}/${OBJ_DIR}/%.o: ${SAI_SRC_DIR}/%.cpp ${SAI_SRC_HEADERS}
 	g++ ${CPP_OPTS} ${CPP_DEFS} $(INC_DIRS) -c $< -o $@ ${STAND_OBJS} ${LIBS_DIRS} ${LIBS}
 
 %.o: %.cpp

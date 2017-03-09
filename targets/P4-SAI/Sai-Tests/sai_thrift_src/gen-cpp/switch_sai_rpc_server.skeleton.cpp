@@ -27,7 +27,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
     printf("sai_thrift_set_port_attribute\n");
   }
 
-  void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t port_id) {
+  void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t port_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
     // Your implementation goes here
     printf("sai_thrift_get_port_attribute\n");
   }
@@ -62,6 +62,11 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
     printf("sai_thrift_remove_bridge\n");
   }
 
+  void sai_thirft_get_bridge_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t bridge_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+    // Your implementation goes here
+    printf("sai_thirft_get_bridge_attribute\n");
+  }
+
   sai_thrift_object_id_t sai_thrift_create_bridge_port(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
     // Your implementation goes here
     printf("sai_thrift_create_bridge_port\n");
@@ -72,9 +77,14 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
     printf("sai_thrift_remove_bridge_port\n");
   }
 
-  void sai_thirft_get_bridge_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t bridge_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+  void sai_thirft_get_bridge_port_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t bridge_port_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
     // Your implementation goes here
-    printf("sai_thirft_get_bridge_attribute\n");
+    printf("sai_thirft_get_bridge_port_attribute\n");
+  }
+
+  sai_thrift_status_t sai_thrift_set_bridge_port_attribute(const sai_thrift_object_id_t bridge_port_id, const sai_thrift_attribute_t& thrift_attr) {
+    // Your implementation goes here
+    printf("sai_thrift_set_bridge_port_attribute\n");
   }
 
   sai_thrift_status_t sai_thrift_create_fdb_entry(const sai_thrift_fdb_entry_t& thrift_fdb_entry, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {

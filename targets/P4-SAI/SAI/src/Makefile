@@ -20,6 +20,7 @@ SAI_OBJ_IF_OBJ    = $(patsubst %.cpp,${OBJ_DIR}/%.o, $(SAI_OBJ_IF_SRC))
 SAI_DIR = ../inc/
 SAI_SRC = $(wildcard *.c)
 SAI_OBJ = $(patsubst %.c,${OBJ_DIR}/%.o, $(SAI_SRC))
+HEADERS = $(wildcard *.h)
 INC_DIRS  =-I${USR_DIR}/include -I${THRIFT_DIR}/include/thrift -I${SAI_DIR} -I${BM_DIR}
 SAI_INC = -I${SAI_DIR}
 
@@ -27,7 +28,7 @@ default = all
 
 .PHONY: all clean
 
-${OBJ_DIR}/%.o: %.cpp
+${OBJ_DIR}/%.o: %.cpp ${HEADERS}
 	g++ ${CPP_OPTS} ${CPP_DEFS} $(INC_DIRS) -c $< -o $@ ${STAND_OBJS} ${LIBS_DIRS} ${LIBS}
 
 ${OBJ_DIR}/%.o: %.c

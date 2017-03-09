@@ -16,16 +16,18 @@ class switch_sai_rpcIf {
  public:
   virtual ~switch_sai_rpcIf() {}
   virtual sai_thrift_status_t sai_thrift_set_port_attribute(const sai_thrift_object_id_t port_id, const sai_thrift_attribute_t& thrift_attr) = 0;
-  virtual void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t port_id) = 0;
+  virtual void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t port_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) = 0;
   virtual void sai_thrift_get_port_stats(std::vector<int64_t> & _return, const sai_thrift_object_id_t port_id, const std::vector<sai_thrift_port_stat_counter_t> & counter_ids, const int32_t number_of_counters) = 0;
   virtual sai_thrift_status_t sai_thrift_clear_port_all_stats(const sai_thrift_object_id_t port_id) = 0;
   virtual sai_thrift_status_t sai_thrift_remove_port(const sai_thrift_object_id_t port_id) = 0;
   virtual sai_thrift_object_id_t sai_thrift_create_port(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) = 0;
   virtual sai_thrift_object_id_t sai_thrift_create_bridge(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) = 0;
   virtual sai_thrift_status_t sai_thrift_remove_bridge(const sai_thrift_object_id_t bridge_id) = 0;
+  virtual void sai_thirft_get_bridge_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t bridge_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) = 0;
   virtual sai_thrift_object_id_t sai_thrift_create_bridge_port(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) = 0;
   virtual sai_thrift_status_t sai_thrift_remove_bridge_port(const sai_thrift_object_id_t bridge_port_id) = 0;
-  virtual void sai_thirft_get_bridge_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t bridge_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) = 0;
+  virtual void sai_thirft_get_bridge_port_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t bridge_port_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) = 0;
+  virtual sai_thrift_status_t sai_thrift_set_bridge_port_attribute(const sai_thrift_object_id_t bridge_port_id, const sai_thrift_attribute_t& thrift_attr) = 0;
   virtual sai_thrift_status_t sai_thrift_create_fdb_entry(const sai_thrift_fdb_entry_t& thrift_fdb_entry, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) = 0;
   virtual sai_thrift_status_t sai_thrift_delete_fdb_entry(const sai_thrift_fdb_entry_t& thrift_fdb_entry) = 0;
   virtual sai_thrift_status_t sai_thrift_flush_fdb_entries(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) = 0;
@@ -131,7 +133,7 @@ class switch_sai_rpcNull : virtual public switch_sai_rpcIf {
     sai_thrift_status_t _return = 0;
     return _return;
   }
-  void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& /* _return */, const sai_thrift_object_id_t /* port_id */) {
+  void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& /* _return */, const sai_thrift_object_id_t /* port_id */, const std::vector<sai_thrift_attribute_t> & /* thrift_attr_list */) {
     return;
   }
   void sai_thrift_get_port_stats(std::vector<int64_t> & /* _return */, const sai_thrift_object_id_t /* port_id */, const std::vector<sai_thrift_port_stat_counter_t> & /* counter_ids */, const int32_t /* number_of_counters */) {
@@ -157,6 +159,9 @@ class switch_sai_rpcNull : virtual public switch_sai_rpcIf {
     sai_thrift_status_t _return = 0;
     return _return;
   }
+  void sai_thirft_get_bridge_attribute(sai_thrift_attribute_list_t& /* _return */, const sai_thrift_object_id_t /* bridge_id */, const std::vector<sai_thrift_attribute_t> & /* thrift_attr_list */) {
+    return;
+  }
   sai_thrift_object_id_t sai_thrift_create_bridge_port(const std::vector<sai_thrift_attribute_t> & /* thrift_attr_list */) {
     sai_thrift_object_id_t _return = 0;
     return _return;
@@ -165,8 +170,12 @@ class switch_sai_rpcNull : virtual public switch_sai_rpcIf {
     sai_thrift_status_t _return = 0;
     return _return;
   }
-  void sai_thirft_get_bridge_attribute(sai_thrift_attribute_list_t& /* _return */, const sai_thrift_object_id_t /* bridge_id */, const std::vector<sai_thrift_attribute_t> & /* thrift_attr_list */) {
+  void sai_thirft_get_bridge_port_attribute(sai_thrift_attribute_list_t& /* _return */, const sai_thrift_object_id_t /* bridge_port_id */, const std::vector<sai_thrift_attribute_t> & /* thrift_attr_list */) {
     return;
+  }
+  sai_thrift_status_t sai_thrift_set_bridge_port_attribute(const sai_thrift_object_id_t /* bridge_port_id */, const sai_thrift_attribute_t& /* thrift_attr */) {
+    sai_thrift_status_t _return = 0;
+    return _return;
   }
   sai_thrift_status_t sai_thrift_create_fdb_entry(const sai_thrift_fdb_entry_t& /* thrift_fdb_entry */, const std::vector<sai_thrift_attribute_t> & /* thrift_attr_list */) {
     sai_thrift_status_t _return = 0;
@@ -578,15 +587,16 @@ class switch_sai_rpc_sai_thrift_set_port_attribute_presult {
 };
 
 typedef struct _switch_sai_rpc_sai_thrift_get_port_attribute_args__isset {
-  _switch_sai_rpc_sai_thrift_get_port_attribute_args__isset() : port_id(false) {}
+  _switch_sai_rpc_sai_thrift_get_port_attribute_args__isset() : port_id(false), thrift_attr_list(false) {}
   bool port_id :1;
+  bool thrift_attr_list :1;
 } _switch_sai_rpc_sai_thrift_get_port_attribute_args__isset;
 
 class switch_sai_rpc_sai_thrift_get_port_attribute_args {
  public:
 
-  static const char* ascii_fingerprint; // = "56A59CE7FFAF82BCA8A19FAACDE4FB75";
-  static const uint8_t binary_fingerprint[16]; // = {0x56,0xA5,0x9C,0xE7,0xFF,0xAF,0x82,0xBC,0xA8,0xA1,0x9F,0xAA,0xCD,0xE4,0xFB,0x75};
+  static const char* ascii_fingerprint; // = "167DF62E99156CE9FB422E5036D3E344";
+  static const uint8_t binary_fingerprint[16]; // = {0x16,0x7D,0xF6,0x2E,0x99,0x15,0x6C,0xE9,0xFB,0x42,0x2E,0x50,0x36,0xD3,0xE3,0x44};
 
   switch_sai_rpc_sai_thrift_get_port_attribute_args(const switch_sai_rpc_sai_thrift_get_port_attribute_args&);
   switch_sai_rpc_sai_thrift_get_port_attribute_args& operator=(const switch_sai_rpc_sai_thrift_get_port_attribute_args&);
@@ -595,14 +605,19 @@ class switch_sai_rpc_sai_thrift_get_port_attribute_args {
 
   virtual ~switch_sai_rpc_sai_thrift_get_port_attribute_args() throw();
   sai_thrift_object_id_t port_id;
+  std::vector<sai_thrift_attribute_t>  thrift_attr_list;
 
   _switch_sai_rpc_sai_thrift_get_port_attribute_args__isset __isset;
 
   void __set_port_id(const sai_thrift_object_id_t val);
 
+  void __set_thrift_attr_list(const std::vector<sai_thrift_attribute_t> & val);
+
   bool operator == (const switch_sai_rpc_sai_thrift_get_port_attribute_args & rhs) const
   {
     if (!(port_id == rhs.port_id))
+      return false;
+    if (!(thrift_attr_list == rhs.thrift_attr_list))
       return false;
     return true;
   }
@@ -622,12 +637,13 @@ class switch_sai_rpc_sai_thrift_get_port_attribute_args {
 class switch_sai_rpc_sai_thrift_get_port_attribute_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "56A59CE7FFAF82BCA8A19FAACDE4FB75";
-  static const uint8_t binary_fingerprint[16]; // = {0x56,0xA5,0x9C,0xE7,0xFF,0xAF,0x82,0xBC,0xA8,0xA1,0x9F,0xAA,0xCD,0xE4,0xFB,0x75};
+  static const char* ascii_fingerprint; // = "167DF62E99156CE9FB422E5036D3E344";
+  static const uint8_t binary_fingerprint[16]; // = {0x16,0x7D,0xF6,0x2E,0x99,0x15,0x6C,0xE9,0xFB,0x42,0x2E,0x50,0x36,0xD3,0xE3,0x44};
 
 
   virtual ~switch_sai_rpc_sai_thrift_get_port_attribute_pargs() throw();
   const sai_thrift_object_id_t* port_id;
+  const std::vector<sai_thrift_attribute_t> * thrift_attr_list;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -1431,6 +1447,133 @@ class switch_sai_rpc_sai_thrift_remove_bridge_presult {
   friend std::ostream& operator<<(std::ostream& out, const switch_sai_rpc_sai_thrift_remove_bridge_presult& obj);
 };
 
+typedef struct _switch_sai_rpc_sai_thirft_get_bridge_attribute_args__isset {
+  _switch_sai_rpc_sai_thirft_get_bridge_attribute_args__isset() : bridge_id(false), thrift_attr_list(false) {}
+  bool bridge_id :1;
+  bool thrift_attr_list :1;
+} _switch_sai_rpc_sai_thirft_get_bridge_attribute_args__isset;
+
+class switch_sai_rpc_sai_thirft_get_bridge_attribute_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "167DF62E99156CE9FB422E5036D3E344";
+  static const uint8_t binary_fingerprint[16]; // = {0x16,0x7D,0xF6,0x2E,0x99,0x15,0x6C,0xE9,0xFB,0x42,0x2E,0x50,0x36,0xD3,0xE3,0x44};
+
+  switch_sai_rpc_sai_thirft_get_bridge_attribute_args(const switch_sai_rpc_sai_thirft_get_bridge_attribute_args&);
+  switch_sai_rpc_sai_thirft_get_bridge_attribute_args& operator=(const switch_sai_rpc_sai_thirft_get_bridge_attribute_args&);
+  switch_sai_rpc_sai_thirft_get_bridge_attribute_args() : bridge_id(0) {
+  }
+
+  virtual ~switch_sai_rpc_sai_thirft_get_bridge_attribute_args() throw();
+  sai_thrift_object_id_t bridge_id;
+  std::vector<sai_thrift_attribute_t>  thrift_attr_list;
+
+  _switch_sai_rpc_sai_thirft_get_bridge_attribute_args__isset __isset;
+
+  void __set_bridge_id(const sai_thrift_object_id_t val);
+
+  void __set_thrift_attr_list(const std::vector<sai_thrift_attribute_t> & val);
+
+  bool operator == (const switch_sai_rpc_sai_thirft_get_bridge_attribute_args & rhs) const
+  {
+    if (!(bridge_id == rhs.bridge_id))
+      return false;
+    if (!(thrift_attr_list == rhs.thrift_attr_list))
+      return false;
+    return true;
+  }
+  bool operator != (const switch_sai_rpc_sai_thirft_get_bridge_attribute_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const switch_sai_rpc_sai_thirft_get_bridge_attribute_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const switch_sai_rpc_sai_thirft_get_bridge_attribute_args& obj);
+};
+
+
+class switch_sai_rpc_sai_thirft_get_bridge_attribute_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "167DF62E99156CE9FB422E5036D3E344";
+  static const uint8_t binary_fingerprint[16]; // = {0x16,0x7D,0xF6,0x2E,0x99,0x15,0x6C,0xE9,0xFB,0x42,0x2E,0x50,0x36,0xD3,0xE3,0x44};
+
+
+  virtual ~switch_sai_rpc_sai_thirft_get_bridge_attribute_pargs() throw();
+  const sai_thrift_object_id_t* bridge_id;
+  const std::vector<sai_thrift_attribute_t> * thrift_attr_list;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const switch_sai_rpc_sai_thirft_get_bridge_attribute_pargs& obj);
+};
+
+typedef struct _switch_sai_rpc_sai_thirft_get_bridge_attribute_result__isset {
+  _switch_sai_rpc_sai_thirft_get_bridge_attribute_result__isset() : success(false) {}
+  bool success :1;
+} _switch_sai_rpc_sai_thirft_get_bridge_attribute_result__isset;
+
+class switch_sai_rpc_sai_thirft_get_bridge_attribute_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "0227EB6DD04FC1C7B99B863E918FE19E";
+  static const uint8_t binary_fingerprint[16]; // = {0x02,0x27,0xEB,0x6D,0xD0,0x4F,0xC1,0xC7,0xB9,0x9B,0x86,0x3E,0x91,0x8F,0xE1,0x9E};
+
+  switch_sai_rpc_sai_thirft_get_bridge_attribute_result(const switch_sai_rpc_sai_thirft_get_bridge_attribute_result&);
+  switch_sai_rpc_sai_thirft_get_bridge_attribute_result& operator=(const switch_sai_rpc_sai_thirft_get_bridge_attribute_result&);
+  switch_sai_rpc_sai_thirft_get_bridge_attribute_result() {
+  }
+
+  virtual ~switch_sai_rpc_sai_thirft_get_bridge_attribute_result() throw();
+  sai_thrift_attribute_list_t success;
+
+  _switch_sai_rpc_sai_thirft_get_bridge_attribute_result__isset __isset;
+
+  void __set_success(const sai_thrift_attribute_list_t& val);
+
+  bool operator == (const switch_sai_rpc_sai_thirft_get_bridge_attribute_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const switch_sai_rpc_sai_thirft_get_bridge_attribute_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const switch_sai_rpc_sai_thirft_get_bridge_attribute_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const switch_sai_rpc_sai_thirft_get_bridge_attribute_result& obj);
+};
+
+typedef struct _switch_sai_rpc_sai_thirft_get_bridge_attribute_presult__isset {
+  _switch_sai_rpc_sai_thirft_get_bridge_attribute_presult__isset() : success(false) {}
+  bool success :1;
+} _switch_sai_rpc_sai_thirft_get_bridge_attribute_presult__isset;
+
+class switch_sai_rpc_sai_thirft_get_bridge_attribute_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "0227EB6DD04FC1C7B99B863E918FE19E";
+  static const uint8_t binary_fingerprint[16]; // = {0x02,0x27,0xEB,0x6D,0xD0,0x4F,0xC1,0xC7,0xB9,0x9B,0x86,0x3E,0x91,0x8F,0xE1,0x9E};
+
+
+  virtual ~switch_sai_rpc_sai_thirft_get_bridge_attribute_presult() throw();
+  sai_thrift_attribute_list_t* success;
+
+  _switch_sai_rpc_sai_thirft_get_bridge_attribute_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const switch_sai_rpc_sai_thirft_get_bridge_attribute_presult& obj);
+};
+
 typedef struct _switch_sai_rpc_sai_thrift_create_bridge_port_args__isset {
   _switch_sai_rpc_sai_thrift_create_bridge_port_args__isset() : thrift_attr_list(false) {}
   bool thrift_attr_list :1;
@@ -1671,131 +1814,258 @@ class switch_sai_rpc_sai_thrift_remove_bridge_port_presult {
   friend std::ostream& operator<<(std::ostream& out, const switch_sai_rpc_sai_thrift_remove_bridge_port_presult& obj);
 };
 
-typedef struct _switch_sai_rpc_sai_thirft_get_bridge_attribute_args__isset {
-  _switch_sai_rpc_sai_thirft_get_bridge_attribute_args__isset() : bridge_id(false), thrift_attr_list(false) {}
-  bool bridge_id :1;
+typedef struct _switch_sai_rpc_sai_thirft_get_bridge_port_attribute_args__isset {
+  _switch_sai_rpc_sai_thirft_get_bridge_port_attribute_args__isset() : bridge_port_id(false), thrift_attr_list(false) {}
+  bool bridge_port_id :1;
   bool thrift_attr_list :1;
-} _switch_sai_rpc_sai_thirft_get_bridge_attribute_args__isset;
+} _switch_sai_rpc_sai_thirft_get_bridge_port_attribute_args__isset;
 
-class switch_sai_rpc_sai_thirft_get_bridge_attribute_args {
+class switch_sai_rpc_sai_thirft_get_bridge_port_attribute_args {
  public:
 
   static const char* ascii_fingerprint; // = "167DF62E99156CE9FB422E5036D3E344";
   static const uint8_t binary_fingerprint[16]; // = {0x16,0x7D,0xF6,0x2E,0x99,0x15,0x6C,0xE9,0xFB,0x42,0x2E,0x50,0x36,0xD3,0xE3,0x44};
 
-  switch_sai_rpc_sai_thirft_get_bridge_attribute_args(const switch_sai_rpc_sai_thirft_get_bridge_attribute_args&);
-  switch_sai_rpc_sai_thirft_get_bridge_attribute_args& operator=(const switch_sai_rpc_sai_thirft_get_bridge_attribute_args&);
-  switch_sai_rpc_sai_thirft_get_bridge_attribute_args() : bridge_id(0) {
+  switch_sai_rpc_sai_thirft_get_bridge_port_attribute_args(const switch_sai_rpc_sai_thirft_get_bridge_port_attribute_args&);
+  switch_sai_rpc_sai_thirft_get_bridge_port_attribute_args& operator=(const switch_sai_rpc_sai_thirft_get_bridge_port_attribute_args&);
+  switch_sai_rpc_sai_thirft_get_bridge_port_attribute_args() : bridge_port_id(0) {
   }
 
-  virtual ~switch_sai_rpc_sai_thirft_get_bridge_attribute_args() throw();
-  sai_thrift_object_id_t bridge_id;
+  virtual ~switch_sai_rpc_sai_thirft_get_bridge_port_attribute_args() throw();
+  sai_thrift_object_id_t bridge_port_id;
   std::vector<sai_thrift_attribute_t>  thrift_attr_list;
 
-  _switch_sai_rpc_sai_thirft_get_bridge_attribute_args__isset __isset;
+  _switch_sai_rpc_sai_thirft_get_bridge_port_attribute_args__isset __isset;
 
-  void __set_bridge_id(const sai_thrift_object_id_t val);
+  void __set_bridge_port_id(const sai_thrift_object_id_t val);
 
   void __set_thrift_attr_list(const std::vector<sai_thrift_attribute_t> & val);
 
-  bool operator == (const switch_sai_rpc_sai_thirft_get_bridge_attribute_args & rhs) const
+  bool operator == (const switch_sai_rpc_sai_thirft_get_bridge_port_attribute_args & rhs) const
   {
-    if (!(bridge_id == rhs.bridge_id))
+    if (!(bridge_port_id == rhs.bridge_port_id))
       return false;
     if (!(thrift_attr_list == rhs.thrift_attr_list))
       return false;
     return true;
   }
-  bool operator != (const switch_sai_rpc_sai_thirft_get_bridge_attribute_args &rhs) const {
+  bool operator != (const switch_sai_rpc_sai_thirft_get_bridge_port_attribute_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const switch_sai_rpc_sai_thirft_get_bridge_attribute_args & ) const;
+  bool operator < (const switch_sai_rpc_sai_thirft_get_bridge_port_attribute_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const switch_sai_rpc_sai_thirft_get_bridge_attribute_args& obj);
+  friend std::ostream& operator<<(std::ostream& out, const switch_sai_rpc_sai_thirft_get_bridge_port_attribute_args& obj);
 };
 
 
-class switch_sai_rpc_sai_thirft_get_bridge_attribute_pargs {
+class switch_sai_rpc_sai_thirft_get_bridge_port_attribute_pargs {
  public:
 
   static const char* ascii_fingerprint; // = "167DF62E99156CE9FB422E5036D3E344";
   static const uint8_t binary_fingerprint[16]; // = {0x16,0x7D,0xF6,0x2E,0x99,0x15,0x6C,0xE9,0xFB,0x42,0x2E,0x50,0x36,0xD3,0xE3,0x44};
 
 
-  virtual ~switch_sai_rpc_sai_thirft_get_bridge_attribute_pargs() throw();
-  const sai_thrift_object_id_t* bridge_id;
+  virtual ~switch_sai_rpc_sai_thirft_get_bridge_port_attribute_pargs() throw();
+  const sai_thrift_object_id_t* bridge_port_id;
   const std::vector<sai_thrift_attribute_t> * thrift_attr_list;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const switch_sai_rpc_sai_thirft_get_bridge_attribute_pargs& obj);
+  friend std::ostream& operator<<(std::ostream& out, const switch_sai_rpc_sai_thirft_get_bridge_port_attribute_pargs& obj);
 };
 
-typedef struct _switch_sai_rpc_sai_thirft_get_bridge_attribute_result__isset {
-  _switch_sai_rpc_sai_thirft_get_bridge_attribute_result__isset() : success(false) {}
+typedef struct _switch_sai_rpc_sai_thirft_get_bridge_port_attribute_result__isset {
+  _switch_sai_rpc_sai_thirft_get_bridge_port_attribute_result__isset() : success(false) {}
   bool success :1;
-} _switch_sai_rpc_sai_thirft_get_bridge_attribute_result__isset;
+} _switch_sai_rpc_sai_thirft_get_bridge_port_attribute_result__isset;
 
-class switch_sai_rpc_sai_thirft_get_bridge_attribute_result {
+class switch_sai_rpc_sai_thirft_get_bridge_port_attribute_result {
  public:
 
   static const char* ascii_fingerprint; // = "0227EB6DD04FC1C7B99B863E918FE19E";
   static const uint8_t binary_fingerprint[16]; // = {0x02,0x27,0xEB,0x6D,0xD0,0x4F,0xC1,0xC7,0xB9,0x9B,0x86,0x3E,0x91,0x8F,0xE1,0x9E};
 
-  switch_sai_rpc_sai_thirft_get_bridge_attribute_result(const switch_sai_rpc_sai_thirft_get_bridge_attribute_result&);
-  switch_sai_rpc_sai_thirft_get_bridge_attribute_result& operator=(const switch_sai_rpc_sai_thirft_get_bridge_attribute_result&);
-  switch_sai_rpc_sai_thirft_get_bridge_attribute_result() {
+  switch_sai_rpc_sai_thirft_get_bridge_port_attribute_result(const switch_sai_rpc_sai_thirft_get_bridge_port_attribute_result&);
+  switch_sai_rpc_sai_thirft_get_bridge_port_attribute_result& operator=(const switch_sai_rpc_sai_thirft_get_bridge_port_attribute_result&);
+  switch_sai_rpc_sai_thirft_get_bridge_port_attribute_result() {
   }
 
-  virtual ~switch_sai_rpc_sai_thirft_get_bridge_attribute_result() throw();
+  virtual ~switch_sai_rpc_sai_thirft_get_bridge_port_attribute_result() throw();
   sai_thrift_attribute_list_t success;
 
-  _switch_sai_rpc_sai_thirft_get_bridge_attribute_result__isset __isset;
+  _switch_sai_rpc_sai_thirft_get_bridge_port_attribute_result__isset __isset;
 
   void __set_success(const sai_thrift_attribute_list_t& val);
 
-  bool operator == (const switch_sai_rpc_sai_thirft_get_bridge_attribute_result & rhs) const
+  bool operator == (const switch_sai_rpc_sai_thirft_get_bridge_port_attribute_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const switch_sai_rpc_sai_thirft_get_bridge_attribute_result &rhs) const {
+  bool operator != (const switch_sai_rpc_sai_thirft_get_bridge_port_attribute_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const switch_sai_rpc_sai_thirft_get_bridge_attribute_result & ) const;
+  bool operator < (const switch_sai_rpc_sai_thirft_get_bridge_port_attribute_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const switch_sai_rpc_sai_thirft_get_bridge_attribute_result& obj);
+  friend std::ostream& operator<<(std::ostream& out, const switch_sai_rpc_sai_thirft_get_bridge_port_attribute_result& obj);
 };
 
-typedef struct _switch_sai_rpc_sai_thirft_get_bridge_attribute_presult__isset {
-  _switch_sai_rpc_sai_thirft_get_bridge_attribute_presult__isset() : success(false) {}
+typedef struct _switch_sai_rpc_sai_thirft_get_bridge_port_attribute_presult__isset {
+  _switch_sai_rpc_sai_thirft_get_bridge_port_attribute_presult__isset() : success(false) {}
   bool success :1;
-} _switch_sai_rpc_sai_thirft_get_bridge_attribute_presult__isset;
+} _switch_sai_rpc_sai_thirft_get_bridge_port_attribute_presult__isset;
 
-class switch_sai_rpc_sai_thirft_get_bridge_attribute_presult {
+class switch_sai_rpc_sai_thirft_get_bridge_port_attribute_presult {
  public:
 
   static const char* ascii_fingerprint; // = "0227EB6DD04FC1C7B99B863E918FE19E";
   static const uint8_t binary_fingerprint[16]; // = {0x02,0x27,0xEB,0x6D,0xD0,0x4F,0xC1,0xC7,0xB9,0x9B,0x86,0x3E,0x91,0x8F,0xE1,0x9E};
 
 
-  virtual ~switch_sai_rpc_sai_thirft_get_bridge_attribute_presult() throw();
+  virtual ~switch_sai_rpc_sai_thirft_get_bridge_port_attribute_presult() throw();
   sai_thrift_attribute_list_t* success;
 
-  _switch_sai_rpc_sai_thirft_get_bridge_attribute_presult__isset __isset;
+  _switch_sai_rpc_sai_thirft_get_bridge_port_attribute_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
-  friend std::ostream& operator<<(std::ostream& out, const switch_sai_rpc_sai_thirft_get_bridge_attribute_presult& obj);
+  friend std::ostream& operator<<(std::ostream& out, const switch_sai_rpc_sai_thirft_get_bridge_port_attribute_presult& obj);
+};
+
+typedef struct _switch_sai_rpc_sai_thrift_set_bridge_port_attribute_args__isset {
+  _switch_sai_rpc_sai_thrift_set_bridge_port_attribute_args__isset() : bridge_port_id(false), thrift_attr(false) {}
+  bool bridge_port_id :1;
+  bool thrift_attr :1;
+} _switch_sai_rpc_sai_thrift_set_bridge_port_attribute_args__isset;
+
+class switch_sai_rpc_sai_thrift_set_bridge_port_attribute_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "9DB218D3BFEA9AD98917925622916A58";
+  static const uint8_t binary_fingerprint[16]; // = {0x9D,0xB2,0x18,0xD3,0xBF,0xEA,0x9A,0xD9,0x89,0x17,0x92,0x56,0x22,0x91,0x6A,0x58};
+
+  switch_sai_rpc_sai_thrift_set_bridge_port_attribute_args(const switch_sai_rpc_sai_thrift_set_bridge_port_attribute_args&);
+  switch_sai_rpc_sai_thrift_set_bridge_port_attribute_args& operator=(const switch_sai_rpc_sai_thrift_set_bridge_port_attribute_args&);
+  switch_sai_rpc_sai_thrift_set_bridge_port_attribute_args() : bridge_port_id(0) {
+  }
+
+  virtual ~switch_sai_rpc_sai_thrift_set_bridge_port_attribute_args() throw();
+  sai_thrift_object_id_t bridge_port_id;
+  sai_thrift_attribute_t thrift_attr;
+
+  _switch_sai_rpc_sai_thrift_set_bridge_port_attribute_args__isset __isset;
+
+  void __set_bridge_port_id(const sai_thrift_object_id_t val);
+
+  void __set_thrift_attr(const sai_thrift_attribute_t& val);
+
+  bool operator == (const switch_sai_rpc_sai_thrift_set_bridge_port_attribute_args & rhs) const
+  {
+    if (!(bridge_port_id == rhs.bridge_port_id))
+      return false;
+    if (!(thrift_attr == rhs.thrift_attr))
+      return false;
+    return true;
+  }
+  bool operator != (const switch_sai_rpc_sai_thrift_set_bridge_port_attribute_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const switch_sai_rpc_sai_thrift_set_bridge_port_attribute_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const switch_sai_rpc_sai_thrift_set_bridge_port_attribute_args& obj);
+};
+
+
+class switch_sai_rpc_sai_thrift_set_bridge_port_attribute_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "9DB218D3BFEA9AD98917925622916A58";
+  static const uint8_t binary_fingerprint[16]; // = {0x9D,0xB2,0x18,0xD3,0xBF,0xEA,0x9A,0xD9,0x89,0x17,0x92,0x56,0x22,0x91,0x6A,0x58};
+
+
+  virtual ~switch_sai_rpc_sai_thrift_set_bridge_port_attribute_pargs() throw();
+  const sai_thrift_object_id_t* bridge_port_id;
+  const sai_thrift_attribute_t* thrift_attr;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const switch_sai_rpc_sai_thrift_set_bridge_port_attribute_pargs& obj);
+};
+
+typedef struct _switch_sai_rpc_sai_thrift_set_bridge_port_attribute_result__isset {
+  _switch_sai_rpc_sai_thrift_set_bridge_port_attribute_result__isset() : success(false) {}
+  bool success :1;
+} _switch_sai_rpc_sai_thrift_set_bridge_port_attribute_result__isset;
+
+class switch_sai_rpc_sai_thrift_set_bridge_port_attribute_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "32183C4A04E706C58ED2F62566DDD8DE";
+  static const uint8_t binary_fingerprint[16]; // = {0x32,0x18,0x3C,0x4A,0x04,0xE7,0x06,0xC5,0x8E,0xD2,0xF6,0x25,0x66,0xDD,0xD8,0xDE};
+
+  switch_sai_rpc_sai_thrift_set_bridge_port_attribute_result(const switch_sai_rpc_sai_thrift_set_bridge_port_attribute_result&);
+  switch_sai_rpc_sai_thrift_set_bridge_port_attribute_result& operator=(const switch_sai_rpc_sai_thrift_set_bridge_port_attribute_result&);
+  switch_sai_rpc_sai_thrift_set_bridge_port_attribute_result() : success(0) {
+  }
+
+  virtual ~switch_sai_rpc_sai_thrift_set_bridge_port_attribute_result() throw();
+  sai_thrift_status_t success;
+
+  _switch_sai_rpc_sai_thrift_set_bridge_port_attribute_result__isset __isset;
+
+  void __set_success(const sai_thrift_status_t val);
+
+  bool operator == (const switch_sai_rpc_sai_thrift_set_bridge_port_attribute_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const switch_sai_rpc_sai_thrift_set_bridge_port_attribute_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const switch_sai_rpc_sai_thrift_set_bridge_port_attribute_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const switch_sai_rpc_sai_thrift_set_bridge_port_attribute_result& obj);
+};
+
+typedef struct _switch_sai_rpc_sai_thrift_set_bridge_port_attribute_presult__isset {
+  _switch_sai_rpc_sai_thrift_set_bridge_port_attribute_presult__isset() : success(false) {}
+  bool success :1;
+} _switch_sai_rpc_sai_thrift_set_bridge_port_attribute_presult__isset;
+
+class switch_sai_rpc_sai_thrift_set_bridge_port_attribute_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "32183C4A04E706C58ED2F62566DDD8DE";
+  static const uint8_t binary_fingerprint[16]; // = {0x32,0x18,0x3C,0x4A,0x04,0xE7,0x06,0xC5,0x8E,0xD2,0xF6,0x25,0x66,0xDD,0xD8,0xDE};
+
+
+  virtual ~switch_sai_rpc_sai_thrift_set_bridge_port_attribute_presult() throw();
+  sai_thrift_status_t* success;
+
+  _switch_sai_rpc_sai_thrift_set_bridge_port_attribute_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const switch_sai_rpc_sai_thrift_set_bridge_port_attribute_presult& obj);
 };
 
 typedef struct _switch_sai_rpc_sai_thrift_create_fdb_entry_args__isset {
@@ -10572,8 +10842,8 @@ class switch_sai_rpcClient : virtual public switch_sai_rpcIf {
   sai_thrift_status_t sai_thrift_set_port_attribute(const sai_thrift_object_id_t port_id, const sai_thrift_attribute_t& thrift_attr);
   void send_sai_thrift_set_port_attribute(const sai_thrift_object_id_t port_id, const sai_thrift_attribute_t& thrift_attr);
   sai_thrift_status_t recv_sai_thrift_set_port_attribute();
-  void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t port_id);
-  void send_sai_thrift_get_port_attribute(const sai_thrift_object_id_t port_id);
+  void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t port_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list);
+  void send_sai_thrift_get_port_attribute(const sai_thrift_object_id_t port_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list);
   void recv_sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& _return);
   void sai_thrift_get_port_stats(std::vector<int64_t> & _return, const sai_thrift_object_id_t port_id, const std::vector<sai_thrift_port_stat_counter_t> & counter_ids, const int32_t number_of_counters);
   void send_sai_thrift_get_port_stats(const sai_thrift_object_id_t port_id, const std::vector<sai_thrift_port_stat_counter_t> & counter_ids, const int32_t number_of_counters);
@@ -10593,15 +10863,21 @@ class switch_sai_rpcClient : virtual public switch_sai_rpcIf {
   sai_thrift_status_t sai_thrift_remove_bridge(const sai_thrift_object_id_t bridge_id);
   void send_sai_thrift_remove_bridge(const sai_thrift_object_id_t bridge_id);
   sai_thrift_status_t recv_sai_thrift_remove_bridge();
+  void sai_thirft_get_bridge_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t bridge_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list);
+  void send_sai_thirft_get_bridge_attribute(const sai_thrift_object_id_t bridge_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list);
+  void recv_sai_thirft_get_bridge_attribute(sai_thrift_attribute_list_t& _return);
   sai_thrift_object_id_t sai_thrift_create_bridge_port(const std::vector<sai_thrift_attribute_t> & thrift_attr_list);
   void send_sai_thrift_create_bridge_port(const std::vector<sai_thrift_attribute_t> & thrift_attr_list);
   sai_thrift_object_id_t recv_sai_thrift_create_bridge_port();
   sai_thrift_status_t sai_thrift_remove_bridge_port(const sai_thrift_object_id_t bridge_port_id);
   void send_sai_thrift_remove_bridge_port(const sai_thrift_object_id_t bridge_port_id);
   sai_thrift_status_t recv_sai_thrift_remove_bridge_port();
-  void sai_thirft_get_bridge_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t bridge_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list);
-  void send_sai_thirft_get_bridge_attribute(const sai_thrift_object_id_t bridge_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list);
-  void recv_sai_thirft_get_bridge_attribute(sai_thrift_attribute_list_t& _return);
+  void sai_thirft_get_bridge_port_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t bridge_port_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list);
+  void send_sai_thirft_get_bridge_port_attribute(const sai_thrift_object_id_t bridge_port_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list);
+  void recv_sai_thirft_get_bridge_port_attribute(sai_thrift_attribute_list_t& _return);
+  sai_thrift_status_t sai_thrift_set_bridge_port_attribute(const sai_thrift_object_id_t bridge_port_id, const sai_thrift_attribute_t& thrift_attr);
+  void send_sai_thrift_set_bridge_port_attribute(const sai_thrift_object_id_t bridge_port_id, const sai_thrift_attribute_t& thrift_attr);
+  sai_thrift_status_t recv_sai_thrift_set_bridge_port_attribute();
   sai_thrift_status_t sai_thrift_create_fdb_entry(const sai_thrift_fdb_entry_t& thrift_fdb_entry, const std::vector<sai_thrift_attribute_t> & thrift_attr_list);
   void send_sai_thrift_create_fdb_entry(const sai_thrift_fdb_entry_t& thrift_fdb_entry, const std::vector<sai_thrift_attribute_t> & thrift_attr_list);
   sai_thrift_status_t recv_sai_thrift_create_fdb_entry();
@@ -10841,9 +11117,11 @@ class switch_sai_rpcProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_sai_thrift_create_port(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_sai_thrift_create_bridge(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_sai_thrift_remove_bridge(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_sai_thirft_get_bridge_attribute(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_sai_thrift_create_bridge_port(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_sai_thrift_remove_bridge_port(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_sai_thirft_get_bridge_attribute(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_sai_thirft_get_bridge_port_attribute(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_sai_thrift_set_bridge_port_attribute(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_sai_thrift_create_fdb_entry(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_sai_thrift_delete_fdb_entry(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_sai_thrift_flush_fdb_entries(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -10927,9 +11205,11 @@ class switch_sai_rpcProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["sai_thrift_create_port"] = &switch_sai_rpcProcessor::process_sai_thrift_create_port;
     processMap_["sai_thrift_create_bridge"] = &switch_sai_rpcProcessor::process_sai_thrift_create_bridge;
     processMap_["sai_thrift_remove_bridge"] = &switch_sai_rpcProcessor::process_sai_thrift_remove_bridge;
+    processMap_["sai_thirft_get_bridge_attribute"] = &switch_sai_rpcProcessor::process_sai_thirft_get_bridge_attribute;
     processMap_["sai_thrift_create_bridge_port"] = &switch_sai_rpcProcessor::process_sai_thrift_create_bridge_port;
     processMap_["sai_thrift_remove_bridge_port"] = &switch_sai_rpcProcessor::process_sai_thrift_remove_bridge_port;
-    processMap_["sai_thirft_get_bridge_attribute"] = &switch_sai_rpcProcessor::process_sai_thirft_get_bridge_attribute;
+    processMap_["sai_thirft_get_bridge_port_attribute"] = &switch_sai_rpcProcessor::process_sai_thirft_get_bridge_port_attribute;
+    processMap_["sai_thrift_set_bridge_port_attribute"] = &switch_sai_rpcProcessor::process_sai_thrift_set_bridge_port_attribute;
     processMap_["sai_thrift_create_fdb_entry"] = &switch_sai_rpcProcessor::process_sai_thrift_create_fdb_entry;
     processMap_["sai_thrift_delete_fdb_entry"] = &switch_sai_rpcProcessor::process_sai_thrift_delete_fdb_entry;
     processMap_["sai_thrift_flush_fdb_entries"] = &switch_sai_rpcProcessor::process_sai_thrift_flush_fdb_entries;
@@ -11039,13 +11319,13 @@ class switch_sai_rpcMultiface : virtual public switch_sai_rpcIf {
     return ifaces_[i]->sai_thrift_set_port_attribute(port_id, thrift_attr);
   }
 
-  void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t port_id) {
+  void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t port_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->sai_thrift_get_port_attribute(_return, port_id);
+      ifaces_[i]->sai_thrift_get_port_attribute(_return, port_id, thrift_attr_list);
     }
-    ifaces_[i]->sai_thrift_get_port_attribute(_return, port_id);
+    ifaces_[i]->sai_thrift_get_port_attribute(_return, port_id, thrift_attr_list);
     return;
   }
 
@@ -11104,6 +11384,16 @@ class switch_sai_rpcMultiface : virtual public switch_sai_rpcIf {
     return ifaces_[i]->sai_thrift_remove_bridge(bridge_id);
   }
 
+  void sai_thirft_get_bridge_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t bridge_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->sai_thirft_get_bridge_attribute(_return, bridge_id, thrift_attr_list);
+    }
+    ifaces_[i]->sai_thirft_get_bridge_attribute(_return, bridge_id, thrift_attr_list);
+    return;
+  }
+
   sai_thrift_object_id_t sai_thrift_create_bridge_port(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -11122,14 +11412,23 @@ class switch_sai_rpcMultiface : virtual public switch_sai_rpcIf {
     return ifaces_[i]->sai_thrift_remove_bridge_port(bridge_port_id);
   }
 
-  void sai_thirft_get_bridge_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t bridge_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+  void sai_thirft_get_bridge_port_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t bridge_port_id, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->sai_thirft_get_bridge_attribute(_return, bridge_id, thrift_attr_list);
+      ifaces_[i]->sai_thirft_get_bridge_port_attribute(_return, bridge_port_id, thrift_attr_list);
     }
-    ifaces_[i]->sai_thirft_get_bridge_attribute(_return, bridge_id, thrift_attr_list);
+    ifaces_[i]->sai_thirft_get_bridge_port_attribute(_return, bridge_port_id, thrift_attr_list);
     return;
+  }
+
+  sai_thrift_status_t sai_thrift_set_bridge_port_attribute(const sai_thrift_object_id_t bridge_port_id, const sai_thrift_attribute_t& thrift_attr) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->sai_thrift_set_bridge_port_attribute(bridge_port_id, thrift_attr);
+    }
+    return ifaces_[i]->sai_thrift_set_bridge_port_attribute(bridge_port_id, thrift_attr);
   }
 
   sai_thrift_status_t sai_thrift_create_fdb_entry(const sai_thrift_fdb_entry_t& thrift_fdb_entry, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {

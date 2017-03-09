@@ -22,6 +22,10 @@ extern "C"
     sai_object* q = (sai_object*) p;
     return q->create_switch(switch_id,attr_count,attr_list); 
   }
+  sai_status_t sai_object_get_switch_attribute(S_O_Handle p, sai_object_id_t switch_id, sai_uint32_t attr_count, sai_attribute_t *attr_list) {
+    sai_object* q = (sai_object*) p;
+    return q->get_switch_attribute(switch_id,attr_count,attr_list); 
+  }
 
 // PORT
   sai_status_t sai_obj_create_port (S_O_Handle p,sai_object_id_t *port_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list) {
@@ -39,6 +43,11 @@ extern "C"
       return q->set_port_attribute(port_id, attr); 
     }
 
+  sai_status_t sai_obj_get_port_attribute(S_O_Handle p, sai_object_id_t port_id, uint32_t attr_count, sai_attribute_t *attr_list) {
+    sai_object* q = (sai_object*) p;
+    return q->get_port_attribute(port_id, attr_count, attr_list); 
+  }
+
 // BRIDGE
   sai_status_t sai_obj_create_bridge(S_O_Handle p,sai_object_id_t *bridge_id, sai_object_id_t switch_id, uint32_t attr_count, const sai_attribute_t *attr_list) {
     sai_object* q = (sai_object*) p;
@@ -47,6 +56,10 @@ extern "C"
   sai_status_t sai_obj_remove_bridge(S_O_Handle p,sai_object_id_t bridge_id) {
     sai_object* q = (sai_object*) p;
     return q->remove_bridge(bridge_id); 
+  }
+  sai_status_t get_bridge_attribute(S_O_Handle p, sai_object_id_t bridge_id, uint32_t attr_count, sai_attribute_t *attr_list) {
+    sai_object* q = (sai_object*) p;
+    return q->get_bridge_attribute(bridge_id, attr_count, attr_list); 
   }
 
 // BRIDGE PORT
@@ -57,6 +70,10 @@ extern "C"
   sai_status_t sai_obj_remove_bridge_port(S_O_Handle p,sai_object_id_t bridge_port_id) {
     sai_object* q = (sai_object*) p;
     return q->remove_bridge_port(bridge_port_id); 
+  }
+  sai_status_t get_bridge_port_attribute(S_O_Handle p, sai_object_id_t bridge_port_id, uint32_t attr_count, sai_attribute_t *attr_list) {
+    sai_object* q = (sai_object*) p;
+    return q->get_bridge_port_attribute(bridge_port_id, attr_count, attr_list); 
   }
 
 // FDB
@@ -74,25 +91,28 @@ extern "C"
     sai_object* q = (sai_object*) p;
     return q->create_vlan(vlan_id ,switch_id,attr_count,attr_list);
   }
-  sai_status_t sai_obj_remove_vlan(S_O_Handle p,sai_object_id_t *vlan_id){
+  sai_status_t sai_obj_remove_vlan(S_O_Handle p,sai_object_id_t vlan_id){
     sai_object* q = (sai_object*) p;
     return q->remove_vlan(vlan_id);
   }
+
   sai_status_t sai_obj_set_vlan_attribute(S_O_Handle p,sai_object_id_t vlan_id, const sai_attribute_t *attr){
     sai_object* q = (sai_object*) p;
     return q->set_vlan_attribute(vlan_id, attr);
   }
-  sai_status_t sai_obj_get_vlan_attribute(S_O_Handle p,sai_object_id_t vlan_id, const uint32_t attr_count, ai_attribute_t *attr_list)
+
+  sai_status_t sai_obj_get_vlan_attribute(S_O_Handle p,sai_object_id_t vlan_id, const uint32_t attr_count, sai_attribute_t *attr_list) {
     sai_object* q = (sai_object*) p;
     return q->get_vlan_attribute(vlan_id, attr_count, attr_list);
   }
-  sai_status_t sai_obj_create_vlan_member(S_O_Handle p,sai_object_id_t vlan_id, sai_object_id_t switch_id, uint32_t attr_count,const sai_attribute_t *attr_list){
+  
+  sai_status_t sai_obj_create_vlan_member(S_O_Handle p,sai_object_id_t *vlan_member_id, sai_object_id_t switch_id, uint32_t attr_count, const sai_attribute_t *attr_list) {
     sai_object* q = (sai_object*) p;
-    return q->create_vlan_member(vlan_id, switch_id, attr_count,attr_list);
+    return q->create_vlan_member(vlan_member_id, switch_id, attr_count,attr_list);
   }
-  sai_status_t sai_obj_remove_vlan_member(S_O_Handle p,sai_object_id_t *vlan_id){
+  sai_status_t sai_obj_remove_vlan_member(S_O_Handle p,sai_object_id_t vlan_member_id){
     sai_object* q = (sai_object*) p;
-    return q->remove_vlan_member(vlan_id);
+    return q->remove_vlan_member(vlan_member_id);
   }
   sai_status_t sai_obj_set_vlan_member_attribute(S_O_Handle p,sai_object_id_t vlan_member_id, const sai_attribute_t *attr){
     sai_object* q = (sai_object*) p;
