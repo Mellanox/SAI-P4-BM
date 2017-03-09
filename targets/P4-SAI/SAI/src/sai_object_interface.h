@@ -46,6 +46,13 @@ sai_status_t 	sai_obj_get_vlan_member_attribute(S_O_Handle ,sai_object_id_t , co
 sai_status_t 	sai_obj_get_vlan_stats(S_O_Handle ,sai_object_id_t , const sai_vlan_stat_t *, uint32_t , uint64_t *);
 sai_status_t 	sai_obj_clear_vlan_stats(S_O_Handle ,sai_object_id_t , const sai_vlan_stat_t *, uint32_t);
 
+// LAG
+sai_status_t 	sai_obj_create_lag(S_O_Handle, sai_object_id_t *,sai_object_id_t, uint32_t,const sai_attribute_t *);
+sai_status_t 	sai_obj_remove_lag(S_O_Handle, sai_object_id_t);
+sai_status_t 	sai_obj_create_lag_member(S_O_Handle, sai_object_id_t *,sai_object_id_t ,uint32_t ,const sai_attribute_t *);
+sai_status_t 	sai_obj_remove_lag_member(S_O_Handle, sai_object_id_t);
+
+
 #ifdef __cplusplus
 }
 #endif

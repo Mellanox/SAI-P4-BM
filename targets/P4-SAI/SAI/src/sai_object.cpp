@@ -44,7 +44,7 @@ sai_status_t sai_object::create_switch(sai_object_id_t* switch_id, uint32_t attr
 		switch_metadata_ptr->ports[port->sai_object_id] = port;
 		port->hw_port = hw_port;
 		port->l2_if = hw_port;
-		printf("Defulat port_id %d. hw_port = %d\n", port->sai_object_id, port->hw_port);
+		printf("Default port_id %d. hw_port = %d\n", port->sai_object_id, port->hw_port);
 
 		// Create Default Bridge ports and connect to 1Q bridge
 		BridgePort_obj *bridge_port = new BridgePort_obj(sai_id_map_ptr);
@@ -53,7 +53,7 @@ sai_status_t sai_object::create_switch(sai_object_id_t* switch_id, uint32_t attr
 		bridge_port->bridge_port = hw_port;
 		bridge_port->bridge_id = bridge->sai_object_id;
 		bridge->bridge_port_list.push_back(bridge_port->sai_object_id);
-		printf("Defulat bridge_port_id %d. bridge_port = %d\n", bridge_port->sai_object_id, bridge_port->bridge_port);
+		printf("Default bridge_port_id %d. bridge_port = %d\n", bridge_port->sai_object_id, bridge_port->bridge_port);
 
 		// Store default table entries
 		match_params.clear();
@@ -210,11 +210,11 @@ sai_status_t sai_object::create_port (sai_object_id_t *port_id, sai_object_id_t 
 }
 
 sai_status_t sai_object::remove_port(sai_object_id_t port_id){
+	printf("sai_remove_port: %d \n",port_id);
 	Port_obj* port = switch_metadata_ptr->ports[port_id];
 	try{
 		bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_ingress_lag",port->handle_lag_if);
 		bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_port_configurations",port->handle_port_cfg);
-//		printf("deleted port bm_entries\n");
 	}
 	catch(int e){printf("unable to remove port tables entries\n");}
 	switch_metadata_ptr->ports.erase(port->sai_object_id);
@@ -250,8 +250,6 @@ sai_status_t sai_object::remove_bridge(sai_object_id_t bridge_id){
 	//printf("bridges.size=%d\n",switch_metadata_ptr->bridges.size());
 	return SAI_STATUS_SUCCESS;
 }
-
-
 
 sai_status_t sai_object::create_bridge_port (sai_object_id_t *bridge_port_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list){
 	uint32_t bridge_port_num = switch_metadata_ptr->GetNewBridgePort();
@@ -371,7 +369,7 @@ sai_status_t sai_object::remove_bridge_port(sai_object_id_t bridge_port_id){
 	}
 	catch(int e){
 		status = SAI_STATUS_FAILURE;
-		printf("unable to remove bridge port tables entries\n");
+		printf("ERROR : Unable to remove bridge port tables entries\n");
 	}
 	switch_metadata_ptr->bridge_ports.erase(bridge_port->sai_object_id);
 	sai_id_map_ptr->free_id(bridge_port->sai_object_id);
@@ -492,7 +490,6 @@ sai_status_t sai_object::remove_fdb_entry(const sai_fdb_entry_t *fdb_entry){
 	return status;
 }
 
-
 sai_status_t sai_object::create_vlan (sai_object_id_t *vlan_id , sai_object_id_t switch_id, uint32_t attr_count,const sai_attribute_t *attr_list){
 	Vlan_obj *vlan = new Vlan_obj(sai_id_map_ptr);
 	switch_metadata_ptr->vlans[vlan->sai_object_id] = vlan;
@@ -543,12 +540,15 @@ sai_status_t sai_object::create_vlan_member (sai_object_id_t *vlan_member_id , s
     Vlan_obj* vlan = switch_metadata_ptr->vlans[vlan_member->vlan_oid];
     vlan_member->vid = vlan->vid;
     vlan->vlan_members.push_back(vlan_member->sai_object_id);
-    uint32_t port_id=bridge_ports[vlan_member->bridge_port_id];
-    if(lags.find(port_id)==lags.end()){
-    	uint32_t out_if = lags[port_id]->l2_if;
+    uint32_t port_id=switch_metadata_ptr->bridge_ports[vlan_member->bridge_port_id]->port_id;
+    uint32_t bridge_port=switch_metadata_ptr->bridge_ports[vlan_member->bridge_port_id]->bridge_port;
+
+    uint32_t out_if;
+    if(switch_metadata_ptr->lags.find(port_id)==switch_metadata_ptr->lags.end()){
+    	out_if = switch_metadata_ptr->lags[port_id]->l2_if;
     }
     else{
-    	uint32_t out_if = ports[port_id]->hw_port;
+    	out_if = switch_metadata_ptr->ports[port_id]->hw_port;
     }
     BmAddEntryOptions options;
 	BmMatchParams match_params;
@@ -588,55 +588,201 @@ sai_status_t sai_object::create_vlan_member (sai_object_id_t *vlan_member_id , s
     	bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_vlan_filtering",match_params, "_nop",  action_data, options);	
     vlan_member->handle_egress_vlan_filtering =
     	bm_client_ptr->bm_mt_add_entry(cxt_id,"table_ingress_vlan_filtering",match_params, "_nop",  action_data, options);	
-	*vlan_id = bridge->sai_object_id;
+	*vlan_member_id = vlan_member->sai_object_id;
 	return SAI_STATUS_SUCCESS;
 }
 
 sai_status_t sai_object::remove_vlan_member (sai_object_id_t vlan_member_id) {
-	printf("remove vlan_member: vlan_id = %d\n",vlan_member_id);
+	printf("remove vlan_member: vlan_member_id = %d\n",vlan_member_id);
 	sai_status_t status = SAI_STATUS_SUCCESS;
-	Vlan_member_obj *vlan_member = vlan_members[vlan_member_id];
-	BmAddEntryOptions options;
-	BmMatchParams match_params;
-	BmActionData action_data;
-	match_params.push_back(parse_exact_match_param(mac_address,6));
-	match_params.push_back(parse_exact_match_param(fdb_entry->bridge_id,2));
-
-	BmMtEntry bm_entry;
+	Vlan_member_obj *vlan_member = switch_metadata_ptr->vlan_members[vlan_member_id];
 	try{
-		bm_client_ptr->bm_mt_get_entry_from_key(bm_entry,cxt_id,"table_fdb",match_params,options);
-	} 
+		bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_egress_vlan_filtering",vlan_member->handle_egress_vlan_filtering);
+		bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_ingress_vlan_filtering",vlan_member->handle_ingress_vlan_filtering);
+		if(vlan_member->tagging_mode == SAI_VLAN_TAGGING_MODE_TAGGED){
+    		bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_egress_vlan_lag",vlan_member->handle_egress_vlan_tag);
+	    }
+	    else if (vlan_member->tagging_mode == SAI_VLAN_TAGGING_MODE_PRIORITY_TAGGED) {
+	    	bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_egress_vlan_lag",vlan_member->handle_egress_vlan_tag);
+	    }
+	    else{
+	    	bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_egress_vlan_lag",vlan_member->handle_egress_vlan_tag);	
+	    }
+	}
 	catch (int e) {
-		printf("Unable to delete table. possible key missmatch:%d\n",mac_address);
+		printf("ERROR : Unable to delete tables.\n");
 		return SAI_STATUS_FAILURE;
 	};
-	//std::cout << "got entry handle"<< endl;
-	std::cout << "got entry handle: " << bm_entry.entry_handle <<endl;
-	bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_fdb",bm_entry.entry_handle);
+	//get parent vlan member list, and remove the memeber by value - TODO consider map instead of vector.
+	std::vector<sai_object_id_t> *vlan_members = &switch_metadata_ptr->vlans[vlan_member->vlan_oid]->vlan_members;
+	vlan_members->erase(std::remove(vlan_members->begin(), vlan_members->end(), vlan_member->sai_object_id), vlan_members->end());
+	switch_metadata_ptr->vlan_members.erase(vlan_member->sai_object_id);
+	sai_id_map_ptr->free_id(vlan_member->sai_object_id);
 	return status;
-
-
 }
 
-
 sai_status_t sai_object::set_vlan_attribute (sai_object_id_t vlan_id, const sai_attribute_t *attr) {
+	printf("TODO : set_vlan_attribute not implemened\n");
+	return SAI_STATUS_NOT_IMPLEMENTED;
 	// implementation
 }
 sai_status_t sai_object::get_vlan_attribute (sai_object_id_t vlan_id, const uint32_t attr_count, sai_attribute_t *attr_list) {
-	// implementation
-}
-sai_status_t sai_object::remove_vlan_member (sai_object_id_t vlan_member_id) {
+	printf("TODO : get_vlan_attribute not implemened\n");
+	return SAI_STATUS_NOT_IMPLEMENTED;
 	// implementation
 }
 sai_status_t sai_object::set_vlan_member_attribute (sai_object_id_t vlan_member_id, const sai_attribute_t *attr) {
+	printf("TODO : set_vlan_member_attribute not implemened\n");
+	return SAI_STATUS_NOT_IMPLEMENTED;
+
 	// implementation
 }
 sai_status_t sai_object::get_vlan_member_attribute (sai_object_id_t vlan_member_id, const uint32_t attr_count, sai_attribute_t *attr_list) {
+	printf("TODO : get_vlan_member_attribute not implemened\n");
+	return SAI_STATUS_NOT_IMPLEMENTED;	
 	// implementation
 }
 sai_status_t sai_object::get_vlan_stats (sai_object_id_t vlan_id, const sai_vlan_stat_t *counter_ids, uint32_t number_of_counters, uint64_t *counters) {
+	printf("TODO : get_vlan_stats not implemened\n");
+	return SAI_STATUS_NOT_IMPLEMENTED;
+
 	// implementation
 }
 sai_status_t sai_object::clear_vlan_stats (sai_object_id_t vlan_id, const sai_vlan_stat_t *counter_ids, uint32_t number_of_counters) {
+	printf("TODO : clear_vlan_stats not implemened\n");
 	// implementation
+}
+
+sai_status_t sai_object::create_lag(sai_object_id_t *lag_id,sai_object_id_t switch_id, uint32_t attr_count,const sai_attribute_t *attr_list){
+	Lag_obj *lag = new Lag_obj(sai_id_map_ptr);
+	lag->l2_if = switch_metadata_ptr->GetNewL2IF();
+	switch_metadata_ptr->lags[lag->sai_object_id] = lag;
+    *lag_id = lag->sai_object_id;
+	return SAI_STATUS_SUCCESS;
+}
+sai_status_t sai_object::remove_lag(sai_object_id_t lag_id){
+	sai_status_t status = SAI_STATUS_SUCCESS;
+	Lag_obj* lag = switch_metadata_ptr->lags[lag_id];
+	try{
+		if (lag->handle_port_configurations != 999){
+			bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_port_configurations",lag->handle_port_configurations);
+		}
+		if (lag->handle_lag_hash != 999){
+			bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_lag_hash",lag->handle_lag_hash);
+		}
+	}
+	catch (int e){
+		status = SAI_STATUS_FAILURE;
+		printf("ERROR : unable to remove lag tables entries\n");
+	}
+	switch_metadata_ptr->l2_ifs.erase(lag->l2_if);
+	switch_metadata_ptr->lags.erase(lag->sai_object_id);
+	sai_id_map_ptr->free_id(lag->sai_object_id);
+	return status;
+}
+sai_status_t sai_object::create_lag_member(sai_object_id_t *lag_member_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list){
+	Lag_member_obj *lag_member = new Lag_member_obj(sai_id_map_ptr);
+	switch_metadata_ptr->lag_members[lag_member->sai_object_id] = lag_member;
+	//parsing attributes
+	sai_attribute_t attribute;
+	sai_object_id_t port_id;
+	Port_obj* port;
+	sai_object_id_t lag_id;
+	Lag_obj* lag;
+	for(uint32_t i = 0; i < attr_count; i++) {
+     	attribute =attr_list[i];
+     	switch (attribute.id) {
+	     	case SAI_LAG_MEMBER_ATTR_PORT_ID:
+	     		port_id = attribute.value.oid;
+	     		lag_member->lag_id = port_id;
+	     		port = switch_metadata_ptr->ports[port_id];
+	     		break;
+	     	case SAI_LAG_MEMBER_ATTR_LAG_ID:
+	     		lag_id = (sai_object_id_t) attribute.value.oid;
+	     		lag_member->lag_id = lag_id;
+	     		lag = switch_metadata_ptr->lags[lag_id];
+	     		lag->lag_members.push_back(lag_member->sai_object_id);
+	     		break;
+	     	default:
+		     	std::cout << "while parsing lag member, attribute.id = " << attribute.id << "was dumped in sai_obj" << endl; 
+	        	break;
+	        }
+    }
+    lag = switch_metadata_ptr->lags[lag_member->lag_id];
+    lag->port_obj = port;
+    lag_member->hw_port = port->hw_port;
+    uint32_t l2_if = lag->l2_if;
+    if (port->handle_ingress_lag != 999){
+    	bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_ingress_lag",port->handle_ingress_lag);
+    	port->handle_ingress_lag = 999;
+    }
+    if (lag->handle_lag_hash != 999){
+    	bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_lag_hash",lag->handle_lag_hash);
+    	lag->handle_lag_hash = 999;
+    }
+    BmAddEntryOptions options;
+	BmMatchParams match_params;
+	BmActionData action_data;  
+	match_params.push_back(parse_exact_match_param(port->hw_port,1));
+	action_data.push_back(parse_param(1,1));  
+	action_data.push_back(parse_param(l2_if,1)); 
+	port->handle_ingress_lag = 
+		bm_client_ptr->bm_mt_add_entry(cxt_id,"table_ingress_lag",match_params, "action_set_lag_l2if",  action_data, options);
+	match_params.clear();
+	match_params.push_back(parse_exact_match_param(l2_if,1));
+	match_params.push_back(parse_exact_match_param(lag->lag_members.size()-1,1));
+	action_data.clear();
+	action_data.push_back(parse_param(port->hw_port,1));
+	port->handle_egress_lag =
+		bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_lag",match_params, "action_set_out_port",  action_data, options);
+	action_data.clear();
+	match_params.clear();
+	match_params.push_back(parse_exact_match_param(l2_if,1));
+	action_data.push_back(parse_param(lag->lag_members.size(),1));
+	lag->handle_lag_hash =
+		bm_client_ptr->bm_mt_add_entry(cxt_id,"table_lag_hash",match_params, "action_set_lag_hash_size",  action_data, options);
+	port->l2_if = l2_if;
+	config_port(port);
+	*lag_member_id = lag_member->sai_object_id;
+	return SAI_STATUS_SUCCESS;
+}
+sai_status_t sai_object::remove_lag_member(sai_object_id_t lag_member_id){
+	printf("sai_remove_lag_member: %d\n",lag_member_id);
+	sai_status_t status = SAI_STATUS_SUCCESS;
+	Lag_member_obj* lag_member = switch_metadata_ptr->lag_members[lag_member_id];
+	Lag_obj* lag = switch_metadata_ptr->lags[lag_member->lag_id];
+	try{
+ 		std::vector<sai_object_id_t>::iterator iter = std::find(lag->lag_members.begin(), lag->lag_members.end(), lag_member_id);
+    	size_t hash_index = std::distance(lag->lag_members.begin(), iter);
+    	if(hash_index == lag->lag_members.size())
+   		{
+     		printf("ERROR: lag memeber %d is not in lag %d member list.\n",lag_member->sai_object_id,lag->sai_object_id);
+     		//invalid
+   		}
+   		else{
+   			lag->lag_members.erase(lag->lag_members.begin() + hash_index);
+   			bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_lag_hash",lag->handle_lag_hash);
+    		lag->handle_lag_hash = 999;
+    		bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_ingress_lag",lag->port_obj->handle_ingress_lag);
+    		lag->port_obj->handle_ingress_lag = 999;
+    		bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_egress_lag",lag->port_obj->handle_egress_lag);
+    		lag->port_obj->handle_egress_lag = 999;
+    		BmAddEntryOptions options;
+			BmMatchParams match_params;
+			BmActionData action_data;  
+			match_params.push_back(parse_exact_match_param(lag->l2_if,1));
+			action_data.push_back(parse_param(lag->lag_members.size(),1));
+			lag->handle_lag_hash =
+				bm_client_ptr->bm_mt_add_entry(cxt_id,"table_lag_hash",match_params, "action_set_lag_hash_size",  action_data, options);
+
+   			//TODO check compliance with pyhton server. seems like the last member edge case needs to be addressed.
+   		}
+   	}
+	catch (int e) { 
+		printf("ERROR: can't remove lag_member\n");
+
+	}
+	switch_metadata_ptr->lag_members.erase(lag_member->sai_object_id);
+	sai_id_map_ptr->free_id(lag_member->sai_object_id);
+	return status;
 }

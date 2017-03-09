@@ -426,6 +426,16 @@ sai_thrift_status_t sai_thrift_set_bridge_port_attribute(const sai_thrift_object
   printf("sai_thrift_set_bridge_port_attribute\n");
 }
 
+// GENERAL
+void parse_mac_str(const std::string& mac_str, uint8_t mac[6])  {
+  int l=mac_str.length();
+  int j=5;
+  for (int i=0; i<l ; i+=3){
+    mac[j] = (uint8_t) std::stoi(mac_str.substr(i,2),NULL,16);
+    j--;
+  }
+}
+
 sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_entry){
   sai_fdb_entry_t sai_fdb_entry;
   sai_fdb_entry.switch_id=0;
@@ -570,8 +580,16 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
   }
 
   sai_thrift_status_t sai_thrift_remove_vlan_member(const sai_thrift_object_id_t vlan_member_id) {
-    // Your implementation goes here
     printf("sai_thrift_remove_vlan_member\n");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_vlan_api_t *vlan_api;
+    status = sai_api_query(SAI_API_VLAN, (void **) &vlan_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        printf("sai_api_query failed!!!\n");
+        //return SAI_STATUS_NOT_IMPLEMENTED; 
+    }
+    vlan_api->remove_vlan_member((sai_object_id_t) vlan_member_id);
+    return (sai_thrift_object_id_t)vlan_member_id;
   }
 
   void sai_thrift_get_vlan_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t vlan_id) {
@@ -639,24 +657,83 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     printf("sai_thrift_remove_next_hop_from_group\n");
   }
 
+  void sai_thrift_parse_lag_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+    std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+    sai_thrift_attribute_t attribute;
+    for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+        attribute = (sai_thrift_attribute_t)*it;
+        attr_list[i].id = attribute.id;
+        switch (attribute.id) {
+            default:
+              std::cout << "--> while parsing lag_attr: attribute.id = " << attribute.id << " was dumped in sai_cpp_server" << endl; 
+              break;
+        }
+    }
+  }
   sai_thrift_object_id_t sai_thrift_create_lag(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
-    // Your implementation goes here
     printf("sai_thrift_create_lag\n");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_lag_api_t *lag_api;
+    sai_attribute_t *attr= (sai_attribute_t*) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+    status = sai_api_query(SAI_API_LAG, (void **) &lag_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        printf("sai_api_query failed!!!\n");
+        //return SAI_STATUS_NOT_IMPLEMENTED; 
+    }
+    sai_thrift_parse_lag_attributes(thrift_attr_list, attr );
+    uint32_t count = thrift_attr_list.size();
+    sai_object_id_t s_id=0;
+    sai_object_id_t lag_id =1;
+    lag_api->create_lag(&lag_id,s_id,count,attr);
+    free(attr);
+    return (sai_thrift_object_id_t) lag_id;
   }
 
   sai_thrift_status_t sai_thrift_remove_lag(const sai_thrift_object_id_t lag_id) {
-    // Your implementation goes here
     printf("sai_thrift_remove_lag\n");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_lag_api_t *lag_api;
+    status = sai_api_query(SAI_API_LAG, (void **) &lag_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        printf("sai_api_query failed!!!\n");
+        return SAI_STATUS_NOT_IMPLEMENTED; 
+    }
+    sai_object_id_t s_id=0;
+    lag_api->remove_lag(lag_id);
+    return status;
   }
 
   sai_thrift_object_id_t sai_thrift_create_lag_member(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
-    // Your implementation goes here
     printf("sai_thrift_create_lag_member\n");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_lag_api_t *lag_api;
+    sai_attribute_t *attr= (sai_attribute_t*) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+    status = sai_api_query(SAI_API_LAG, (void **) &lag_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        printf("sai_api_query failed!!!\n");
+        //return SAI_STATUS_NOT_IMPLEMENTED; 
+    }
+    sai_thrift_parse_lag_attributes(thrift_attr_list, attr );
+    uint32_t count = thrift_attr_list.size();
+    sai_object_id_t s_id=0;
+    sai_object_id_t lag_member_id =1;
+    lag_api->create_lag_member(&lag_member_id,s_id,count,attr);
+    free(attr);
+    return (sai_thrift_object_id_t) lag_member_id;
   }
 
   sai_thrift_status_t sai_thrift_remove_lag_member(const sai_thrift_object_id_t lag_member_id) {
-    // Your implementation goes here
     printf("sai_thrift_remove_lag_member\n");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_lag_api_t *lag_api;
+    status = sai_api_query(SAI_API_LAG, (void **) &lag_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        printf("sai_api_query failed!!!\n");
+        return SAI_STATUS_NOT_IMPLEMENTED; 
+    }
+    sai_object_id_t s_id=0;
+    lag_api->remove_lag_member(lag_member_id);
+    return status;
   }
 
   sai_thrift_object_id_t sai_thrift_create_stp_entry(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
@@ -1000,17 +1077,7 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
   sai_thrift_status_t sai_thrift_remove_qos_map(const sai_thrift_object_id_t qos_map_id) {
     // Your implementation goes here
     printf("sai_thrift_remove_qos_map\n");
-  }
-
-  // GENERAL
-  void parse_mac_str(const std::string& mac_str, uint8_t mac[6])
-  {
-    int l=mac_str.length();
-    int j=5;
-    for (int i=0; i<l ; i+=3){
-      mac[j] = (uint8_t) std::stoi(mac_str.substr(i,2),NULL,16);j--;
-    }
-  }
+  } 
 };
 
 
