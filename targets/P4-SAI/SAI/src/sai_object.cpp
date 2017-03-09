@@ -441,7 +441,7 @@ sai_status_t sai_object::create_vlan_member (sai_object_id_t *vlan_member_id , s
 	     	default:
 		     	std::cout << "while parsing vlan member, attribute.id = " << attribute.id << "was dumped in sai_obj" << endl; 
 	        	break;
-
+	        }
     }
     Vlan_obj* vlan = vlans[vlan_member->vlan_oid];
     vlan_member->vid = vlan->vid;
@@ -459,22 +459,64 @@ sai_status_t sai_object::create_vlan_member (sai_object_id_t *vlan_member_id , s
     if(vlan_member->tagging_mode == SAI_VLAN_TAGGING_MODE_TAGGED){
     	uint32_t vlan_pcp = 0;
     	uint32_t vlan_cfi = 0;
-		match_params.push_back(parse_exact_match_param(out_if,6));
+		match_params.push_back(parse_exact_match_param(out_if,1));
 		match_params.push_back(parse_exact_match_param(vlan_member->vid,2));
 		match_params.push_back(parse_exact_match_param(0,1));
 		action_data.push_back(parse_param(bridge_port,1));
-		BmEntryHandle handle;
-   		bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_vlan_lag",match_params, "action_forward_vlan_tag",  action_data, options);
+   		vlan_member->handle_egress_vlan_tag =
+   			bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_vlan_lag",match_params, "action_forward_vlan_tag",  action_data, options);
     }
     else if (vlan_member->tagging_mode == SAI_VLAN_TAGGING_MODE_PRIORITY_TAGGED) {
     	uint32_t vlan_pcp = 0;
     	uint32_t vlan_cfi = 0;
+    	match_params.push_back(parse_exact_match_param(out_if,1));
+		match_params.push_back(parse_exact_match_param(vlan_member->vid,2));
+		match_params.push_back(parse_exact_match_param(0,1));
+		action_data.push_back(parse_param(bridge_port,1));
+		vlan_member->handle_egress_vlan_tag =
+   			bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_vlan_lag",match_params, "action_forward_vlan_tag",  action_data, options);
     }
     else{
-
+    	match_params.push_back(parse_exact_match_param(out_if,1));
+		match_params.push_back(parse_exact_match_param(vlan_member->vid,2));
+		match_params.push_back(parse_exact_match_param(1,1));
+		vlan_member->handle_egress_vlan_tag =
+   			bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_vlan_lag",match_params, "action_forward_vlan_untag",  action_data, options);	
     }
-
-  }
+    match_params.clear();
+    match_params.push_back(parse_exact_match_param(bridge_port,1));
+	match_params.push_back(parse_exact_match_param(vlan_member->vid,2));
+    action_data.clear();
+    vlan_member->handle_egress_vlan_filtering =
+    	bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_vlan_filtering",match_params, "_nop",  action_data, options);	
+    vlan_member->handle_egress_vlan_filtering =
+    	bm_client_ptr->bm_mt_add_entry(cxt_id,"table_ingress_vlan_filtering",match_params, "_nop",  action_data, options);	
 	*vlan_id = bridge->sai_object_id;
 	return SAI_STATUS_SUCCESS;
+}
+
+sai_status_t sai_object::remove_vlan_member (sai_object_id_t vlan_member_id) {
+	printf("remove vlan_member: vlan_id = %d\n",vlan_member_id);
+	sai_status_t status = SAI_STATUS_SUCCESS;
+	Vlan_member_obj *vlan_member = vlan_members[vlan_member_id];
+	BmAddEntryOptions options;
+	BmMatchParams match_params;
+	BmActionData action_data;
+	match_params.push_back(parse_exact_match_param(mac_address,6));
+	match_params.push_back(parse_exact_match_param(fdb_entry->bridge_id,2));
+
+	BmMtEntry bm_entry;
+	try{
+		bm_client_ptr->bm_mt_get_entry_from_key(bm_entry,cxt_id,"table_fdb",match_params,options);
+	} 
+	catch (int e) {
+		printf("Unable to delete table. possible key missmatch:%d\n",mac_address);
+		return SAI_STATUS_FAILURE;
+	};
+	//std::cout << "got entry handle"<< endl;
+	std::cout << "got entry handle: " << bm_entry.entry_handle <<endl;
+	bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_fdb",bm_entry.entry_handle);
+	return status;
+
+
 }

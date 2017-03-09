@@ -146,6 +146,9 @@ class Vlan_member_obj : public Sai_obj {
     sai_object_id_t vlan_oid;
     uint32_t tagging_mode;
     uint16_t vid;
+    BmEntryHandle handle_egress_vlan_tag;
+    BmEntryHandle handle_egress_vlan_filtering;
+    BmEntryHandle handle_ingress_vlan_filtering;
     Vlan_member_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr){
       this->vid = 999;
       this->vlan_oid = 999;// TODO needed? consider remove.
