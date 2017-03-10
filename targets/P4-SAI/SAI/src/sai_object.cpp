@@ -24,6 +24,15 @@ BmMatchParam parse_exact_match_param(uint64_t param, uint32_t num_of_bytes) {
     return match_param;
 }
 
+BmMatchParam parse_valid_match_param(bool param) {
+  BmMatchParam match_param;
+  match_param.type = BmMatchParamType::type::VALID; 
+  BmMatchParamValid match_param_valid;
+  match_param_valid.key = param;
+  match_param.__set_valid(match_param_valid);
+  return match_param;
+}
+
 sai_status_t sai_object::create_switch(sai_object_id_t* switch_id, uint32_t attr_count, const sai_attribute_t *attr_list) {
 	BmAddEntryOptions options;
   	BmMatchParams match_params;
@@ -574,7 +583,7 @@ sai_status_t sai_object::create_vlan_member (sai_object_id_t *vlan_member_id , s
     	uint32_t vlan_cfi = 0;
 		match_params.push_back(parse_exact_match_param(out_if,1));
 		match_params.push_back(parse_exact_match_param(vlan_member->vid,2));
-		match_params.push_back(parse_exact_match_param(0,1));
+		match_params.push_back(parse_valid_match_param(false));
 		action_data.push_back(parse_param(bridge_port,1));
    		vlan_member->handle_egress_vlan_tag =
    			bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_vlan_tag",match_params, "action_forward_vlan_tag",  action_data, options);
@@ -586,7 +595,7 @@ sai_status_t sai_object::create_vlan_member (sai_object_id_t *vlan_member_id , s
     	uint32_t vlan_cfi = 0;
     	match_params.push_back(parse_exact_match_param(out_if,1));
 		match_params.push_back(parse_exact_match_param(vlan_member->vid,2));
-		match_params.push_back(parse_exact_match_param(0,1));
+		match_params.push_back(parse_valid_match_param(false));
 		action_data.push_back(parse_param(bridge_port,1));
 		vlan_member->handle_egress_vlan_tag =
    			bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_vlan_tag",match_params, "action_forward_vlan_tag",  action_data, options);
@@ -596,7 +605,7 @@ sai_status_t sai_object::create_vlan_member (sai_object_id_t *vlan_member_id , s
     	printf("10.3\n");
     	match_params.push_back(parse_exact_match_param(out_if,1));
 		match_params.push_back(parse_exact_match_param(vlan_member->vid,2));
-		match_params.push_back(parse_exact_match_param(1,1));
+		match_params.push_back(parse_valid_match_param(true));
 		action_data.clear();
 		vlan_member->handle_egress_vlan_tag =
    			bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_vlan_tag",match_params, "action_forward_vlan_untag",  action_data, options);	
@@ -621,27 +630,36 @@ sai_status_t sai_object::remove_vlan_member (sai_object_id_t vlan_member_id) {
 	sai_status_t status = SAI_STATUS_SUCCESS;
 	Vlan_member_obj *vlan_member = switch_metadata_ptr->vlan_members[vlan_member_id];
 	try{
+    printf("test 1\n");
 		bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_egress_vlan_filtering",vlan_member->handle_egress_vlan_filtering);
 		bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_ingress_vlan_filtering",vlan_member->handle_ingress_vlan_filtering);
+    printf("test 2\n");
 		if(vlan_member->tagging_mode == SAI_VLAN_TAGGING_MODE_TAGGED){
     		bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_egress_vlan_lag",vlan_member->handle_egress_vlan_tag);
+        printf("test 3\n");
 	    }
 	    else if (vlan_member->tagging_mode == SAI_VLAN_TAGGING_MODE_PRIORITY_TAGGED) {
 	    	bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_egress_vlan_lag",vlan_member->handle_egress_vlan_tag);
+        printf("test 3.5\n");
 	    }
 	    else{
 	    	bm_client_ptr->bm_mt_delete_entry(cxt_id,"table_egress_vlan_lag",vlan_member->handle_egress_vlan_tag);	
+        printf("test 3.75\n");
 	    }
 	}
 	catch (int e) {
 		printf("ERROR : Unable to delete tables.\n");
 		return SAI_STATUS_FAILURE;
 	};
+  printf("test 5\n");
 	//get parent vlan member list, and remove the memeber by value - TODO consider map instead of vector.
 	std::vector<sai_object_id_t> *vlan_members = &switch_metadata_ptr->vlans[vlan_member->vlan_oid]->vlan_members;
 	vlan_members->erase(std::remove(vlan_members->begin(), vlan_members->end(), vlan_member->sai_object_id), vlan_members->end());
+  printf("test 6\n");
 	switch_metadata_ptr->vlan_members.erase(vlan_member->sai_object_id);
+  printf("test 7\n");
 	sai_id_map_ptr->free_id(vlan_member->sai_object_id);
+  printf("test 8\n");
 	return status;
 }
 
