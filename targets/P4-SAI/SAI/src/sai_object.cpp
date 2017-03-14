@@ -590,7 +590,9 @@ sai_status_t sai_object::create_vlan_member (sai_object_id_t *vlan_member_id , s
 		match_params.push_back(parse_exact_match_param(out_if,1));
 		match_params.push_back(parse_exact_match_param(vlan_member->vid,2));
 		match_params.push_back(parse_valid_match_param(false));
-		action_data.push_back(parse_param(bridge_port,1));
+		action_data.push_back(parse_param(vlan_pcp,1));
+		action_data.push_back(parse_param(vlan_cfi,1));
+		action_data.push_back(parse_param(vlan_member->vid,2));
    		vlan_member->handle_egress_vlan_tag =
    			bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_vlan_tag",match_params, "action_forward_vlan_tag",  action_data, options);
     }
@@ -600,7 +602,9 @@ sai_status_t sai_object::create_vlan_member (sai_object_id_t *vlan_member_id , s
     	match_params.push_back(parse_exact_match_param(out_if,1));
 		match_params.push_back(parse_exact_match_param(vlan_member->vid,2));
 		match_params.push_back(parse_valid_match_param(false));
-		action_data.push_back(parse_param(bridge_port,1));
+		action_data.push_back(parse_param(vlan_pcp,1));
+		action_data.push_back(parse_param(vlan_cfi,1));
+		action_data.push_back(parse_param(0,2));
 		vlan_member->handle_egress_vlan_tag =
    			bm_client_ptr->bm_mt_add_entry(cxt_id,"table_egress_vlan_tag",match_params, "action_forward_vlan_tag",  action_data, options);
     }
