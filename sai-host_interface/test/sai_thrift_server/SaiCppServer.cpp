@@ -154,6 +154,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
       free(attr);
       return port_id;
   }
+
   uint32_t* sai_thrift_parse_port_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
       std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
       sai_thrift_attribute_t attribute;
@@ -670,6 +671,29 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
         }
     }
   }
+
+  void sai_thrift_parse_lag_member_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+    std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+    sai_thrift_attribute_t attribute;
+    for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+        attribute = (sai_thrift_attribute_t)*it;
+        attr_list[i].id = attribute.id;
+        switch (attribute.id) {
+          case SAI_LAG_MEMBER_ATTR_PORT_ID:
+              attr_list[i].value.oid = attribute.value.oid;
+              break;
+          case SAI_LAG_MEMBER_ATTR_LAG_ID:
+              attr_list[i].value.oid = attribute.value.oid;
+              break;
+          default:
+              std::cout << "--> while parsing lag_member_attr: attribute.id = " << attribute.id << " was dumped in sai_cpp_server" << endl; 
+              break;
+        }
+    }
+  }
+  
+        
+
   sai_thrift_object_id_t sai_thrift_create_lag(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
     printf("sai_thrift_create_lag\n");
     sai_status_t status = SAI_STATUS_SUCCESS;
@@ -713,7 +737,7 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
         printf("sai_api_query failed!!!\n");
         //return SAI_STATUS_NOT_IMPLEMENTED; 
     }
-    sai_thrift_parse_lag_attributes(thrift_attr_list, attr );
+    sai_thrift_parse_lag_member_attributes(thrift_attr_list, attr );
     uint32_t count = thrift_attr_list.size();
     sai_object_id_t s_id=0;
     sai_object_id_t lag_member_id =1;

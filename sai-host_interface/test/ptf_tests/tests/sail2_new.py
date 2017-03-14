@@ -585,10 +585,10 @@ class L21DLagTest(sai_base_test.ThriftInterfaceDataPlane):
         # Create LAG
         lag = self.client.sai_thrift_create_lag([])
         lag_member1 = sai_thrift_create_lag_member(self.client, port2, lag)
-        # lag_member2 = sai_thrift_create_lag_member(self.client, port3, lag)
+        # lag_member2 = sai_thrift_create_lag_member(self.client, port3, lag) 
         lag_member3 = sai_thrift_create_lag_member(self.client, port4, lag)
         lag_member4 = sai_thrift_create_lag_member(self.client, port5, lag)
-        # self.client.sai_thrift_remove_lag_member(lag_member2)
+        # self.client.sai_thrift_remove_lag_member(lag_member2) # Check remove_lag_member from middle of list. shouldn't mess with hash.
 
         # Set LAG Vlan attr
         attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
@@ -651,6 +651,10 @@ class L21DLagTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_set_port_attribute(port3, attr)
             self.client.sai_thrift_set_port_attribute(port4, attr)
             self.client.sai_thrift_set_port_attribute(port5, attr)
+            self.client.sai_thrift_remove_lag_member(lag_member1)
+            self.client.sai_thrift_remove_lag_member(lag_member4)
+            self.client.sai_thrift_remove_lag_member(lag_member3)
+            self.client.sai_thrift_remove_lag(lag)
             bridge_port_type = SAI_BRIDGE_PORT_TYPE_PORT
             self.client.sai_thrift_remove_bridge_port(bridge_port1)
             bridge_port1 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port1, vlan_id, default_bridge)
@@ -663,10 +667,6 @@ class L21DLagTest(sai_base_test.ThriftInterfaceDataPlane):
             br_port_list[port2] = bridge_port2
             br_port_list[port4] = bridge_port4
             br_port_list[port5] = bridge_port5
-            self.client.sai_thrift_remove_lag_member(lag_member1)
-            self.client.sai_thrift_remove_lag_member(lag_member4)
-            self.client.sai_thrift_remove_lag_member(lag_member3)
-            self.client.sai_thrift_remove_lag(lag)
 
 @group('l2')
 class L21QLagTest(sai_base_test.ThriftInterfaceDataPlane):

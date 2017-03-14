@@ -80,7 +80,6 @@ class Port_obj : public Sai_obj{
     BmEntryHandle handle_lag_if;
     BmEntryHandle handle_port_cfg;
     BmEntryHandle handle_ingress_lag;
-    BmEntryHandle handle_egress_lag;
     Port_obj(sai_id_map_t* sai_id_map_ptr): Sai_obj(sai_id_map_ptr) {
       //printf("create port object\n");
       this->mtu=1512;
@@ -93,7 +92,6 @@ class Port_obj : public Sai_obj{
       this->is_default=true;
       this->is_lag=false;
       this->handle_ingress_lag = 999;
-      this->handle_egress_lag = 999;
       this->handle_port_cfg = 999;
       this->handle_lag_if = 999;
     }   
@@ -187,13 +185,13 @@ public:
 
 class Lag_member_obj : public Sai_obj{
   public:
-    sai_object_id_t port_id;
-    sai_object_id_t lag_id;
-    uint32_t hw_port;
+    Port_obj* port;
+    Lag_obj* lag;
+    BmEntryHandle handle_egress_lag;
     Lag_member_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr){
-      this->port_id=0;
-      this->lag_id=0;
-      this->hw_port=0;
+      this->port=NULL;
+      this->lag=NULL;
+      this->handle_egress_lag = 999;
   }
 };
 
@@ -216,7 +214,6 @@ public:
   lag_id_map_t          lags;
   lag_member_id_map_t   lag_members;
   sai_object_id_t       default_bridge_id;
-  l2_if_map_t           l2_ifs; // TODO consider list
   Switch_metadata(){
     ports.clear();
     bridge_ports.clear();
@@ -253,8 +250,11 @@ public:
   }
   uint32_t GetNewL2IF() {
     std::vector<uint32_t> l2_ifs_nums;
-    for (l2_if_map_t::iterator it=l2_ifs.begin(); it!=l2_ifs.end(); ++it) {
-      l2_ifs_nums.push_back(it->second);
+    for (port_id_map_t::iterator it=ports.begin(); it!=ports.end(); ++it) {
+      l2_ifs_nums.push_back(it->second->l2_if);
+    }
+    for (lag_id_map_t::iterator it=lags.begin(); it!=lags.end(); ++it) {
+      l2_ifs_nums.push_back(it->second->l2_if);
     }
     for (int i=0; i<l2_ifs_nums.size(); ++i) {
       if (std::find(l2_ifs_nums.begin(), l2_ifs_nums.end(), i) == l2_ifs_nums.end()) {
