@@ -1,8 +1,7 @@
 import sys
-sys.path.append('sai_thrift_src/gen-py')
+sys.path.append('../ptf_tests/sai_thrift_src/gen-py')
 sys.path.append('../')
-sys.path.append('../../../tools/')
-sys.path.append('tests')
+sys.path.append('../../../p4-softswitch/tools/')
 from sai_types import *
 from cli_driver import SwitchThriftClient
 from switch_sai import switch_sai_rpc
@@ -106,7 +105,7 @@ class SaiHandler():
     self.switch_id = 0
     self.log = {}
     print "connecting to cli thrift"
-    self.cli_client = SwitchThriftClient(json='../sai.json',default_config='../p4src/DefaultConfig.txt')
+    self.cli_client = SwitchThriftClient(json='../../../p4-softswitch/targets/P4-SAI/sai.json',default_config='../../../p4-softswitch/targets/P4-SAI/p4src/DefaultConfig.txt')
     self.hw_port_list = [0, 1, 2, 3, 4, 5, 6, 7]
     self.sai_thrift_create_switch([])
 

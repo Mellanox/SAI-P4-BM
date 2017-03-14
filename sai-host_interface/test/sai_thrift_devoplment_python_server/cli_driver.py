@@ -26,7 +26,9 @@ from subprocess import Popen, call
 import shlex
 
 class SwitchThriftClient():
-    def __init__(self, ip='localhost', port=9090,services=cli.PreType.SimplePreLAG,json='sai.json', default_config='p4src/DefaultConfig.txt'):
+    def __init__(self, ip='localhost', port=9090,services=cli.PreType.SimplePreLAG,
+                 json='../../../p4-softswitch/targets/P4-SAI/sai.json',
+                 default_config='../../../p4-softswitch/targets/P4-SAI/p4src/DefaultConfig.txt'):
         self.pre = services
         self.standard_client, self.mc_client = self.ConnectToThrift(ip, port, services, json)
         self.json = json

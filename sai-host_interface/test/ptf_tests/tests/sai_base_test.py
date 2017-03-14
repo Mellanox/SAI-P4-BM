@@ -15,7 +15,6 @@ from ptf.base_tests import BaseTest
 from ptf import config
 import ptf.dataplane as dataplane
 import ptf.testutils as testutils
-from sai_types import *
 
 ################################################################
 #
@@ -28,6 +27,11 @@ import switch_sai.switch_sai_rpc as switch_sai_rpc
 from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
+
+sys.path.append('../sai_thrift_src/gen-py/')
+from switch_sai.ttypes import *
+sys.path.append('../')
+from sai_types import *
 
 interface_to_front_mapping = {}
 port_map_loaded=0
@@ -78,7 +82,7 @@ class ThriftInterface(BaseTest):
         global interface_to_front_mapping
         BaseTest.setUp(self)
         self.test_params = testutils.test_params_get()
-        #self.loadPortMap()
+        self.loadPortMap()
         self.createRpcClient()
         return
 

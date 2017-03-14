@@ -15,14 +15,13 @@
 """
 Thrift SAI interface L2 tests
 """
+import sys
+# sys.path.append('../')
+# from sai_types import *
 import socket
 from switch import *
 import sai_base_test
-import sys
-sys.path.append('../sai_thrift_src/gen-py/')
-from switch_sai.ttypes import *
 import random
-from sai_types import *
 
 @group('l2')
 class L2AcceptedFrameType(sai_base_test.ThriftInterfaceDataPlane):
