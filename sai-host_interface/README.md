@@ -22,7 +22,7 @@ Now, follow these steps to run the PTF tests:
 2) Start new terminal and run the sai thrift server:
   SAI-P4-BM/sai-host_interface/saithrift/SaiCppServer
 
-3) Start another new terminal and run the [PTF tests](tests/ptf_tests/) directly, or by one the test shell scripts found in the ptf test folder. 
+3) Start another new terminal and run the [PTF tests](test/ptf_tests/) directly, or by one the test shell scripts found in the ptf test folder. 
 
 ### Python development server
 For P4 new features testing, it is possible to bypass implementing new SAI C implementations, and just update the thirft implementation in python.
