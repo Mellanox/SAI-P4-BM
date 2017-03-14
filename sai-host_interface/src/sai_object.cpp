@@ -3,8 +3,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include "sai_object.h"
-#include "../../../../thrift_src/gen-cpp/bm/standard_types.h"
-#include "../../Sai-Tests/sai_thrift_src/gen-cpp/switch_sai_types.h" // TODO probably need to remove. enum issue with SAI_FDB_ENTRY_ATTR_PACKET_ACTION
+#include <standard_types.h>
 StandardClient* sai_object::bm_client_ptr;
 sai_id_map_t* sai_object::sai_id_map_ptr;
 Switch_metadata* sai_object::switch_metadata_ptr;

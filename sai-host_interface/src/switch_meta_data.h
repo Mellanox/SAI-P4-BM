@@ -6,7 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
-#include "../../../../thrift_src/gen-cpp/bm/standard_types.h"
+#include <standard_types.h>
 using namespace bm_runtime::standard;
 
 class sai_id_map_t { // object pointer and it's id

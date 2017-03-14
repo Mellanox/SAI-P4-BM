@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 /// thrift sai server
-#include "../../Sai-Tests/sai_thrift_src/gen-cpp/switch_sai_rpc.h"
+#include <switch_sai_rpc.h>
 // #include "../src/sai_object.h"
 #include <thrift/server/TSimpleServer.h>
 #include <thrift/transport/TServerSocket.h>

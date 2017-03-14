@@ -23,7 +23,7 @@ extern "C" {
 
 
 // thrift bm clinet
-#include "../../../../thrift_src/gen-cpp/bm/Standard.h"
+#include <Standard.h>
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/protocol/TMultiplexedProtocol.h>
 #include <thrift/transport/TTransportUtils.h>
