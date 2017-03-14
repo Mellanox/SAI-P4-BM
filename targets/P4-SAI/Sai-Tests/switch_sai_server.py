@@ -259,7 +259,7 @@ class SaiHandler():
       vlan_pcp = 0 
       vlan_cfi = 0
       self.cli_client.AddTable('table_egress_vlan_tag','action_forward_vlan_tag',
-                               list_to_str([out_if, vlan_id, 0]), list_to_str([vlan_pcp, vlan_cfi, vlan_id]))
+                               list_to_str([out_if, vlan_id, 0]), list_to_str([vlan_pcp, vlan_cfi, 0]))
     else:
       self.cli_client.AddTable('table_egress_vlan_tag','action_forward_vlan_untag',
                               list_to_str([out_if, vlan_id, 1]),'')

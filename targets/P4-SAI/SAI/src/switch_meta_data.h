@@ -79,6 +79,8 @@ class Port_obj : public Sai_obj{
     bool is_lag;
     BmEntryHandle handle_lag_if;
     BmEntryHandle handle_port_cfg;
+    BmEntryHandle handle_ingress_lag;
+    BmEntryHandle handle_egress_lag;
     Port_obj(sai_id_map_t* sai_id_map_ptr): Sai_obj(sai_id_map_ptr) {
       //printf("create port object\n");
       this->mtu=1512;
@@ -90,6 +92,10 @@ class Port_obj : public Sai_obj{
       this->bind_mode=SAI_PORT_BIND_MODE_PORT;
       this->is_default=true;
       this->is_lag=false;
+      this->handle_ingress_lag = 999;
+      this->handle_egress_lag = 999;
+      this->handle_port_cfg = 999;
+      this->handle_lag_if = 999;
     }   
 };
 
@@ -152,6 +158,9 @@ class Vlan_member_obj : public Sai_obj {
     sai_object_id_t vlan_oid;
     uint32_t tagging_mode;
     uint16_t vid;
+    BmEntryHandle handle_egress_vlan_tag;
+    BmEntryHandle handle_egress_vlan_filtering;
+    BmEntryHandle handle_ingress_vlan_filtering;
     Vlan_member_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr){
       this->vid = 999;
       this->vlan_oid = 999;// TODO needed? consider remove.
@@ -164,22 +173,27 @@ class Lag_obj : public Sai_obj {
 public:
   uint32_t l2_if;
   std::vector<sai_object_id_t> lag_members;
+  BmEntryHandle handle_lag_hash;
+  BmEntryHandle handle_port_configurations;
   Port_obj* port_obj;
   Lag_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr){
     this->lag_members.clear();
     this->l2_if=0;
     this->port_obj=NULL;
+    this->handle_lag_hash=999;
+    this->handle_port_configurations=999;
   }
 };
 
 class Lag_member_obj : public Sai_obj{
-  uint32_t port_id;
-  uint32_t lag_id;
-  uint32_t hw_port;
-  Lag_member_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr){
-    this->port_id=0;
-    this->lag_id=0;
-    this->hw_port=0;
+  public:
+    sai_object_id_t port_id;
+    sai_object_id_t lag_id;
+    uint32_t hw_port;
+    Lag_member_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr){
+      this->port_id=0;
+      this->lag_id=0;
+      this->hw_port=0;
   }
 };
 
@@ -189,7 +203,8 @@ typedef std::map<sai_object_id_t, Bridge_obj*>      bridge_id_map_t;
 typedef std::map<sai_object_id_t, Vlan_obj*>        vlan_id_map_t;
 typedef std::map<sai_object_id_t, Vlan_member_obj*> vlan_member_id_map_t;
 typedef std::map<sai_object_id_t, Lag_obj*>         lag_id_map_t;
-
+typedef std::map<sai_object_id_t, uint32_t>         l2_if_map_t;
+typedef std::map<sai_object_id_t, Lag_member_obj*>  lag_member_id_map_t;
 class Switch_metadata { // TODO:  add default.. // this object_id is the switch_id
 public:
   sai_u32_list_t        hw_port_list;
@@ -199,13 +214,15 @@ public:
   vlan_id_map_t         vlans;
   vlan_member_id_map_t  vlan_members;
   lag_id_map_t          lags;
+  lag_member_id_map_t   lag_members;
   sai_object_id_t       default_bridge_id;
-
+  l2_if_map_t           l2_ifs; // TODO consider list
   Switch_metadata(){
     ports.clear();
     bridge_ports.clear();
     bridges.clear();
     vlans.clear();
+    vlan_members.clear();
     lags.clear();
   }
 
@@ -233,6 +250,18 @@ public:
       }
     }
     return bridge_ids.size();
+  }
+  uint32_t GetNewL2IF() {
+    std::vector<uint32_t> l2_ifs_nums;
+    for (l2_if_map_t::iterator it=l2_ifs.begin(); it!=l2_ifs.end(); ++it) {
+      l2_ifs_nums.push_back(it->second);
+    }
+    for (int i=0; i<l2_ifs_nums.size(); ++i) {
+      if (std::find(l2_ifs_nums.begin(), l2_ifs_nums.end(), i) == l2_ifs_nums.end()) {
+        return i;
+      }
+    }
+    return l2_ifs_nums.size();
   }
 };
 

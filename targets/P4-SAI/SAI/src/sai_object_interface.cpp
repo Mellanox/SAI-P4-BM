@@ -130,4 +130,11 @@ extern "C"
     sai_object* q = (sai_object*) p;
     return q->clear_vlan_stats(vlan_id, counter_ids, number_of_counters);
   }
+
+  // LAG
+sai_status_t  sai_obj_create_lag(S_O_Handle p, sai_object_id_t *lag_id,sai_object_id_t switch_id, uint32_t attr_count,const sai_attribute_t *attr_list);
+sai_status_t  sai_obj_remove_lag(S_O_Handle p, sai_object_id_t lag_id);
+sai_status_t  sai_obj_create_lag_member(S_O_Handle p, sai_object_id_t *lag_member_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+sai_status_t  sai_obj_remove_lag_member(S_O_Handle p, sai_object_id_t lag_member_id);
+
 }
