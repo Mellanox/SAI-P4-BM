@@ -769,6 +769,7 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
   sai_thrift_object_id_t sai_thrift_create_switch(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
     //TODO: Currently not caring about attr_list.
     // sai_attribute_t *attr = (sai_attribute_t*) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+    printf("sai_thrift_create_switch\n");
     sai_status_t status = SAI_STATUS_SUCCESS;
     sai_switch_api_t *switch_api;
     status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
@@ -776,7 +777,6 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
         printf("sai_api_query failed!!!\n");
         return SAI_STATUS_NOT_IMPLEMENTED; 
     }
-    printf("sai_thrift_create_switch\n");
     // uint32_t count = thrift_attr_list.size();
     uint32_t count =0;
     sai_object_id_t s_id =1;
@@ -876,7 +876,6 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
         printf("sai_api_query failed!!!\n");
         return -1; 
     }
-
     sai_attribute_t max_port_attribute;
     max_port_attribute.id = SAI_SWITCH_ATTR_PORT_NUMBER;
     sai_object_id_t s_id =1;
@@ -888,24 +887,30 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     port_list_object_attribute.value.objlist.list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * max_ports);
     port_list_object_attribute.value.objlist.count = max_ports;
     switch_api->get_switch_attribute(s_id, 1, &port_list_object_attribute);
-
     sai_object_id_t port_id;
     bool found = false;
+    bool mem_assigned = false;
     sai_attribute_t hw_lane_list_attr;
     for (int i=0;i<max_ports;i++) {
       hw_lane_list_attr.id = SAI_PORT_ATTR_HW_LANE_LIST;
       hw_lane_list_attr.value.u32list.list = (uint32_t*) malloc (sizeof(uint32_t));
+      mem_assigned = true;
       port_api->get_port_attribute(port_list_object_attribute.value.objlist.list[i], 1, &hw_lane_list_attr);
       if (hw_lane_list_attr.value.u32list.list[0] == hw_port) {
         port_id = port_list_object_attribute.value.objlist.list[i];
         found = true;
       }
     }
-    free(hw_lane_list_attr.value.u32list.list);
-    free(port_list_object_attribute.value.objlist.list);
     if (!found) {
       printf("didn't find port\n");
     }
+    if (mem_assigned == true){
+      //printf("--> freeing hw_lane_list_attr.value.u32list.list\n");
+      free(hw_lane_list_attr.value.u32list.list);
+    }
+    //printf("--> freeing port_list_object_attribute.value.objlist.list\n");
+    free(port_list_object_attribute.value.objlist.list);
+
     return port_id;
   }
 

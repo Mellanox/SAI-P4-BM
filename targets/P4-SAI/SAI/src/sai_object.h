@@ -53,7 +53,9 @@ public:
 	// generals
   	sai_id_map_t sai_id_map;
 	Switch_metadata switch_metadata;
+	std::vector<sai_object_id_t> switch_list;
 	uint32_t list[8]={0,1,2,3,4,5,6,7};
+	static std::vector<sai_object_id_t> * switch_list_ptr;
 	static sai_id_map_t* sai_id_map_ptr;
 	static StandardClient* bm_client_ptr;
     static Switch_metadata* switch_metadata_ptr;
@@ -112,7 +114,8 @@ public:
 	  bprotocol(new TBinaryProtocol(transport)),
 	  protocol (new TMultiplexedProtocol(bprotocol, "standard")),
 	  bm_client(protocol)
-	  {		
+	  {	
+	  	switch_list_ptr = &switch_list;
   		switch_metadata_ptr = &switch_metadata;
   		switch_metadata.hw_port_list.list=list;
   		switch_metadata.hw_port_list.count=8;
