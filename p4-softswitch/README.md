@@ -4,7 +4,6 @@ This repository contains P4 implementation of SAI behavioural model, forked from
 
 The Model is meant to provide a conformal behavioural SAI(https://github.com/opencomputeproject/SAI) model.
 It implements SAI 1.0 on top of soft switch coded via P4.  
-The Packet Test Framework (pft) implements test using python.
 
 ## Compiling P4 Behavioural model 
 For list of dependencies and build instructions:
