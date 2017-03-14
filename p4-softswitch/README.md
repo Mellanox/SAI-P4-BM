@@ -2,7 +2,7 @@
 This repository clearly defines widely accepted network switch behaviour.
 The switch behavioral model provides a commom framework for all network vendors and users.
 It meant to describe the standard ethernet switch features and flows.
-both users and vendors can align and check specific
+both users and vendors can align and check specific behaviors.
 
 ## P4 MODEL
 The Model is meant to provide a conformal behavioural SAI(https://github.com/opencomputeproject/SAI) model.
