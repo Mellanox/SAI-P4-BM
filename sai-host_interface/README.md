@@ -30,7 +30,7 @@ use the [python thrift server](tests/sai_thrift_development_python_server/) foun
 If you decide to do so, replace step (2) with tests/sai_thrift_development_python_server/sai_rpc_server.sh
 
 ### LOGS
-During the ptf, the following logs are outputted:
+During the tests, the following logs are outputted:
 1) BM server log can be found under SAI-P4-BM/p4-softswitch/targets/P4-SAI/log.txt
 2) thrift server log is outputted to stdout.
 3) PTF log is stdout.
