@@ -62,8 +62,7 @@ static const char *module[] = {
     "L2MC",
 };
 
-sai_status_t sai_api_query(_In_ sai_api_t sai_api_id,
-                           _Out_ void **api_method_table) {
+sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table) {
   sai_status_t status = SAI_STATUS_SUCCESS;
 
   //SAI_LOG_ENTER();
