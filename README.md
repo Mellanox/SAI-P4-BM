@@ -10,7 +10,7 @@ The repository consist of:
 ### [P4 soft-switch](/p4-softswitch/)
 P4_14 source files to be complied by the p4c complier 
 Can be independently configured via the CLI interface.
-### [SAI host interface](/sai-host_interface/)
+### [SAI adapter](/sai_adapter/)
 C source files implementation for the SAI API build for P4 soft switch model.
 SAI lib
 Tests frameworks: PTF, unittests.
