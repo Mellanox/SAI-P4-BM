@@ -83,6 +83,8 @@ header_type ingress_metadata_t {
         bit<32> mtu;
         bit     drop_tagged;
         bit     drop_untagged;
+        bit<8>  trap_id;
+        bit     is_cloned;
 	}
 }
 

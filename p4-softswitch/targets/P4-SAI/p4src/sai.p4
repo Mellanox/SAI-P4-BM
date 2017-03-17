@@ -66,7 +66,8 @@ control control_ingress_port{
 		apply(table_drop_untagged_internal);
 	}
 	// apply(table_port_mode);
-
+	apply(table_l2_trap);
+	apply(table_trap_id); //TODO: move this
 	// apply(table_check_port_mtu; //TODO
 	//apply(table_ingress_acl); // TODO
 	if(ingress_metadata.bind_mode == PORT_MODE_PORT) 

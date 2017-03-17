@@ -5,6 +5,9 @@
 #define FALSE 				0
 #define MAC_LEARN_RECEIVER 	512
 
+//  Mirroring and traps
+#define COPY_TO_CPU_MIRROR_ID 8
+
 // header/metadata fields width
 #define LAG_WDT				16
 #define L2_BRIDGE_NUM_WDT 	3 // TODO

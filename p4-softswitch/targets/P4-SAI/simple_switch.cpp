@@ -115,6 +115,8 @@ SimpleSwitch::SimpleSwitch(int max_port, bool enable_swap)
   force_arith_field("intrinsic_metadata", "egress_rid");
   force_arith_field("intrinsic_metadata", "recirculate_flag");
 
+  force_arith_field("ingress_metadata", "is_cloned");
+
   import_primitives();
 }
 
@@ -361,6 +363,7 @@ SimpleSwitch::ingress_thread() {
       egress_port = get_mirroring_mapping(clone_spec & 0xFFFF);
       f_clone_spec.set(0);
       if (egress_port >= 0) {
+        phv->get_field("ingress_metadata.is_cloned").set(1);
         const Packet::buffer_state_t packet_out_state =
             packet->save_buffer_state();
         packet->restore_buffer_state(packet_in_state);
@@ -375,7 +378,7 @@ SimpleSwitch::ingress_thread() {
         packet->restore_buffer_state(packet_out_state);
       }
     }
-
+    phv->get_field("ingress_metadata.is_cloned").set(0);
     // LEARNING
     if (learn_id > 0) {
       get_learn_engine()->learn(learn_id, *packet.get());
@@ -464,7 +467,6 @@ SimpleSwitch::egress_thread(size_t worker_id) {
     phv->get_field("standard_metadata.egress_port").set(port);
 
     Field &f_egress_spec = phv->get_field("standard_metadata.egress_spec");
-    f_egress_spec.set(510);
 
     phv->get_field("standard_metadata.packet_length").set(
         packet->get_register(PACKET_LENGTH_REG_IDX));
@@ -502,11 +504,13 @@ SimpleSwitch::egress_thread(size_t worker_id) {
       continue;
     }
 
-    //yonatanp:  if egress_spec changed in egress pipeline, update egress port. in the future, maybe don't set output port in ingress
-    if (egress_spec != 510) {
+    // yonatanp. since cloned packet get passed egress_spec, they will update their egress_spec. in order to bypass it and allow I2E clonnig, I've added a
+    // P4 flag, to know if this is a cloned packet or not. There probably exists a better solution, Hopefully after changing to P4_16 this won't be needed.
+    int is_cloned = phv->get_field("ingress_metadata.is_cloned").get_int();
+    if (is_cloned == 0) {
       packet->set_egress_port(egress_spec);
-      BMLOG_DEBUG_PKT(*packet, "Chnaged egress port at egress pipeline to {}", egress_spec);
-    } 
+      BMLOG_DEBUG_PKT(*packet, "Changed egress port at egress pipeline to {}", egress_spec);
+    }
 
     deparser->deparse(packet.get());
 

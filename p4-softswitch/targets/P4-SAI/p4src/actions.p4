@@ -15,6 +15,13 @@ action action_set_lag_l2if(in bit is_lag, in bit<6> l2_if) { // , in bit<16> lag
 	ingress_metadata.l2_if 	=	l2_if;
 }
 
+action action_set_trap_id(in bit<8> trap_id) {
+	ingress_metadata.trap_id = trap_id;	
+}
+
+action action_copy_to_cpu() {
+	clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_FL);
+}
 // ingres L2
 action action_set_l2if() { 
 	ingress_metadata.l2_if =standard_metadata.ingress_port;

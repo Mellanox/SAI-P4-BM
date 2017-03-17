@@ -9,6 +9,9 @@ table_set_default table_ingress_vlan_filtering _drop
 table_set_default table_port_set_packet_vid_internal action_set_packet_vid
 table_set_default table_drop_tagged_internal _nop
 table_set_default table_drop_untagged_internal _nop
+table_set_default table_l2_trap action_set_trap_id 0xff
+table_set_default table_trap_id _nop
+
 
 table_add table_drop_tagged_internal _drop 1 =>
 table_add table_drop_untagged_internal _drop 1 =>
