@@ -107,6 +107,7 @@ public:
 	sai_switch_api_t    switch_api;
 	sai_vlan_api_t		vlan_api;
 	sai_lag_api_t		lag_api;
+	sai_hostif_api_t    hostif_api;
 	sai_object():
 	//  constructor pre initializations
 	  socket(new TSocket("localhost", bm_port)),
@@ -188,6 +189,9 @@ public:
               break;
             case SAI_API_LAG:
               *api_method_table =&lag_api;
+              break;
+            case SAI_API_HOSTIF:
+              *api_method_table =&hostif_api;
               break;
          	default:
          		printf("api requested was %d, while sai_api_port is %d\n",sai_api_id,SAI_API_PORT);
