@@ -19,15 +19,7 @@ extern "C" {
 }
 #endif
 
-#include <saifdb.h>
-#include <saivlan.h>
-#include <sairouter.h>
-#include <sairouterintf.h>
-#include <sairoute.h>
-#include <saiswitch.h>
-#include <saimirror.h>
-#include <stdlib.h>
-#include <saistatus.h>
+#include <sai.h>
 
 using namespace std;
 using namespace ::apache::thrift;
@@ -521,7 +513,7 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     return (sai_thrift_object_id_t)vlan_id;
   }
 
-  sai_thrift_status_t sai_thrift_delete_vlan(const sai_thrift_object_id_t vlan_id) {
+  sai_thrift_status_t sai_thrift_remove_vlan(const sai_thrift_object_id_t vlan_id) {
     printf("sai_thrift_delete_vlan\n");
     sai_status_t status = SAI_STATUS_SUCCESS;
     sai_vlan_api_t *vlan_api;
@@ -598,6 +590,11 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     printf("sai_thrift_get_vlan_attribute\n");
   }
 
+  void sai_thrift_get_vlan_id(sai_thrift_result_t& _return, const sai_thrift_object_id_t vlan_id) {
+    // Your implementation goes here
+    printf("sai_thrift_get_vlan_id\n");
+  }
+
   sai_thrift_object_id_t sai_thrift_create_virtual_router(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
     // Your implementation goes here
     printf("sai_thrift_create_virtual_router\n");
@@ -608,12 +605,12 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     printf("sai_thrift_remove_virtual_router\n");
   }
 
-  sai_thrift_status_t sai_thrift_create_route(const sai_thrift_unicast_route_entry_t& thrift_unicast_route_entry, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+  sai_thrift_status_t sai_thrift_create_route(const sai_thrift_route_entry_t& thrift_route_entry, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
     // Your implementation goes here
     printf("sai_thrift_create_route\n");
   }
 
-  sai_thrift_status_t sai_thrift_remove_route(const sai_thrift_unicast_route_entry_t& thrift_unicast_route_entry) {
+  sai_thrift_status_t sai_thrift_remove_route(const sai_thrift_route_entry_t& thrift_route_entry) {
     // Your implementation goes here
     printf("sai_thrift_remove_route\n");
   }
@@ -626,6 +623,11 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
   sai_thrift_status_t sai_thrift_remove_router_interface(const sai_thrift_object_id_t rif_id) {
     // Your implementation goes here
     printf("sai_thrift_remove_router_interface\n");
+  }
+
+  sai_thrift_status_t sai_thrift_set_router_interface_attribute(const sai_thrift_object_id_t rif_id, const sai_thrift_attribute_t& thrift_attr) {
+    // Your implementation goes here
+    printf("sai_thrift_set_router_interface_attribute\n");
   }
 
   sai_thrift_object_id_t sai_thrift_create_next_hop(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
@@ -643,19 +645,19 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     printf("sai_thrift_create_next_hop_group\n");
   }
 
-  sai_thrift_status_t sai_thrift_remove_next_hop_group(const sai_thrift_object_id_t next_hop_group_id) {
+  sai_thrift_status_t sai_thrift_remove_next_hop_group(const sai_thrift_object_id_t nhop_group_oid) {
     // Your implementation goes here
     printf("sai_thrift_remove_next_hop_group\n");
   }
 
-  sai_thrift_status_t sai_thrift_add_next_hop_to_group(const sai_thrift_object_id_t next_hop_group_id, const std::vector<sai_thrift_object_id_t> & thrift_nexthops) {
+  sai_thrift_object_id_t sai_thrift_create_next_hop_group_member(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
     // Your implementation goes here
-    printf("sai_thrift_add_next_hop_to_group\n");
+    printf("sai_thrift_create_next_hop_group_member\n");
   }
 
-  sai_thrift_status_t sai_thrift_remove_next_hop_from_group(const sai_thrift_object_id_t next_hop_group_id, const std::vector<sai_thrift_object_id_t> & thrift_nexthops) {
+  sai_thrift_status_t sai_thrift_remove_next_hop_group_member(const sai_thrift_object_id_t nhop_group_member_oid) {
     // Your implementation goes here
-    printf("sai_thrift_remove_next_hop_from_group\n");
+    printf("sai_thrift_remove_next_hop_group_member\n");
   }
 
   void sai_thrift_parse_lag_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
@@ -882,6 +884,11 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     printf("sai_thrift_get_default_router_id\n");
   }
 
+   void sai_thrift_get_default_vlan_id(sai_thrift_result_t& _return) {
+    // Your implementation goes here
+    printf("sai_thrift_get_default_vlan_id\n");
+  }
+
   sai_thrift_object_id_t sai_thrift_get_port_id_by_front_port(const std::string& port_name) {
     // Your implementation goes here
     uint32_t hw_port = std::stoi(port_name);
@@ -973,7 +980,7 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     printf("sai_thrift_remove_hostif_trap\n");
   }
 
-  sai_thrift_status_t sai_thrift_set_hostif_trap(const sai_thrift_hostif_trap_id_t trap_id, const sai_thrift_attribute_t& thrift_attr) {
+  sai_thrift_status_t sai_thrift_set_hostif_trap(const sai_thrift_object_id_t trap_id, const sai_thrift_attribute_t& thrift_attr) {
     // Your implementation goes here
     printf("sai_thrift_set_hostif_trap\n");
   }
@@ -988,9 +995,9 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     printf("sai_thrift_create_acl_table\n");
   }
 
-  sai_thrift_status_t sai_thrift_delete_acl_table(const sai_thrift_object_id_t acl_table_id) {
+  sai_thrift_status_t sai_thrift_remove_acl_table(const sai_thrift_object_id_t acl_table_id) {
     // Your implementation goes here
-    printf("sai_thrift_delete_acl_table\n");
+    printf("sai_thrift_remove_acl_table\n");
   }
 
   sai_thrift_object_id_t sai_thrift_create_acl_entry(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
@@ -998,9 +1005,29 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     printf("sai_thrift_create_acl_entry\n");
   }
 
-  sai_thrift_status_t sai_thrift_delete_acl_entry(const sai_thrift_object_id_t acl_entry) {
+  sai_thrift_status_t sai_thrift_remove_acl_entry(const sai_thrift_object_id_t acl_entry) {
     // Your implementation goes here
-    printf("sai_thrift_delete_acl_entry\n");
+    printf("sai_thrift_remove_acl_entry\n");
+  }
+
+  sai_thrift_object_id_t sai_thrift_create_acl_table_group(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+    // Your implementation goes here
+    printf("sai_thrift_create_acl_table_group\n");
+  }
+
+  sai_thrift_status_t sai_thrift_remove_acl_table_group(const sai_thrift_object_id_t acl_table_group_id) {
+    // Your implementation goes here
+    printf("sai_thrift_remove_acl_table_group\n");
+  }
+
+  sai_thrift_object_id_t sai_thrift_create_acl_table_group_member(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+    // Your implementation goes here
+    printf("sai_thrift_create_acl_table_group_member\n");
+  }
+
+  sai_thrift_status_t sai_thrift_remove_acl_table_group_member(const sai_thrift_object_id_t acl_table_group_member_id) {
+    // Your implementation goes here
+    printf("sai_thrift_remove_acl_table_group_member\n");
   }
 
   sai_thrift_object_id_t sai_thrift_create_acl_counter(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
@@ -1008,9 +1035,9 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
     printf("sai_thrift_create_acl_counter\n");
   }
 
-  sai_thrift_status_t sai_thrift_delete_acl_counter(const sai_thrift_object_id_t acl_counter_id) {
+  sai_thrift_status_t sai_thrift_remove_acl_counter(const sai_thrift_object_id_t acl_counter_id) {
     // Your implementation goes here
-    printf("sai_thrift_delete_acl_counter\n");
+    printf("sai_thrift_remove_acl_counter\n");
   }
 
   void sai_thrift_get_acl_counter_attribute(std::vector<sai_thrift_attribute_value_t> & _return, const sai_thrift_object_id_t acl_counter_id, const std::vector<int32_t> & thrift_attr_ids) {
@@ -1106,7 +1133,8 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
   sai_thrift_status_t sai_thrift_remove_qos_map(const sai_thrift_object_id_t qos_map_id) {
     // Your implementation goes here
     printf("sai_thrift_remove_qos_map\n");
-  } 
+  }
+
 };
 
 

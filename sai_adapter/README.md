@@ -12,7 +12,10 @@ SAI Tests were written using the [ptf](https://github.com/p4lang/ptf) framework.
 The directory is divided to tests (ready and passing tests), wip_tests for work in progress.
 
 ### Runing the tests
-First, bulid the thrift server found in SAI-P4-BM/sai-host_interface/ by typing "make" in this location.
+First, run make from this location. This will build the sai library, generate the needed thrift and ctypesgen files, and will build the C thrift server, needed to run the tests. \\
+ctypesgen will be needed  for this (python wrapper for the C header files used by ptf), and can be easily installed with pip:  
+```pip install ctypesgen```  
+or from source: [ctypesgen](https://github.com/davidjamesca/ctypesgen).
 
 Now, follow these steps to run the PTF tests:
 1) In SAI-P4-BM/tree/master/p4-softswitch/targets/P4-SAI/ run:
@@ -20,7 +23,7 @@ Now, follow these steps to run the PTF tests:
 1.2) run_server.sh  - to start the P4 BM server.
 
 2) Start new terminal and run the sai thrift server:
-  SAI-P4-BM/sai-host_interface/saithrift/SaiCppServer
+  SAI-P4-BM/sai_adapter/test/sai_thrift_server/SaiCppServer
 
 3) Start another new terminal and run the [PTF tests](test/ptf_tests/) directly, or by one the test shell scripts found in the ptf test folder. 
 

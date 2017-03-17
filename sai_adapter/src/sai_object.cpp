@@ -130,6 +130,10 @@ sai_status_t sai_object::get_switch_attribute(sai_object_id_t switch_id,
 
 void sai_object::set_parsed_port_attribute(Port_obj *port,
                                            sai_attribute_t attribute) {
+  printf("set_parsed_port_attribute. attribute id = %d\n", attribute.id);
+  printf("vlan = %d | bind_mode = %d | hw_lane_list = %d | drop_untagged = %d | drop_tagged = %d\n", 
+    SAI_PORT_ATTR_PORT_VLAN_ID, SAI_PORT_ATTR_BIND_MODE, SAI_PORT_ATTR_HW_LANE_LIST,
+    SAI_PORT_ATTR_DROP_UNTAGGED, SAI_PORT_ATTR_DROP_TAGGED);
   switch (attribute.id) {
   case SAI_PORT_ATTR_PORT_VLAN_ID:
     port->pvid = attribute.value.u16;
@@ -142,9 +146,11 @@ void sai_object::set_parsed_port_attribute(Port_obj *port,
     break;
   case SAI_PORT_ATTR_DROP_UNTAGGED:
     port->drop_untagged = attribute.value.booldata;
+    printf("drop untagged debug = %d\n", attribute.value.booldata);
     break;
   case SAI_PORT_ATTR_DROP_TAGGED:
     port->drop_tagged = attribute.value.booldata;
+    printf("drop tagged debug = %d\n", attribute.value.booldata);
     break;
   }
 }
@@ -183,6 +189,7 @@ void sai_object::config_port(Port_obj *port) {
   action_data.push_back(parse_param(port->mtu, 4));
   action_data.push_back(parse_param(port->drop_tagged, 1));
   action_data.push_back(parse_param(port->drop_untagged, 1));
+  printf("configing port. drop_tagged = %d, drop_untagged = %d\n", port->drop_tagged, port->drop_untagged);
   if (port->is_default) {
     port->handle_port_cfg = bm_client_ptr->bm_mt_add_entry(
         cxt_id, "table_port_configurations", match_params,
