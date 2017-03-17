@@ -246,7 +246,7 @@ class L21QBridgeAccess2AccessTest(sai_base_test.ThriftInterfaceDataPlane):
             sai_thrift_delete_fdb(self.client, mac2, bridge)
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan_member(vlan_member2)
-            self.client.sai_thrift_delete_vlan(vlan_oid)
+            self.client.sai_thrift_remove_vlan(vlan_oid)
             vlan_id = 1
             attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
@@ -338,7 +338,7 @@ class L21QBridgeAccess2TrunkTest(sai_base_test.ThriftInterfaceDataPlane):
             sai_thrift_delete_fdb(self.client, mac2, bridge)
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan_member(vlan_member2)
-            self.client.sai_thrift_delete_vlan(vlan_oid)
+            self.client.sai_thrift_remove_vlan(vlan_oid)
             vlan_id = 1
             attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value) 
@@ -430,7 +430,7 @@ class L21QBridgeTrunk2TrunkTest(sai_base_test.ThriftInterfaceDataPlane):
             sai_thrift_delete_fdb(self.client, mac2, bridge)
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan_member(vlan_member2)
-            self.client.sai_thrift_delete_vlan(vlan_oid)
+            self.client.sai_thrift_remove_vlan(vlan_oid)
             vlan_id = 1
             attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value) 
@@ -523,7 +523,7 @@ class L21QBridgeTrunk2AccessTest(sai_base_test.ThriftInterfaceDataPlane):
             sai_thrift_delete_fdb(self.client, mac2, bridge)
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan_member(vlan_member2)
-            self.client.sai_thrift_delete_vlan(vlan_oid)
+            self.client.sai_thrift_remove_vlan(vlan_oid)
             vlan_id = 1
             attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value) 
