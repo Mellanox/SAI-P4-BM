@@ -13,7 +13,7 @@ The directory is divided to tests (ready and passing tests), wip_tests for work 
 
 ### Runing the tests
 First, run make from this location. This will build the sai library, generate the needed thrift and ctypesgen files, and will build the C thrift server, needed to run the tests. \\
-You will need ctypesgen for this, can be installed easily with:  
+ctypesgen will be needed  for this (python wrapper for the C header files used by ptf), and can be easily installed with pip:  
 ```pip install ctypesgen```  
 or from source: [ctypesgen](https://github.com/davidjamesca/ctypesgen).
 
