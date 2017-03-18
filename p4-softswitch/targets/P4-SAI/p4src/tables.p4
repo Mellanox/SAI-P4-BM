@@ -35,7 +35,7 @@ table table_trap_id { //TODO: move this?
     reads {
         ingress_metadata.trap_id : exact;
     }
-    actions {_drop;_nop;action_copy_to_cpu;} //TODO: add trap without copy.
+    actions {_drop;_nop;action_copy_to_cpu;action_trap_to_cpu;} 
 }
 
 table table_port_configurations {
@@ -307,6 +307,6 @@ table table_egress_clone_internal {
     reads {
         standard_metadata.instance_type : exact;
     }
-    actions {_nop; action_cpu_encap; _drop;} //drop will be used for trap action, and nop for copy_to_cpu action
-    size: 16;
+    actions {_nop; action_cpu_encap;} 
+    // size: 16;
 }
