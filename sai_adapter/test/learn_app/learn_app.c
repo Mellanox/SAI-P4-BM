@@ -4,6 +4,11 @@
 #include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pcap.h>
+
+#define ETHER_ADDR_LEN  6
+#define CPU_HDR_LEN  6
+#define MAC_LEARN_TRAP_ID 512
 
 const char* test_profile_get_value(
     _In_ sai_switch_profile_id_t profile_id,
@@ -63,6 +68,58 @@ void* fdb_miss_event_notification(sai_object_id_t switch_id,
 	printf("FDB MISS.\n");
 
 	// Learn new mac.
+}
+
+typedef struct _ethernet_hdr_t {
+    uint8_t dst_addr[ETHER_ADDR_LEN]; 
+    uint8_t src_addr[ETHER_ADDR_LEN];
+    uint16_t ether_type; 
+} ethernet_hdr_t;
+
+typedef struct _cpu_hdr_t {
+    unsigned int ingress_port : 8;
+    unsigned int bridge_port : 8;
+    unsigned int bridge_id : 16;
+    unsigned int trap_id : 16;
+} cpu_hdr_t;
+
+void ReverseBytes( uint8_t *byte_arr, int size )
+{
+    uint8_t tmp;
+    for(int lo=0, hi=size-1; hi>lo; lo++, hi--)
+    {
+        tmp = byte_arr[lo];
+        byte_arr[lo] = byte_arr[hi];
+        byte_arr[hi] = tmp;
+    }
+
+}
+
+void print_mac(const uint8_t* mac) {
+  int i;
+  for (i=0;i<ETHER_ADDR_LEN-1;i++) {
+    printf("%.2x:", mac[i]);
+  }
+  printf("%.2x\n",mac[ETHER_ADDR_LEN-1]);
+}
+
+void packetHandler(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet) {
+  // uint64_t* num;
+  cpu_hdr_t* cpu_hdr = (cpu_hdr_t*) packet;
+  ReverseBytes((uint8_t*) cpu_hdr, CPU_HDR_LEN);
+  ethernet_hdr_t* ether = (ethernet_hdr_t*) (packet + CPU_HDR_LEN);
+  ReverseBytes((uint8_t*) &(ether->ether_type), 2);
+  
+  printf("packet captured:\n");
+  printf("trap_id: %d. bridge_id: %d. ingress_port: %d. bridge_port: %d.\n",cpu_hdr->trap_id, cpu_hdr->bridge_id, cpu_hdr->ingress_port, cpu_hdr->bridge_port);
+  printf("source MAC:\n");
+  print_mac(ether->src_addr);
+  printf("dest MAC:\n");
+  print_mac(ether->dst_addr);
+  printf("ether_type = 0x%.4x\n",ether->ether_type);
+
+  sai_object_id_t bridge_port_id = temp_sai_get_bridge_port(2);
+  printf("bridge_port id = %d\n", bridge_port_id);
 }
 
 int main(int argc, char **argv)
@@ -132,6 +189,45 @@ int main(int argc, char **argv)
 	// sai_if_channel_attr[2].id = SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE;
 	// sai_if_channel_attr[2].value.s32 = SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_CB;
 	// hostif_api->create_hostif_table_entry(&host_table_entry[0], switch_id, 3, sai_if_channel_attr); 
+    const char *dev = "cpu_port";
+    pcap_t *descr;
+    char errbuf[PCAP_ERRBUF_SIZE];
+    printf("pcap started on dev %s\n", dev);
+    descr = pcap_open_live(dev, BUFSIZ, 0, -1, errbuf);
+    if (descr == NULL) {
+      printf("pcap_open_live() failed: %s\n",errbuf);
+      return 1;
+    }
+
+    if (pcap_loop(descr, 10, packetHandler, NULL) < 0) {
+      printf("pcap_loop() failed: %s\n",pcap_geterr(descr));
+      return 1;
+    }
+
+    // sai_bridge_api_t *bridge_api;
+    // sai_status_t status = SAI_STATUS_SUCCESS;
+    // status = sai_api_query(SAI_API_BRIDGE, (void **) &bridge_api);
+    // if (status != SAI_STATUS_SUCCESS) {
+    //     printf("sai_api_query failed!!!\n");
+    //     return SAI_STATUS_NOT_IMPLEMENTED; 
+    // }
+
+    sai_fdb_api_t *fdb_api;
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    status = sai_api_query(SAI_API_FDB, (void **) &fdb_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        printf("sai_api_query failed!!!\n");
+        return SAI_STATUS_NOT_IMPLEMENTED; 
+    }
+    sai_attribute_t attr[3];
+    attr[0].id = SAI_FDB_ENTRY_ATTR_TYPE;
+    attr[0].value.s32 = SAI_FDB_ENTRY_TYPE_STATIC;
+    attr[1].id = SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID;
+    // attr[1].value.oid = bridge_port_id;
+    attr[2].id = SAI_FDB_ENTRY_ATTR_PACKET_ACTION;
+    attr[2].value.s32 = SAI_FDB_ENTRY_ATTR_PACKET_ACTION;
+    sai_fdb_entry_t sai_fdb_entry;    
+    fdb_api->create_fdb_entry(&sai_fdb_entry,3,attr);
 
     sai_api_uninitialize();
 }

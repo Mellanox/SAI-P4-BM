@@ -462,6 +462,16 @@ sai_status_t sai_object::create_bridge_port(sai_object_id_t *bridge_port_id,
   return SAI_STATUS_SUCCESS;
 }
 
+sai_object_id_t sai_object::temp_sai_get_bridge_port(uint32_t bridge_port_num) {
+    printf("sai_object::temp_sai_get_bridge_port. bridge_port_num = %d\n", bridge_port_num);
+    for (bridge_port_id_map_t::iterator it = switch_metadata_ptr->bridge_ports.begin(); it != switch_metadata_ptr->bridge_ports.end(); ++it) {
+      printf("bridge_port_id %d. bridge_port_num %d", it->first, it->second->bridge_port);
+      if (it->second->bridge_port == bridge_port_num) {
+        return it->first;
+      }
+    }
+}
+
 sai_status_t sai_object::remove_bridge_port(sai_object_id_t bridge_port_id) {
   sai_status_t status = SAI_STATUS_SUCCESS;
   BridgePort_obj *bridge_port =

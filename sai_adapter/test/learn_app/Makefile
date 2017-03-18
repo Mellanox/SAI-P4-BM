@@ -6,7 +6,7 @@ SAI_SRC_DIR = ../../src
 LIBS_DIRS  =-L${USR_DIR}/lib -L${USR_DIR}/${THRIFT_VER}/lib 
 CPP_DEFS   =-D=HAVE_CONFIG_H
 CPP_OPTS   =-Wall -O2 -std=c++11 -w
-LIBS       =-lthrift ${LIBS_DIRS}
+LIBS       =-lthrift -lpcap ${LIBS_DIRS}
 BM_DIR     = ../../../p4-softswitch/thrift_src/gen-cpp/bm
 SAI_THRIFT_SRC_DIR    = ../sai_thrift_src/gen-cpp
 
