@@ -67,70 +67,71 @@ void* fdb_miss_event_notification(sai_object_id_t switch_id,
 
 int main(int argc, char **argv)
 {
+    printf("Starting learning app.\n");
 	sai_object_id_t switch_id = 1;
 	sai_api_initialize(0, &test_services);
-    // sai_port_api_t* port_api;
-    // sai_api_query(SAI_API_PORT, (void**)&port_api);
+ //    // sai_port_api_t* port_api;
+ //    // sai_api_query(SAI_API_PORT, (void**)&port_api);
 
-    // Set packet callback function
-    sai_switch_api_t* switch_api;
-    sai_api_query(SAI_API_SWITCH, (void**)&switch_api);
-    sai_attribute_t sai_attr;
-    sai_attr.id = SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY;
-    sai_attr.value.ptr = fdb_miss_event_notification;
-    switch_api->set_switch_attribute(switch_id, &sai_attr);
+ //    // Set packet callback function
+ //    sai_switch_api_t* switch_api;
+ //    sai_api_query(SAI_API_SWITCH, (void**)&switch_api);
+ //    sai_attribute_t sai_attr;
+ //    sai_attr.id = SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY;
+ //    sai_attr.value.ptr = fdb_miss_event_notification;
+ //    switch_api->set_switch_attribute(switch_id, &sai_attr);
 
-    sai_hostif_api_t* hostif_api;
-	sai_api_query(SAI_API_HOSTIF, (void**)&hostif_api); 
+ //    sai_hostif_api_t* hostif_api;
+	// sai_api_query(SAI_API_HOSTIF, (void**)&hostif_api); 
 
-    // create trap group (currently only 1.)
-    sai_object_id_t prio_group;
-	sai_attribute_t sai_attr_list[2];
-	sai_attr_list[1].id=SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE;
-	sai_attr_list[1].value.u32 = 0; // high_queue_id; // high_queue_id is a queue element created via QoS SAI API 
-	sai_attr_list[2].id= SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER;
-	sai_attr_list[2].value.oid = 0; // high_policer_id; //high_policer_id is a policer element created via policer SAI API
-	hostif_api->create_hostif_trap_group(&prio_group, switch_id, 2, sai_attr_list);
-
-
-	// Configuring Trap-IDs
-    sai_attribute_t sai_trap_attr[3];
-    sai_object_id_t host_trap_id[1];
-	// configure STP trap_id
-    // sai_trap_attr[0].id=SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP;
-    // sai_trap_attr[0].value=&high_prio_group;
-    // sai_trap_attr[1].id= SAI_HOSTIF_TRAP_ATTR_TRAP_ACTION;
-    // sai_trap_attr[1].value= SAI_PACKET_ACTION_TRAP;
-    // sai_trap_attr[2].id= SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE;
-    // sai_trap_attr[2].value= SAI_HOSTIF_TRAP_TYPE_STP;
-    // hostif_api->create_hostif_trap(&host_trap_id[1],2, sai_trap_attr);
-    // configure FDB miss trap-id 
-    sai_trap_attr[0].id = SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_TRAP_GROUP;
-    sai_trap_attr[0].value.oid = prio_group;
-    sai_trap_attr[1].id = SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_TYPE;
-    sai_trap_attr[1].value.s32 = SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_FDB;
-    sai_trap_attr[2].id = SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_TRAP_PRIORITY;
-    sai_trap_attr[2].value.u32 = 0;
-    hostif_api->create_hostif_user_defined_trap(&host_trap_id[0], switch_id, 3, sai_trap_attr);
+ //    // create trap group (currently only 1.)
+ //    sai_object_id_t prio_group;
+	// sai_attribute_t sai_attr_list[2];
+	// sai_attr_list[1].id=SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE;
+	// sai_attr_list[1].value.u32 = 0; // high_queue_id; // high_queue_id is a queue element created via QoS SAI API 
+	// sai_attr_list[2].id= SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER;
+	// sai_attr_list[2].value.oid = 0; // high_policer_id; //high_policer_id is a policer element created via policer SAI API
+	// hostif_api->create_hostif_trap_group(&prio_group, switch_id, 2, sai_attr_list);
 
 
-    // Configuring Host tables
-    sai_object_id_t host_table_entry[1];
-	sai_attribute_t sai_if_channel_attr[3];
+	// // Configuring Trap-IDs
+ //    sai_attribute_t sai_trap_attr[3];
+ //    sai_object_id_t host_trap_id[1];
+	// // configure STP trap_id
+ //    // sai_trap_attr[0].id=SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP;
+ //    // sai_trap_attr[0].value=&high_prio_group;
+ //    // sai_trap_attr[1].id= SAI_HOSTIF_TRAP_ATTR_TRAP_ACTION;
+ //    // sai_trap_attr[1].value= SAI_PACKET_ACTION_TRAP;
+ //    // sai_trap_attr[2].id= SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE;
+ //    // sai_trap_attr[2].value= SAI_HOSTIF_TRAP_TYPE_STP;
+ //    // hostif_api->create_hostif_trap(&host_trap_id[1],2, sai_trap_attr);
+ //    // configure FDB miss trap-id 
+ //    sai_trap_attr[0].id = SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_TRAP_GROUP;
+ //    sai_trap_attr[0].value.oid = prio_group;
+ //    sai_trap_attr[1].id = SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_TYPE;
+ //    sai_trap_attr[1].value.s32 = SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_FDB;
+ //    sai_trap_attr[2].id = SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_TRAP_PRIORITY;
+ //    sai_trap_attr[2].value.u32 = 0;
+ //    hostif_api->create_hostif_user_defined_trap(&host_trap_id[0], switch_id, 3, sai_trap_attr);
+
+
+ //    // Configuring Host tables
+ //    sai_object_id_t host_table_entry[1];
+	// sai_attribute_t sai_if_channel_attr[3];
+	// // sai_if_channel_attr[0].id=SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE;
+	// // sai_if_channel_attr[0].value= SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_TRAP_ID;
+	// // sai_if_channel_attr[1].id= SAI_HOSTIF_TABLE_ENTRY_ATTR_TRAP_ID;
+	// // sai_if_channel_attr[1].value=host_trap_id[1]; // Object referencing STP trap
+	// // sai_if_channel_attr[2].id= SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE;
+	// // sai_if_channel_attr[2].value=SAI_HOST_INTERFACE_TABLE_ENTRY_CHANNEL_TYPE_CB;
+	// // hostif_api->create_hostif_table_entry(&host_table_entry[0], 3, sai_if_channel_attr); 
 	// sai_if_channel_attr[0].id=SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE;
-	// sai_if_channel_attr[0].value= SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_TRAP_ID;
-	// sai_if_channel_attr[1].id= SAI_HOSTIF_TABLE_ENTRY_ATTR_TRAP_ID;
-	// sai_if_channel_attr[1].value=host_trap_id[1]; // Object referencing STP trap
-	// sai_if_channel_attr[2].id= SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE;
-	// sai_if_channel_attr[2].value=SAI_HOST_INTERFACE_TABLE_ENTRY_CHANNEL_TYPE_CB;
-	// hostif_api->create_hostif_table_entry(&host_table_entry[0], 3, sai_if_channel_attr); 
-	sai_if_channel_attr[0].id=SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE;
-	sai_if_channel_attr[0].value.s32 = SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID;
-	sai_if_channel_attr[1].id = SAI_HOSTIF_TABLE_ENTRY_ATTR_TRAP_ID;
-	sai_if_channel_attr[1].value.oid = host_trap_id[0]; // Object referencing FDB trap
-	sai_if_channel_attr[2].id = SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE;
-	sai_if_channel_attr[2].value.s32 = SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_CB;
-	hostif_api->create_hostif_table_entry(&host_table_entry[0], switch_id, 3, sai_if_channel_attr); 
+	// sai_if_channel_attr[0].value.s32 = SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID;
+	// sai_if_channel_attr[1].id = SAI_HOSTIF_TABLE_ENTRY_ATTR_TRAP_ID;
+	// sai_if_channel_attr[1].value.oid = host_trap_id[0]; // Object referencing FDB trap
+	// sai_if_channel_attr[2].id = SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE;
+	// sai_if_channel_attr[2].value.s32 = SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_CB;
+	// hostif_api->create_hostif_table_entry(&host_table_entry[0], switch_id, 3, sai_if_channel_attr); 
 
     sai_api_uninitialize();
 }

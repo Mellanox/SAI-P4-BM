@@ -164,9 +164,6 @@ public:
 	~sai_object(){
 	 	  //deconstructor
   		transport->close();
-  		delete bm_client_ptr;
-  		delete sai_id_map_ptr;
-  		delete switch_metadata_ptr;
     	printf("BM clients closed\n");
 	 }
 
