@@ -10,7 +10,17 @@
 
 
 // parser starts here
+// check if needs to add clone_to_cpu encapsulation
 parser start {
+    return select(current(0, 64)) {
+        0 : parse_cpu_header;
+        default: parse_ethernet;
+    }
+}
+
+
+parser parse_cpu_header {
+    extract(cpu_header);
     return parse_ethernet;
 }
 

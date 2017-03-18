@@ -11,11 +11,12 @@
 #include "field_lists.p4"
 
 // headers
-header 		ethernet_t 			ethernet;
-header 		vlan_t 				vlan;
-header 		ipv4_t 				ipv4;
-header 		tcp_t 				tcp;
-header 		udp_t				udp;
+header   ethernet_t 	  ethernet;
+header   vlan_t 		  vlan;
+header   ipv4_t 		  ipv4;
+header   tcp_t 			  tcp;
+header   udp_t			  udp;
+header   cpu_header_t     cpu_header;  
 
 // metadata
 metadata 	ingress_metadata_t 	 ingress_metadata;
@@ -158,6 +159,7 @@ control egress{
 	//if((egress_metadata.stp_state == STP_FORWARDING) and (egress_metadata.tag_mode == TAG) ){
 		// TODO: go to egress
 	//}
+	apply(table_egress_clone_internal);
 }
 
 control control_1q_egress_uni_router {

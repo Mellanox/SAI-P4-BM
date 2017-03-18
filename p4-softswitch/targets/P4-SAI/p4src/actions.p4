@@ -162,3 +162,10 @@ action set_egr(in bit<6> egress_spec) {
 action action_set_mc_fdb_miss() {
 	ingress_metadata.mc_fdb_miss=1;
 }
+
+action action_cpu_encap() { 
+	add_header(cpu_header);
+	cpu_header.ingress_port = standard_metadata.ingress_port;
+	cpu_header.trap_id = ingress_metadata.trap_id;
+	cpu_header.bridge_id = ingress_metadata.bridge_id;
+}

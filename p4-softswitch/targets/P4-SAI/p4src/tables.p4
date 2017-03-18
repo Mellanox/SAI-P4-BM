@@ -302,3 +302,11 @@ table table_egress_lag {
     actions {action_set_out_port; _drop;}
     //size : 1; // TODO
 }
+
+table table_egress_clone_internal {
+    reads {
+        standard_metadata.instance_type : exact;
+    }
+    actions {_nop; action_cpu_encap; _drop;} //drop will be used for trap action, and nop for copy_to_cpu action
+    size: 16;
+}

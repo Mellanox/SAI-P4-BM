@@ -11,8 +11,9 @@ table_set_default table_drop_tagged_internal _nop
 table_set_default table_drop_untagged_internal _nop
 table_set_default table_l2_trap action_set_trap_id 0xff
 table_set_default table_trap_id _nop
+table_set_default table_egress_clone_internal _nop
 
-
+table_add table_egress_clone_internal action_cpu_encap 1 =>
 table_add table_drop_tagged_internal _drop 1 =>
 table_add table_drop_untagged_internal _drop 1 =>
 

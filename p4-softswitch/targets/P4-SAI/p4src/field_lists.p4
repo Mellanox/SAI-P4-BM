@@ -41,5 +41,6 @@ field_list_calculation lag_hash {
 
 field_list redirect_FL {
     standard_metadata;
-    // ingress_metadata.is_cloned;
+    ingress_metadata.trap_id;
+    ingress_metadata.bridge_id;
 }

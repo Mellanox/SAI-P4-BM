@@ -83,8 +83,7 @@ header_type ingress_metadata_t {
         bit<32> mtu;
         bit     drop_tagged;
         bit     drop_untagged;
-        bit<8>  trap_id;
-        bit     is_cloned;
+        bit<11> trap_id;
 	}
 }
 
@@ -114,3 +113,11 @@ header_type intrinsic_metadata_t {
 }
 
 metadata intrinsic_metadata_t intrinsic_metadata;
+
+header_type cpu_header_t {
+    fields {
+        bit<11> trap_id;
+        bit<12> bridge_id;
+        bit<9>  ingress_port;
+    }
+}
