@@ -116,8 +116,9 @@ metadata intrinsic_metadata_t intrinsic_metadata;
 
 header_type cpu_header_t {
     fields {
-        bit<11> trap_id;
-        bit<12> bridge_id;
-        bit<9>  ingress_port;
+        bit<16> trap_id;
+        bit<16> bridge_id;
+        bit<8>  ingress_port;
+        bit<8>  bridge_port;
     }
 }

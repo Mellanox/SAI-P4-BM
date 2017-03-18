@@ -7,6 +7,7 @@ table_set_default table_subport_ingress_l2_interface_type _drop
 table_set_default table_bridge_id_1q action_set_bridge_id_vid
 table_set_default table_ingress_vlan_filtering _drop
 table_set_default table_port_set_packet_vid_internal action_set_packet_vid
+table_set_default table_learn_fdb action_learn_mac
 
 table_set_default table_drop_tagged_internal _nop
 table_set_default table_drop_untagged_internal _nop
@@ -35,7 +36,6 @@ table_add table_egress_br_port_to_if action_forward_set_outIfType 4 => 4 0
 table_add table_egress_br_port_to_if action_forward_set_outIfType 5 => 5 0
 table_add table_egress_br_port_to_if action_forward_set_outIfType 6 => 6 0
 table_add table_egress_br_port_to_if action_forward_set_outIfType 7 => 7 0
-
 
 table_add table_port_set_packet_vid_internal action_set_packet_vid 1 =>
 table_add table_ingress_vlan_filtering _nop 0 1 =>

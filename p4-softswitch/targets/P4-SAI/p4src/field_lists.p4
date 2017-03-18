@@ -43,4 +43,5 @@ field_list redirect_FL {
     standard_metadata;
     ingress_metadata.trap_id;
     ingress_metadata.bridge_id;
+    ingress_metadata.bridge_port;
 }

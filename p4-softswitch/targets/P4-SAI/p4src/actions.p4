@@ -87,7 +87,8 @@ action action_go_to_in_l3_if_table(){
 
 // L2
 action action_learn_mac() {
-    generate_digest(MAC_LEARN_RECEIVER, mac_learn_digest);
+	ingress_metadata.trap_id = MAC_LEARN_RECEIVER;	 //TODO, should this be configurable to support hostif interface(?)
+	clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_FL);
 }
 
 action action_set_egress_br_port(in bit<8> br_port){
@@ -168,4 +169,5 @@ action action_cpu_encap() {
 	cpu_header.ingress_port = standard_metadata.ingress_port;
 	cpu_header.trap_id = ingress_metadata.trap_id;
 	cpu_header.bridge_id = ingress_metadata.bridge_id;
+	cpu_header.bridge_port = ingress_metadata.bridge_port;
 }
