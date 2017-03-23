@@ -114,10 +114,7 @@ class SaiHandler():
 
   def get_new_l2_if(self):
     l2_ifs = [x.l2_if for x in self.ports.values() + self.lags.values()]
-    print "current l2_ifs: "+str(l2_ifs)
-    i = GetNewIndex(l2_ifs)
-    print"new l2_if is:" + str(i)
-    return i
+    return GetNewIndex(l2_ifs)
 
   def get_new_bridge_id(self):
     bridge_ids = [x.bridge_id for x in self.bridges.values()]
@@ -185,7 +182,7 @@ class SaiHandler():
     if packet_action == SAI_PACKET_ACTION_FORWARD:
       if entry_type == SAI_FDB_ENTRY_TYPE_STATIC:
         self.cli_client.AddTable('table_fdb', 'action_set_egress_br_port', match_str, action_str)
-  	return 0
+    return 0
 
   def sai_thrift_delete_fdb_entry(self, thrift_fdb_entry):
     match_str = thrift_fdb_entry.mac_address + ' ' + str(self.bridges[thrift_fdb_entry.bridge_id].bridge_id)
@@ -227,8 +224,8 @@ class SaiHandler():
     return 0
 
   def sai_thrift_create_vlan_member(self, vlan_member_attr_list):
-  	# SAI_VLAN_TAGGING_MODE_TAGGED
-  	# SAI_VLAN_TAGGING_MODE_UNTAGGED
+    # SAI_VLAN_TAGGING_MODE_TAGGED
+    # SAI_VLAN_TAGGING_MODE_UNTAGGED
     for attr in vlan_member_attr_list:
       if attr.id == SAI_VLAN_MEMBER_ATTR_VLAN_ID:
         vlan_oid = attr.value.oid
@@ -340,7 +337,6 @@ class SaiHandler():
   def sai_thrift_create_lag(self, thrift_attr_list):
     lag_id, lag_obj = CreateNewItem(self.lags, Lag_obj, forbidden_list=self.get_all_oids())
     lag_obj.l2_if = self.get_new_l2_if()
-    print "LAG :" + str(lag_id) + "->l2_if = " + str(lag_obj.l2_if)
     return lag_id
 
   def sai_thrift_remove_lag(self, lag_id):
@@ -364,7 +360,6 @@ class SaiHandler():
     lag.port_obj = port
     lag_member_obj.hw_port = port.hw_port
     l2_if = lag.l2_if
-    print "create lag member, lag_id = " +str(lag_id) + ", l2_if = "+str(l2_if)
     self.cli_client.RemoveTableEntry('table_ingress_lag', str(lag_member_obj.hw_port))
     self.cli_client.AddTable('table_ingress_lag', 'action_set_lag_l2if', str(lag_member_obj.hw_port), list_to_str([1, lag_id]))
     self.cli_client.AddTable('table_egress_lag', 'action_set_out_port', list_to_str([l2_if, len(self.lags[lag_id].lag_members)-1]), str(lag_member_obj.hw_port))

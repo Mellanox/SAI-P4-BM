@@ -330,6 +330,7 @@ sai_status_t sai_object::create_bridge(sai_object_id_t *bridge_id,
 }
 
 sai_status_t sai_object::remove_bridge(sai_object_id_t bridge_id) {
+  printf("remove bridge: bridge_id %d\n",bridge_id);
   Bridge_obj *bridge = switch_metadata_ptr->bridges[bridge_id];
   switch_metadata_ptr->bridges.erase(bridge->sai_object_id);
   sai_id_map_ptr->free_id(bridge->sai_object_id);
@@ -518,9 +519,9 @@ sai_status_t sai_object::remove_bridge_port(sai_object_id_t bridge_port_id) {
           bridge_port->handle_port_ingress_interface_type);
     }catch(...){printf("--> DEBUG : Unable to remove table_port_ingress_interface_type entry, possible entry override\n");}
   }
-  printf("deleted bridge port %d bm_entries\n", bridge_port->sai_object_id);
   switch_metadata_ptr->bridge_ports.erase(bridge_port->sai_object_id);
   sai_id_map_ptr->free_id(bridge_port->sai_object_id);
+  printf("deleted bridge port %d bm_entries\n", bridge_port->sai_object_id);
   // printf("ports.size=%d\n",switch_metadata_ptr->ports.size());
   return status;
 }
@@ -529,6 +530,7 @@ sai_status_t
 sai_object::get_bridge_port_attribute(sai_object_id_t bridge_port_id,
                                       uint32_t attr_count,
                                       sai_attribute_t *attr_list) {
+  printf("get_bridge_port_attribute: bridge_port_id %d\n",bridge_port_id);
   BridgePort_obj *bridge_port =
       (BridgePort_obj *)sai_id_map_ptr->get_object(bridge_port_id);
   for (int i = 0; i < attr_count; i++) {
