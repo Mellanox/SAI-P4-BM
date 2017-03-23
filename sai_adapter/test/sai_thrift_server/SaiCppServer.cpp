@@ -57,9 +57,24 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
   switch_sai_rpcHandler(){
     // initialization   
     sai_api_initialize(0, &test_services);
-  
+    server_internal_init_switch();
   }
  
+  void server_internal_init_switch() {
+    printf("Switch init with default configurations\n");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_switch_api_t *switch_api;
+    status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        printf("sai_api_query failed!!!\n");
+    }
+    uint32_t count =0;
+    sai_object_id_t s_id =1;
+    status = switch_api->create_switch(&s_id,count,NULL);
+    printf("Switch inititated\n");
+    return;
+  }
+  
   sai_attribute_t parse_port_atrribute(const sai_thrift_attribute_t &thrift_attr) {
       sai_attribute_t sai_attr;
       sai_attr.id = thrift_attr.id;
@@ -795,20 +810,9 @@ sai_fdb_entry_t  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_
   sai_thrift_object_id_t sai_thrift_create_switch(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
     //TODO: Currently not caring about attr_list.
     // sai_attribute_t *attr = (sai_attribute_t*) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
-    printf("sai_thrift_create_switch\n");
-    sai_status_t status = SAI_STATUS_SUCCESS;
-    sai_switch_api_t *switch_api;
-    status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
-    if (status != SAI_STATUS_SUCCESS) {
-        printf("sai_api_query failed!!!\n");
-        return SAI_STATUS_NOT_IMPLEMENTED; 
-    }
-    // uint32_t count = thrift_attr_list.size();
-    uint32_t count =0;
-    sai_object_id_t s_id =1;
-    status = switch_api->create_switch(&s_id,count,NULL);
-    return s_id;
+    printf("sai_thrift_create_switch - currently only initiated on server constructor\n");
   }
+
 
   sai_attribute_t parse_switch_attribute(sai_thrift_attribute_t thrift_attr) {
     sai_attribute_t sai_attr;
