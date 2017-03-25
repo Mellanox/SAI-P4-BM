@@ -364,6 +364,20 @@ sai_status_t sai_object::create_bridge_port(sai_object_id_t *bridge_port_id,
       break;
     }
   }
+  cout << "test1" << endl;
+  std::vector<sai_object_id_t> vec = switch_metadata_ptr->bridges[bridge_port->bridge_id]->bridge_port_list;
+  for (std::vector<sai_object_id_t>::iterator it = vec.begin(); it < vec.end(); ++it) {
+    cout << *it << " ";
+  }
+  cout << endl;
+
+  switch_metadata_ptr->bridges[bridge_port->bridge_id]->bridge_port_list.push_back(bridge_port->sai_object_id);
+  vec = switch_metadata_ptr->bridges[bridge_port->bridge_id]->bridge_port_list;
+  cout << "test2" << endl;
+  for (std::vector<sai_object_id_t>::iterator it = vec.begin(); it < vec.end(); ++it) {
+    cout << *it << " ";
+  }
+  cout << endl;
   BmAddEntryOptions options;
   BmMatchParams match_params;
   BmActionData action_data;
@@ -520,6 +534,22 @@ sai_status_t sai_object::remove_bridge_port(sai_object_id_t bridge_port_id) {
   }
   printf("deleted bridge port %d bm_entries\n", bridge_port->sai_object_id);
   switch_metadata_ptr->bridge_ports.erase(bridge_port->sai_object_id);
+  std::vector<sai_object_id_t> vec = switch_metadata_ptr->bridges[bridge_port->bridge_id]->bridge_port_list;
+  cout << "test_remove1" << endl;
+  for (std::vector<sai_object_id_t>::iterator it = vec.begin(); it < vec.end(); ++it) {
+    cout << *it << " ";
+  }
+  cout << endl;
+
+  vec.erase(std::remove(vec.begin(), vec.end(), bridge_port->sai_object_id), vec.end());
+
+  vec = switch_metadata_ptr->bridges[bridge_port->bridge_id]->bridge_port_list;
+  cout << "test_remove2" << endl;
+  for (std::vector<sai_object_id_t>::iterator it = vec.begin(); it < vec.end(); ++it) {
+    cout << *it << " ";
+  }
+  cout << endl;
+
   sai_id_map_ptr->free_id(bridge_port->sai_object_id);
   // printf("ports.size=%d\n",switch_metadata_ptr->ports.size());
   return status;
@@ -562,6 +592,11 @@ sai_status_t sai_object::get_bridge_attribute(sai_object_id_t bridge_id,
     case SAI_BRIDGE_ATTR_PORT_LIST:
       (attr_list + i)->value.objlist.count = bridge->bridge_port_list.size();
       (attr_list + i)->value.objlist.list = &bridge->bridge_port_list[0];
+      printf("bridge (id %d) bridge_port_list:\n", bridge_id);
+      for (std::vector<sai_object_id_t>::iterator it = bridge->bridge_port_list.begin(); it < bridge->bridge_port_list.end(); ++it) {
+        std::cout << *it << " ";
+      }
+      std::cout << endl;
       break;
     }
   }
