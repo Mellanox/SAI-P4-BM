@@ -947,7 +947,7 @@ sai_status_t sai_object::create_lag_member(sai_object_id_t *lag_member_id,
   BmActionData action_data;
   match_params.push_back(parse_exact_match_param(port->hw_port, 2));
   action_data.push_back(parse_param(1, 1));
-  action_data.push_back(parse_param(lag->sai_object_id, 1));
+  action_data.push_back(parse_param(lag->l2_if, 1));
   port->handle_ingress_lag = bm_client_ptr->bm_mt_add_entry(
       cxt_id, "table_ingress_lag", match_params, "action_set_lag_l2if",
       action_data, options);
