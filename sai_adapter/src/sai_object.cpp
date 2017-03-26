@@ -364,20 +364,9 @@ sai_status_t sai_object::create_bridge_port(sai_object_id_t *bridge_port_id,
       break;
     }
   }
-  cout << "test1" << endl;
-  std::vector<sai_object_id_t> vec = switch_metadata_ptr->bridges[bridge_port->bridge_id]->bridge_port_list;
-  for (std::vector<sai_object_id_t>::iterator it = vec.begin(); it < vec.end(); ++it) {
-    cout << *it << " ";
-  }
-  cout << endl;
 
   switch_metadata_ptr->bridges[bridge_port->bridge_id]->bridge_port_list.push_back(bridge_port->sai_object_id);
-  vec = switch_metadata_ptr->bridges[bridge_port->bridge_id]->bridge_port_list;
-  cout << "test2" << endl;
-  for (std::vector<sai_object_id_t>::iterator it = vec.begin(); it < vec.end(); ++it) {
-    cout << *it << " ";
-  }
-  cout << endl;
+  
   BmAddEntryOptions options;
   BmMatchParams match_params;
   BmActionData action_data;
@@ -532,23 +521,11 @@ sai_status_t sai_object::remove_bridge_port(sai_object_id_t bridge_port_id) {
           bridge_port->handle_port_ingress_interface_type);
     }catch(...){printf("--> DEBUG : Unable to remove table_port_ingress_interface_type entry, possible entry override\n");}
   }
+
   printf("deleted bridge port %d bm_entries\n", bridge_port->sai_object_id);
   switch_metadata_ptr->bridge_ports.erase(bridge_port->sai_object_id);
-  std::vector<sai_object_id_t> vec = switch_metadata_ptr->bridges[bridge_port->bridge_id]->bridge_port_list;
-  cout << "test_remove1" << endl;
-  for (std::vector<sai_object_id_t>::iterator it = vec.begin(); it < vec.end(); ++it) {
-    cout << *it << " ";
-  }
-  cout << endl;
-
-  vec.erase(std::remove(vec.begin(), vec.end(), bridge_port->sai_object_id), vec.end());
-
-  vec = switch_metadata_ptr->bridges[bridge_port->bridge_id]->bridge_port_list;
-  cout << "test_remove2" << endl;
-  for (std::vector<sai_object_id_t>::iterator it = vec.begin(); it < vec.end(); ++it) {
-    cout << *it << " ";
-  }
-  cout << endl;
+  std::vector<sai_object_id_t> *vec = &switch_metadata_ptr->bridges[bridge_port->bridge_id]->bridge_port_list;
+  vec->erase(std::remove(vec->begin(), vec->end(), bridge_port->sai_object_id), vec->end());
 
   sai_id_map_ptr->free_id(bridge_port->sai_object_id);
   // printf("ports.size=%d\n",switch_metadata_ptr->ports.size());
@@ -797,6 +774,7 @@ sai_status_t sai_object::create_vlan_member(sai_object_id_t *vlan_member_id,
         cxt_id, "table_egress_vlan_tag", match_params,
         "action_forward_vlan_tag", action_data, options);
   } else {
+    printf("table_egress_vlan_tag debug.  out_if = %d, vid = %d\n", out_if, vlan_member->vid);
     match_params.push_back(parse_exact_match_param(out_if, 1));
     match_params.push_back(parse_exact_match_param(vlan_member->vid, 2));
     match_params.push_back(parse_valid_match_param(true));

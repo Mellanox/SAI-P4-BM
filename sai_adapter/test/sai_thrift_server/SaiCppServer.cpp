@@ -247,11 +247,9 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
     return thrift_attr;
   }
 
-  int sai_thrift_parse_bridge_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+  void sai_thrift_parse_bridge_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
       std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
       sai_thrift_attribute_t attribute;
-      int list_ind = -1;
-      uint32_t MAX_BRIDGE_PORTS = 50; //TODO: Should this be an attribute of bridge? if not, add as define, the real number.
       for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
           attribute = (sai_thrift_attribute_t)*it;
           attr_list[i].id = attribute.id;
@@ -261,15 +259,14 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
                   break;
               case SAI_BRIDGE_ATTR_PORT_LIST:
                   attr_list[i].value.objlist.count = 0;
-                  attr_list[i].value.objlist.list = (sai_object_id_t*) malloc (sizeof(sai_object_id_t) * MAX_BRIDGE_PORTS);
-                  list_ind = i;
                   break;
               default:
                   break;
           }
       }
-      return list_ind;
+      return;
   }
+
   void sai_thrift_parse_fdb_entry_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
     std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
     sai_thrift_attribute_t attribute;
@@ -308,14 +305,11 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
         printf("sai_api_query failed!!!\n");
         return SAI_STATUS_NOT_IMPLEMENTED; 
     }
-    int list_ind = sai_thrift_parse_bridge_attributes(thrift_attr_list, attr );
+    sai_thrift_parse_bridge_attributes(thrift_attr_list, attr);
     sai_object_id_t s_id=0;
     uint32_t count = thrift_attr_list.size();
     sai_object_id_t bridge_id =1;
     status = bridge_api->create_bridge(&bridge_id,s_id,count,attr);
-    if (list_ind != -1) {
-      free((attr+list_ind)->value.objlist.list);
-    }
     free(attr);
     return bridge_id;
   }
@@ -362,14 +356,11 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf{
 
     uint32_t count = thrift_attr_list.size();
     sai_attribute_t *attr = (sai_attribute_t*) malloc(sizeof(sai_attribute_t) * count);
-    int list_ind =sai_thrift_parse_bridge_attributes(thrift_attr_list, attr);
+    sai_thrift_parse_bridge_attributes(thrift_attr_list, attr);
     status = bridge_api->get_bridge_attribute(bridge_id,count,attr);
     _return.attr_count = count;
     for (int i=0; i<count;i++) {
       _return.attr_list.push_back(parse_bridge_thrift_attribute(attr+i));
-    }
-    if (list_ind != -1) {
-      free((attr+list_ind)->value.objlist.list);
     }
     free(attr);
     return;
