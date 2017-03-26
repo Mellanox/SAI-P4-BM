@@ -29,7 +29,7 @@ sai_status_t    get_bridge_attribute(S_O_Handle, sai_object_id_t bridge_id, uint
 sai_status_t 	sai_obj_create_bridge_port(S_O_Handle, sai_object_id_t*, sai_object_id_t,uint32_t,const sai_attribute_t*);
 sai_status_t 	sai_obj_remove_bridge_port(S_O_Handle, sai_object_id_t);
 sai_status_t    get_bridge_port_attribute(S_O_Handle, sai_object_id_t bridge_port_id, uint32_t, sai_attribute_t*);
-sai_object_id_t sai_obj_temp_sai_get_bridge_port(S_O_Handle, uint32_t bridge_id);
+sai_object_id_t sai_obj_temp_sai_get_bridge_port(S_O_Handle, uint32_t bridge_port_num);
 
 // FDB
 sai_status_t 	sai_obj_create_fdb_entry(S_O_Handle, sai_fdb_entry_t*,uint32_t,const sai_attribute_t*);

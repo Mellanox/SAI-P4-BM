@@ -480,7 +480,6 @@ sai_status_t sai_object::create_bridge_port(sai_object_id_t *bridge_port_id,
 sai_object_id_t sai_object::temp_sai_get_bridge_port(uint32_t bridge_port_num) {
     printf("sai_object::temp_sai_get_bridge_port. bridge_port_num = %d\n", bridge_port_num);
     for (bridge_port_id_map_t::iterator it = switch_metadata_ptr->bridge_ports.begin(); it != switch_metadata_ptr->bridge_ports.end(); ++it) {
-      printf("bridge_port_id %d. bridge_port_num %d", it->first, it->second->bridge_port);
       if (it->second->bridge_port == bridge_port_num) {
         return it->first;
       }
@@ -601,15 +600,15 @@ sai_status_t sai_object::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
   sai_status_t status = SAI_STATUS_SUCCESS;
   // parsing attributes
 
-  uint32_t entry_type;
+  sai_fdb_entry_type_t entry_type;
   uint32_t bridge_port;
-  uint32_t packet_action;
+  sai_packet_action_t packet_action;
   sai_attribute_t attribute;
   for (uint32_t i = 0; i < attr_count; i++) {
     attribute = attr_list[i];
     switch (attribute.id) {
     case SAI_FDB_ENTRY_ATTR_TYPE:
-      entry_type = attribute.value.s32;
+      entry_type =  (sai_fdb_entry_type_t) attribute.value.s32;
       // std::cout << "--> attr packet type="<<attribute.value.s32<<endl;
       // std::cout << "--> attr packet_static" << SAI_FDB_ENTRY_TYPE_STATIC
       // <<endl;
@@ -619,7 +618,7 @@ sai_status_t sai_object::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
           switch_metadata_ptr->bridge_ports[attribute.value.oid]->bridge_port;
       break;
     case SAI_FDB_ENTRY_ATTR_PACKET_ACTION:
-      packet_action = attribute.value.s32;
+      packet_action = (sai_packet_action_t) attribute.value.s32;
       // std::cout << "--> attr packet_action="<<attribute.value.s32<<endl;
       // std::cout << "--> attr packet_action_fwd=" << SAI_PACKET_ACTION_FORWARD
       // <<endl;
@@ -648,6 +647,10 @@ sai_status_t sai_object::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
       action_data.push_back(parse_param(bridge_port, 1));
       bm_client_ptr->bm_mt_add_entry(cxt_id, "table_fdb", match_params,
                                      "action_set_egress_br_port", action_data,
+                                     options);
+      action_data.clear();
+      bm_client_ptr->bm_mt_add_entry(cxt_id, "table_learn_fdb", match_params,
+                                     "_nop", action_data,
                                      options);
     }
   }

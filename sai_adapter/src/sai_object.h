@@ -80,7 +80,7 @@ public:
 	static sai_status_t create_bridge_port (sai_object_id_t *bridge_port_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
 	static sai_status_t remove_bridge_port (sai_object_id_t bridge_port_id);
 	static sai_status_t get_bridge_port_attribute(sai_object_id_t bridge_port_id, uint32_t attr_count, sai_attribute_t *attr_list);
-	static sai_object_id_t temp_sai_get_bridge_port(uint32_t bridge_port_num);
+	static sai_object_id_t temp_sai_get_bridge_port(uint32_t bridge_id);
 	//fdb
 	static sai_status_t create_fdb_entry (const sai_fdb_entry_t* fdb_entry,uint32_t attr_count,const sai_attribute_t *attr_list);
 	static sai_status_t remove_fdb_entry (const sai_fdb_entry_t* fdb_entry);	

@@ -84,8 +84,8 @@ sai_status_t sai_api_uninitialize(void) {
   free_sai_object(sai_obj);
 }
 
-sai_object_id_t temp_sai_get_bridge_port(uint32_t bridge_id) {
-  return sai_obj_temp_sai_get_bridge_port(sai_obj, bridge_id);
+sai_object_id_t temp_sai_get_bridge_port(uint32_t bridge_port_num) {
+  return sai_obj_temp_sai_get_bridge_port(sai_obj, bridge_port_num);
 }
 
 #ifdef __cplusplus
