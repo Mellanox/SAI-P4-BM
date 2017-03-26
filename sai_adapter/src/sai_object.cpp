@@ -189,21 +189,26 @@ void sai_object::config_port(Port_obj *port) {
   action_data.push_back(parse_param(port->mtu, 4));
   action_data.push_back(parse_param(port->drop_tagged, 1));
   action_data.push_back(parse_param(port->drop_untagged, 1));
-  printf("configing port. drop_tagged = %d, drop_untagged = %d\n", port->drop_tagged, port->drop_untagged);
-  if (port->is_default) {
+  printf("----> config port: l2_if = %d. drop_tagged = %d, drop_untagged = %d\n",port->l2_if, port->drop_tagged, port->drop_untagged);
+  try { // need to change match - remove, than add entry!!!!!!!!!!!!
+    BmMtEntry entry;
+    bm_client_ptr->bm_mt_get_entry_from_key(
+        entry, cxt_id, "table_port_configurations", match_params, options);  
+    printf("----> deleting port_contifguration entry handle %d \n",entry.entry_handle); 
+    bm_client_ptr->bm_mt_delete_entry(
+        cxt_id, "table_port_configurations", entry.entry_handle);
+  } 
+  catch (...) {
+    printf("----> InvalidTableOperation while removing table_port_configurations entry\n");
+  }
+  try{
     port->handle_port_cfg = bm_client_ptr->bm_mt_add_entry(
-        cxt_id, "table_port_configurations", match_params,
-        "action_set_port_configurations", action_data, options);
-    port->is_default = false;
-  } else {
-    try {
-      bm_client_ptr->bm_mt_modify_entry(
-          cxt_id, "table_port_configurations", port->handle_port_cfg,
-          "action_set_port_configurations", action_data);
-    } catch (int e) {
-      printf("InvalidTableOperation while removing table_port_configurations "
-             "entry\n");
-    }
+      cxt_id, "table_port_configurations", match_params,
+      "action_set_port_configurations", action_data, options);
+    printf("----> added table_port_configurations entry handle: %d\n", port->handle_port_cfg);
+  }
+  catch (...) {
+    printf("----> InvalidTableOperation while adding table_port_configurations entry\n");
   }
   // printf("port cfg modified, handle= %d\n",port->handle_port_cfg);
 }
@@ -244,7 +249,7 @@ sai_status_t sai_object::create_port(sai_object_id_t *port_id,
   // %d\n",switch_metadata_ptr->ports.size());
   switch_metadata_ptr->ports[port->sai_object_id] = port;
   // switch_metadata_ptr->ports.insert(std::make_pair(port->sai_object_id,&port));
-  printf("new port sai_id = %d, tot port num: %d\n", port->sai_object_id,
+  printf("--> new port sai_id = %d, tot port num: %d\n", port->sai_object_id,
          switch_metadata_ptr->ports.size());
   // parsing attributes
   sai_attribute_t attribute;
@@ -278,7 +283,6 @@ sai_status_t sai_object::create_port(sai_object_id_t *port_id,
   port->handle_port_cfg = bm_client_ptr->bm_mt_add_entry(
       cxt_id, "table_port_configurations", match_params,
       "action_set_port_configurations", action_data, options);
-  port->is_default = false;
   // printf("port cfg handle= %d\n",port->handle_port_cfg);
   *port_id = port->sai_object_id;
   return SAI_STATUS_SUCCESS;
@@ -293,11 +297,11 @@ sai_status_t sai_object::remove_port(sai_object_id_t port_id) {
     bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_port_configurations",
                                       port->handle_port_cfg);
   } catch (int e) {
-    printf("unable to remove port tables entries\n");
+    printf("--> unable to remove port tables entries\n");
   }
   switch_metadata_ptr->ports.erase(port->sai_object_id);
   sai_id_map_ptr->free_id(port->sai_object_id);
-  printf("  ports.size after remove: %d\n", switch_metadata_ptr->ports.size());
+  printf("--> ports.size after remove: %d\n", switch_metadata_ptr->ports.size());
   return SAI_STATUS_SUCCESS;
 }
 
@@ -309,7 +313,7 @@ sai_status_t sai_object::create_bridge(sai_object_id_t *bridge_id,
   Bridge_obj *bridge = new Bridge_obj(sai_id_map_ptr);
   switch_metadata_ptr->bridges[bridge->sai_object_id] = bridge;
   bridge->bridge_id = bridge_id_num;
-  printf("Created new bridge %d (sai_object_id=%d)\n", bridge->bridge_id,
+  printf("--> Created new bridge %d (sai_object_id=%d)\n", bridge->bridge_id,
          bridge->sai_object_id);
   // parsing attributes
   sai_attribute_t attribute;
@@ -360,6 +364,9 @@ sai_status_t sai_object::create_bridge_port(sai_object_id_t *bridge_port_id,
       break;
     }
   }
+
+  switch_metadata_ptr->bridges[bridge_port->bridge_id]->bridge_port_list.push_back(bridge_port->sai_object_id);
+  
   BmAddEntryOptions options;
   BmMatchParams match_params;
   BmActionData action_data;
@@ -384,17 +391,27 @@ sai_status_t sai_object::create_bridge_port(sai_object_id_t *bridge_port_id,
     l2_if_type = 2;
   }
   // 1Q
-  else {
+  else if (bridge_port->bridge_port_type == SAI_BRIDGE_PORT_TYPE_PORT){
     match_params.clear();
     match_params.push_back(parse_exact_match_param(bridge_port->vlan_id, 2));
     action_data.clear();
     action_data.push_back(parse_param(bridge_id, 2));
-    try { // TODO: This needs to be done only once per 1Q bridge, maybe a better
-          // solution then try?
+    if(bridge_port->handle_id_1q == NULL_HANDLE){
+      try {
+        BmMtEntry entry;
+        bm_client_ptr->bm_mt_get_entry_from_key(
+            entry, cxt_id, "table_bridge_id_1q", match_params, options);  
+        printf("--> deleting table_bridge_id_1q entry handle %d \n",entry.entry_handle); 
+        bm_client_ptr->bm_mt_delete_entry(
+            cxt_id, "table_bridge_id_1q", entry.entry_handle);
+      } 
+      catch (...) {
+        printf("--> InvalidTableOperation while removing table_bridge_id_1q entry\n");
+      }
+      printf("--> adding table_bridge_id_1q entry, key:%d\n",bridge_port->vlan_id);
       bridge_port->handle_id_1q = bm_client_ptr->bm_mt_add_entry(
           cxt_id, "table_bridge_id_1q", match_params, "action_set_bridge_id",
           action_data, options);
-    } catch (...) {
     }
     l2_if_type = 3;
   }
@@ -421,11 +438,7 @@ sai_status_t sai_object::create_bridge_port(sai_object_id_t *bridge_port_id,
   action_data.clear();
   action_data.push_back(parse_param(l2_if, 1));
   action_data.push_back(parse_param(is_lag, 1));
-  // action_data.push_back(parse_param(999999,3));
-  // action_data.push_back(parse_param(55,3));
-  // std::cout << "table_egress_br_port_to_if : " <<match_params[0] << endl;
-  // std::cout << "action 0 "<< action_data[0] << endl;
-  // std::cout << "action 1 "<< action_data[1] << endl;
+  std::cout << "--> adding table_egress_br_port_to_if : key:" << bridge_port->bridge_port<< endl;//match_params[0] << endl;
   bridge_port->handle_egress_br_port_to_if = bm_client_ptr->bm_mt_add_entry(
       cxt_id, "table_egress_br_port_to_if", match_params,
       "action_forward_set_outIfType", action_data, options);
@@ -437,26 +450,28 @@ sai_status_t sai_object::create_bridge_port(sai_object_id_t *bridge_port_id,
     action_data.clear();
     action_data.push_back(parse_param(l2_if_type, 1));
     action_data.push_back(parse_param(bridge_port->bridge_port, 1));
-    printf("Trying to create bridge_port. add "
+    printf("--> Trying to create bridge_port. add "
            "table_subport_ingress_interface_type. with l2_if = %d, vid = %d\n",
            l2_if, bridge_port->vlan_id);
     bridge_port->handle_subport_ingress_interface_type =
         bm_client_ptr->bm_mt_add_entry(
             cxt_id, "table_subport_ingress_interface_type", match_params,
             "action_set_l2_if_type", action_data, options);
+    printf("--> Created bridge port, entry handle %d\n",bridge_port->handle_subport_ingress_interface_type);
   } else {
     match_params.clear();
     match_params.push_back(parse_exact_match_param(l2_if, 1));
     action_data.clear();
     action_data.push_back(parse_param(l2_if_type, 1));
     action_data.push_back(parse_param(bridge_port->bridge_port, 1));
-    printf("Trying to create bridge_port. add "
+    printf("--> Trying to create bridge_port. add "
            "table_port_ingress_interface_type. with l2_if = %d\n",
            l2_if);
     bridge_port->handle_port_ingress_interface_type =
         bm_client_ptr->bm_mt_add_entry(
             cxt_id, "table_port_ingress_interface_type", match_params,
             "action_set_l2_if_type", action_data, options);
+    printf("--> Created bridge port, entry handle %d\n",bridge_port->handle_port_ingress_interface_type);
   }
   *bridge_port_id = bridge_port->sai_object_id;
   return SAI_STATUS_SUCCESS;
@@ -477,40 +492,51 @@ sai_status_t sai_object::remove_bridge_port(sai_object_id_t bridge_port_id) {
   BridgePort_obj *bridge_port =
       switch_metadata_ptr->bridge_ports[bridge_port_id];
 
-  try {
-    if (bridge_port->handle_id_1d != 999) {
+  if (bridge_port->handle_id_1d != NULL_HANDLE) {
+    try {
       bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_bridge_id_1d",
-                                        bridge_port->handle_id_1d);
-    }
-    if (bridge_port->handle_id_1q != 999) {
+                                      bridge_port->handle_id_1d);
+    }catch(...){printf("--> DEBUG : Unable to remove table_bridge_id_1d entry, possible entry override\n");}
+  }
+  if (bridge_port->handle_id_1q != NULL_HANDLE) {
+    try {
       bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_bridge_id_1q",
-                                        bridge_port->handle_id_1q);
-    }
-    if (bridge_port->handle_egress_set_vlan != 999) {
+                                      bridge_port->handle_id_1q);
+    }catch(...){printf("--> DEBUG : Unable to remove table_bridge_id_1q entry, possible entry override\n");}
+  }
+  if (bridge_port->handle_egress_set_vlan != NULL_HANDLE) {
+    try {
       bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_egress_set_vlan",
-                                        bridge_port->handle_egress_set_vlan);
-    }
-    if (bridge_port->handle_egress_br_port_to_if != 999) {
+                                      bridge_port->handle_egress_set_vlan);
+    }catch(...){printf("--> DEBUG : Unable to remove table_egress_set_vlan entry, possible entry override\n");}
+  }
+  if (bridge_port->handle_egress_br_port_to_if != NULL_HANDLE) {
+    try{ 
       bm_client_ptr->bm_mt_delete_entry(
           cxt_id, "table_egress_br_port_to_if",
           bridge_port->handle_egress_br_port_to_if);
-    }
-    if (bridge_port->handle_subport_ingress_interface_type != 999) {
+      }catch(...){printf("--> DEBUG : Unable to remove table_egress_br_port_to_if entry, possible entry override\n");}
+  }
+  if (bridge_port->handle_subport_ingress_interface_type != NULL_HANDLE) {
+    try{
       bm_client_ptr->bm_mt_delete_entry(
           cxt_id, "table_subport_ingress_interface_type",
           bridge_port->handle_subport_ingress_interface_type);
-    }
-    if (bridge_port->handle_port_ingress_interface_type != 999) {
+    }catch(...){printf("--> DEBUG : Unable to remove table_subport_ingress_interface_type entry, possible entry override\n");}
+  }
+  if (bridge_port->handle_port_ingress_interface_type != NULL_HANDLE) {
+    try{
       bm_client_ptr->bm_mt_delete_entry(
           cxt_id, "table_port_ingress_interface_type",
           bridge_port->handle_port_ingress_interface_type);
-    }
-    printf("deleted bridge port %d bm_entries\n", bridge_port->sai_object_id);
-  } catch (int e) {
-    status = SAI_STATUS_FAILURE;
-    printf("ERROR : Unable to remove bridge port tables entries\n");
+    }catch(...){printf("--> DEBUG : Unable to remove table_port_ingress_interface_type entry, possible entry override\n");}
   }
+
+  printf("deleted bridge port %d bm_entries\n", bridge_port->sai_object_id);
   switch_metadata_ptr->bridge_ports.erase(bridge_port->sai_object_id);
+  std::vector<sai_object_id_t> *vec = &switch_metadata_ptr->bridges[bridge_port->bridge_id]->bridge_port_list;
+  vec->erase(std::remove(vec->begin(), vec->end(), bridge_port->sai_object_id), vec->end());
+
   sai_id_map_ptr->free_id(bridge_port->sai_object_id);
   // printf("ports.size=%d\n",switch_metadata_ptr->ports.size());
   return status;
@@ -553,6 +579,11 @@ sai_status_t sai_object::get_bridge_attribute(sai_object_id_t bridge_id,
     case SAI_BRIDGE_ATTR_PORT_LIST:
       (attr_list + i)->value.objlist.count = bridge->bridge_port_list.size();
       (attr_list + i)->value.objlist.list = &bridge->bridge_port_list[0];
+      printf("bridge (id %d) bridge_port_list:\n", bridge_id);
+      for (std::vector<sai_object_id_t>::iterator it = bridge->bridge_port_list.begin(); it < bridge->bridge_port_list.end(); ++it) {
+        std::cout << *it << " ";
+      }
+      std::cout << endl;
       break;
     }
   }
@@ -594,7 +625,7 @@ sai_status_t sai_object::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
       // <<endl;
       break;
     default:
-      std::cout << "attribute.id = " << attribute.id << "was dumped in sai_obj"
+      std::cout << "--> create_fdb_entry attribute.id = " << attribute.id << "was dumped in sai_obj"
                 << endl;
       break;
     }
@@ -604,9 +635,9 @@ sai_status_t sai_object::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
   uint32_t bridge_id =
       switch_metadata_ptr->bridges[fdb_entry->bridge_id]->bridge_id;
   if (packet_action == SAI_PACKET_ACTION_FORWARD) {
-    std::cout << "SAI_PACKET_ACTION_FORWARD" << endl;
+    std::cout << "--> SAI_PACKET_ACTION_FORWARD" << endl;
     if (entry_type == SAI_FDB_ENTRY_TYPE_STATIC) {
-      std::cout << "SAI_FDB_ENTRY_TYPE_STATIC" << endl;
+      std::cout << "--> SAI_FDB_ENTRY_TYPE_STATIC" << endl;
       BmAddEntryOptions options;
       BmMatchParams match_params;
       BmActionData action_data;
@@ -753,6 +784,7 @@ sai_status_t sai_object::create_vlan_member(sai_object_id_t *vlan_member_id,
         cxt_id, "table_egress_vlan_tag", match_params,
         "action_forward_vlan_tag", action_data, options);
   } else {
+    printf("table_egress_vlan_tag debug.  out_if = %d, vid = %d\n", out_if, vlan_member->vid);
     match_params.push_back(parse_exact_match_param(out_if, 1));
     match_params.push_back(parse_exact_match_param(vlan_member->vid, 2));
     match_params.push_back(parse_valid_match_param(true));
@@ -875,11 +907,11 @@ sai_status_t sai_object::remove_lag(sai_object_id_t lag_id) {
   sai_status_t status = SAI_STATUS_SUCCESS;
   Lag_obj *lag = switch_metadata_ptr->lags[lag_id];
   try {
-    if (lag->handle_port_configurations != 999) {
+    if (lag->handle_port_configurations != NULL_HANDLE) {
       bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_port_configurations",
                                         lag->handle_port_configurations);
     }
-    if (lag->handle_lag_hash != 999) {
+    if (lag->handle_lag_hash != NULL_HANDLE) {
       bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_lag_hash",
                                         lag->handle_lag_hash);
     }
@@ -922,27 +954,28 @@ sai_status_t sai_object::create_lag_member(sai_object_id_t *lag_member_id,
   }
   lag->port_obj = port;
   uint32_t l2_if = lag->l2_if;
-  if (port->handle_ingress_lag != 999) {
+  if (port->handle_ingress_lag != NULL_HANDLE) {
     bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_ingress_lag",
                                       port->handle_ingress_lag);
-    port->handle_ingress_lag = 999;
+    port->handle_ingress_lag = NULL_HANDLE;
   }
-  if (lag->handle_lag_hash != 999) {
+  if (lag->handle_lag_hash != NULL_HANDLE) {
     bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_lag_hash",
                                       lag->handle_lag_hash);
-    lag->handle_lag_hash = 999;
+    lag->handle_lag_hash = NULL_HANDLE;
   }
+
   BmAddEntryOptions options;
   BmMatchParams match_params;
   BmActionData action_data;
   match_params.push_back(parse_exact_match_param(port->hw_port, 2));
   action_data.push_back(parse_param(1, 1));
-  action_data.push_back(parse_param(l2_if, 1));
+  action_data.push_back(parse_param(lag->l2_if, 1));
   port->handle_ingress_lag = bm_client_ptr->bm_mt_add_entry(
       cxt_id, "table_ingress_lag", match_params, "action_set_lag_l2if",
       action_data, options);
-  printf("lag %d. port %d (hw %d). ingress_lag_handle = %d\n",
-         port->sai_object_id, port->hw_port, port->handle_ingress_lag);
+  printf("lag l2_if %d. port %d (hw %d). ingress_lag_handle = %d\n",
+         lag->l2_if ,port->sai_object_id, port->hw_port, port->handle_ingress_lag);
   match_params.clear();
   match_params.push_back(parse_exact_match_param(l2_if, 1));
   match_params.push_back(
@@ -1004,10 +1037,10 @@ sai_status_t sai_object::remove_lag_member(sai_object_id_t lag_member_id) {
   // lag->port->sai_object_id, lag->port->handle_ingress_lag);
   bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_ingress_lag",
                                     lag_member->port->handle_ingress_lag);
-  lag_member->port->handle_ingress_lag = 999;
+  lag_member->port->handle_ingress_lag = NULL_HANDLE;
   bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_egress_lag",
                                     lag_member->handle_egress_lag);
-  lag_member->handle_egress_lag = 999;
+  lag_member->handle_egress_lag = NULL_HANDLE;
 
   if (hash_index != lag->lag_members.size()) {
     sai_object_id_t last_lag_member_id = lag->lag_members.back();

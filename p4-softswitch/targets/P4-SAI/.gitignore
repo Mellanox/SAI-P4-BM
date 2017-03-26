@@ -5,3 +5,4 @@ sswitch_runtime
 simple_switch_CLI
 log.txt
 tests/CLI_tests/run_one_test.py
+log*

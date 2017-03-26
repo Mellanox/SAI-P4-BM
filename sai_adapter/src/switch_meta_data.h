@@ -1,6 +1,7 @@
 #ifndef SWITCH_META_DATA_H
 #define SWITCH_META_DATA_H
 
+#define NULL_HANDLE -1
 #include  <sai.h>
 #include <list>
 #include <iostream>
@@ -75,7 +76,6 @@ class Port_obj : public Sai_obj{
     uint32_t mtu;
     uint32_t drop_tagged;
     uint32_t drop_untagged;
-    bool is_default;
     bool is_lag;
     BmEntryHandle handle_lag_if;
     BmEntryHandle handle_port_cfg;
@@ -89,11 +89,10 @@ class Port_obj : public Sai_obj{
       this->l2_if=0;
       this->pvid=1;
       this->bind_mode=SAI_PORT_BIND_MODE_PORT;
-      this->is_default=true;
       this->is_lag=false;
-      this->handle_ingress_lag = 999;
-      this->handle_port_cfg = 999;
-      this->handle_lag_if = 999;
+      this->handle_ingress_lag = NULL_HANDLE;
+      this->handle_port_cfg = NULL_HANDLE;
+      this->handle_lag_if = NULL_HANDLE;
     }   
 };
 
@@ -114,16 +113,16 @@ public:
   BridgePort_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->port_id=0;
     this->vlan_id=1;
-    this->bridge_port=0;
-    this->bridge_id=0;
+    this->bridge_port=NULL;
+    this->bridge_id=NULL;
     this->bridge_port_type=SAI_BRIDGE_PORT_TYPE_PORT;
-    // TODO 999 is inavlid. consider other notation
-    this->handle_id_1d =999;
-    this->handle_id_1q =999;
-    this->handle_egress_set_vlan =999;
-    this->handle_egress_br_port_to_if =999;
-    this->handle_subport_ingress_interface_type =999;
-    this->handle_port_ingress_interface_type =999;
+    // TODO NULL_HANDLE is inavlid. consider other notation
+    this->handle_id_1d =NULL_HANDLE;
+    this->handle_id_1q =NULL_HANDLE;
+    this->handle_egress_set_vlan =NULL_HANDLE;
+    this->handle_egress_br_port_to_if =NULL_HANDLE;
+    this->handle_subport_ingress_interface_type =NULL_HANDLE;
+    this->handle_port_ingress_interface_type =NULL_HANDLE;
 
   }
 };
@@ -160,10 +159,10 @@ class Vlan_member_obj : public Sai_obj {
     BmEntryHandle handle_egress_vlan_filtering;
     BmEntryHandle handle_ingress_vlan_filtering;
     Vlan_member_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr){
-      this->vid = 999;
-      this->vlan_oid = 999;// TODO needed? consider remove.
+      this->vid = NULL_HANDLE;
+      this->vlan_oid = NULL_HANDLE;// TODO needed? consider remove.
       this->tagging_mode = SAI_VLAN_TAGGING_MODE_UNTAGGED;
-      this->bridge_port_id=999;
+      this->bridge_port_id=NULL_HANDLE;
     }
 };
 
@@ -178,8 +177,8 @@ public:
     this->lag_members.clear();
     this->l2_if=0;
     this->port_obj=NULL;
-    this->handle_lag_hash=999;
-    this->handle_port_configurations=999;
+    this->handle_lag_hash=NULL_HANDLE;
+    this->handle_port_configurations=NULL_HANDLE;
   }
 };
 
@@ -191,7 +190,7 @@ class Lag_member_obj : public Sai_obj{
     Lag_member_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr){
       this->port=NULL;
       this->lag=NULL;
-      this->handle_egress_lag = 999;
+      this->handle_egress_lag = NULL_HANDLE;
   }
 };
 
@@ -225,14 +224,18 @@ public:
 
   uint32_t GetNewBridgePort() {
     std::vector<uint32_t> bridge_port_nums;
+        printf("--> GetNewBridgePort: ");
     for (bridge_port_id_map_t::iterator it=bridge_ports.begin(); it!=bridge_ports.end(); ++it) {
       bridge_port_nums.push_back(it->second->bridge_port);
+      printf("%d ",it->second->bridge_port);
     }
     for (int i=0; i<bridge_port_nums.size(); ++i) {
       if (std::find(bridge_port_nums.begin(), bridge_port_nums.end(), i) == bridge_port_nums.end()) {
+        printf("--> new bridge_port is: %d \n", i);
         return i;
       }
     }
+    printf("--> new bridge_port is: %d \n", bridge_port_nums.size());
     return bridge_port_nums.size();
   }
 
@@ -250,17 +253,24 @@ public:
   }
   uint32_t GetNewL2IF() {
     std::vector<uint32_t> l2_ifs_nums;
+    printf("--> Get_New_L2_if: Ports: ");
     for (port_id_map_t::iterator it=ports.begin(); it!=ports.end(); ++it) {
       l2_ifs_nums.push_back(it->second->l2_if);
+      printf("%d ",it->second->l2_if);
     }
+    printf(", Lags: ");
     for (lag_id_map_t::iterator it=lags.begin(); it!=lags.end(); ++it) {
       l2_ifs_nums.push_back(it->second->l2_if);
+      printf("%d ",it->second->l2_if);
     }
+    printf("\n");
     for (int i=0; i<l2_ifs_nums.size(); ++i) {
       if (std::find(l2_ifs_nums.begin(), l2_ifs_nums.end(), i) == l2_ifs_nums.end()) {
+        printf("--> new if is: %d \n", i);
         return i;
       }
     }
+    printf("--> new if is: %d \n", l2_ifs_nums.size());
     return l2_ifs_nums.size();
   }
 };

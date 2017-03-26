@@ -111,7 +111,7 @@ def switch_init2(client):
     global switch_inited
     if switch_inited:
         return
-    client.sai_thrift_create_switch([])
+    # client.sai_thrift_create_switch([])
     attr_value = sai_thrift_attribute_value_t(oid=0)
     attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID, value=attr_value)
     # attr_value2 = sai_thrift_attribute_value_t(objlist=0)
