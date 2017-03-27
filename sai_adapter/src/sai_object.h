@@ -1,3 +1,6 @@
+#ifndef SAI_OBJECT_H
+#define SAI_OBJECT_H
+
 #include <iostream>
 
 //SAI
@@ -8,15 +11,6 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-
-// #include <saifdb.h>
-// #include <saivlan.h>
-// #include <sairouter.h>
-// #include <sairouterintf.h>
-// #include <sairoute.h>
-// #include <saiswitch.h>
-// #include <saimirror.h>
-// #include <saistatus.h>
 
 // INTERNAL
 #include "switch_meta_data.h"
@@ -44,6 +38,9 @@ const int32_t cxt_id =0;
 
 // static StandardClient* bm_client_ptr;
 // static sai_id_map_t* sai_id_map_ptr;
+std::string parse_param(uint64_t param, uint32_t num_of_bytes);
+BmMatchParam parse_exact_match_param(uint64_t param, uint32_t num_of_bytes);
+BmMatchParam parse_valid_match_param(bool param);
 
 class sai_object {
 public:
@@ -105,6 +102,7 @@ public:
 	static sai_status_t remove_lag(sai_object_id_t lag_id);
 	static sai_status_t create_lag_member(sai_object_id_t *lag_member_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
 	static sai_status_t remove_lag_member(sai_object_id_t lag_member_id);
+
 
 	//api s
 	sai_port_api_t		port_api;
@@ -214,3 +212,4 @@ public:
 	}
 };
 
+#endif

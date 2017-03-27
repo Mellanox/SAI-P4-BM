@@ -15,7 +15,7 @@ STAND_OBJS = ${BM_DIR}/Standard.o  \
              ${BM_DIR}/standard_constants.o
 
 OBJ_DIR    = obj
-SAI_OBJ_IF_SRC    = sai_object_interface.cpp sai_object.cpp
+SAI_OBJ_IF_SRC    = $(wildcard *.cpp)
 SAI_OBJ_IF_OBJ    = $(patsubst %.cpp,${OBJ_DIR}/%.o, $(SAI_OBJ_IF_SRC))
 SAI_DIR = ../inc/
 SAI_SRC = $(wildcard *.c)
