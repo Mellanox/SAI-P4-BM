@@ -17,13 +17,13 @@ STAND_OBJS = ${BM_DIR}/Standard.o  \
 OBJ_DIR    = obj
 SAI_OBJ_IF_SRC    = $(wildcard *.cpp)
 SAI_OBJ_IF_OBJ    = $(patsubst %.cpp,${OBJ_DIR}/%.o, $(SAI_OBJ_IF_SRC))
-SAI_DIR = ../inc/
+INC_DIR = ../inc
+SAI_DIR = ${INC_DIR}/SAI/
 SAI_SRC = $(wildcard *.c)
 SAI_OBJ = $(patsubst %.c,${OBJ_DIR}/%.o, $(SAI_SRC))
 HEADERS = $(wildcard *.h)
-LOG_DIR = -I${SAI_DIR}/spdlog/
-INC_DIRS =-I${USR_DIR}/include -I${THRIFT_DIR}/include/thrift -I${SAI_DIR} -I${BM_DIR} -I{LOG_DIR}
-SAI_INC = -I${SAI_DIR} -I${LOG_DIR}
+INC_DIRS =-I${USR_DIR}/include -I${THRIFT_DIR}/include/thrift -I${INC_DIR} -I${SAI_DIR} -I${BM_DIR}
+SAI_INC = -I${SAI_DIR} -I$(INC_DIR)
 default = all
 
 .PHONY: all clean

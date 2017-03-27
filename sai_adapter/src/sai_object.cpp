@@ -1,4 +1,4 @@
-#include "sai_object.h"
+#include "../inc/sai_object.h"
 
 StandardClient *sai_object::bm_client_ptr;
 sai_id_map_t *sai_object::sai_id_map_ptr;

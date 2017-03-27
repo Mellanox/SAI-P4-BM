@@ -1,4 +1,4 @@
-#include "sai_object.h"
+#include "../inc/sai_object.h"
 
 sai_status_t sai_object::create_port(sai_object_id_t *port_id,
                                      sai_object_id_t switch_id,

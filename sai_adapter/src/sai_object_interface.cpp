@@ -1,6 +1,6 @@
-#include "sai_object_interface.h"
-#include "sai_object.h"
-#include "switch_meta_data.h"
+#include "../inc/sai_object_interface.h"
+#include "../inc/sai_object.h"
+#include "../inc/switch_meta_data.h"
 
 extern "C" {
 S_O_Handle create_sai_object() { return new sai_object();}

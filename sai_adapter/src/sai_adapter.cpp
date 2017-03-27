@@ -1,4 +1,4 @@
-#include "sai_object.h"
+#include "../inc/sai_object.h"
 #include <assert.h>
 #include <inttypes.h>
 #include <pcap.h>

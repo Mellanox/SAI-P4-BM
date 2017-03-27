@@ -1,6 +1,6 @@
-#include "sai.h"
+#include "../inc/SAI/sai.h"
 // #include "sai_bm_c_api.h"
-#include "sai_object_interface.h"
+#include "../inc/sai_object_interface.h"
 #include <stdlib.h>
 // static sai_api_service_t sai_api_service;
 static S_O_Handle sai_obj;

@@ -1,4 +1,4 @@
-#include "sai_object.h"
+#include "../inc/sai_object.h"
 
 sai_status_t sai_object::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
                                           uint32_t attr_count,

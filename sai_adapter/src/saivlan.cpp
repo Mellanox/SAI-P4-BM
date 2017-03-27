@@ -1,4 +1,4 @@
-#include "sai_object.h"
+#include "../inc/sai_object.h"
 
 sai_status_t sai_object::create_vlan(sai_object_id_t *vlan_id,
                                      sai_object_id_t switch_id,

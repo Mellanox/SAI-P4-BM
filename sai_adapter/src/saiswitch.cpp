@@ -1,4 +1,4 @@
-#include "sai_object.h"
+#include "../inc/sai_object.h"
 
 sai_status_t sai_object::create_switch(sai_object_id_t *switch_id,
                                        uint32_t attr_count,
