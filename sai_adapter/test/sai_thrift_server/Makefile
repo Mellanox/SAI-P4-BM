@@ -7,7 +7,7 @@ LOG_DIR    = SAI_INC_DIR/spdlog/
 LIBS_DIRS  =-L${USR_DIR}/lib -L${USR_DIR}/${THRIFT_VER}/lib -L../inc 
 CPP_DEFS   =-D=HAVE_CONFIG_H
 CPP_OPTS   =-Wall -O3 -std=c++11 -pthread -w
-LIBS       =-lthrift
+LIBS       =-lthrift -lpcap ${LIBS_DIRS}
 BM_DIR     = ../../../p4-softswitch/thrift_src/gen-cpp/bm
 SAI_THRIFT_SRC_DIR    = ../sai_thrift_src/gen-cpp
 
@@ -42,13 +42,13 @@ ${SAI_SRC_DIR}/${OBJ_DIR}%.o: ${SAI_SRC_DIR}/%.c
 	gcc ${CPP_OPTS} ${CPP_DEFS} $(INC_DIRS) -c $< -o $@
 
 ${SAI_SRC_DIR}/${OBJ_DIR}/%.o: ${SAI_SRC_DIR}/%.cpp ${SAI_SRC_HEADERS}
-	g++ ${CPP_OPTS} ${CPP_DEFS} $(INC_DIRS) -c $< -o $@ ${LIBS_DIRS} ${LIBS}
+	g++ ${CPP_OPTS} ${CPP_DEFS} $(INC_DIRS) -c $< -o $@ ${LIBS}
 
 %.o: %.cpp
 	g++ ${CPP_OPTS} ${CPP_DEFS} $(INC_DIRS) -c $< -o $@
 
 server: ${GEN_OBJ} ${SAI_OBJS} ${SAI_OBJ_IF_OBJ} SaiCppServer.o
-	g++ ${CPP_OPTS} ${CPP_DEFS} -o SaiCppServer ${SERVER_INC} ${INC_DIRS} SaiCppServer.o ${SAI_OBJS} ${SAI_OBJ_IF_OBJ} ${GEN_OBJ} ${STAND_OBJS} ${LIBS_DIRS} ${LIBS}
+	g++ ${CPP_OPTS} ${CPP_DEFS} -o SaiCppServer ${SERVER_INC} ${INC_DIRS} SaiCppServer.o ${SAI_OBJS} ${SAI_OBJ_IF_OBJ} ${GEN_OBJ} ${STAND_OBJS} ${LIBS}
 
 clean:
 	$(RM) -r SaiCppServer *.o

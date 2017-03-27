@@ -192,7 +192,7 @@ void packetHandler(u_char *userData, const struct pcap_pkthdr *pkthdr,
   // attr[1].value.u16, attr[2].value.oid);
 }
 
-int main(int argc, char **argv) {
+int main_old(int argc, char **argv) {
   printf("Starting SAI adapter.\n");
   sai_object_id_t switch_id = 1;
   printf("debug0\n");
