@@ -3,7 +3,7 @@ USR_DIR    =${HOME}/usr
 THRIFT_DIR =${USR_DIR}/${THRIFT_VER}
 LIBS_DIRS  =-L${USR_DIR}/lib -L${USR_DIR}/${THRIFT_VER}/lib -L../inc 
 CPP_DEFS   =-D=HAVE_CONFIG_H
-CPP_OPTS   =-Wall -O2 -std=c++11 -w
+CPP_OPTS   =-Wall -O3 -std=c++11 -pthread -w
 LIBS       =-lthrift
 BM_DIR     = ../../p4-softswitch/thrift_src/gen-cpp/bm
 
@@ -21,9 +21,9 @@ SAI_DIR = ../inc/
 SAI_SRC = $(wildcard *.c)
 SAI_OBJ = $(patsubst %.c,${OBJ_DIR}/%.o, $(SAI_SRC))
 HEADERS = $(wildcard *.h)
-INC_DIRS  =-I${USR_DIR}/include -I${THRIFT_DIR}/include/thrift -I${SAI_DIR} -I${BM_DIR}
-SAI_INC = -I${SAI_DIR}
-
+LOG_DIR = -I${SAI_DIR}/spdlog/
+INC_DIRS =-I${USR_DIR}/include -I${THRIFT_DIR}/include/thrift -I${SAI_DIR} -I${BM_DIR} -I{LOG_DIR}
+SAI_INC = -I${SAI_DIR} -I${LOG_DIR}
 default = all
 
 .PHONY: all clean

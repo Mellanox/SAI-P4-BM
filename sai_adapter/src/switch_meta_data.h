@@ -16,25 +16,25 @@ class sai_id_map_t { // object pointer and it's id
     std::vector<sai_object_id_t> unused_id;
   public:
     sai_id_map_t(){
-      //printf("sai_id_map_constructor \n",id_map.size(),unused_id.size());
+      //printf("sai_id_map_constructor ",id_map.size(),unused_id.size());
       // init
       unused_id.clear();
       id_map.clear();
     }
 
     ~sai_id_map_t(){
-      printf("sai_id_map_destructor, id_map addr: %d \n",&id_map);
+      printf("sai_id_map_destructor, id_map addr: %d ",&id_map);
     }
 
     void free_id(sai_object_id_t sai_object_id){
-      printf("freeing object with sai_id %d\n",sai_object_id);
+      printf("freeing object with sai_id %d",sai_object_id);
       delete id_map[sai_object_id];
       id_map.erase(sai_object_id);
       unused_id.push_back(sai_object_id);
     }
 
     sai_object_id_t get_new_id(void* obj_ptr){//pointer to object
-      //printf("get_new_id\n");
+      //printf("get_new_id");
       sai_object_id_t id;
       if(!unused_id.empty()){
         id = unused_id.back();
@@ -42,9 +42,9 @@ class sai_id_map_t { // object pointer and it's id
       }
       else { 
         id = id_map.size(); }
-      //printf("id_map.size = %d \n", id_map.size());
+      //printf("id_map.size = %d ", id_map.size());
       id_map[id]=obj_ptr;
-      //printf("after insertion : id_map.size = %d \n", id_map.size());
+      //printf("after insertion : id_map.size = %d ", id_map.size());
       return id;
     }
 
@@ -81,7 +81,7 @@ class Port_obj : public Sai_obj{
     BmEntryHandle handle_port_cfg;
     BmEntryHandle handle_ingress_lag;
     Port_obj(sai_id_map_t* sai_id_map_ptr): Sai_obj(sai_id_map_ptr) {
-      //printf("create port object\n");
+      //printf("create port object");
       this->mtu=1512;
       this->drop_tagged=0;
       this->drop_untagged=0;
@@ -231,11 +231,11 @@ public:
     }
     for (int i=0; i<bridge_port_nums.size(); ++i) {
       if (std::find(bridge_port_nums.begin(), bridge_port_nums.end(), i) == bridge_port_nums.end()) {
-        printf("--> new bridge_port is: %d \n", i);
+        printf("--> new bridge_port is: %d ", i);
         return i;
       }
     }
-    printf("--> new bridge_port is: %d \n", bridge_port_nums.size());
+    printf("--> new bridge_port is: %d ", bridge_port_nums.size());
     return bridge_port_nums.size();
   }
 
@@ -263,14 +263,14 @@ public:
       l2_ifs_nums.push_back(it->second->l2_if);
       printf("%d ",it->second->l2_if);
     }
-    printf("\n");
+    printf("");
     for (int i=0; i<l2_ifs_nums.size(); ++i) {
       if (std::find(l2_ifs_nums.begin(), l2_ifs_nums.end(), i) == l2_ifs_nums.end()) {
-        printf("--> new if is: %d \n", i);
+        printf("--> new if is: %d ", i);
         return i;
       }
     }
-    printf("--> new if is: %d \n", l2_ifs_nums.size());
+    printf("--> new if is: %d ", l2_ifs_nums.size());
     return l2_ifs_nums.size();
   }
 };

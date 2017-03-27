@@ -29,6 +29,9 @@ extern "C" {
 #include <thrift/transport/TTransportUtils.h>
 #include <thrift/transport/TSocket.h>
 
+// LOG
+#include "../inc/spdlog/spdlog.h"
+
 using namespace std;
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -55,11 +58,13 @@ public:
 	Switch_metadata switch_metadata;
 	std::vector<sai_object_id_t> switch_list;
 	uint32_t list[8]={0,1,2,3,4,5,6,7};
+	//logger
+	std::shared_ptr<spdlog::logger> logger_o;
 	static std::vector<sai_object_id_t> * switch_list_ptr;
 	static sai_id_map_t* sai_id_map_ptr;
 	static StandardClient* bm_client_ptr;
     static Switch_metadata* switch_metadata_ptr;
-
+    static std::shared_ptr<spdlog::logger> *logger;
     //switch
 	static sai_status_t create_switch(sai_object_id_t* switch_id, uint32_t attr_count, const sai_attribute_t *attr_list);
 	static sai_status_t get_switch_attribute(sai_object_id_t switch_id, sai_uint32_t attr_count, sai_attribute_t *attr_list);
@@ -111,12 +116,22 @@ public:
 	sai_hostif_api_t    hostif_api;
 	sai_object():
 	//  constructor pre initializations
+	  //logger(new spdlog::logger),//(new std::shared_ptr<spdlog::logger>),
 	  socket(new TSocket("localhost", bm_port)),
 	  transport(new TBufferedTransport(socket)),
 	  bprotocol(new TBinaryProtocol(transport)),
 	  protocol (new TMultiplexedProtocol(bprotocol, "standard")),
 	  bm_client(protocol)
 	  {	
+	  	// logger
+	  	 logger_o = spdlog::get("logger");
+	  	 if (logger_o == 0){
+	  	 	auto logger_o = spdlog::basic_logger_mt("logger", "logs/log.txt");
+  			logger_o->flush_on(spdlog::level::info); // make err
+			spdlog::set_pattern("[thread %t] %l %v "); // add %T for time
+	  	 }
+  		logger = &logger_o;
+	  	// start P4 link
 	  	switch_list_ptr = &switch_list;
   		switch_metadata_ptr = &switch_metadata;
   		switch_metadata.hw_port_list.list=list;
@@ -160,12 +175,12 @@ public:
   		lag_api.create_lag_member 		= &sai_object::create_lag_member;
   		lag_api.remove_lag_member 		= &sai_object::remove_lag_member;
   		//
-    	printf("BM connection started on port %d\n",bm_port); 
+    	(*logger)->info("BM connection started on port %d\n",bm_port); 
 	  }
 	~sai_object(){
 	 	  //deconstructor
   		transport->close();
-    	printf("BM clients closed\n");
+    	(*logger)->info("BM clients closed\n");
 	 }
 
 	sai_status_t sai_api_query(sai_api_t sai_api_id,void** api_method_table){
@@ -192,7 +207,7 @@ public:
               *api_method_table =&hostif_api;
               break;
          	default:
-         		printf("api requested was %d, while sai_api_port is %d\n",sai_api_id,SAI_API_PORT);
+         		(*logger)->info("api requested was %d, while sai_api_port is %d\n",sai_api_id,SAI_API_PORT);
          		return SAI_STATUS_FAILURE;
          	}
 		return SAI_STATUS_SUCCESS;
