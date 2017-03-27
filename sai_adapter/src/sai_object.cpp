@@ -676,15 +676,25 @@ sai_status_t sai_object::remove_fdb_entry(const sai_fdb_entry_t *fdb_entry) {
   // try{
   bm_client_ptr->bm_mt_get_entry_from_key(bm_entry, cxt_id, "table_fdb",
                                           match_params, options);
-  printf("--> fdb entry handle %d\n", bm_entry.entry_handle);
-
   //} catch (int e) {
   //  printf("Unable to delete table. possible key missmatch:%d\n",mac_address);
   //  return SAI_STATUS_FAILURE;
   //};
-  printf("--> deleting fdb handle\n");
+  printf("--> deleting fdb handle %d\n", bm_entry.entry_handle);
   bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb", bm_entry.entry_handle);
-  printf("--> deleted: fdb handle\n");
+  // try{
+  bm_client_ptr->bm_mt_get_entry_from_key(bm_entry, cxt_id, "table_learn_fdb",
+                                          match_params, options);
+  //} catch (int e) {
+  //  printf("Unable to delete table. possible key missmatch:%d\n",mac_address);
+  //  return SAI_STATUS_FAILURE;
+  //};
+  printf("--> deleting fdb handle %d\n", bm_entry.entry_handle);
+  bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_learn_fdb", bm_entry.entry_handle);
+    
+
+
+
   return status;
 }
 
