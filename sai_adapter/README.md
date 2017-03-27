@@ -52,4 +52,4 @@ tests/sai_thrift_development_python_server/sai_rpc_server.sh
 * Add the function implementation to a .cpp file in the [src/](src/) dir, under the sai_object namespace.
 ### Additional information
 * the sai_object uses the [switch_meta_data.h](inc/switch_meta_data.h) to manage the runtime information regarding the sai_object_ids etc... 
-* to configure the BM tables, use the P4 thrift API is found in [Standard.h](/SAI-P4-BM/p4-softswitch/thrift_src/gen-cpp/bm/Standard.h)
+* to configure the BM tables, use the P4 thrift API is found (after p4-sofswitch compliation) in /SAI-P4-BM/p4-softswitch/thrift_src/gen-cpp/bm/Standard.h
