@@ -35,7 +35,7 @@ During the tests, the following logs are outputted:
 2) thrift server log is outputted to SAI-P4-BM/sai_adapter/test/sai_thrift_server/logs/log.txt
 3) PTF log is stdout.  
 
-# Sai BM Contribution Guide
+# SAI BM Contribution Guide
 ## Adding BM functionaity
 For new Soft Switch features ("HW" flows), please follow the [SAI-P4-BM/p4-softswitch](../SAI-P4-BM/p4-softswitch/) readme.
 ### Python development server
