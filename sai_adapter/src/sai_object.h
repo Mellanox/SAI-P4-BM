@@ -26,10 +26,11 @@ extern "C" {
 #include "../inc/spdlog/spdlog.h"
 
 // General
+#include <standard_types.h>
 #include <algorithm>
+#include <atomic>
 #include <cstdlib>
 #include <sstream>
-#include <standard_types.h>
 #include <string>
 #include <thread>
 
@@ -51,7 +52,7 @@ BmMatchParam parse_valid_match_param(bool param);
 uint64_t parse_mac_64(uint8_t const mac_8[6]);
 
 class sai_object {
-public:
+ public:
   // thrift
   boost::shared_ptr<TTransport> socket;
   boost::shared_ptr<TTransport> transport;
@@ -112,7 +113,6 @@ public:
   static sai_status_t get_bridge_port_attribute(sai_object_id_t bridge_port_id,
                                                 uint32_t attr_count,
                                                 sai_attribute_t *attr_list);
-  static sai_object_id_t temp_sai_get_bridge_port(uint32_t bridge_id);
   // fdb
   static sai_status_t create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
                                        uint32_t attr_count,
@@ -168,6 +168,14 @@ public:
   sai_object();
   ~sai_object();
   sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table);
+
+ private:
+  std::atomic<bool> sai_adapter_active;
+  void startSaiAdapter();
+  void endSaiAdapter();
+  void SaiAdapterMain();
+  static void packetHandler(u_char *userData, const struct pcap_pkthdr *pkthdr,
+                   const u_char *packet);
 };
 
 #endif

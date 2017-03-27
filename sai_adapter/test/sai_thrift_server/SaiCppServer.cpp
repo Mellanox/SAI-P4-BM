@@ -2,13 +2,13 @@
 #include <iostream>
 #include <vector>
 /// thrift sai server
-#include "../../inc/spdlog/spdlog.h"
-#include <string>
 #include <switch_sai_rpc.h>
 #include <thrift/server/TSimpleServer.h>
 #include <thrift/transport/TBufferTransports.h>
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TTransportUtils.h>
+#include <string>
+#include "../../inc/spdlog/spdlog.h"
 
 // SAI
 #ifdef __cplusplus
@@ -53,12 +53,12 @@ sai_status_t sai_api_uninitialize(void);
 const int sai_port = 9092;
 
 class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
-
-public:
+ public:
   //  static sai_object sai_obj;
   std::shared_ptr<spdlog::logger> logger;
   ~switch_sai_rpcHandler() {
     // deconstructor
+    logger->info("switch_sai_rpcHandler destructor called");
     spdlog::drop_all();
     sai_api_uninitialize();
   }
@@ -84,33 +84,33 @@ public:
     return;
   }
 
-  sai_attribute_t
-  parse_port_atrribute(const sai_thrift_attribute_t &thrift_attr) {
+  sai_attribute_t parse_port_atrribute(
+      const sai_thrift_attribute_t &thrift_attr) {
     sai_attribute_t sai_attr;
     sai_attr.id = thrift_attr.id;
     switch (thrift_attr.id) {
-    case SAI_PORT_ATTR_UPDATE_DSCP:
-      sai_attr.value.booldata = thrift_attr.value.booldata;
-      break;
-    case SAI_PORT_ATTR_PORT_VLAN_ID:
-      sai_attr.value.u16 = thrift_attr.value.u16;
-      break;
-    case SAI_PORT_ATTR_BIND_MODE:
-      sai_attr.value.s32 = thrift_attr.value.s32;
-      break;
-    case SAI_PORT_ATTR_DROP_UNTAGGED:
-      sai_attr.value.booldata = thrift_attr.value.booldata;
-      break;
-    case SAI_PORT_ATTR_DROP_TAGGED:
-      sai_attr.value.booldata = thrift_attr.value.booldata;
-      break;
+      case SAI_PORT_ATTR_UPDATE_DSCP:
+        sai_attr.value.booldata = thrift_attr.value.booldata;
+        break;
+      case SAI_PORT_ATTR_PORT_VLAN_ID:
+        sai_attr.value.u16 = thrift_attr.value.u16;
+        break;
+      case SAI_PORT_ATTR_BIND_MODE:
+        sai_attr.value.s32 = thrift_attr.value.s32;
+        break;
+      case SAI_PORT_ATTR_DROP_UNTAGGED:
+        sai_attr.value.booldata = thrift_attr.value.booldata;
+        break;
+      case SAI_PORT_ATTR_DROP_TAGGED:
+        sai_attr.value.booldata = thrift_attr.value.booldata;
+        break;
     };
     return sai_attr;
   }
 
-  sai_thrift_status_t
-  sai_thrift_set_port_attribute(const sai_thrift_object_id_t port_id,
-                                const sai_thrift_attribute_t &thrift_attr) {
+  sai_thrift_status_t sai_thrift_set_port_attribute(
+      const sai_thrift_object_id_t port_id,
+      const sai_thrift_attribute_t &thrift_attr) {
     logger->info("sai_thrift_set_port_attribute");
     sai_status_t status = SAI_STATUS_SUCCESS;
     sai_port_api_t *port_api;
@@ -140,14 +140,14 @@ public:
     logger->info("sai_thrift_get_port_stats");
   }
 
-  sai_thrift_status_t
-  sai_thrift_clear_port_all_stats(const sai_thrift_object_id_t port_id) {
+  sai_thrift_status_t sai_thrift_clear_port_all_stats(
+      const sai_thrift_object_id_t port_id) {
     // Your implementation goes here
     logger->info("sai_thrift_clear_port_all_stats");
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_port(const sai_thrift_object_id_t port_id) {
+  sai_thrift_status_t sai_thrift_remove_port(
+      const sai_thrift_object_id_t port_id) {
     logger->info("sai_thrift_remove_port");
     sai_status_t status = SAI_STATUS_SUCCESS;
     sai_port_api_t *port_api;
@@ -196,35 +196,35 @@ public:
       attribute = (sai_thrift_attribute_t)*it;
       attr_list[i].id = attribute.id;
       switch (attribute.id) {
-      case SAI_PORT_ATTR_UPDATE_DSCP:
-        attr_list[i].value.booldata = attribute.value.booldata;
-        break;
-      case SAI_PORT_ATTR_PORT_VLAN_ID:
-        attr_list[i].value.u16 = attribute.value.u16;
-        break;
-      case SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL:
-      case SAI_PORT_ATTR_QOS_DEFAULT_TC:
-        attr_list[i].value.u8 = attribute.value.u8;
-        break;
-      case SAI_PORT_ATTR_QOS_INGRESS_BUFFER_PROFILE_LIST:
-      case SAI_PORT_ATTR_QOS_EGRESS_BUFFER_PROFILE_LIST:
-      case SAI_PORT_ATTR_BIND_MODE:
-        attr_list[i].value.s32 = attribute.value.s32;
-        break;
-      case SAI_PORT_ATTR_HW_LANE_LIST: {
-        attr_list[i].value.u32list.count = attribute.value.u32list.count;
-        attr_list[i].value.u32list.list = (uint32_t *)malloc(
-            sizeof(uint32_t) * attribute.value.u32list.count);
-        int j;
-        for (j = 0; j <= attribute.value.u32list.count; j++) {
-          attr_list[i].value.u32list.list[j] =
-              attribute.value.u32list.u32list[j];
+        case SAI_PORT_ATTR_UPDATE_DSCP:
+          attr_list[i].value.booldata = attribute.value.booldata;
+          break;
+        case SAI_PORT_ATTR_PORT_VLAN_ID:
+          attr_list[i].value.u16 = attribute.value.u16;
+          break;
+        case SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL:
+        case SAI_PORT_ATTR_QOS_DEFAULT_TC:
+          attr_list[i].value.u8 = attribute.value.u8;
+          break;
+        case SAI_PORT_ATTR_QOS_INGRESS_BUFFER_PROFILE_LIST:
+        case SAI_PORT_ATTR_QOS_EGRESS_BUFFER_PROFILE_LIST:
+        case SAI_PORT_ATTR_BIND_MODE:
+          attr_list[i].value.s32 = attribute.value.s32;
+          break;
+        case SAI_PORT_ATTR_HW_LANE_LIST: {
+          attr_list[i].value.u32list.count = attribute.value.u32list.count;
+          attr_list[i].value.u32list.list = (uint32_t *)malloc(
+              sizeof(uint32_t) * attribute.value.u32list.count);
+          int j;
+          for (j = 0; j <= attribute.value.u32list.count; j++) {
+            attr_list[i].value.u32list.list[j] =
+                attribute.value.u32list.u32list[j];
+          }
+          lane_list_ptr = attr_list[i].value.u32list.list;
+          break;
         }
-        lane_list_ptr = attr_list[i].value.u32list.list;
-        break;
-      }
-      default:
-        break;
+        default:
+          break;
       }
     }
     return lane_list_ptr;
@@ -240,41 +240,41 @@ public:
       attribute = (sai_thrift_attribute_t)*it;
       attr_list[i].id = attribute.id;
       switch (attribute.id) {
-      case SAI_BRIDGE_PORT_ATTR_VLAN_ID:
-        attr_list[i].value.u16 = attribute.value.u16;
-        break;
-      case SAI_BRIDGE_PORT_ATTR_BRIDGE_ID:
-        attr_list[i].value.oid = attribute.value.oid;
-        break;
-      case SAI_BRIDGE_PORT_ATTR_TYPE:
-        attr_list[i].value.s32 = attribute.value.s32;
-        break;
-      case SAI_BRIDGE_PORT_ATTR_PORT_ID:
-        attr_list[i].value.oid = attribute.value.oid;
-        break;
-      default:
-        break;
+        case SAI_BRIDGE_PORT_ATTR_VLAN_ID:
+          attr_list[i].value.u16 = attribute.value.u16;
+          break;
+        case SAI_BRIDGE_PORT_ATTR_BRIDGE_ID:
+          attr_list[i].value.oid = attribute.value.oid;
+          break;
+        case SAI_BRIDGE_PORT_ATTR_TYPE:
+          attr_list[i].value.s32 = attribute.value.s32;
+          break;
+        case SAI_BRIDGE_PORT_ATTR_PORT_ID:
+          attr_list[i].value.oid = attribute.value.oid;
+          break;
+        default:
+          break;
       }
     }
   }
 
-  sai_thrift_attribute_t
-  parse_bridge_port_thrift_attribute(sai_attribute_t *sai_attr) {
+  sai_thrift_attribute_t parse_bridge_port_thrift_attribute(
+      sai_attribute_t *sai_attr) {
     sai_thrift_attribute_t thrift_attr;
     thrift_attr.id = sai_attr->id;
     switch (sai_attr->id) {
-    case SAI_BRIDGE_PORT_ATTR_PORT_ID:
-      thrift_attr.value.oid = sai_attr->value.oid;
-      break;
-    case SAI_BRIDGE_PORT_ATTR_VLAN_ID:
-      thrift_attr.value.u16 = sai_attr->value.u16;
-      break;
-    case SAI_BRIDGE_PORT_ATTR_TYPE:
-      thrift_attr.value.s32 = sai_attr->value.s32;
-      break;
-    case SAI_BRIDGE_PORT_ATTR_BRIDGE_ID:
-      thrift_attr.value.oid = sai_attr->value.oid;
-      break;
+      case SAI_BRIDGE_PORT_ATTR_PORT_ID:
+        thrift_attr.value.oid = sai_attr->value.oid;
+        break;
+      case SAI_BRIDGE_PORT_ATTR_VLAN_ID:
+        thrift_attr.value.u16 = sai_attr->value.u16;
+        break;
+      case SAI_BRIDGE_PORT_ATTR_TYPE:
+        thrift_attr.value.s32 = sai_attr->value.s32;
+        break;
+      case SAI_BRIDGE_PORT_ATTR_BRIDGE_ID:
+        thrift_attr.value.oid = sai_attr->value.oid;
+        break;
     }
     return thrift_attr;
   }
@@ -289,14 +289,14 @@ public:
       attribute = (sai_thrift_attribute_t)*it;
       attr_list[i].id = attribute.id;
       switch (attribute.id) {
-      case SAI_BRIDGE_ATTR_TYPE:
-        attr_list[i].value.s32 = attribute.value.s32;
-        break;
-      case SAI_BRIDGE_ATTR_PORT_LIST:
-        attr_list[i].value.objlist.count = 0;
-        break;
-      default:
-        break;
+        case SAI_BRIDGE_ATTR_TYPE:
+          attr_list[i].value.s32 = attribute.value.s32;
+          break;
+        case SAI_BRIDGE_ATTR_PORT_LIST:
+          attr_list[i].value.objlist.count = 0;
+          break;
+        default:
+          break;
       }
     }
     return;
@@ -312,26 +312,27 @@ public:
       attribute = (sai_thrift_attribute_t)*it;
       attr_list[i].id = attribute.id;
       switch (attribute.id) {
-      case SAI_FDB_ENTRY_ATTR_TYPE:
-        attr_list[i].value.s32 = attribute.value.s32;
-        // td::cout << "--> attr packet type="<<attribute.value.s32<<endl;
-        // std::cout << "--> attr packet_static" << SAI_FDB_ENTRY_TYPE_STATIC
-        // <<endl;
-        break;
-      case SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID:
-        attr_list[i].value.oid = attribute.value.oid;
-        break;
-      case SAI_FDB_ENTRY_ATTR_PACKET_ACTION:
-        attr_list[i].value.s32 = attribute.value.s32;
-        // std::cout << "--> attr packet_action="<<attribute.value.s32<<endl;
-        // std::cout << "--> attr packet_action_fwd=" <<
-        // SAI_PACKET_ACTION_FORWARD <<endl;
-        break;
-      default:
-        logger->error("--> while parsing fdb_attr: attribute.id = {} was "
-                      "dumped in sai_cpp_server",
-                      attribute.id);
-        break;
+        case SAI_FDB_ENTRY_ATTR_TYPE:
+          attr_list[i].value.s32 = attribute.value.s32;
+          // td::cout << "--> attr packet type="<<attribute.value.s32<<endl;
+          // std::cout << "--> attr packet_static" << SAI_FDB_ENTRY_TYPE_STATIC
+          // <<endl;
+          break;
+        case SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID:
+          attr_list[i].value.oid = attribute.value.oid;
+          break;
+        case SAI_FDB_ENTRY_ATTR_PACKET_ACTION:
+          attr_list[i].value.s32 = attribute.value.s32;
+          // std::cout << "--> attr packet_action="<<attribute.value.s32<<endl;
+          // std::cout << "--> attr packet_action_fwd=" <<
+          // SAI_PACKET_ACTION_FORWARD <<endl;
+          break;
+        default:
+          logger->error(
+              "--> while parsing fdb_attr: attribute.id = {} was "
+              "dumped in sai_cpp_server",
+              attribute.id);
+          break;
       }
     }
   }
@@ -357,8 +358,8 @@ public:
     return bridge_id;
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_bridge(const sai_thrift_object_id_t bridge_id) {
+  sai_thrift_status_t sai_thrift_remove_bridge(
+      const sai_thrift_object_id_t bridge_id) {
     logger->info("sai_thrift_remove_bridge");
     sai_status_t status = SAI_STATUS_SUCCESS;
     sai_bridge_api_t *bridge_api;
@@ -371,21 +372,21 @@ public:
     return status;
   }
 
-  sai_thrift_attribute_t
-  parse_bridge_thrift_attribute(sai_attribute_t *sai_attr) {
+  sai_thrift_attribute_t parse_bridge_thrift_attribute(
+      sai_attribute_t *sai_attr) {
     sai_thrift_attribute_t thrift_attr;
     thrift_attr.id = sai_attr->id;
     switch (sai_attr->id) {
-    case SAI_BRIDGE_ATTR_TYPE:
-      thrift_attr.value.s32 = sai_attr->value.s32;
-      break;
-    case SAI_BRIDGE_ATTR_PORT_LIST:
-      thrift_attr.value.objlist.count = sai_attr->value.objlist.count;
-      for (int i = 0; i < thrift_attr.value.objlist.count; i++) {
-        thrift_attr.value.objlist.object_id_list.push_back(
-            sai_attr->value.objlist.list[i]);
-      }
-      break;
+      case SAI_BRIDGE_ATTR_TYPE:
+        thrift_attr.value.s32 = sai_attr->value.s32;
+        break;
+      case SAI_BRIDGE_ATTR_PORT_LIST:
+        thrift_attr.value.objlist.count = sai_attr->value.objlist.count;
+        for (int i = 0; i < thrift_attr.value.objlist.count; i++) {
+          thrift_attr.value.objlist.object_id_list.push_back(
+              sai_attr->value.objlist.list[i]);
+        }
+        break;
     }
     return thrift_attr;
   }
@@ -437,8 +438,8 @@ public:
     return (sai_thrift_object_id_t)bridge_port_id;
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_bridge_port(const sai_thrift_object_id_t bridge_port_id) {
+  sai_thrift_status_t sai_thrift_remove_bridge_port(
+      const sai_thrift_object_id_t bridge_port_id) {
     // Your implementation goes here
     logger->info("sai_thrift_remove_bridge_port");
     sai_status_t status = SAI_STATUS_SUCCESS;
@@ -493,8 +494,8 @@ public:
     }
   }
 
-  sai_fdb_entry_t
-  parse_thrift_fdb_entry(const sai_thrift_fdb_entry_t thrift_fdb_entry) {
+  sai_fdb_entry_t parse_thrift_fdb_entry(
+      const sai_thrift_fdb_entry_t thrift_fdb_entry) {
     sai_fdb_entry_t sai_fdb_entry;
     sai_fdb_entry.switch_id = 0;
     parse_mac_str(thrift_fdb_entry.mac_address, sai_fdb_entry.mac_address);
@@ -525,8 +526,8 @@ public:
     return fdb_api->create_fdb_entry(&sai_fdb_entry, count, attr);
   }
 
-  sai_thrift_status_t
-  sai_thrift_delete_fdb_entry(const sai_thrift_fdb_entry_t &thrift_fdb_entry) {
+  sai_thrift_status_t sai_thrift_delete_fdb_entry(
+      const sai_thrift_fdb_entry_t &thrift_fdb_entry) {
     logger->info("sai_thrift_delete_fdb_entry");
     sai_status_t status = SAI_STATUS_SUCCESS;
     sai_fdb_api_t *fdb_api;
@@ -556,14 +557,14 @@ public:
       attribute = (sai_thrift_attribute_t)*it;
       attr_list[i].id = attribute.id;
       switch (attribute.id) {
-      case SAI_VLAN_ATTR_VLAN_ID:
-        attr_list[i].value.u16 = attribute.value.u16;
-        break;
-      default:
-        logger->error(
-            "--> while parsing vlan_attr: {} was dumped in sai_cpp_server",
-            attribute.id);
-        break;
+        case SAI_VLAN_ATTR_VLAN_ID:
+          attr_list[i].value.u16 = attribute.value.u16;
+          break;
+        default:
+          logger->error(
+              "--> while parsing vlan_attr: {} was dumped in sai_cpp_server",
+              attribute.id);
+          break;
       }
     }
   }
@@ -588,8 +589,8 @@ public:
     return (sai_thrift_object_id_t)vlan_id;
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_vlan(const sai_thrift_object_id_t vlan_id) {
+  sai_thrift_status_t sai_thrift_remove_vlan(
+      const sai_thrift_object_id_t vlan_id) {
     logger->info("sai_thrift_delete_vlan");
     sai_status_t status = SAI_STATUS_SUCCESS;
     sai_vlan_api_t *vlan_api;
@@ -620,20 +621,21 @@ public:
       attribute = (sai_thrift_attribute_t)*it;
       attr_list[i].id = attribute.id;
       switch (attribute.id) {
-      case SAI_VLAN_MEMBER_ATTR_VLAN_ID:
-        attr_list[i].value.oid = attribute.value.oid;
-        break;
-      case SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID:
-        attr_list[i].value.oid = attribute.value.oid;
-        break;
-      case SAI_VLAN_MEMBER_ATTR_VLAN_TAGGING_MODE:
-        attr_list[i].value.s32 = attribute.value.s32;
-        break;
-      default:
-        logger->error("--> while parsing vlan_member_attr: {}  was dumped in "
-                      "sai_cpp_server",
-                      attribute.id);
-        break;
+        case SAI_VLAN_MEMBER_ATTR_VLAN_ID:
+          attr_list[i].value.oid = attribute.value.oid;
+          break;
+        case SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID:
+          attr_list[i].value.oid = attribute.value.oid;
+          break;
+        case SAI_VLAN_MEMBER_ATTR_VLAN_TAGGING_MODE:
+          attr_list[i].value.s32 = attribute.value.s32;
+          break;
+        default:
+          logger->error(
+              "--> while parsing vlan_member_attr: {}  was dumped in "
+              "sai_cpp_server",
+              attribute.id);
+          break;
       }
     }
   }
@@ -658,8 +660,8 @@ public:
     return (sai_thrift_object_id_t)vlan_member_id;
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_vlan_member(const sai_thrift_object_id_t vlan_member_id) {
+  sai_thrift_status_t sai_thrift_remove_vlan_member(
+      const sai_thrift_object_id_t vlan_member_id) {
     logger->info("sai_thrift_remove_vlan_member");
     sai_status_t status = SAI_STATUS_SUCCESS;
     sai_vlan_api_t *vlan_api;
@@ -690,8 +692,8 @@ public:
     logger->info("sai_thrift_create_virtual_router");
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_virtual_router(const sai_thrift_object_id_t vr_id) {
+  sai_thrift_status_t sai_thrift_remove_virtual_router(
+      const sai_thrift_object_id_t vr_id) {
     // Your implementation goes here
     logger->info("sai_thrift_remove_virtual_router");
   }
@@ -703,8 +705,8 @@ public:
     logger->info("sai_thrift_create_route");
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_route(const sai_thrift_route_entry_t &thrift_route_entry) {
+  sai_thrift_status_t sai_thrift_remove_route(
+      const sai_thrift_route_entry_t &thrift_route_entry) {
     // Your implementation goes here
     logger->info("sai_thrift_remove_route");
   }
@@ -715,8 +717,8 @@ public:
     logger->info("sai_thrift_create_router_interface");
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_router_interface(const sai_thrift_object_id_t rif_id) {
+  sai_thrift_status_t sai_thrift_remove_router_interface(
+      const sai_thrift_object_id_t rif_id) {
     // Your implementation goes here
     logger->info("sai_thrift_remove_router_interface");
   }
@@ -734,8 +736,8 @@ public:
     logger->info("sai_thrift_create_next_hop");
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_next_hop(const sai_thrift_object_id_t next_hop_id) {
+  sai_thrift_status_t sai_thrift_remove_next_hop(
+      const sai_thrift_object_id_t next_hop_id) {
     // Your implementation goes here
     logger->info("sai_thrift_remove_next_hop");
   }
@@ -774,10 +776,10 @@ public:
       attribute = (sai_thrift_attribute_t)*it;
       attr_list[i].id = attribute.id;
       switch (attribute.id) {
-      default:
-        std::cout << "--> while parsing lag_attr: attribute.id = "
-                  << attribute.id << " was dumped in sai_cpp_server" << endl;
-        break;
+        default:
+          std::cout << "--> while parsing lag_attr: attribute.id = "
+                    << attribute.id << " was dumped in sai_cpp_server" << endl;
+          break;
       }
     }
   }
@@ -792,16 +794,16 @@ public:
       attribute = (sai_thrift_attribute_t)*it;
       attr_list[i].id = attribute.id;
       switch (attribute.id) {
-      case SAI_LAG_MEMBER_ATTR_PORT_ID:
-        attr_list[i].value.oid = attribute.value.oid;
-        break;
-      case SAI_LAG_MEMBER_ATTR_LAG_ID:
-        attr_list[i].value.oid = attribute.value.oid;
-        break;
-      default:
-        std::cout << "--> while parsing lag_member_attr: attribute.id = "
-                  << attribute.id << " was dumped in sai_cpp_server" << endl;
-        break;
+        case SAI_LAG_MEMBER_ATTR_PORT_ID:
+          attr_list[i].value.oid = attribute.value.oid;
+          break;
+        case SAI_LAG_MEMBER_ATTR_LAG_ID:
+          attr_list[i].value.oid = attribute.value.oid;
+          break;
+        default:
+          std::cout << "--> while parsing lag_member_attr: attribute.id = "
+                    << attribute.id << " was dumped in sai_cpp_server" << endl;
+          break;
       }
     }
   }
@@ -827,8 +829,8 @@ public:
     return (sai_thrift_object_id_t)lag_id;
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_lag(const sai_thrift_object_id_t lag_id) {
+  sai_thrift_status_t sai_thrift_remove_lag(
+      const sai_thrift_object_id_t lag_id) {
     logger->info("sai_thrift_remove_lag");
     sai_status_t status = SAI_STATUS_SUCCESS;
     sai_lag_api_t *lag_api;
@@ -863,8 +865,8 @@ public:
     return (sai_thrift_object_id_t)lag_member_id;
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_lag_member(const sai_thrift_object_id_t lag_member_id) {
+  sai_thrift_status_t sai_thrift_remove_lag_member(
+      const sai_thrift_object_id_t lag_member_id) {
     logger->info("sai_thrift_remove_lag_member");
     sai_status_t status = SAI_STATUS_SUCCESS;
     sai_lag_api_t *lag_api;
@@ -884,8 +886,8 @@ public:
     logger->info("sai_thrift_create_stp_entry");
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_stp_entry(const sai_thrift_object_id_t stp_id) {
+  sai_thrift_status_t sai_thrift_remove_stp_entry(
+      const sai_thrift_object_id_t stp_id) {
     // Your implementation goes here
     logger->info("sai_thrift_remove_stp_entry");
   }
@@ -897,9 +899,9 @@ public:
     logger->info("sai_thrift_set_stp_port_state");
   }
 
-  sai_thrift_port_stp_port_state_t
-  sai_thrift_get_stp_port_state(const sai_thrift_object_id_t stp_id,
-                                const sai_thrift_object_id_t port_id) {
+  sai_thrift_port_stp_port_state_t sai_thrift_get_stp_port_state(
+      const sai_thrift_object_id_t stp_id,
+      const sai_thrift_object_id_t port_id) {
     // Your implementation goes here
     logger->info("sai_thrift_get_stp_port_state");
   }
@@ -922,8 +924,9 @@ public:
     // TODO: Currently not caring about attr_list.
     // sai_attribute_t *attr = (sai_attribute_t*) malloc(sizeof(sai_attribute_t)
     // * thrift_attr_list.size());
-    logger->info("sai_thrift_create_switch - currently only initiated on "
-                 "server constructor");
+    logger->info(
+        "sai_thrift_create_switch - currently only initiated on "
+        "server constructor");
   }
 
   sai_attribute_t parse_switch_attribute(sai_thrift_attribute_t thrift_attr) {
@@ -940,8 +943,8 @@ public:
     return sai_attr;
   }
 
-  sai_thrift_attribute_t
-  parse_switch_thrift_attribute(sai_attribute_t *sai_attr) {
+  sai_thrift_attribute_t parse_switch_thrift_attribute(
+      sai_attribute_t *sai_attr) {
     sai_thrift_attribute_t thrift_attr;
     thrift_attr.id = sai_attr->id;
     if (sai_attr->id == SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID) {
@@ -1010,8 +1013,8 @@ public:
     logger->info("sai_thrift_get_default_vlan_id");
   }
 
-  sai_thrift_object_id_t
-  sai_thrift_get_port_id_by_front_port(const std::string &port_name) {
+  sai_thrift_object_id_t sai_thrift_get_port_id_by_front_port(
+      const std::string &port_name) {
     // Your implementation goes here
     uint32_t hw_port = std::stoi(port_name);
     logger->info("sai_thrift_get_port_id_by_front_port (%d)", hw_port);
@@ -1072,8 +1075,8 @@ public:
     return port_id;
   }
 
-  sai_thrift_status_t
-  sai_thrift_set_switch_attribute(const sai_thrift_attribute_t &attribute) {
+  sai_thrift_status_t sai_thrift_set_switch_attribute(
+      const sai_thrift_attribute_t &attribute) {
     // Your implementation goes here
     logger->info("sai_thrift_set_switch_attribute");
   }
@@ -1084,8 +1087,8 @@ public:
     logger->info("sai_thrift_create_hostif");
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_hostif(const sai_thrift_object_id_t hif_id) {
+  sai_thrift_status_t sai_thrift_remove_hostif(
+      const sai_thrift_object_id_t hif_id) {
     // Your implementation goes here
     logger->info("sai_thrift_remove_hostif");
   }
@@ -1108,22 +1111,22 @@ public:
     logger->info("sai_thrift_create_hostif_trap");
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_hostif_trap(const sai_thrift_hostif_trap_id_t trap_id) {
+  sai_thrift_status_t sai_thrift_remove_hostif_trap(
+      const sai_thrift_hostif_trap_id_t trap_id) {
     // Your implementation goes here
     logger->info("sai_thrift_remove_hostif_trap");
   }
 
-  sai_thrift_status_t
-  sai_thrift_set_hostif_trap(const sai_thrift_object_id_t trap_id,
-                             const sai_thrift_attribute_t &thrift_attr) {
+  sai_thrift_status_t sai_thrift_set_hostif_trap(
+      const sai_thrift_object_id_t trap_id,
+      const sai_thrift_attribute_t &thrift_attr) {
     // Your implementation goes here
     logger->info("sai_thrift_set_hostif_trap");
   }
 
-  sai_thrift_status_t
-  sai_thrift_set_hostif_trap_group(const sai_thrift_object_id_t trap_group_id,
-                                   const sai_thrift_attribute_t &thrift_attr) {
+  sai_thrift_status_t sai_thrift_set_hostif_trap_group(
+      const sai_thrift_object_id_t trap_group_id,
+      const sai_thrift_attribute_t &thrift_attr) {
     // Your implementation goes here
     logger->info("sai_thrift_set_hostif_trap_group");
   }
@@ -1134,8 +1137,8 @@ public:
     logger->info("sai_thrift_create_acl_table");
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_acl_table(const sai_thrift_object_id_t acl_table_id) {
+  sai_thrift_status_t sai_thrift_remove_acl_table(
+      const sai_thrift_object_id_t acl_table_id) {
     // Your implementation goes here
     logger->info("sai_thrift_remove_acl_table");
   }
@@ -1146,8 +1149,8 @@ public:
     logger->info("sai_thrift_create_acl_entry");
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_acl_entry(const sai_thrift_object_id_t acl_entry) {
+  sai_thrift_status_t sai_thrift_remove_acl_entry(
+      const sai_thrift_object_id_t acl_entry) {
     // Your implementation goes here
     logger->info("sai_thrift_remove_acl_entry");
   }
@@ -1182,8 +1185,8 @@ public:
     logger->info("sai_thrift_create_acl_counter");
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_acl_counter(const sai_thrift_object_id_t acl_counter_id) {
+  sai_thrift_status_t sai_thrift_remove_acl_counter(
+      const sai_thrift_object_id_t acl_counter_id) {
     // Your implementation goes here
     logger->info("sai_thrift_remove_acl_counter");
   }
@@ -1202,8 +1205,8 @@ public:
     logger->info("sai_thrift_create_mirror_session");
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_mirror_session(const sai_thrift_object_id_t session_id) {
+  sai_thrift_status_t sai_thrift_remove_mirror_session(
+      const sai_thrift_object_id_t session_id) {
     // Your implementation goes here
     logger->info("sai_thrift_remove_mirror_session");
   }
@@ -1214,8 +1217,8 @@ public:
     logger->info("sai_thrift_create_policer");
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_policer(const sai_thrift_object_id_t policer_id) {
+  sai_thrift_status_t sai_thrift_remove_policer(
+      const sai_thrift_object_id_t policer_id) {
     // Your implementation goes here
     logger->info("sai_thrift_remove_policer");
   }
@@ -1255,9 +1258,9 @@ public:
     logger->info("sai_thrift_clear_queue_stats");
   }
 
-  sai_thrift_status_t
-  sai_thrift_set_queue_attribute(const sai_thrift_object_id_t queue_id,
-                                 const sai_thrift_attribute_t &thrift_attr) {
+  sai_thrift_status_t sai_thrift_set_queue_attribute(
+      const sai_thrift_object_id_t queue_id,
+      const sai_thrift_attribute_t &thrift_attr) {
     // Your implementation goes here
     logger->info("sai_thrift_set_queue_attribute");
   }
@@ -1295,8 +1298,8 @@ public:
     logger->info("sai_thrift_create_wred_profile");
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_wred_profile(const sai_thrift_object_id_t wred_id) {
+  sai_thrift_status_t sai_thrift_remove_wred_profile(
+      const sai_thrift_object_id_t wred_id) {
     // Your implementation goes here
     logger->info("sai_thrift_remove_wred_profile");
   }
@@ -1307,8 +1310,8 @@ public:
     logger->info("sai_thrift_create_qos_map");
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_qos_map(const sai_thrift_object_id_t qos_map_id) {
+  sai_thrift_status_t sai_thrift_remove_qos_map(
+      const sai_thrift_object_id_t qos_map_id) {
     // Your implementation goes here
     logger->info("sai_thrift_remove_qos_map");
   }
@@ -1317,8 +1320,8 @@ int main(int argc, char **argv) {
   std::cout << "creating server for SAI on port" << sai_port;
   // logging
   auto logger = spdlog::basic_logger_mt("logger", "logs/log.txt");
-  logger->flush_on(spdlog::level::info);     // make err
-  spdlog::set_pattern("[thread %t] %l %v "); // add %T for time
+  logger->flush_on(spdlog::level::info);      // make err
+  spdlog::set_pattern("[thread %t] %l %v ");  // add %T for time
 
   // open server to sai functions
   boost::shared_ptr<switch_sai_rpcHandler> handler(new switch_sai_rpcHandler());

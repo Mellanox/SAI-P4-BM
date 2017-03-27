@@ -1,7 +1,7 @@
 #include "sai.h"
 // #include "sai_bm_c_api.h"
-#include "sai_object_interface.h"
 #include <stdlib.h>
+#include "sai_object_interface.h"
 // static sai_api_service_t sai_api_service;
 static S_O_Handle sai_obj;
 static sai_api_t api_id = SAI_API_UNSPECIFIED;
@@ -65,11 +65,11 @@ static const char *module[] = {
 sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table) {
   sai_status_t status = SAI_STATUS_SUCCESS;
 
-  //SAI_LOG_ENTER();
+  // SAI_LOG_ENTER();
 
   if (!api_method_table) {
     status = SAI_STATUS_INVALID_PARAMETER;
-    //SAI_LOG_ERROR("null api method table: %s", sai_status_to_string(status));
+    // SAI_LOG_ERROR("null api method table: %s", sai_status_to_string(status));
     return status;
   }
 
@@ -77,17 +77,12 @@ sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table) {
   return status;
 }
 
-sai_status_t sai_api_initialize(uint64_t flags, const service_method_table_t* services) {
+sai_status_t sai_api_initialize(uint64_t flags,
+                                const service_method_table_t *services) {
   sai_obj = create_sai_object();
 }
 
-sai_status_t sai_api_uninitialize(void) {
-  free_sai_object(sai_obj);
-}
-
-sai_object_id_t temp_sai_get_bridge_port(uint32_t bridge_port_num) {
-  return sai_obj_temp_sai_get_bridge_port(sai_obj, bridge_port_num);
-}
+sai_status_t sai_api_uninitialize(void) { free_sai_object(sai_obj); }
 
 #ifdef __cplusplus
 }

@@ -1,13 +1,47 @@
-#include "sai_object.h"
 #include <assert.h>
 #include <inttypes.h>
 #include <pcap.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "sai_object.h"
 
 #define ETHER_ADDR_LEN 6
 #define CPU_HDR_LEN 6
 #define MAC_LEARN_TRAP_ID 512
+
+void sai_object::startSaiAdapter() {
+  sai_adapter_active = true;
+  std::thread SaiAdapterThread(&sai_object::SaiAdapterMain, this);
+  SaiAdapterThread.detach();
+}
+
+void sai_object::endSaiAdapter() {
+  sai_adapter_active = false; 
+}
+
+void sai_object::SaiAdapterMain() {
+  (*logger)->info("SAI Adapter Thread Started\n");
+  // sai_api_initialize(0, &test_services);
+  // server_internal_init_switch();
+  const char *dev = "cpu_port";
+  pcap_t *descr;
+  char errbuf[PCAP_ERRBUF_SIZE];
+  // (*logger)->("pcap started on dev %s\n", dev);
+  descr = pcap_open_live(dev, BUFSIZ, 0, -1, errbuf);
+  if (descr == NULL) {
+    // (*logger)->("pcap_open_live() failed: %s\n", errbuf);
+    return;
+  }
+
+  if (pcap_loop(descr, 10, sai_object::packetHandler, NULL) < 0) {
+    (*logger)->info("pcap_loop() failed: %s\n", pcap_geterr(descr));
+    return;
+  }
+  // while (sai_adapter_active) {
+    
+  // }
+  (*logger)->info("[T] Thread Ended\n");
+}
 
 void server_internal_init_switch() {
   printf("Switch init with default configurations\n");
@@ -24,56 +58,13 @@ void server_internal_init_switch() {
   return;
 }
 
-const char *test_profile_get_value(_In_ sai_switch_profile_id_t profile_id,
-                                   _In_ const char *variable) {
-  // UNREFERENCED_PARAMETER(profile_id);
+// void *fdb_miss_event_notification(sai_object_id_t switch_id, const void *buffer,
+//                                   sai_size_t buffer_size, uint32_t attr_count,
+//                                   const sai_attribute_t *attr_list) {
+//   printf("FDB MISS.\n");
 
-  if (!strcmp(variable, "SAI_KEY_INIT_CONFIG_FILE")) {
-    return "/usr/share/sai_2410.xml";
-  } else if (!strcmp(variable, "KV_DEVICE_MAC_ADDRESS")) {
-    return "20:03:04:05:06:00";
-  } else if (!strcmp(variable, "SAI_KEY_L3_ROUTE_TABLE_SIZE")) {
-    // return "1000";
-  } else if (!strcmp(variable, "SAI_KEY_L3_NEIGHBOR_TABLE_SIZE")) {
-    // return "2000";
-  }
-
-  return NULL;
-}
-
-/* Enumerate all the K/V pairs in a profile.
-Pointer to NULL passed as variable restarts enumeration.
-Function returns 0 if next value exists, -1 at the end of the list. */
-int test_profile_get_next_value(_In_ sai_switch_profile_id_t profile_id,
-                                _Out_ const char **variable,
-                                _Out_ const char **value) {
-  // UNREFERENCED_PARAMETER(profile_id);
-  // UNREFERENCED_PARAMETER(variable);
-  // UNREFERENCED_PARAMETER(value);
-
-  return -1;
-}
-
-const service_method_table_t test_services = {test_profile_get_value,
-                                              test_profile_get_next_value};
-
-/* Enumerate all the K/V pairs in a profile.
-Pointer to NULL passed as variable restarts enumeration.
-Function returns 0 if next value exists, -1 at the end of the list. */
-
-// typedef void(*sai_packet_event_notification_fn)(
-//         _In_ sai_object_id_t switch_id,
-//         _In_ const void *buffer,
-//         _In_ sai_size_t buffer_size,
-//         _In_ uint32_t attr_count,
-//         _In_ const sai_attribute_t *attr_list);
-void *fdb_miss_event_notification(sai_object_id_t switch_id, const void *buffer,
-                                  sai_size_t buffer_size, uint32_t attr_count,
-                                  const sai_attribute_t *attr_list) {
-  printf("FDB MISS.\n");
-
-  // Learn new mac.
-}
+//   // Learn new mac.
+// }
 
 typedef struct _ethernet_hdr_t {
   uint8_t dst_addr[ETHER_ADDR_LEN];
@@ -140,93 +131,57 @@ void adapter_create_fdb_entry(sai_object_id_t bridge_port_id, sai_mac_t mac,
   printf("fdb learned\n");
 }
 
-void packetHandler(u_char *userData, const struct pcap_pkthdr *pkthdr,
+void sai_object::packetHandler(u_char *userData, const struct pcap_pkthdr *pkthdr,
                    const u_char *packet) {
   // uint64_t* num;
-  cpu_hdr_t *cpu_hdr = (cpu_hdr_t *)packet;
-  ReverseBytes((uint8_t *)cpu_hdr, CPU_HDR_LEN);
-  ethernet_hdr_t *ether = (ethernet_hdr_t *)(packet + CPU_HDR_LEN);
-  ReverseBytes((uint8_t *)&(ether->ether_type), 2);
-  ReverseBytes(ether->dst_addr, 6);
-  ReverseBytes(ether->src_addr, 6);
+  // cpu_hdr_t *cpu_hdr = (cpu_hdr_t *)packet;
+  // ReverseBytes((uint8_t *)cpu_hdr, CPU_HDR_LEN);
+  // ethernet_hdr_t *ether = (ethernet_hdr_t *)(packet + CPU_HDR_LEN);
+  // ReverseBytes((uint8_t *)&(ether->ether_type), 2);
+  // ReverseBytes(ether->dst_addr, 6);
+  // ReverseBytes(ether->src_addr, 6);
 
-  printf("packet captured:\n");
-  printf("trap_id: %d. bridge_id: %d. ingress_port: %d. bridge_port: %d.\n",
-         cpu_hdr->trap_id, cpu_hdr->bridge_id, cpu_hdr->ingress_port,
-         cpu_hdr->bridge_port);
-  printf("source MAC:\n");
-  print_mac(ether->src_addr);
-  printf("dest MAC:\n");
-  print_mac(ether->dst_addr);
-  printf("ether_type = 0x%.4x\n", ether->ether_type);
+  (*logger)->info("CPU packet captured");
+}
+  // printf("trap_id: %d. bridge_id: %d. ingress_port: %d. bridge_port: %d.\n",
+  //        cpu_hdr->trap_id, cpu_hdr->bridge_id, cpu_hdr->ingress_port,
+  //        cpu_hdr->bridge_port);
+  // printf("source MAC:\n");
+  // print_mac(ether->src_addr);
+  // printf("dest MAC:\n");
+  // print_mac(ether->dst_addr);
+  // printf("ether_type = 0x%.4x\n", ether->ether_type);
   // sai_object_id_t bridge_port =
   // temp_sai_get_bridge_port(cpu_hdr->bridge_port);
   // printf("bridge_port_sai_obj_id = %d\n", bridge_port);
 
-  sai_bridge_api_t *bridge_api;
-  sai_status_t status = SAI_STATUS_SUCCESS;
-  status = sai_api_query(SAI_API_BRIDGE, (void **)&bridge_api);
-  if (status != SAI_STATUS_SUCCESS) {
-    printf("sai_api_query failed!!!\n");
-    return;
-  }
-
-  sai_attribute_t attr[3];
-  attr[0].id = SAI_BRIDGE_PORT_ATTR_TYPE;
-  attr[1].id = SAI_BRIDGE_PORT_ATTR_VLAN_ID;
-  attr[2].id = SAI_BRIDGE_PORT_ATTR_BRIDGE_ID;
-  // bridge_api->get_bridge_port_attribute(bridge_port, 3, attr);
-  sai_fdb_entry_bridge_type_t bridge_type;
-  switch (attr[0].value.s32) {
-  case SAI_BRIDGE_PORT_TYPE_PORT:
-    bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1Q;
-    break;
-  case SAI_BRIDGE_PORT_TYPE_SUB_PORT:
-    bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1D;
-    break;
-  default:
-    printf("packet arrived from non port bridge_port (not supported yet)\n");
-    break;
-  }
-  // adapter_create_fdb_entry(bridge_port, ether->src_addr, bridge_type,
-  // attr[1].value.u16, attr[2].value.oid);
-}
-
-int main_old(int argc, char **argv) {
-  printf("Starting SAI adapter.\n");
-  sai_object_id_t switch_id = 1;
-  printf("debug0\n");
-  std::shared_ptr<spdlog::logger> logger = spdlog::get("logger");
-  printf("debug1\n");
-  sai_api_initialize(0, &test_services);
-  printf("debug2\n");
-  server_internal_init_switch();
-  printf("debug3\n");
-  const char *dev = "cpu_port";
-  pcap_t *descr;
-  char errbuf[PCAP_ERRBUF_SIZE];
-  printf("pcap started on dev %s\n", dev);
-  descr = pcap_open_live(dev, BUFSIZ, 0, -1, errbuf);
-  if (descr == NULL) {
-    printf("pcap_open_live() failed: %s\n", errbuf);
-    return 1;
-  }
-
-  if (pcap_loop(descr, 10, packetHandler, NULL) < 0) {
-    printf("pcap_loop() failed: %s\n", pcap_geterr(descr));
-    return 1;
-  }
-
   // sai_bridge_api_t *bridge_api;
   // sai_status_t status = SAI_STATUS_SUCCESS;
-  // status = sai_api_query(SAI_API_BRIDGE, (void **) &bridge_api);
+  // status = sai_api_query(SAI_API_BRIDGE, (void **)&bridge_api);
   // if (status != SAI_STATUS_SUCCESS) {
-  //     printf("sai_api_query failed!!!\n");
-  //     return SAI_STATUS_NOT_IMPLEMENTED;
+  //   printf("sai_api_query failed!!!\n");
+  //   return;
   // }
 
-  sai_api_uninitialize();
-}
+  // sai_attribute_t attr[3];
+  // attr[0].id = SAI_BRIDGE_PORT_ATTR_TYPE;
+  // attr[1].id = SAI_BRIDGE_PORT_ATTR_VLAN_ID;
+  // attr[2].id = SAI_BRIDGE_PORT_ATTR_BRIDGE_ID;
+  // // bridge_api->get_bridge_port_attribute(bridge_port, 3, attr);
+  // sai_fdb_entry_bridge_type_t bridge_type;
+  // switch (attr[0].value.s32) {
+  //   case SAI_BRIDGE_PORT_TYPE_PORT:
+  //     bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1Q;
+  //     break;
+  //   case SAI_BRIDGE_PORT_TYPE_SUB_PORT:
+  //     bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1D;
+  //     break;
+  //   default:
+  //     printf("packet arrived from non port bridge_port (not supported yet)\n");
+  //     break;
+  // }
+  // adapter_create_fdb_entry(bridge_port, ether->src_addr, bridge_type,
+  // attr[1].value.u16, attr[2].value.oid);
 
 // sai_port_api_t* port_api;
 //    // sai_api_query(SAI_API_PORT, (void**)&port_api);
