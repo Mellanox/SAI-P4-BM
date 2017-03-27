@@ -762,6 +762,9 @@ class L21QLagTest(sai_base_test.ThriftInterfaceDataPlane):
         finally:
             sai_thrift_delete_fdb(self.client, mac1, bridge)
             sai_thrift_delete_fdb(self.client, mac2, bridge)
+            self.client.sai_thrift_remove_vlan_member(vlan_member1)
+            self.client.sai_thrift_remove_vlan_member(vlan_member2)
+            self.client.sai_thrift_remove_vlan(vlan_oid)
             self.client.sai_thrift_remove_bridge_port(bridge_port1)
             self.client.sai_thrift_remove_bridge_port(bridge_port2)
             self.client.sai_thrift_remove_bridge(bridge)

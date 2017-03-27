@@ -365,6 +365,9 @@ sai_status_t sai_object::create_bridge_port(sai_object_id_t *bridge_port_id,
       break;
     }
   }
+
+  switch_metadata_ptr->bridges[bridge_port->bridge_id]->bridge_port_list.push_back(bridge_port->sai_object_id);
+  
   BmAddEntryOptions options;
   BmMatchParams match_params;
   BmActionData action_data;
@@ -475,6 +478,15 @@ sai_status_t sai_object::create_bridge_port(sai_object_id_t *bridge_port_id,
   return SAI_STATUS_SUCCESS;
 }
 
+sai_object_id_t sai_object::temp_sai_get_bridge_port(uint32_t bridge_port_num) {
+    printf("sai_object::temp_sai_get_bridge_port. bridge_port_num = %d\n", bridge_port_num);
+    for (bridge_port_id_map_t::iterator it = switch_metadata_ptr->bridge_ports.begin(); it != switch_metadata_ptr->bridge_ports.end(); ++it) {
+      if (it->second->bridge_port == bridge_port_num) {
+        return it->first;
+      }
+    }
+}
+
 sai_status_t sai_object::remove_bridge_port(sai_object_id_t bridge_port_id) {
   sai_status_t status = SAI_STATUS_SUCCESS;
   BridgePort_obj *bridge_port =
@@ -519,7 +531,11 @@ sai_status_t sai_object::remove_bridge_port(sai_object_id_t bridge_port_id) {
           bridge_port->handle_port_ingress_interface_type);
     }catch(...){printf("--> DEBUG : Unable to remove table_port_ingress_interface_type entry, possible entry override\n");}
   }
+  printf("deleted bridge port %d bm_entries\n", bridge_port->sai_object_id);
   switch_metadata_ptr->bridge_ports.erase(bridge_port->sai_object_id);
+  std::vector<sai_object_id_t> *vec = &switch_metadata_ptr->bridges[bridge_port->bridge_id]->bridge_port_list;
+  vec->erase(std::remove(vec->begin(), vec->end(), bridge_port->sai_object_id), vec->end());
+
   sai_id_map_ptr->free_id(bridge_port->sai_object_id);
   printf("deleted bridge port %d bm_entries\n", bridge_port->sai_object_id);
   // printf("ports.size=%d\n",switch_metadata_ptr->ports.size());
@@ -564,6 +580,11 @@ sai_status_t sai_object::get_bridge_attribute(sai_object_id_t bridge_id,
     case SAI_BRIDGE_ATTR_PORT_LIST:
       (attr_list + i)->value.objlist.count = bridge->bridge_port_list.size();
       (attr_list + i)->value.objlist.list = &bridge->bridge_port_list[0];
+      printf("bridge (id %d) bridge_port_list:\n", bridge_id);
+      for (std::vector<sai_object_id_t>::iterator it = bridge->bridge_port_list.begin(); it < bridge->bridge_port_list.end(); ++it) {
+        std::cout << *it << " ";
+      }
+      std::cout << endl;
       break;
     }
   }
@@ -581,15 +602,15 @@ sai_status_t sai_object::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
   sai_status_t status = SAI_STATUS_SUCCESS;
   // parsing attributes
 
-  uint32_t entry_type;
+  sai_fdb_entry_type_t entry_type;
   uint32_t bridge_port;
-  uint32_t packet_action;
+  sai_packet_action_t packet_action;
   sai_attribute_t attribute;
   for (uint32_t i = 0; i < attr_count; i++) {
     attribute = attr_list[i];
     switch (attribute.id) {
     case SAI_FDB_ENTRY_ATTR_TYPE:
-      entry_type = attribute.value.s32;
+      entry_type =  (sai_fdb_entry_type_t) attribute.value.s32;
       // std::cout << "--> attr packet type="<<attribute.value.s32<<endl;
       // std::cout << "--> attr packet_static" << SAI_FDB_ENTRY_TYPE_STATIC
       // <<endl;
@@ -599,7 +620,7 @@ sai_status_t sai_object::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
           switch_metadata_ptr->bridge_ports[attribute.value.oid]->bridge_port;
       break;
     case SAI_FDB_ENTRY_ATTR_PACKET_ACTION:
-      packet_action = attribute.value.s32;
+      packet_action = (sai_packet_action_t) attribute.value.s32;
       // std::cout << "--> attr packet_action="<<attribute.value.s32<<endl;
       // std::cout << "--> attr packet_action_fwd=" << SAI_PACKET_ACTION_FORWARD
       // <<endl;
@@ -628,6 +649,10 @@ sai_status_t sai_object::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
       action_data.push_back(parse_param(bridge_port, 1));
       bm_client_ptr->bm_mt_add_entry(cxt_id, "table_fdb", match_params,
                                      "action_set_egress_br_port", action_data,
+                                     options);
+      action_data.clear();
+      bm_client_ptr->bm_mt_add_entry(cxt_id, "table_learn_fdb", match_params,
+                                     "_nop", action_data,
                                      options);
     }
   }
@@ -764,6 +789,7 @@ sai_status_t sai_object::create_vlan_member(sai_object_id_t *vlan_member_id,
         cxt_id, "table_egress_vlan_tag", match_params,
         "action_forward_vlan_tag", action_data, options);
   } else {
+    printf("table_egress_vlan_tag debug.  out_if = %d, vid = %d\n", out_if, vlan_member->vid);
     match_params.push_back(parse_exact_match_param(out_if, 1));
     match_params.push_back(parse_exact_match_param(vlan_member->vid, 2));
     match_params.push_back(parse_valid_match_param(true));
@@ -949,7 +975,7 @@ sai_status_t sai_object::create_lag_member(sai_object_id_t *lag_member_id,
   BmActionData action_data;
   match_params.push_back(parse_exact_match_param(port->hw_port, 2));
   action_data.push_back(parse_param(1, 1));
-  action_data.push_back(parse_param(lag->sai_object_id, 1));
+  action_data.push_back(parse_param(lag->l2_if, 1));
   port->handle_ingress_lag = bm_client_ptr->bm_mt_add_entry(
       cxt_id, "table_ingress_lag", match_params, "action_set_lag_l2if",
       action_data, options);

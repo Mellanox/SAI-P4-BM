@@ -80,6 +80,7 @@ public:
 	static sai_status_t create_bridge_port (sai_object_id_t *bridge_port_id, sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
 	static sai_status_t remove_bridge_port (sai_object_id_t bridge_port_id);
 	static sai_status_t get_bridge_port_attribute(sai_object_id_t bridge_port_id, uint32_t attr_count, sai_attribute_t *attr_list);
+	static sai_object_id_t temp_sai_get_bridge_port(uint32_t bridge_id);
 	//fdb
 	static sai_status_t create_fdb_entry (const sai_fdb_entry_t* fdb_entry,uint32_t attr_count,const sai_attribute_t *attr_list);
 	static sai_status_t remove_fdb_entry (const sai_fdb_entry_t* fdb_entry);	
@@ -107,6 +108,7 @@ public:
 	sai_switch_api_t    switch_api;
 	sai_vlan_api_t		vlan_api;
 	sai_lag_api_t		lag_api;
+	sai_hostif_api_t    hostif_api;
 	sai_object():
 	//  constructor pre initializations
 	  socket(new TSocket("localhost", bm_port)),
@@ -163,9 +165,6 @@ public:
 	~sai_object(){
 	 	  //deconstructor
   		transport->close();
-  		delete bm_client_ptr;
-  		delete sai_id_map_ptr;
-  		delete switch_metadata_ptr;
     	printf("BM clients closed\n");
 	 }
 
@@ -188,6 +187,9 @@ public:
               break;
             case SAI_API_LAG:
               *api_method_table =&lag_api;
+              break;
+            case SAI_API_HOSTIF:
+              *api_method_table =&hostif_api;
               break;
          	default:
          		printf("api requested was %d, while sai_api_port is %d\n",sai_api_id,SAI_API_PORT);

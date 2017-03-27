@@ -11,11 +11,12 @@
 #include "field_lists.p4"
 
 // headers
-header 		ethernet_t 			ethernet;
-header 		vlan_t 				vlan;
-header 		ipv4_t 				ipv4;
-header 		tcp_t 				tcp;
-header 		udp_t				udp;
+header   ethernet_t 	  ethernet;
+header   vlan_t 		  vlan;
+header   ipv4_t 		  ipv4;
+header   tcp_t 			  tcp;
+header   udp_t			  udp;
+header   cpu_header_t     cpu_header;  
 
 // metadata
 metadata 	ingress_metadata_t 	 ingress_metadata;
@@ -43,7 +44,7 @@ control control_bridge {
 		control_1q_bridge_flow();
 	}
 
-	control_learn_fdb();
+	// control_learn_fdb();
 	if((ethernet.dstAddr&0x010000000000)==0x0){   //unicast 
 		control_unicast_fdb();
 	} else if(ethernet.dstAddr==0xffffffffffff){  //broadcast
@@ -66,7 +67,8 @@ control control_ingress_port{
 		apply(table_drop_untagged_internal);
 	}
 	// apply(table_port_mode);
-
+	apply(table_l2_trap);
+	apply(table_trap_id); //TODO: move this
 	// apply(table_check_port_mtu; //TODO
 	//apply(table_ingress_acl); // TODO
 	if(ingress_metadata.bind_mode == PORT_MODE_PORT) 
@@ -90,11 +92,13 @@ control control_1q_bridge_flow{
 control control_router_flow{
 	// TODO
 }
-control control_learn_fdb{
-          apply(table_learn_fdb);
-}
+
+// control control_learn_fdb{
+//     apply(table_learn_fdb);
+// }
 
 control control_unicast_fdb{
+	apply(table_learn_fdb); //TODO: is this only relevant for unicast?
 	apply(table_l3_interface){//should be for unicast only TDB
 		miss{ 
 				apply(table_fdb) {
@@ -157,6 +161,7 @@ control egress{
 	//if((egress_metadata.stp_state == STP_FORWARDING) and (egress_metadata.tag_mode == TAG) ){
 		// TODO: go to egress
 	//}
+	apply(table_egress_clone_internal);
 }
 
 control control_1q_egress_uni_router {

@@ -26,7 +26,7 @@ field_list ipv4_checksum_list {
         ipv4.dstAddr;
 }
 
-field_list lag_hash_fieldlist { //TODO: Consult Matty which fields to use for hash, preferably to keep same flows in same out port.
+field_list lag_hash_fieldlist { 
     ethernet.srcAddr;
     ipv4.id;
 }
@@ -37,4 +37,11 @@ field_list_calculation lag_hash {
     }
     algorithm : xor8; //TODO: change to lag_hash
     output_width : 1; //TODO: LOG2(NUM_OF_PORTS)
+}
+
+field_list redirect_FL {
+    standard_metadata;
+    ingress_metadata.trap_id;
+    ingress_metadata.bridge_id;
+    ingress_metadata.bridge_port;
 }

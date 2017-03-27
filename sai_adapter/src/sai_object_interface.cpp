@@ -76,6 +76,12 @@ extern "C"
     return q->get_bridge_port_attribute(bridge_port_id, attr_count, attr_list); 
   }
 
+  sai_object_id_t sai_obj_temp_sai_get_bridge_port(S_O_Handle p, uint32_t bridge_port_num) {
+    printf("temp_sai_get_bridge_port\n");
+    sai_object* q = (sai_object*) p;
+    return q->temp_sai_get_bridge_port(bridge_port_num);
+  }
+
 // FDB
   sai_status_t sai_obj_create_fdb_entry(S_O_Handle p,sai_fdb_entry_t *fdb_entry,uint32_t attr_count, const sai_attribute_t *attr_list) {
     sai_object* q = (sai_object*) p;

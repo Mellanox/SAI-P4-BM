@@ -15,21 +15,28 @@ action action_set_lag_l2if(in bit is_lag, in bit<6> l2_if) { // , in bit<16> lag
 	ingress_metadata.l2_if 	=	l2_if;
 }
 
+action action_set_trap_id(in bit<11> trap_id) {
+	ingress_metadata.trap_id = trap_id;	
+}
+
+action action_copy_to_cpu() {
+	clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_FL);
+}
+
+action action_trap_to_cpu() {
+	clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_FL);
+	drop();
+}
+
 // ingres L2
 action action_set_l2if() { 
 	ingress_metadata.l2_if =standard_metadata.ingress_port;
 }
 
-// action action_set_pvid(in bit<12> pvid){
-// 	ingress_metadata.vid = pvid;
-// }
 action action_set_packet_vid(){
 	ingress_metadata.vid = vlan.vid;
 }
 
-// action action_set_port_mode(in bit <1> mode){
-// 	ingress_metadata.port_mode 	= mode;
-// }
 action action_set_port_configurations(in bit<12> pvid, in bit bind_mode, in bit<32> mtu, in bit drop_tagged, in bit drop_untagged) {
 	ingress_metadata.vid = pvid;
 	ingress_metadata.bind_mode = bind_mode;
@@ -80,7 +87,8 @@ action action_go_to_in_l3_if_table(){
 
 // L2
 action action_learn_mac() {
-    generate_digest(MAC_LEARN_RECEIVER, mac_learn_digest);
+	ingress_metadata.trap_id = MAC_LEARN_RECEIVER;	 //TODO, should this be configurable to support hostif interface(?)
+	clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_FL);
 }
 
 action action_set_egress_br_port(in bit<8> br_port){
@@ -154,4 +162,12 @@ action set_egr(in bit<6> egress_spec) {
 // mc
 action action_set_mc_fdb_miss() {
 	ingress_metadata.mc_fdb_miss=1;
+}
+
+action action_cpu_encap() { 
+	add_header(cpu_header);
+	cpu_header.ingress_port = standard_metadata.ingress_port;
+	cpu_header.trap_id = ingress_metadata.trap_id;
+	cpu_header.bridge_id = ingress_metadata.bridge_id;
+	cpu_header.bridge_port = ingress_metadata.bridge_port;
 }

@@ -9,14 +9,6 @@ table table_ingress_lag {
     size : PHY_PORT_NUM;
 }
 
-// table table_accepted_frame_type {
-    // reads {
-        // ingress_metadata.l2_if : exact;
-        // ingress_metadata.is_tagged : exact;//matty prio tagged frames will have vlan valid 
-// 
-    // }
-    // actions {_drop;_nop;}
-// }
 table table_drop_tagged_internal {
     reads {
         ingress_metadata.drop_tagged : exact;
@@ -32,19 +24,27 @@ table table_drop_untagged_internal {
     size: 1;
 }
 
-// table table_port_PVID {  
-//     reads {
-//         ingress_metadata.l2_if : exact;
-//     }
-//     actions {action_set_pvid;}
-//     //size : 1; // TODO
-// }
+table table_l2_trap {
+    reads {
+        ethernet.dstAddr : exact;
+    }
+    actions {action_set_trap_id;}
+}
+
+table table_trap_id { //TODO: move this?
+    reads {
+        ingress_metadata.trap_id : exact;
+    }
+    actions {_drop;_nop;action_copy_to_cpu;action_trap_to_cpu;} 
+}
+
 table table_port_configurations {
     reads {
         ingress_metadata.l2_if : exact;
     }
     actions {action_set_port_configurations;}
 }
+
 table table_port_set_packet_vid_internal {  
     reads {
         ingress_metadata.is_tagged : exact;
@@ -53,21 +53,12 @@ table table_port_set_packet_vid_internal {
     size : 1; 
 }
 
-// table table_port_mode {  
-//     reads {
-//         ingress_metadata.l2_if : exact;
-//     }
-//     actions {action_set_port_mode;}
-//     //size : 1; // TODO
-// }
-
 
 table table_port_ingress_interface_type {// should be 
     reads {
         ingress_metadata.l2_if: exact;
     }
     actions {action_set_l2_if_type; _drop;}
-    //size : 1; TODO
 }
 
 table table_subport_ingress_interface_type {
@@ -76,7 +67,6 @@ table table_subport_ingress_interface_type {
         ingress_metadata.vid   : exact;
     }
     actions {action_set_l2_if_type; _drop;}
-    //size : 1; TODO
 }
 
 
@@ -311,4 +301,12 @@ table table_egress_lag {
     }
     actions {action_set_out_port; _drop;}
     //size : 1; // TODO
+}
+
+table table_egress_clone_internal {
+    reads {
+        standard_metadata.instance_type : exact;
+    }
+    actions {_nop; action_cpu_encap;} 
+    // size: 16;
 }

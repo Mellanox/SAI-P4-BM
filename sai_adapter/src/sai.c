@@ -62,8 +62,7 @@ static const char *module[] = {
     "L2MC",
 };
 
-sai_status_t sai_api_query(_In_ sai_api_t sai_api_id,
-                           _Out_ void **api_method_table) {
+sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table) {
   sai_status_t status = SAI_STATUS_SUCCESS;
 
   //SAI_LOG_ENTER();
@@ -83,6 +82,10 @@ sai_status_t sai_api_initialize(uint64_t flags, const service_method_table_t* se
 }
 sai_status_t sai_api_uninitialize(void) {
   free_sai_object(sai_obj);
+}
+
+sai_object_id_t temp_sai_get_bridge_port(uint32_t bridge_port_num) {
+  return sai_obj_temp_sai_get_bridge_port(sai_obj, bridge_port_num);
 }
 
 #ifdef __cplusplus
