@@ -4,7 +4,7 @@ THRIFT_DIR =${USR_DIR}/${THRIFT_VER}
 LIBS_DIRS  =-L${USR_DIR}/lib -L${USR_DIR}/${THRIFT_VER}/lib -L../inc 
 CPP_DEFS   =-D=HAVE_CONFIG_H
 CPP_OPTS   =-Wall -O3 -std=c++11 -pthread -w
-LIBS       =-lthrift
+LIBS       =-lthrift -lpcap ${LIBS_DIRS}
 BM_DIR     = ../../p4-softswitch/thrift_src/gen-cpp/bm
 
 STAND_SRC  = ${BM_DIR}/Standard.cpp  \
@@ -28,13 +28,18 @@ default = all
 
 .PHONY: all clean
 
+default: sai_adapter
+
 ${OBJ_DIR}/%.o: %.cpp ${HEADERS}
-	g++ ${CPP_OPTS} ${CPP_DEFS} $(INC_DIRS) -c $< -o $@ ${STAND_OBJS} ${LIBS_DIRS} ${LIBS}
+	g++ ${CPP_OPTS} ${CPP_DEFS} $(INC_DIRS) -c $< -o $@ ${LIBS}
 
 ${OBJ_DIR}/%.o: %.c
 	gcc ${SAI_INC} -c $< -o $@
 
 all: $(SAI_OBJ) $(SAI_OBJ_IF_OBJ)
+
+sai_adapter: $(SAI_OBJ) $(SAI_OBJ_IF_OBJ)
+	g++ ${CPP_OPTS} ${CPP_DEFS} ${INC_DIRS} ${SAI_OBJ} ${SAI_OBJ_IF_OBJ} ${STAND_OBJS} -o sai_adapter ${LIBS}
 
 clean:
 	rm -f $(SAI_OBJ) $(SAI_OBJ_IF_OBJ)
