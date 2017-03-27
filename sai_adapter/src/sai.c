@@ -77,7 +77,6 @@ sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table) {
   return status;
 }
 
-#include <stdio.h>
 sai_status_t sai_api_initialize(uint64_t flags, const service_method_table_t* services) {
   sai_obj = create_sai_object();
 }

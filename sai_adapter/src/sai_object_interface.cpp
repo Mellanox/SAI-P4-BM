@@ -3,9 +3,7 @@
 #include "switch_meta_data.h"
 
 extern "C" {
-S_O_Handle create_sai_object() { 
-  return new sai_object();
- }
+S_O_Handle create_sai_object() { return new sai_object();}
 void free_sai_object(S_O_Handle p) {
   sai_object *q = (sai_object *)p;
   q->~sai_object();

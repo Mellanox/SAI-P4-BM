@@ -28,7 +28,7 @@ default = all
 
 .PHONY: all clean
 
-default: sai_adapter
+# default: sai_adapter
 
 ${OBJ_DIR}/%.o: %.cpp ${HEADERS}
 	g++ ${CPP_OPTS} ${CPP_DEFS} $(INC_DIRS) -c $< -o $@ ${LIBS}
@@ -38,8 +38,8 @@ ${OBJ_DIR}/%.o: %.c
 
 all: $(SAI_OBJ) $(SAI_OBJ_IF_OBJ)
 
-sai_adapter: $(SAI_OBJ) $(SAI_OBJ_IF_OBJ)
-	g++ ${CPP_OPTS} ${CPP_DEFS} ${INC_DIRS} ${SAI_OBJ} ${SAI_OBJ_IF_OBJ} ${STAND_OBJS} -o sai_adapter ${LIBS}
+# sai_adapter: $(SAI_OBJ) $(SAI_OBJ_IF_OBJ)
+	# g++ ${CPP_OPTS} ${CPP_DEFS} ${INC_DIRS} ${SAI_OBJ} ${SAI_OBJ_IF_OBJ} ${STAND_OBJS} -o sai_adapter ${LIBS}
 
 clean:
 	rm -f $(SAI_OBJ) $(SAI_OBJ_IF_OBJ)
