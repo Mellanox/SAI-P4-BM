@@ -48,7 +48,7 @@ tests/sai_thrift_development_python_server/sai_rpc_server.sh
 * in [sai_object_interface.h](TODO) create C function decleration. 
 * in [sai_object_interface.cpp](src/sai_object_interface.cpp) create the function link, with the sai_object pointer.
 * in [sai_object.h](TODO) add a static decleration for the function.
-* for new/unimplemented api, also add the sai_api decleration, and link in the sai_api_query in this file.
+* for new/unimplemented api, also add the sai_api decleration, and link in the sai_api_query in the sai_object.h, and sai.c files.
 * Add the function implementation to a .cpp file in the [src/](src/) dir, under the sai_object namespace.
 ### Additional information
 * the sai_object uses the [switch_meta_data.h](TODO) to manage the runtime information regarding the sai_object_ids etc... 
