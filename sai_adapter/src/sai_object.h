@@ -172,7 +172,6 @@ public:
         protocol(new TMultiplexedProtocol(bprotocol, "standard")),
         bm_client(protocol) {
     // logger
-    printf("sai_obj_construct debug1\n");
     logger_o = spdlog::get("logger");
     if (logger_o == 0) {
       auto logger_o = spdlog::basic_logger_mt("logger", "logs/log.txt");
@@ -180,7 +179,6 @@ public:
       spdlog::set_pattern("[thread %t] %l %v "); // add %T for time
     }
     logger = &logger_o;
-    printf("sai_obj_construct debug2\n");
     // start P4 link
     switch_list_ptr = &switch_list;
     switch_metadata_ptr = &switch_metadata;
@@ -188,9 +186,7 @@ public:
     switch_metadata.hw_port_list.count = 8;
     bm_client_ptr = &bm_client;
     sai_id_map_ptr = &sai_id_map;
-    printf("sai_obj_construct debug3\n");
     transport->open();
-    printf("sai_obj_construct debug4\n");
 
     // api set
     switch_api.create_switch = &sai_object::create_switch;
@@ -228,14 +224,12 @@ public:
     lag_api.create_lag_member = &sai_object::create_lag_member;
     lag_api.remove_lag_member = &sai_object::remove_lag_member;
     //
-    printf("sai_obj_construct debug5\n");
     (*logger)->info("BM connection started on port {}", bm_port);
-    printf("sai_obj_construct debug6\n");
   }
   ~sai_object() {
     // deconstructor
     transport->close();
-    (*logger)->info("BM clients closed\n");
+    (*logger)->info("BM clients closed");
   }
 
   sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table) {
@@ -262,7 +256,7 @@ public:
       *api_method_table = &hostif_api;
       break;
     default:
-      (*logger)->info("api requested was %d, while sai_api_port is %d\n",
+      (*logger)->info("api requested was {}, while sai_api_port is {}",
                       sai_api_id, SAI_API_PORT);
       return SAI_STATUS_FAILURE;
     }

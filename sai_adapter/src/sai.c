@@ -79,7 +79,6 @@ sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table) {
 
 #include <stdio.h>
 sai_status_t sai_api_initialize(uint64_t flags, const service_method_table_t* services) {
-  printf("sai_api_init debug\n");
   sai_obj = create_sai_object();
 }
 

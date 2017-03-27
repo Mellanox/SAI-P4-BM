@@ -48,7 +48,7 @@ sai_status_t sai_object::remove_port(sai_object_id_t port_id) {
                                       port->handle_lag_if);
     bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_port_configurations",
                                       port->handle_port_cfg);
-  } catch (int e) {
+  } catch (...) {
     (*logger)->info("--> unable to remove port tables entries");
   }
   switch_metadata_ptr->ports.erase(port->sai_object_id);
@@ -87,7 +87,7 @@ sai_status_t sai_object::get_port_attribute(sai_object_id_t port_id,
 void sai_object::set_parsed_port_attribute(Port_obj *port,
                                            sai_attribute_t attribute) {
   (*logger)->info("set_parsed_port_attribute. attribute id = {}", attribute.id);
-  (*logger)->info("vlan = {} | bind_mode = {} | hw_lane_list = {} | "
+  (*logger)->trace("vlan = {} | bind_mode = {} | hw_lane_list = {} | "
                   "drop_untagged = {} | drop_tagged = {}",
                   SAI_PORT_ATTR_PORT_VLAN_ID, SAI_PORT_ATTR_BIND_MODE,
                   SAI_PORT_ATTR_HW_LANE_LIST, SAI_PORT_ATTR_DROP_UNTAGGED,
@@ -104,11 +104,9 @@ void sai_object::set_parsed_port_attribute(Port_obj *port,
     break;
   case SAI_PORT_ATTR_DROP_UNTAGGED:
     port->drop_untagged = attribute.value.booldata;
-    (*logger)->debug("drop untagged debug = {}", attribute.value.booldata);
     break;
   case SAI_PORT_ATTR_DROP_TAGGED:
     port->drop_tagged = attribute.value.booldata;
-    (*logger)->debug("drop tagged debug = {}", attribute.value.booldata);
     break;
   }
 }
@@ -147,7 +145,7 @@ void sai_object::config_port(Port_obj *port) {
   action_data.push_back(parse_param(port->mtu, 4));
   action_data.push_back(parse_param(port->drop_tagged, 1));
   action_data.push_back(parse_param(port->drop_untagged, 1));
-  try { // need to change match - remove, than add entry!!!!!!!!!!!!
+  try { 
     BmMtEntry entry;
     bm_client_ptr->bm_mt_get_entry_from_key(
         entry, cxt_id, "table_port_configurations", match_params, options);
@@ -165,5 +163,4 @@ void sai_object::config_port(Port_obj *port) {
     (*logger)->warn("--> InvalidTableOperation while adding "
                     "table_port_configurations entry");
   }
-  // (*logger)->info("port cfg modified, handle= {}",port->handle_port_cfg);
 }

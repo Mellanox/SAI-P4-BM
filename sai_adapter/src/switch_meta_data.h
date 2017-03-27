@@ -8,6 +8,8 @@
 #include <vector>
 #include <map>
 #include <standard_types.h>
+#include "../inc/spdlog/spdlog.h"
+
 using namespace bm_runtime::standard;
 
 class sai_id_map_t { // object pointer and it's id
@@ -16,25 +18,22 @@ class sai_id_map_t { // object pointer and it's id
     std::vector<sai_object_id_t> unused_id;
   public:
     sai_id_map_t(){
-      //printf("sai_id_map_constructor ",id_map.size(),unused_id.size());
       // init
       unused_id.clear();
       id_map.clear();
     }
 
     ~sai_id_map_t(){
-      printf("sai_id_map_destructor, id_map addr: %d ",&id_map);
     }
 
     void free_id(sai_object_id_t sai_object_id){
-      printf("freeing object with sai_id %d",sai_object_id);
+      spdlog::get("logger")->debug("freeing object with sai_id {}",sai_object_id);
       delete id_map[sai_object_id];
       id_map.erase(sai_object_id);
       unused_id.push_back(sai_object_id);
     }
 
     sai_object_id_t get_new_id(void* obj_ptr){//pointer to object
-      //printf("get_new_id");
       sai_object_id_t id;
       if(!unused_id.empty()){
         id = unused_id.back();
@@ -42,9 +41,7 @@ class sai_id_map_t { // object pointer and it's id
       }
       else { 
         id = id_map.size(); }
-      //printf("id_map.size = %d ", id_map.size());
       id_map[id]=obj_ptr;
-      //printf("after insertion : id_map.size = %d ", id_map.size());
       return id;
     }
 
@@ -56,12 +53,11 @@ class sai_id_map_t { // object pointer and it's id
 
 class Sai_obj {
   public:
-    sai_object_id_t sai_object_id; // TODO maybe use the map and don't save here
+    sai_object_id_t sai_object_id;
     Sai_obj(sai_id_map_t* sai_id_map_ptr){
       sai_object_id = sai_id_map_ptr->get_new_id(this); // sai_id_map. set map to true.
     }
     ~Sai_obj(){
-      //free_id(sai_object_id); TODO: fix this
     }
   
 };
@@ -81,7 +77,6 @@ class Port_obj : public Sai_obj{
     BmEntryHandle handle_port_cfg;
     BmEntryHandle handle_ingress_lag;
     Port_obj(sai_id_map_t* sai_id_map_ptr): Sai_obj(sai_id_map_ptr) {
-      //printf("create port object");
       this->mtu=1512;
       this->drop_tagged=0;
       this->drop_untagged=0;
@@ -109,14 +104,12 @@ public:
   BmEntryHandle handle_egress_br_port_to_if;
   BmEntryHandle handle_subport_ingress_interface_type;
   BmEntryHandle handle_port_ingress_interface_type;
-  //BmEntryHandle handle_cfg; // TODO
   BridgePort_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->port_id=0;
     this->vlan_id=1;
     this->bridge_port=NULL;
     this->bridge_id=NULL;
     this->bridge_port_type=SAI_BRIDGE_PORT_TYPE_PORT;
-    // TODO NULL_HANDLE is inavlid. consider other notation
     this->handle_id_1d =NULL_HANDLE;
     this->handle_id_1q =NULL_HANDLE;
     this->handle_egress_set_vlan =NULL_HANDLE;
@@ -224,18 +217,17 @@ public:
 
   uint32_t GetNewBridgePort() {
     std::vector<uint32_t> bridge_port_nums;
-        printf("--> GetNewBridgePort: ");
     for (bridge_port_id_map_t::iterator it=bridge_ports.begin(); it!=bridge_ports.end(); ++it) {
       bridge_port_nums.push_back(it->second->bridge_port);
-      printf("%d ",it->second->bridge_port);
+      spdlog::get("logger")->debug("{} ",it->second->bridge_port);
     }
     for (int i=0; i<bridge_port_nums.size(); ++i) {
       if (std::find(bridge_port_nums.begin(), bridge_port_nums.end(), i) == bridge_port_nums.end()) {
-        printf("--> new bridge_port is: %d ", i);
+        spdlog::get("logger")->debug("-->GetNewBridgePort: bridge_port is: {} ", i);
         return i;
       }
     }
-    printf("--> new bridge_port is: %d ", bridge_port_nums.size());
+    spdlog::get("logger")->debug("--> GetNewBridgePort: bridge_port is: {} ", bridge_port_nums.size());
     return bridge_port_nums.size();
   }
 
@@ -253,24 +245,19 @@ public:
   }
   uint32_t GetNewL2IF() {
     std::vector<uint32_t> l2_ifs_nums;
-    printf("--> Get_New_L2_if: Ports: ");
     for (port_id_map_t::iterator it=ports.begin(); it!=ports.end(); ++it) {
       l2_ifs_nums.push_back(it->second->l2_if);
-      printf("%d ",it->second->l2_if);
     }
-    printf(", Lags: ");
     for (lag_id_map_t::iterator it=lags.begin(); it!=lags.end(); ++it) {
       l2_ifs_nums.push_back(it->second->l2_if);
-      printf("%d ",it->second->l2_if);
     }
-    printf("");
     for (int i=0; i<l2_ifs_nums.size(); ++i) {
       if (std::find(l2_ifs_nums.begin(), l2_ifs_nums.end(), i) == l2_ifs_nums.end()) {
-        printf("--> new if is: %d ", i);
+        spdlog::get("logger")->debug("--> Get_New_L2_if: new if is: {} ", i);
         return i;
       }
     }
-    printf("--> new if is: %d ", l2_ifs_nums.size());
+    spdlog::get("logger")->debug("--> Get_New_L2_if: new if is: {} ", l2_ifs_nums.size());
     return l2_ifs_nums.size();
   }
 };
