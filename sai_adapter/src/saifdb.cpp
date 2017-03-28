@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #include "sai_adapter.h"
+=======
+#include "../inc/sai_object.h"
+>>>>>>> master
 
 sai_status_t sai_adapter::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
                                           uint32_t attr_count,

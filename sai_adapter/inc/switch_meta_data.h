@@ -8,6 +8,8 @@
 #include <list>
 #include <map>
 #include <vector>
+#include "spdlog/spdlog.h"
+
 using namespace bm_runtime::standard;
 
 class sai_id_map_t {  // object pointer and it's id
@@ -17,6 +19,7 @@ class sai_id_map_t {  // object pointer and it's id
 
  public:
   sai_id_map_t() {
+    // init
     unused_id.clear();
     id_map.clear();
   }
@@ -24,6 +27,8 @@ class sai_id_map_t {  // object pointer and it's id
   ~sai_id_map_t() {}
 
   void free_id(sai_object_id_t sai_object_id) {
+    spdlog::get("logger")->debug("freeing object with sai_id {}",
+                                 sai_object_id);
     delete id_map[sai_object_id];
     id_map.erase(sai_object_id);
     unused_id.push_back(sai_object_id);
@@ -72,6 +77,7 @@ class Port_obj : public Sai_obj {
   BmEntryHandle handle_port_cfg;
   BmEntryHandle handle_ingress_lag;
   Port_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
+    // printf("create port object");
     this->mtu = 1512;
     this->drop_tagged = 0;
     this->drop_untagged = 0;
@@ -212,23 +218,23 @@ class Switch_metadata {  // TODO:  add default.. // this object_id is the
     lags.clear();
   }
 
-  // TODO: printfs to logger in DEBUG verbosity
   uint32_t GetNewBridgePort() {
     std::vector<uint32_t> bridge_port_nums;
-    // printf("--> GetNewBridgePort: ");
     for (bridge_port_id_map_t::iterator it = bridge_ports.begin();
          it != bridge_ports.end(); ++it) {
       bridge_port_nums.push_back(it->second->bridge_port);
-      // printf("%d ",it->second->bridge_port);
+      spdlog::get("logger")->debug("{} ", it->second->bridge_port);
     }
     for (int i = 0; i < bridge_port_nums.size(); ++i) {
       if (std::find(bridge_port_nums.begin(), bridge_port_nums.end(), i) ==
           bridge_port_nums.end()) {
-        // printf("--> new bridge_port is: %d ", i);
+        spdlog::get("logger")->debug("-->GetNewBridgePort: bridge_port is: {} ",
+                                     i);
         return i;
       }
     }
-    // printf("--> new bridge_port is: %d ", bridge_port_nums.size());
+    spdlog::get("logger")->debug("--> GetNewBridgePort: bridge_port is: {} ",
+                                 bridge_port_nums.size());
     return bridge_port_nums.size();
   }
 
@@ -248,25 +254,21 @@ class Switch_metadata {  // TODO:  add default.. // this object_id is the
   }
   uint32_t GetNewL2IF() {
     std::vector<uint32_t> l2_ifs_nums;
-    // printf("--> Get_New_L2_if: Ports: ");
     for (port_id_map_t::iterator it = ports.begin(); it != ports.end(); ++it) {
       l2_ifs_nums.push_back(it->second->l2_if);
-      // printf("%d ",it->second->l2_if);
     }
-    // printf(", Lags: ");
     for (lag_id_map_t::iterator it = lags.begin(); it != lags.end(); ++it) {
       l2_ifs_nums.push_back(it->second->l2_if);
-      // printf("%d ",it->second->l2_if);
     }
-    // printf("");
     for (int i = 0; i < l2_ifs_nums.size(); ++i) {
       if (std::find(l2_ifs_nums.begin(), l2_ifs_nums.end(), i) ==
           l2_ifs_nums.end()) {
-        // printf("--> new if is: %d ", i);
+        spdlog::get("logger")->debug("--> Get_New_L2_if: new if is: {} ", i);
         return i;
       }
     }
-    // printf("--> new if is: %d ", l2_ifs_nums.size());
+    spdlog::get("logger")->debug("--> Get_New_L2_if: new if is: {} ",
+                                 l2_ifs_nums.size());
     return l2_ifs_nums.size();
   }
 };
