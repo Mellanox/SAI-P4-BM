@@ -1,6 +1,5 @@
 #include <assert.h>
 #include <inttypes.h>
-#include <pcap.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "sai_object.h"
@@ -10,37 +9,34 @@
 #define MAC_LEARN_TRAP_ID 512
 
 void sai_object::startSaiAdapter() {
-  sai_adapter_active = true;
+  // sai_adapter_active = true;
   std::thread SaiAdapterThread(&sai_object::SaiAdapterMain, this);
   SaiAdapterThread.detach();
 }
 
 void sai_object::endSaiAdapter() {
-  sai_adapter_active = false; 
+  // sai_adapter_active = false; 
+  pcap_breakloop(adapter_pcap);
 }
 
 void sai_object::SaiAdapterMain() {
-  (*logger)->info("SAI Adapter Thread Started\n");
+  (*logger)->info("SAI Adapter Thread Started");
   // sai_api_initialize(0, &test_services);
   // server_internal_init_switch();
   const char *dev = "cpu_port";
-  pcap_t *descr;
+  // pcap_t *descr;
   char errbuf[PCAP_ERRBUF_SIZE];
-  // (*logger)->("pcap started on dev %s\n", dev);
-  descr = pcap_open_live(dev, BUFSIZ, 0, -1, errbuf);
-  if (descr == NULL) {
-    // (*logger)->("pcap_open_live() failed: %s\n", errbuf);
+  (*logger)->info("pcap started on dev {}", dev);
+  adapter_pcap = pcap_open_live(dev, BUFSIZ, 0, -1, errbuf);
+  if (adapter_pcap == NULL) {
+    (*logger)->info("pcap_open_live() failed: {}", errbuf);
     return;
   }
-
-  if (pcap_loop(descr, 10, sai_object::packetHandler, NULL) < 0) {
-    (*logger)->info("pcap_loop() failed: %s\n", pcap_geterr(descr));
+  if (pcap_loop(adapter_pcap, -1, sai_object::packetHandler, NULL) < 0) {
+    (*logger)->info("pcap_loop() failed: {}", pcap_geterr(adapter_pcap));
     return;
   }
-  // while (sai_adapter_active) {
-    
-  // }
-  (*logger)->info("[T] Thread Ended\n");
+  (*logger)->info("SAI Adapter Thread Ended");
 }
 
 void server_internal_init_switch() {

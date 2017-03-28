@@ -21,7 +21,6 @@ sai_object::sai_object()
     spdlog::set_pattern("[thread %t] %l %v ");  // add %T for time
   }
   logger = &logger_o;
-  (*logger)->info("[M] Thread Created\n");
   startSaiAdapter();
   // start P4 link
   switch_list_ptr = &switch_list;

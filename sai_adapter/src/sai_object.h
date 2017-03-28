@@ -28,11 +28,12 @@ extern "C" {
 // General
 #include <standard_types.h>
 #include <algorithm>
-#include <atomic>
+// #include <atomic>
 #include <cstdlib>
 #include <sstream>
 #include <string>
 #include <thread>
+#include <pcap.h>
 
 using namespace std;
 using namespace ::apache::thrift;
@@ -170,7 +171,8 @@ class sai_object {
   sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table);
 
  private:
-  std::atomic<bool> sai_adapter_active;
+  // std::atomic<bool> sai_adapter_active;
+  pcap_t *adapter_pcap;
   void startSaiAdapter();
   void endSaiAdapter();
   void SaiAdapterMain();
