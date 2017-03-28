@@ -74,7 +74,7 @@ void sai_adapter::adapter_create_fdb_entry(sai_object_id_t bridge_port_id, sai_m
   }
   sai_fdb_entry.bridge_type = bridge_type;
   if (bridge_type == SAI_FDB_ENTRY_BRIDGE_TYPE_1Q) {
-    sai_fdb_entry.vlan_id = (sai_vlan_id_t)vlan_id;
+    sai_fdb_entry.vlan_id = vlan_id;
   }
   sai_fdb_entry.bridge_id = bridge_id;
   fdb_api.create_fdb_entry(&sai_fdb_entry, 3, attr);
@@ -116,5 +116,10 @@ void sai_adapter::learn_mac(uint32_t ingress_port, uint8_t *src_mac) {
   (*logger)->info("MAC learn:");
   print_mac_to_log(src_mac, *logger);
   sai_fdb_entry_bridge_type_t bridge_type;
-  // adapter_create_fdb_entry(bridge_port_id, mac, bridge_type, vlan_id, bridge_id);
+  if (bridge->bridge_type == SAI_BRIDGE_TYPE_1Q) {
+    bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1Q;
+  } else {
+    bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1D;
+  }
+  adapter_create_fdb_entry(bridge_port->sai_object_id, src_mac, bridge_type, bridge_port->vlan_id, bridge->sai_object_id);
 }
