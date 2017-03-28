@@ -58,7 +58,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
   std::shared_ptr<spdlog::logger> logger;
   ~switch_sai_rpcHandler() {
     // deconstructor
-    logger->info("switch_sai_rpcHandler destructor called");
+    logger->debug("switch_sai_rpcHandler destructor called");
     spdlog::drop_all();
     sai_api_uninitialize();
   }
@@ -1318,6 +1318,11 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
 };
 
 TSimpleServer *server_ptr;
+
+void close_rpc_server(int signum) {
+  server_ptr->stop();
+}
+
 int main(int argc, char **argv) {
   std::cout << "creating server for SAI on port" << sai_port;
   // logging
@@ -1338,14 +1343,10 @@ int main(int argc, char **argv) {
   TSimpleServer server(processor, serverTransport, transportFactory,
                        protocolFactory);
   server_ptr = &server;
-  signal(SIGINT, terminate_process); 
+  signal(SIGINT, close_rpc_server); 
 
   logger->info("sai server started ");
   server.serve();
   logger->info("thrift done");
   return 0;
-}
-
-void close_rpc_server() {
-  server_ptr->stop();
 }

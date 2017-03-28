@@ -70,8 +70,6 @@ sai_object::sai_object()
 }
 
 sai_object::~sai_object() {
-  printf("destructor called\n");
-  (*logger)->info("[M] Thread Killed\n");
   endSaiAdapter();
   transport->close();
   (*logger)->info("BM clients closed\n");

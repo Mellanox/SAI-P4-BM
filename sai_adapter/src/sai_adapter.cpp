@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "sai_object.h"
+// #include <pthread>
 
 #define ETHER_ADDR_LEN 6
 #define CPU_HDR_LEN 6
@@ -17,6 +18,9 @@ void sai_object::startSaiAdapter() {
 void sai_object::endSaiAdapter() {
   // sai_adapter_active = false; 
   pcap_breakloop(adapter_pcap);
+  // pcap_close(adapter_pcap);
+  char errbuf[PCAP_ERRBUF_SIZE];
+  pcap_setnonblock(adapter_pcap,0,errbuf);
 }
 
 void sai_object::SaiAdapterMain() {
