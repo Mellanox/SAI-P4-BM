@@ -1,13 +1,9 @@
-<<<<<<< HEAD
-#include "sai_adapter.h"
-=======
-#include "../inc/sai_object.h"
->>>>>>> master
+#include "../inc/sai_adapter.h"
 
 sai_status_t sai_adapter::create_lag(sai_object_id_t *lag_id,
-                                    sai_object_id_t switch_id,
-                                    uint32_t attr_count,
-                                    const sai_attribute_t *attr_list) {
+                                     sai_object_id_t switch_id,
+                                     uint32_t attr_count,
+                                     const sai_attribute_t *attr_list) {
   (*logger)->info("create_lag");
   Lag_obj *lag = new Lag_obj(sai_id_map_ptr);
   lag->l2_if = switch_metadata_ptr->GetNewL2IF();
@@ -37,9 +33,9 @@ sai_status_t sai_adapter::remove_lag(sai_object_id_t lag_id) {
   return status;
 }
 sai_status_t sai_adapter::create_lag_member(sai_object_id_t *lag_member_id,
-                                           sai_object_id_t switch_id,
-                                           uint32_t attr_count,
-                                           const sai_attribute_t *attr_list) {
+                                            sai_object_id_t switch_id,
+                                            uint32_t attr_count,
+                                            const sai_attribute_t *attr_list) {
   (*logger)->info("create_lag_member ");
   Lag_member_obj *lag_member = new Lag_member_obj(sai_id_map_ptr);
   switch_metadata_ptr->lag_members[lag_member->sai_object_id] = lag_member;
@@ -50,20 +46,20 @@ sai_status_t sai_adapter::create_lag_member(sai_object_id_t *lag_member_id,
   for (uint32_t i = 0; i < attr_count; i++) {
     attribute = attr_list[i];
     switch (attribute.id) {
-    case SAI_LAG_MEMBER_ATTR_PORT_ID:
-      port = switch_metadata_ptr->ports[attribute.value.oid];
-      lag_member->port = port;
-      break;
-    case SAI_LAG_MEMBER_ATTR_LAG_ID:
-      lag = switch_metadata_ptr->lags[attribute.value.oid];
-      lag_member->lag = lag;
-      lag->lag_members.push_back(lag_member->sai_object_id);
-      break;
-    default:
-      (*logger)->error(
-          "while parsing lag member, attribute.id = was dumped in sai_obj",
-          attribute.id);
-      break;
+      case SAI_LAG_MEMBER_ATTR_PORT_ID:
+        port = switch_metadata_ptr->ports[attribute.value.oid];
+        lag_member->port = port;
+        break;
+      case SAI_LAG_MEMBER_ATTR_LAG_ID:
+        lag = switch_metadata_ptr->lags[attribute.value.oid];
+        lag_member->lag = lag;
+        lag->lag_members.push_back(lag_member->sai_object_id);
+        break;
+      default:
+        (*logger)->error(
+            "while parsing lag member, attribute.id = was dumped in sai_obj",
+            attribute.id);
+        break;
     }
   }
   lag->port_obj = port;

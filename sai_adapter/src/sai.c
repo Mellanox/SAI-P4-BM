@@ -1,7 +1,7 @@
 #include "../inc/SAI/sai.h"
 // #include "sai_bm_c_api.h"
 #include <stdlib.h>
-#include "sai_adapter_interface.h"
+#include "../inc/sai_adapter_interface.h"
 // static sai_api_service_t sai_api_service;
 static S_O_Handle sai_adapter;
 static sai_api_t api_id = SAI_API_UNSPECIFIED;

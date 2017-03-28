@@ -311,21 +311,14 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       attribute = (sai_thrift_attribute_t)*it;
       attr_list[i].id = attribute.id;
       switch (attribute.id) {
-<<<<<<< HEAD
         case SAI_FDB_ENTRY_ATTR_TYPE:
           attr_list[i].value.s32 = attribute.value.s32;
-          // td::cout << "--> attr packet type="<<attribute.value.s32<<endl;
-          // std::cout << "--> attr packet_static" << SAI_FDB_ENTRY_TYPE_STATIC
-          // <<endl;
           break;
         case SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID:
           attr_list[i].value.oid = attribute.value.oid;
           break;
         case SAI_FDB_ENTRY_ATTR_PACKET_ACTION:
           attr_list[i].value.s32 = attribute.value.s32;
-          // std::cout << "--> attr packet_action="<<attribute.value.s32<<endl;
-          // std::cout << "--> attr packet_action_fwd=" <<
-          // SAI_PACKET_ACTION_FORWARD <<endl;
           break;
         default:
           logger->error(
@@ -333,22 +326,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
               "dumped in sai_cpp_server",
               attribute.id);
           break;
-=======
-      case SAI_FDB_ENTRY_ATTR_TYPE:
-        attr_list[i].value.s32 = attribute.value.s32;
-        break;
-      case SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID:
-        attr_list[i].value.oid = attribute.value.oid;
-        break;
-      case SAI_FDB_ENTRY_ATTR_PACKET_ACTION:
-        attr_list[i].value.s32 = attribute.value.s32;
-        break;
-      default:
-        logger->error("--> while parsing fdb_attr: attribute.id = {} was "
-                      "dumped in sai_cpp_server",
-                      attribute.id);
-        break;
->>>>>>> master
       }
     }
   }
@@ -792,15 +769,12 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       attribute = (sai_thrift_attribute_t)*it;
       attr_list[i].id = attribute.id;
       switch (attribute.id) {
-<<<<<<< HEAD
         default:
-          // std::cout << "--> while parsing lag_attr: attribute.id = "
-          // << attribute.id << " was dumped in sai_cpp_server" << endl;
+          logger->error(
+              "while parsing lag_attr: attribute.id = {} was dumped in "
+              "sai_cpp_server ",
+              attribute.id);
           break;
-=======
-      default:
-        logger->error( "while parsing lag_attr: attribute.id = {} was dumped in sai_cpp_server ", attribute.id);        break;
->>>>>>> master
       }
     }
   }
@@ -815,7 +789,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       attribute = (sai_thrift_attribute_t)*it;
       attr_list[i].id = attribute.id;
       switch (attribute.id) {
-<<<<<<< HEAD
         case SAI_LAG_MEMBER_ATTR_PORT_ID:
           attr_list[i].value.oid = attribute.value.oid;
           break;
@@ -823,20 +796,11 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           attr_list[i].value.oid = attribute.value.oid;
           break;
         default:
-          // std::cout << "--> while parsing lag_member_attr: attribute.id = "
-          // << attribute.id << " was dumped in sai_cpp_server" << endl;
+          logger->error(
+              "while parsing lag_member_attr: attribute.id = {} was dumped in "
+              "sai_cpp_server",
+              attribute.id);
           break;
-=======
-      case SAI_LAG_MEMBER_ATTR_PORT_ID:
-        attr_list[i].value.oid = attribute.value.oid;
-        break;
-      case SAI_LAG_MEMBER_ATTR_LAG_ID:
-        attr_list[i].value.oid = attribute.value.oid;
-        break;
-      default:
-        logger->error( "while parsing lag_member_attr: attribute.id = {} was dumped in sai_cpp_server",attribute.id);
-        break;
->>>>>>> master
       }
     }
   }
@@ -1353,21 +1317,13 @@ TSimpleServer *server_ptr;
 void close_rpc_server(int signum) { server_ptr->stop(); }
 
 int main(int argc, char **argv) {
-<<<<<<< HEAD
   // logging
   auto logger = spdlog::basic_logger_mt("logger", "logs/log.txt");
-  logger->flush_on(spdlog::level::info);         // make err
-  spdlog::set_pattern("[%T thread %t] %l %v ");  // add %T for time
-=======
-  
-  // logging
-  auto logger = spdlog::basic_logger_mt("logger", "logs/log.txt");
-  logger->flush_on(spdlog::level::info);     // make err
-  spdlog::set_pattern("[thread %t] %l %v "); // add %T for time
+  logger->flush_on(spdlog::level::info);      // make err
+  spdlog::set_pattern("[thread %t] %l %v ");  // add %T for time
   auto inline_log = spdlog::stdout_color_mt("inline_log");
-  inline_log->info("Sai thrift server initiated");
-  inline_log->info("creating server for SAI on port {}",sai_port);
->>>>>>> master
+  inline_log->info("creating server for SAI on port {}", sai_port);
+  logger->info("creating server for SAI on port {}", sai_port);
 
   // open server to sai functions
   boost::shared_ptr<switch_sai_rpcHandler> handler(new switch_sai_rpcHandler());

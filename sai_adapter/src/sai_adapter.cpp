@@ -1,4 +1,4 @@
-#include "sai_adapter.h"
+#include "../inc/sai_adapter.h"
 
 StandardClient *sai_adapter::bm_client_ptr;
 sai_id_map_t *sai_adapter::sai_id_map_ptr;
@@ -18,7 +18,7 @@ sai_adapter::sai_adapter()
   if (logger_o == 0) {
     auto logger_o = spdlog::basic_logger_mt("logger", "logs/log.txt");
     logger_o->flush_on(spdlog::level::info);    // make err
-    spdlog::set_pattern("[%T thread %t] %l %v ");  // add %T for time
+    spdlog::set_pattern("[thread %t] %l %v ");  // add %T for time
   }
   logger = &logger_o;
   startSaiAdapterMain();

@@ -1,16 +1,13 @@
-<<<<<<< HEAD
-#include "sai_adapter.h"
-=======
-#include "../inc/sai_object.h"
->>>>>>> master
+#include "../inc/sai_adapter.h"
 
 sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
-                                       uint32_t attr_count,
-                                       const sai_attribute_t *attr_list) {
+                                        uint32_t attr_count,
+                                        const sai_attribute_t *attr_list) {
   (*logger)->info("create switch");
   if (switch_list_ptr->size() != 0) {
-    (*logger)->debug("currently one switch is supportred, returning operating switch_id: {}",
-           (*switch_list_ptr)[0]);
+    (*logger)->debug(
+        "currently one switch is supportred, returning operating switch_id: {}",
+        (*switch_list_ptr)[0]);
     return (*switch_list_ptr)[0];
   } else {
     BmAddEntryOptions options;
@@ -20,7 +17,7 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
     // Create Default 1Q Bridge, and switch_obj (not sure if switch is needed).
     Bridge_obj *bridge = new Bridge_obj(sai_id_map_ptr);
     (*logger)->info("Default 1Q bridge. sai_object_id {} bridge_id {}",
-           bridge->sai_object_id, bridge->bridge_id);
+                    bridge->sai_object_id, bridge->bridge_id);
     Sai_obj *switch_obj = new Sai_obj(sai_id_map_ptr);
     switch_metadata_ptr->bridges[bridge->sai_object_id] = bridge;
     switch_metadata_ptr->default_bridge_id = bridge->sai_object_id;
@@ -34,7 +31,7 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
       port->hw_port = hw_port;
       port->l2_if = hw_port;
       (*logger)->info("Default port_id {}. hw_port = {}", port->sai_object_id,
-             port->hw_port);
+                      port->hw_port);
 
       // Create Default Bridge ports and connect to 1Q bridge
       BridgePort_obj *bridge_port = new BridgePort_obj(sai_id_map_ptr);
@@ -45,7 +42,7 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
       bridge_port->bridge_id = bridge->sai_object_id;
       bridge->bridge_port_list.push_back(bridge_port->sai_object_id);
       (*logger)->info("Default bridge_port_id {}. bridge_port = {}",
-             bridge_port->sai_object_id, bridge_port->bridge_port);
+                      bridge_port->sai_object_id, bridge_port->bridge_port);
 
       // Store default table entries
       match_params.clear();
@@ -67,30 +64,31 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
 }
 
 sai_status_t sai_adapter::get_switch_attribute(sai_object_id_t switch_id,
-                                              sai_uint32_t attr_count,
-                                              sai_attribute_t *attr_list) {
+                                               sai_uint32_t attr_count,
+                                               sai_attribute_t *attr_list) {
   (*logger)->info("get_switch_attribute");
   int i;
   int index = 0;
   for (i = 0; i < attr_count; i++) {
     switch ((attr_list + i)->id) {
-    case SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID:
-      (attr_list + i)->value.oid = switch_metadata_ptr->default_bridge_id;
-      break;
-    case SAI_SWITCH_ATTR_PORT_LIST:
-      for (port_id_map_t::iterator it = switch_metadata_ptr->ports.begin();
-           it != switch_metadata_ptr->ports.end(); ++it) {
-        (attr_list + i)->value.objlist.list[index] = it->first;
-        index += 1;
-      }
-      break;
-    case SAI_SWITCH_ATTR_PORT_NUMBER:
-      (attr_list + i)->value.u32 = switch_metadata_ptr->hw_port_list.count;
-      break;
+      case SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID:
+        (attr_list + i)->value.oid = switch_metadata_ptr->default_bridge_id;
+        break;
+      case SAI_SWITCH_ATTR_PORT_LIST:
+        for (port_id_map_t::iterator it = switch_metadata_ptr->ports.begin();
+             it != switch_metadata_ptr->ports.end(); ++it) {
+          (attr_list + i)->value.objlist.list[index] = it->first;
+          index += 1;
+        }
+        break;
+      case SAI_SWITCH_ATTR_PORT_NUMBER:
+        (attr_list + i)->value.u32 = switch_metadata_ptr->hw_port_list.count;
+        break;
     }
   }
   return SAI_STATUS_SUCCESS;
 }
 
-// sai_status_t sai_adapter::sai_get_switch_attribute(sai_object_id_t switch_id,sai_uint32_t attr_count,sai_attribute_t *attr_list){
+// sai_status_t sai_adapter::sai_get_switch_attribute(sai_object_id_t
+// switch_id,sai_uint32_t attr_count,sai_attribute_t *attr_list){
 // }

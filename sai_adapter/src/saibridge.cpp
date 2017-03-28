@@ -1,11 +1,11 @@
-#include "sai_adapter.h"
+#include "../inc/sai_adapter.h"
 
 // Bridge
 
 sai_status_t sai_adapter::create_bridge(sai_object_id_t *bridge_id,
-                                       sai_object_id_t switch_id,
-                                       uint32_t attr_count,
-                                       const sai_attribute_t *attr_list) {
+                                        sai_object_id_t switch_id,
+                                        uint32_t attr_count,
+                                        const sai_attribute_t *attr_list) {
   uint32_t bridge_id_num = switch_metadata_ptr->GetNewBridgeID();
   Bridge_obj *bridge = new Bridge_obj(sai_id_map_ptr);
   switch_metadata_ptr->bridges[bridge->sai_object_id] = bridge;
@@ -17,9 +17,9 @@ sai_status_t sai_adapter::create_bridge(sai_object_id_t *bridge_id,
   for (uint32_t i = 0; i < attr_count; i++) {
     attribute = attr_list[i];
     switch (attribute.id) {
-    case SAI_BRIDGE_ATTR_TYPE:
-      bridge->bridge_type = (sai_bridge_type_t)attribute.value.s32;
-      break;
+      case SAI_BRIDGE_ATTR_TYPE:
+        bridge->bridge_type = (sai_bridge_type_t)attribute.value.s32;
+        break;
     }
   }
   *bridge_id = bridge->sai_object_id;
@@ -36,19 +36,19 @@ sai_status_t sai_adapter::remove_bridge(sai_object_id_t bridge_id) {
 }
 
 sai_status_t sai_adapter::get_bridge_attribute(sai_object_id_t bridge_id,
-                                              uint32_t attr_count,
-                                              sai_attribute_t *attr_list) {
+                                               uint32_t attr_count,
+                                               sai_attribute_t *attr_list) {
   int i;
   Bridge_obj *bridge = (Bridge_obj *)sai_id_map_ptr->get_object(bridge_id);
   for (i = 0; i < attr_count; i++) {
     switch ((attr_list + i)->id) {
-    case SAI_BRIDGE_ATTR_TYPE:
-      (attr_list + i)->value.s32 = bridge->bridge_type;
-      break;
-    case SAI_BRIDGE_ATTR_PORT_LIST:
-      (attr_list + i)->value.objlist.count = bridge->bridge_port_list.size();
-      (attr_list + i)->value.objlist.list = &bridge->bridge_port_list[0];
-      break;
+      case SAI_BRIDGE_ATTR_TYPE:
+        (attr_list + i)->value.s32 = bridge->bridge_type;
+        break;
+      case SAI_BRIDGE_ATTR_PORT_LIST:
+        (attr_list + i)->value.objlist.count = bridge->bridge_port_list.size();
+        (attr_list + i)->value.objlist.list = &bridge->bridge_port_list[0];
+        break;
     }
   }
 }
@@ -56,9 +56,9 @@ sai_status_t sai_adapter::get_bridge_attribute(sai_object_id_t bridge_id,
 // Bridge Port
 
 sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
-                                            sai_object_id_t switch_id,
-                                            uint32_t attr_count,
-                                            const sai_attribute_t *attr_list) {
+                                             sai_object_id_t switch_id,
+                                             uint32_t attr_count,
+                                             const sai_attribute_t *attr_list) {
   uint32_t bridge_port_num = switch_metadata_ptr->GetNewBridgePort();
   BridgePort_obj *bridge_port = new BridgePort_obj(sai_id_map_ptr);
   switch_metadata_ptr->bridge_ports[bridge_port->sai_object_id] = bridge_port;
@@ -67,19 +67,19 @@ sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
   for (uint32_t i = 0; i < attr_count; i++) {
     attribute = attr_list[i];
     switch (attribute.id) {
-    case SAI_BRIDGE_PORT_ATTR_VLAN_ID:
-      bridge_port->vlan_id = attribute.value.u16;
-      break;
-    case SAI_BRIDGE_PORT_ATTR_BRIDGE_ID:
-      bridge_port->bridge_id = attribute.value.oid;
-      break;
-    case SAI_BRIDGE_PORT_ATTR_TYPE:
-      bridge_port->bridge_port_type =
-          (sai_bridge_port_type_t)attribute.value.s32;
-      break;
-    case SAI_BRIDGE_PORT_ATTR_PORT_ID:
-      bridge_port->port_id = attribute.value.oid;
-      break;
+      case SAI_BRIDGE_PORT_ATTR_VLAN_ID:
+        bridge_port->vlan_id = attribute.value.u16;
+        break;
+      case SAI_BRIDGE_PORT_ATTR_BRIDGE_ID:
+        bridge_port->bridge_id = attribute.value.oid;
+        break;
+      case SAI_BRIDGE_PORT_ATTR_TYPE:
+        bridge_port->bridge_port_type =
+            (sai_bridge_port_type_t)attribute.value.s32;
+        break;
+      case SAI_BRIDGE_PORT_ATTR_PORT_ID:
+        bridge_port->port_id = attribute.value.oid;
+        break;
     }
   }
 
@@ -123,8 +123,9 @@ sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
         bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_bridge_id_1q",
                                           entry.entry_handle);
       } catch (...) {
-        (*logger)->debug("--> InvalidTableOperation while removing "
-                         "table_bridge_id_1q entry");
+        (*logger)->debug(
+            "--> InvalidTableOperation while removing "
+            "table_bridge_id_1q entry");
       }
       (*logger)->debug("--> adding table_bridge_id_1q entry, key:{}",
                        bridge_port->vlan_id);
@@ -140,12 +141,12 @@ sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
   uint32_t is_lag;
   port_id_map_t::iterator it =
       switch_metadata_ptr->ports.find(bridge_port->port_id);
-  if (it != switch_metadata_ptr->ports.end()) { // port_id is port
+  if (it != switch_metadata_ptr->ports.end()) {  // port_id is port
     Port_obj *port = (Port_obj *)it->second;
     bind_mode = port->bind_mode;
     l2_if = port->l2_if;
     is_lag = 0;
-  } else { // port_id is lag
+  } else {  // port_id is lag
     Lag_obj *lag = (Lag_obj *)sai_id_map_ptr->get_object(bridge_port->port_id);
     bind_mode = lag->port_obj->bind_mode;
     l2_if = lag->l2_if;
@@ -163,7 +164,7 @@ sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
   if (bind_mode == SAI_PORT_BIND_MODE_SUB_PORT) {
     match_params.clear();
     match_params.push_back(
-        parse_exact_match_param(l2_if, 1)); // TODO p4 table match is on l2_if
+        parse_exact_match_param(l2_if, 1));  // TODO p4 table match is on l2_if
     match_params.push_back(parse_exact_match_param(bridge_port->vlan_id, 2));
     action_data.clear();
     action_data.push_back(parse_param(l2_if_type, 1));
@@ -197,8 +198,9 @@ sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
       bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_bridge_id_1d",
                                         bridge_port->handle_id_1d);
     } catch (...) {
-      (*logger)->debug("--> Unable to remove table_bridge_id_1d entry, "
-                       "possible entry override");
+      (*logger)->debug(
+          "--> Unable to remove table_bridge_id_1d entry, "
+          "possible entry override");
     }
   }
   if (bridge_port->handle_id_1q != NULL_HANDLE) {
@@ -206,8 +208,9 @@ sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
       bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_bridge_id_1q",
                                         bridge_port->handle_id_1q);
     } catch (...) {
-      (*logger)->debug("--> Unable to remove table_bridge_id_1q entry, "
-                       "possible entry override");
+      (*logger)->debug(
+          "--> Unable to remove table_bridge_id_1q entry, "
+          "possible entry override");
     }
   }
   if (bridge_port->handle_egress_set_vlan != NULL_HANDLE) {
@@ -215,8 +218,9 @@ sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
       bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_egress_set_vlan",
                                         bridge_port->handle_egress_set_vlan);
     } catch (...) {
-      (*logger)->debug("--> Unable to remove table_egress_set_vlan entry, "
-                       "possible entry override");
+      (*logger)->debug(
+          "--> Unable to remove table_egress_set_vlan entry, "
+          "possible entry override");
     }
   }
   if (bridge_port->handle_egress_br_port_to_if != NULL_HANDLE) {
@@ -225,8 +229,9 @@ sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
           cxt_id, "table_egress_br_port_to_if",
           bridge_port->handle_egress_br_port_to_if);
     } catch (...) {
-      (*logger)->debug("--> Unable to remove table_egress_br_port_to_if entry, "
-                       "possible entry override");
+      (*logger)->debug(
+          "--> Unable to remove table_egress_br_port_to_if entry, "
+          "possible entry override");
     }
   }
   if (bridge_port->handle_subport_ingress_interface_type != NULL_HANDLE) {
@@ -235,9 +240,10 @@ sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
           cxt_id, "table_subport_ingress_interface_type",
           bridge_port->handle_subport_ingress_interface_type);
     } catch (...) {
-      (*logger)->debug("--> Unable to remove "
-                       "table_subport_ingress_interface_type entry, possible "
-                       "entry override");
+      (*logger)->debug(
+          "--> Unable to remove "
+          "table_subport_ingress_interface_type entry, possible "
+          "entry override");
     }
   }
   if (bridge_port->handle_port_ingress_interface_type != NULL_HANDLE) {
@@ -246,8 +252,9 @@ sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
           cxt_id, "table_port_ingress_interface_type",
           bridge_port->handle_port_ingress_interface_type);
     } catch (...) {
-      (*logger)->debug("--> Unable to remove table_port_ingress_interface_type "
-                       "entry, possible entry override");
+      (*logger)->debug(
+          "--> Unable to remove table_port_ingress_interface_type "
+          "entry, possible entry override");
     }
   }
   (*logger)->debug("deleted bridge port {} bm_entries",
@@ -264,28 +271,27 @@ sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
   return status;
 }
 
-sai_status_t
-sai_adapter::get_bridge_port_attribute(sai_object_id_t bridge_port_id,
-                                      uint32_t attr_count,
-                                      sai_attribute_t *attr_list) {
+sai_status_t sai_adapter::get_bridge_port_attribute(
+    sai_object_id_t bridge_port_id, uint32_t attr_count,
+    sai_attribute_t *attr_list) {
   (*logger)->debug("get_bridge_port_attribute: bridge_port_id {}",
                    bridge_port_id);
   BridgePort_obj *bridge_port =
       (BridgePort_obj *)sai_id_map_ptr->get_object(bridge_port_id);
   for (int i = 0; i < attr_count; i++) {
     switch ((attr_list + i)->id) {
-    case SAI_BRIDGE_PORT_ATTR_PORT_ID:
-      (attr_list + i)->value.oid = bridge_port->port_id;
-      break;
-    case SAI_BRIDGE_PORT_ATTR_VLAN_ID:
-      (attr_list + i)->value.u16 = bridge_port->vlan_id;
-      break;
-    case SAI_BRIDGE_PORT_ATTR_TYPE:
-      (attr_list + i)->value.s32 = bridge_port->bridge_port_type;
-      break;
-    case SAI_BRIDGE_PORT_ATTR_BRIDGE_ID:
-      (attr_list + i)->value.oid = bridge_port->bridge_port_type;
-      break;
+      case SAI_BRIDGE_PORT_ATTR_PORT_ID:
+        (attr_list + i)->value.oid = bridge_port->port_id;
+        break;
+      case SAI_BRIDGE_PORT_ATTR_VLAN_ID:
+        (attr_list + i)->value.u16 = bridge_port->vlan_id;
+        break;
+      case SAI_BRIDGE_PORT_ATTR_TYPE:
+        (attr_list + i)->value.s32 = bridge_port->bridge_port_type;
+        break;
+      case SAI_BRIDGE_PORT_ATTR_BRIDGE_ID:
+        (attr_list + i)->value.oid = bridge_port->bridge_port_type;
+        break;
     }
   }
 }

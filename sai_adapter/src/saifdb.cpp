@@ -1,12 +1,8 @@
-<<<<<<< HEAD
-#include "sai_adapter.h"
-=======
-#include "../inc/sai_object.h"
->>>>>>> master
+#include "../inc/sai_adapter.h"
 
 sai_status_t sai_adapter::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
-                                          uint32_t attr_count,
-                                          const sai_attribute_t *attr_list) {
+                                           uint32_t attr_count,
+                                           const sai_attribute_t *attr_list) {
   sai_status_t status = SAI_STATUS_SUCCESS;
   // parsing attributes
 
@@ -17,28 +13,30 @@ sai_status_t sai_adapter::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
   for (uint32_t i = 0; i < attr_count; i++) {
     attribute = attr_list[i];
     switch (attribute.id) {
-    case SAI_FDB_ENTRY_ATTR_TYPE:
-      entry_type = (sai_fdb_entry_type_t)attribute.value.s32;
-      // (*logger)->error("--> attr packet type="<<attribute.value.s32<<endl;
-      // (*logger)->error("--> attr packet_static" << SAI_FDB_ENTRY_TYPE_STATIC
-      // <<endl;
-      break;
-    case SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID:
-      bridge_port =
-          switch_metadata_ptr->bridge_ports[attribute.value.oid]->bridge_port;
-      break;
-    case SAI_FDB_ENTRY_ATTR_PACKET_ACTION:
-      packet_action = (sai_packet_action_t)attribute.value.s32;
-      // (*logger)->error("--> attr packet_action="<<attribute.value.s32<<endl;
-      // (*logger)->error("--> attr packet_action_fwd=" <<
-      // SAI_PACKET_ACTION_FORWARD
-      // <<endl;
-      break;
-    default:
-      (*logger)->error(
-          "create_fdb_entry attribute.id = {} was dumped in sai_obj",
-          attribute.id);
-      break;
+      case SAI_FDB_ENTRY_ATTR_TYPE:
+        entry_type = (sai_fdb_entry_type_t)attribute.value.s32;
+        // (*logger)->error("--> attr packet type="<<attribute.value.s32<<endl;
+        // (*logger)->error("--> attr packet_static" <<
+        // SAI_FDB_ENTRY_TYPE_STATIC
+        // <<endl;
+        break;
+      case SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID:
+        bridge_port =
+            switch_metadata_ptr->bridge_ports[attribute.value.oid]->bridge_port;
+        break;
+      case SAI_FDB_ENTRY_ATTR_PACKET_ACTION:
+        packet_action = (sai_packet_action_t)attribute.value.s32;
+        // (*logger)->error("--> attr
+        // packet_action="<<attribute.value.s32<<endl;
+        // (*logger)->error("--> attr packet_action_fwd=" <<
+        // SAI_PACKET_ACTION_FORWARD
+        // <<endl;
+        break;
+      default:
+        (*logger)->error(
+            "create_fdb_entry attribute.id = {} was dumped in sai_obj",
+            attribute.id);
+        break;
     }
   }
   // out_if_type = 0 # port_type (not lag or router). TODO: check how to do it
