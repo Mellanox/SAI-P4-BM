@@ -1,8 +1,8 @@
-#include "sai_object.h"
+#include "sai_adapter.h"
 
 // Bridge
 
-sai_status_t sai_object::create_bridge(sai_object_id_t *bridge_id,
+sai_status_t sai_adapter::create_bridge(sai_object_id_t *bridge_id,
                                        sai_object_id_t switch_id,
                                        uint32_t attr_count,
                                        const sai_attribute_t *attr_list) {
@@ -26,7 +26,7 @@ sai_status_t sai_object::create_bridge(sai_object_id_t *bridge_id,
   return SAI_STATUS_SUCCESS;
 }
 
-sai_status_t sai_object::remove_bridge(sai_object_id_t bridge_id) {
+sai_status_t sai_adapter::remove_bridge(sai_object_id_t bridge_id) {
   (*logger)->info("remove bridge: bridge_id {}", bridge_id);
   Bridge_obj *bridge = switch_metadata_ptr->bridges[bridge_id];
   switch_metadata_ptr->bridges.erase(bridge->sai_object_id);
@@ -35,7 +35,7 @@ sai_status_t sai_object::remove_bridge(sai_object_id_t bridge_id) {
   return SAI_STATUS_SUCCESS;
 }
 
-sai_status_t sai_object::get_bridge_attribute(sai_object_id_t bridge_id,
+sai_status_t sai_adapter::get_bridge_attribute(sai_object_id_t bridge_id,
                                               uint32_t attr_count,
                                               sai_attribute_t *attr_list) {
   int i;
@@ -55,7 +55,7 @@ sai_status_t sai_object::get_bridge_attribute(sai_object_id_t bridge_id,
 
 // Bridge Port
 
-sai_status_t sai_object::create_bridge_port(sai_object_id_t *bridge_port_id,
+sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
                                             sai_object_id_t switch_id,
                                             uint32_t attr_count,
                                             const sai_attribute_t *attr_list) {
@@ -187,7 +187,7 @@ sai_status_t sai_object::create_bridge_port(sai_object_id_t *bridge_port_id,
   return SAI_STATUS_SUCCESS;
 }
 
-sai_status_t sai_object::remove_bridge_port(sai_object_id_t bridge_port_id) {
+sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
   sai_status_t status = SAI_STATUS_SUCCESS;
   BridgePort_obj *bridge_port =
       switch_metadata_ptr->bridge_ports[bridge_port_id];
@@ -265,7 +265,7 @@ sai_status_t sai_object::remove_bridge_port(sai_object_id_t bridge_port_id) {
 }
 
 sai_status_t
-sai_object::get_bridge_port_attribute(sai_object_id_t bridge_port_id,
+sai_adapter::get_bridge_port_attribute(sai_object_id_t bridge_port_id,
                                       uint32_t attr_count,
                                       sai_attribute_t *attr_list) {
   (*logger)->debug("get_bridge_port_attribute: bridge_port_id {}",

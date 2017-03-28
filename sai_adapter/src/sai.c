@@ -1,9 +1,9 @@
 #include "sai.h"
 // #include "sai_bm_c_api.h"
 #include <stdlib.h>
-#include "sai_object_interface.h"
+#include "sai_adapter_interface.h"
 // static sai_api_service_t sai_api_service;
-static S_O_Handle sai_obj;
+static S_O_Handle sai_adapter;
 static sai_api_t api_id = SAI_API_UNSPECIFIED;
 // switch_device_t device = 0;
 
@@ -73,16 +73,16 @@ sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table) {
     return status;
   }
 
-  status = sai_obj_api_query(sai_obj, sai_api_id, api_method_table);
+  status = sai_adapter_api_query(sai_adapter, sai_api_id, api_method_table);
   return status;
 }
 
 sai_status_t sai_api_initialize(uint64_t flags,
                                 const service_method_table_t *services) {
-  sai_obj = create_sai_object();
+  sai_adapter = create_sai_adapter();
 }
 
-sai_status_t sai_api_uninitialize(void) { free_sai_object(sai_obj); }
+sai_status_t sai_api_uninitialize(void) { free_sai_adapter(sai_adapter); }
 
 #ifdef __cplusplus
 }

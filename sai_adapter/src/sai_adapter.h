@@ -1,5 +1,5 @@
-#ifndef SAI_OBJECT_H
-#define SAI_OBJECT_H
+#ifndef SAI_ADAPTER_H
+#define SAI_ADAPTER_H
 
 #include <iostream>
 
@@ -52,7 +52,7 @@ BmMatchParam parse_exact_match_param(uint64_t param, uint32_t num_of_bytes);
 BmMatchParam parse_valid_match_param(bool param);
 uint64_t parse_mac_64(uint8_t const mac_8[6]);
 
-class sai_object {
+class sai_adapter {
  public:
   // thrift
   boost::shared_ptr<TTransport> socket;
@@ -166,16 +166,17 @@ class sai_object {
   sai_vlan_api_t vlan_api;
   sai_lag_api_t lag_api;
   sai_hostif_api_t hostif_api;
-  sai_object();
-  ~sai_object();
+  sai_adapter();
+  ~sai_adapter();
   sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table);
 
  private:
-  // std::atomic<bool> sai_adapter_active;
   pcap_t *adapter_pcap;
-  void startSaiAdapter();
-  void endSaiAdapter();
+  void startSaiAdapterMain();
+  void endSaiAdapterMain();
   void SaiAdapterMain();
+  void PacketSniffer();
+  void internal_init_switch();
   static void packetHandler(u_char *userData, const struct pcap_pkthdr *pkthdr,
                    const u_char *packet);
 };

@@ -1,6 +1,6 @@
-#include "sai_object.h"
+#include "sai_adapter.h"
 
-sai_status_t sai_object::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
+sai_status_t sai_adapter::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
                                           uint32_t attr_count,
                                           const sai_attribute_t *attr_list) {
   sai_status_t status = SAI_STATUS_SUCCESS;
@@ -62,7 +62,7 @@ sai_status_t sai_object::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
   return status;
 }
 
-sai_status_t sai_object::remove_fdb_entry(const sai_fdb_entry_t *fdb_entry) {
+sai_status_t sai_adapter::remove_fdb_entry(const sai_fdb_entry_t *fdb_entry) {
   (*logger)->info("remove_fdb_entry");
   sai_status_t status = SAI_STATUS_SUCCESS;
   BmAddEntryOptions options;

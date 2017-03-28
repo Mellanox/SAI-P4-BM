@@ -1,6 +1,6 @@
-#include "sai_object.h"
+#include "sai_adapter.h"
 
-sai_status_t sai_object::create_lag(sai_object_id_t *lag_id,
+sai_status_t sai_adapter::create_lag(sai_object_id_t *lag_id,
                                     sai_object_id_t switch_id,
                                     uint32_t attr_count,
                                     const sai_attribute_t *attr_list) {
@@ -11,7 +11,7 @@ sai_status_t sai_object::create_lag(sai_object_id_t *lag_id,
   *lag_id = lag->sai_object_id;
   return SAI_STATUS_SUCCESS;
 }
-sai_status_t sai_object::remove_lag(sai_object_id_t lag_id) {
+sai_status_t sai_adapter::remove_lag(sai_object_id_t lag_id) {
   (*logger)->info("remove_lag: {}", lag_id);
   sai_status_t status = SAI_STATUS_SUCCESS;
   Lag_obj *lag = switch_metadata_ptr->lags[lag_id];
@@ -32,7 +32,7 @@ sai_status_t sai_object::remove_lag(sai_object_id_t lag_id) {
   sai_id_map_ptr->free_id(lag->sai_object_id);
   return status;
 }
-sai_status_t sai_object::create_lag_member(sai_object_id_t *lag_member_id,
+sai_status_t sai_adapter::create_lag_member(sai_object_id_t *lag_member_id,
                                            sai_object_id_t switch_id,
                                            uint32_t attr_count,
                                            const sai_attribute_t *attr_list) {
@@ -108,7 +108,7 @@ sai_status_t sai_object::create_lag_member(sai_object_id_t *lag_member_id,
   return SAI_STATUS_SUCCESS;
 }
 
-sai_status_t sai_object::remove_lag_member(sai_object_id_t lag_member_id) {
+sai_status_t sai_adapter::remove_lag_member(sai_object_id_t lag_member_id) {
   (*logger)->info("sai_remove_lag_member: {}", lag_member_id);
   BmAddEntryOptions options;
   BmMatchParams match_params;

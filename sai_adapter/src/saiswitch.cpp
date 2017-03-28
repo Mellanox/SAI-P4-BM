@@ -1,6 +1,6 @@
-#include "sai_object.h"
+#include "sai_adapter.h"
 
-sai_status_t sai_object::create_switch(sai_object_id_t *switch_id,
+sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
                                        uint32_t attr_count,
                                        const sai_attribute_t *attr_list) {
   (*logger)->info("create switch");
@@ -62,7 +62,7 @@ sai_status_t sai_object::create_switch(sai_object_id_t *switch_id,
   }
 }
 
-sai_status_t sai_object::get_switch_attribute(sai_object_id_t switch_id,
+sai_status_t sai_adapter::get_switch_attribute(sai_object_id_t switch_id,
                                               sai_uint32_t attr_count,
                                               sai_attribute_t *attr_list) {
   (*logger)->info("get_switch_attribute");
@@ -88,5 +88,5 @@ sai_status_t sai_object::get_switch_attribute(sai_object_id_t switch_id,
   return SAI_STATUS_SUCCESS;
 }
 
-// sai_status_t sai_object::sai_get_switch_attribute(sai_object_id_t switch_id,sai_uint32_t attr_count,sai_attribute_t *attr_list){
+// sai_status_t sai_adapter::sai_get_switch_attribute(sai_object_id_t switch_id,sai_uint32_t attr_count,sai_attribute_t *attr_list){
 // }

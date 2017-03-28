@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <vector>
 /// thrift sai server
@@ -66,7 +65,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
     // initialization
     logger = spdlog::get("logger");
     sai_api_initialize(0, &test_services);
-    server_internal_init_switch();
+    // server_internal_init_switch();
   }
 
   void server_internal_init_switch() {
@@ -777,8 +776,8 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       attr_list[i].id = attribute.id;
       switch (attribute.id) {
         default:
-          std::cout << "--> while parsing lag_attr: attribute.id = "
-                    << attribute.id << " was dumped in sai_cpp_server" << endl;
+          // std::cout << "--> while parsing lag_attr: attribute.id = "
+          // << attribute.id << " was dumped in sai_cpp_server" << endl;
           break;
       }
     }
@@ -801,8 +800,8 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           attr_list[i].value.oid = attribute.value.oid;
           break;
         default:
-          std::cout << "--> while parsing lag_member_attr: attribute.id = "
-                    << attribute.id << " was dumped in sai_cpp_server" << endl;
+          // std::cout << "--> while parsing lag_member_attr: attribute.id = "
+          // << attribute.id << " was dumped in sai_cpp_server" << endl;
           break;
       }
     }
@@ -1319,16 +1318,13 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
 
 TSimpleServer *server_ptr;
 
-void close_rpc_server(int signum) {
-  server_ptr->stop();
-}
+void close_rpc_server(int signum) { server_ptr->stop(); }
 
 int main(int argc, char **argv) {
-  std::cout << "creating server for SAI on port" << sai_port;
   // logging
   auto logger = spdlog::basic_logger_mt("logger", "logs/log.txt");
-  logger->flush_on(spdlog::level::info);      // make err
-  spdlog::set_pattern("[thread %t] %l %v ");  // add %T for time
+  logger->flush_on(spdlog::level::info);         // make err
+  spdlog::set_pattern("[%T thread %t] %l %v ");  // add %T for time
 
   // open server to sai functions
   boost::shared_ptr<switch_sai_rpcHandler> handler(new switch_sai_rpcHandler());
@@ -1342,10 +1338,10 @@ int main(int argc, char **argv) {
 
   TSimpleServer server(processor, serverTransport, transportFactory,
                        protocolFactory);
-  server_ptr = &server;
-  signal(SIGINT, close_rpc_server); 
 
-  logger->info("sai server started ");
+  server_ptr = &server;
+  signal(SIGINT, close_rpc_server);
+  logger->info("SAI rpc server started on port {}", sai_port);
   server.serve();
   logger->info("thrift done");
   return 0;

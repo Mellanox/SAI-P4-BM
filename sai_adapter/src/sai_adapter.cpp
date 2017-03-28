@@ -1,254 +1,141 @@
-#include <assert.h>
-#include <inttypes.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include "sai_object.h"
-// #include <pthread>
+#include "sai_adapter.h"
 
-#define ETHER_ADDR_LEN 6
-#define CPU_HDR_LEN 6
-#define MAC_LEARN_TRAP_ID 512
+StandardClient *sai_adapter::bm_client_ptr;
+sai_id_map_t *sai_adapter::sai_id_map_ptr;
+Switch_metadata *sai_adapter::switch_metadata_ptr;
+std::vector<sai_object_id_t> *sai_adapter::switch_list_ptr;
+std::shared_ptr<spdlog::logger> *sai_adapter::logger;
 
-void sai_object::startSaiAdapter() {
-  // sai_adapter_active = true;
-  std::thread SaiAdapterThread(&sai_object::SaiAdapterMain, this);
-  SaiAdapterThread.detach();
+sai_adapter::sai_adapter()
+    :  //  constructor pre initializations
+      socket(new TSocket("localhost", bm_port)),
+      transport(new TBufferedTransport(socket)),
+      bprotocol(new TBinaryProtocol(transport)),
+      protocol(new TMultiplexedProtocol(bprotocol, "standard")),
+      bm_client(protocol) {
+  // logger
+  logger_o = spdlog::get("logger");
+  if (logger_o == 0) {
+    auto logger_o = spdlog::basic_logger_mt("logger", "logs/log.txt");
+    logger_o->flush_on(spdlog::level::info);    // make err
+    spdlog::set_pattern("[%T thread %t] %l %v ");  // add %T for time
+  }
+  logger = &logger_o;
+  startSaiAdapterMain();
+  
+  // start P4 link
+  switch_list_ptr = &switch_list;
+  switch_metadata_ptr = &switch_metadata;
+  switch_metadata.hw_port_list.list = list;
+  switch_metadata.hw_port_list.count = 8;
+  bm_client_ptr = &bm_client;
+  sai_id_map_ptr = &sai_id_map;
+  transport->open();
+
+  // api set
+  switch_api.create_switch = &sai_adapter::create_switch;
+  switch_api.get_switch_attribute = &sai_adapter::get_switch_attribute;
+
+  port_api.create_port = &sai_adapter::create_port;
+  port_api.remove_port = &sai_adapter::remove_port;
+  port_api.set_port_attribute = &sai_adapter::set_port_attribute;
+  port_api.get_port_attribute = &sai_adapter::get_port_attribute;
+
+  bridge_api.create_bridge = &sai_adapter::create_bridge;
+  bridge_api.remove_bridge = &sai_adapter::remove_bridge;
+  bridge_api.get_bridge_attribute = &sai_adapter::get_bridge_attribute;
+  bridge_api.create_bridge_port = &sai_adapter::create_bridge_port;
+  bridge_api.remove_bridge_port = &sai_adapter::remove_bridge_port;
+  bridge_api.get_bridge_port_attribute = &sai_adapter::get_bridge_port_attribute;
+
+  fdb_api.create_fdb_entry = &sai_adapter::create_fdb_entry;
+  fdb_api.remove_fdb_entry = &sai_adapter::remove_fdb_entry;
+
+  vlan_api.create_vlan = &sai_adapter::create_vlan;
+  vlan_api.remove_vlan = &sai_adapter::remove_vlan;
+  vlan_api.set_vlan_attribute = &sai_adapter::set_vlan_attribute;
+  vlan_api.get_vlan_attribute = &sai_adapter::get_vlan_attribute;
+  vlan_api.create_vlan_member = &sai_adapter::create_vlan_member;
+  vlan_api.remove_vlan_member = &sai_adapter::remove_vlan_member;
+  vlan_api.set_vlan_member_attribute = &sai_adapter::set_vlan_member_attribute;
+  vlan_api.get_vlan_member_attribute = &sai_adapter::get_vlan_member_attribute;
+  vlan_api.get_vlan_stats = &sai_adapter::get_vlan_stats;
+  vlan_api.clear_vlan_stats = &sai_adapter::clear_vlan_stats;
+
+  lag_api.create_lag = &sai_adapter::create_lag;
+  lag_api.remove_lag = &sai_adapter::remove_lag;
+  lag_api.create_lag_member = &sai_adapter::create_lag_member;
+  lag_api.remove_lag_member = &sai_adapter::remove_lag_member;
+  //
+  (*logger)->info("BM connection started on port {}", bm_port);
 }
 
-void sai_object::endSaiAdapter() {
-  // sai_adapter_active = false; 
-  pcap_breakloop(adapter_pcap);
-  // pcap_close(adapter_pcap);
-  char errbuf[PCAP_ERRBUF_SIZE];
-  pcap_setnonblock(adapter_pcap,0,errbuf);
+sai_adapter::~sai_adapter() {
+  endSaiAdapterMain();
+  std::this_thread::sleep_for(std::chrono::milliseconds(5));
+  transport->close();
+  (*logger)->info("BM clients closed\n");
 }
 
-void sai_object::SaiAdapterMain() {
-  (*logger)->info("SAI Adapter Thread Started");
-  // sai_api_initialize(0, &test_services);
-  // server_internal_init_switch();
-  const char *dev = "cpu_port";
-  // pcap_t *descr;
-  char errbuf[PCAP_ERRBUF_SIZE];
-  (*logger)->info("pcap started on dev {}", dev);
-  adapter_pcap = pcap_open_live(dev, BUFSIZ, 0, -1, errbuf);
-  if (adapter_pcap == NULL) {
-    (*logger)->info("pcap_open_live() failed: {}", errbuf);
-    return;
+sai_status_t sai_adapter::sai_api_query(sai_api_t sai_api_id,
+                                       void **api_method_table) {
+  switch (sai_api_id) {
+    case SAI_API_PORT:
+      *api_method_table = &port_api;
+      break;
+    case SAI_API_BRIDGE:
+      *api_method_table = &bridge_api;
+      break;
+    case SAI_API_FDB:
+      *api_method_table = &fdb_api;
+      break;
+    case SAI_API_SWITCH:
+      *api_method_table = &switch_api;
+      break;
+    case SAI_API_VLAN:
+      *api_method_table = &vlan_api;
+      break;
+    case SAI_API_LAG:
+      *api_method_table = &lag_api;
+      break;
+    case SAI_API_HOSTIF:
+      *api_method_table = &hostif_api;
+      break;
+    default:
+      (*logger)->info("api requested was %d, while sai_api_port is %d\n",
+                      sai_api_id, SAI_API_PORT);
+      return SAI_STATUS_FAILURE;
   }
-  if (pcap_loop(adapter_pcap, -1, sai_object::packetHandler, NULL) < 0) {
-    (*logger)->info("pcap_loop() failed: {}", pcap_geterr(adapter_pcap));
-    return;
-  }
-  (*logger)->info("SAI Adapter Thread Ended");
+  return SAI_STATUS_SUCCESS;
 }
 
-void server_internal_init_switch() {
-  printf("Switch init with default configurations\n");
-  sai_status_t status = SAI_STATUS_SUCCESS;
-  sai_switch_api_t *switch_api;
-  status = sai_api_query(SAI_API_SWITCH, (void **)&switch_api);
-  if (status != SAI_STATUS_SUCCESS) {
-    printf("sai_api_query failed!!!\n");
-  }
-  uint32_t count = 0;
-  sai_object_id_t s_id = 1;
-  status = switch_api->create_switch(&s_id, count, NULL);
-  printf("Switch inititated\n");
-  return;
+std::string parse_param(uint64_t param, uint32_t num_of_bytes) {
+  std::string my_string = std::string(
+      static_cast<char *>(static_cast<void *>(&param)), num_of_bytes);
+  std::reverse(my_string.begin(), my_string.end());
+  return my_string;
 }
 
-// void *fdb_miss_event_notification(sai_object_id_t switch_id, const void *buffer,
-//                                   sai_size_t buffer_size, uint32_t attr_count,
-//                                   const sai_attribute_t *attr_list) {
-//   printf("FDB MISS.\n");
-
-//   // Learn new mac.
-// }
-
-typedef struct _ethernet_hdr_t {
-  uint8_t dst_addr[ETHER_ADDR_LEN];
-  uint8_t src_addr[ETHER_ADDR_LEN];
-  uint16_t ether_type;
-} ethernet_hdr_t;
-
-typedef struct _cpu_hdr_t {
-  unsigned int ingress_port : 8;
-  unsigned int bridge_port : 8;
-  unsigned int bridge_id : 16;
-  unsigned int trap_id : 16;
-} cpu_hdr_t;
-
-void ReverseBytes(uint8_t *byte_arr, int size) {
-  uint8_t tmp;
-  for (int lo = 0, hi = size - 1; hi > lo; lo++, hi--) {
-    tmp = byte_arr[lo];
-    byte_arr[lo] = byte_arr[hi];
-    byte_arr[hi] = tmp;
-  }
+BmMatchParam parse_exact_match_param(uint64_t param, uint32_t num_of_bytes) {
+  BmMatchParam match_param;
+  match_param.type = BmMatchParamType::type::EXACT;
+  BmMatchParamExact match_param_exact;
+  match_param_exact.key = parse_param(param, num_of_bytes);
+  match_param.__set_exact(match_param_exact);
+  return match_param;
 }
 
-void print_mac(const uint8_t *mac) {
-  int i;
-  for (i = ETHER_ADDR_LEN - 1; i > 0; i--) {
-    printf("%.2x:", mac[i]);
-  }
-  printf("%.2x\n", mac[0]);
+BmMatchParam parse_valid_match_param(bool param) {
+  BmMatchParam match_param;
+  match_param.type = BmMatchParamType::type::VALID;
+  BmMatchParamValid match_param_valid;
+  match_param_valid.key = param;
+  match_param.__set_valid(match_param_valid);
+  return match_param;
 }
 
-void adapter_create_fdb_entry(sai_object_id_t bridge_port_id, sai_mac_t mac,
-                              sai_fdb_entry_bridge_type_t bridge_type,
-                              sai_vlan_id_t vlan_id,
-                              sai_object_id_t bridge_id) {
-  sai_fdb_api_t *fdb_api;
-  sai_status_t status = SAI_STATUS_SUCCESS;
-  status = sai_api_query(SAI_API_FDB, (void **)&fdb_api);
-  if (status != SAI_STATUS_SUCCESS) {
-    printf("sai_api_query failed!!!\n");
-    return;
-  }
-  sai_attribute_t attr[3];
-  attr[0].id = SAI_FDB_ENTRY_ATTR_TYPE;
-  attr[0].value.s32 = SAI_FDB_ENTRY_TYPE_STATIC;
-
-  attr[1].id = SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID;
-  attr[1].value.oid = bridge_port_id;
-
-  attr[2].id = SAI_FDB_ENTRY_ATTR_PACKET_ACTION;
-  attr[2].value.s32 = SAI_PACKET_ACTION_FORWARD;
-
-  sai_fdb_entry_t sai_fdb_entry;
-  sai_fdb_entry.switch_id = 0;
-  for (int i = 0; i < ETHER_ADDR_LEN; i++) {
-    sai_fdb_entry.mac_address[i] = mac[i];
-  }
-  sai_fdb_entry.bridge_type = bridge_type;
-  if (bridge_type == SAI_FDB_ENTRY_BRIDGE_TYPE_1Q) {
-    sai_fdb_entry.vlan_id = (sai_vlan_id_t)vlan_id;
-  }
-  sai_fdb_entry.bridge_id = bridge_id;
-  fdb_api->create_fdb_entry(&sai_fdb_entry, 3, attr);
-  printf("fdb learned\n");
+uint64_t parse_mac_64(uint8_t const mac_8[6]) {
+  uint64_t mac_64 = 0;
+  memcpy(&mac_64, mac_8, 6);
+  return mac_64;
 }
-
-void sai_object::packetHandler(u_char *userData, const struct pcap_pkthdr *pkthdr,
-                   const u_char *packet) {
-  // uint64_t* num;
-  // cpu_hdr_t *cpu_hdr = (cpu_hdr_t *)packet;
-  // ReverseBytes((uint8_t *)cpu_hdr, CPU_HDR_LEN);
-  // ethernet_hdr_t *ether = (ethernet_hdr_t *)(packet + CPU_HDR_LEN);
-  // ReverseBytes((uint8_t *)&(ether->ether_type), 2);
-  // ReverseBytes(ether->dst_addr, 6);
-  // ReverseBytes(ether->src_addr, 6);
-
-  (*logger)->info("CPU packet captured");
-}
-  // printf("trap_id: %d. bridge_id: %d. ingress_port: %d. bridge_port: %d.\n",
-  //        cpu_hdr->trap_id, cpu_hdr->bridge_id, cpu_hdr->ingress_port,
-  //        cpu_hdr->bridge_port);
-  // printf("source MAC:\n");
-  // print_mac(ether->src_addr);
-  // printf("dest MAC:\n");
-  // print_mac(ether->dst_addr);
-  // printf("ether_type = 0x%.4x\n", ether->ether_type);
-  // sai_object_id_t bridge_port =
-  // temp_sai_get_bridge_port(cpu_hdr->bridge_port);
-  // printf("bridge_port_sai_obj_id = %d\n", bridge_port);
-
-  // sai_bridge_api_t *bridge_api;
-  // sai_status_t status = SAI_STATUS_SUCCESS;
-  // status = sai_api_query(SAI_API_BRIDGE, (void **)&bridge_api);
-  // if (status != SAI_STATUS_SUCCESS) {
-  //   printf("sai_api_query failed!!!\n");
-  //   return;
-  // }
-
-  // sai_attribute_t attr[3];
-  // attr[0].id = SAI_BRIDGE_PORT_ATTR_TYPE;
-  // attr[1].id = SAI_BRIDGE_PORT_ATTR_VLAN_ID;
-  // attr[2].id = SAI_BRIDGE_PORT_ATTR_BRIDGE_ID;
-  // // bridge_api->get_bridge_port_attribute(bridge_port, 3, attr);
-  // sai_fdb_entry_bridge_type_t bridge_type;
-  // switch (attr[0].value.s32) {
-  //   case SAI_BRIDGE_PORT_TYPE_PORT:
-  //     bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1Q;
-  //     break;
-  //   case SAI_BRIDGE_PORT_TYPE_SUB_PORT:
-  //     bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1D;
-  //     break;
-  //   default:
-  //     printf("packet arrived from non port bridge_port (not supported yet)\n");
-  //     break;
-  // }
-  // adapter_create_fdb_entry(bridge_port, ether->src_addr, bridge_type,
-  // attr[1].value.u16, attr[2].value.oid);
-
-// sai_port_api_t* port_api;
-//    // sai_api_query(SAI_API_PORT, (void**)&port_api);
-
-//    // Set packet callback function
-//    sai_switch_api_t* switch_api;
-//    sai_api_query(SAI_API_SWITCH, (void**)&switch_api);
-//    sai_attribute_t sai_attr;
-//    sai_attr.id = SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY;
-//    sai_attr.value.ptr = fdb_miss_event_notification;
-//    switch_api->set_switch_attribute(switch_id, &sai_attr);
-
-//    sai_hostif_api_t* hostif_api;
-// sai_api_query(SAI_API_HOSTIF, (void**)&hostif_api);
-
-//    // create trap group (currently only 1.)
-//    sai_object_id_t prio_group;
-// sai_attribute_t sai_attr_list[2];
-// sai_attr_list[1].id=SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE;
-// sai_attr_list[1].value.u32 = 0; // high_queue_id; // high_queue_id is a queue
-// element created via QoS SAI API
-// sai_attr_list[2].id= SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER;
-// sai_attr_list[2].value.oid = 0; // high_policer_id; //high_policer_id is a
-// policer element created via policer SAI API
-// hostif_api->create_hostif_trap_group(&prio_group, switch_id, 2,
-// sai_attr_list);
-
-// // Configuring Trap-IDs
-//    sai_attribute_t sai_trap_attr[3];
-//    sai_object_id_t host_trap_id[1];
-// // configure STP trap_id
-//    // sai_trap_attr[0].id=SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP;
-//    // sai_trap_attr[0].value=&high_prio_group;
-//    // sai_trap_attr[1].id= SAI_HOSTIF_TRAP_ATTR_TRAP_ACTION;
-//    // sai_trap_attr[1].value= SAI_PACKET_ACTION_TRAP;
-//    // sai_trap_attr[2].id= SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE;
-//    // sai_trap_attr[2].value= SAI_HOSTIF_TRAP_TYPE_STP;
-//    // hostif_api->create_hostif_trap(&host_trap_id[1],2, sai_trap_attr);
-//    // configure FDB miss trap-id
-//    sai_trap_attr[0].id = SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_TRAP_GROUP;
-//    sai_trap_attr[0].value.oid = prio_group;
-//    sai_trap_attr[1].id = SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_TYPE;
-//    sai_trap_attr[1].value.s32 = SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_FDB;
-//    sai_trap_attr[2].id = SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_TRAP_PRIORITY;
-//    sai_trap_attr[2].value.u32 = 0;
-//    hostif_api->create_hostif_user_defined_trap(&host_trap_id[0], switch_id,
-//    3, sai_trap_attr);
-
-//    // Configuring Host tables
-//    sai_object_id_t host_table_entry[1];
-// sai_attribute_t sai_if_channel_attr[3];
-// // sai_if_channel_attr[0].id=SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE;
-// // sai_if_channel_attr[0].value= SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_TRAP_ID;
-// // sai_if_channel_attr[1].id= SAI_HOSTIF_TABLE_ENTRY_ATTR_TRAP_ID;
-// // sai_if_channel_attr[1].value=host_trap_id[1]; // Object referencing STP
-// trap
-// // sai_if_channel_attr[2].id= SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE;
-// //
-// sai_if_channel_attr[2].value=SAI_HOST_INTERFACE_TABLE_ENTRY_CHANNEL_TYPE_CB;
-// // hostif_api->create_hostif_table_entry(&host_table_entry[0], 3,
-// sai_if_channel_attr);
-// sai_if_channel_attr[0].id=SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE;
-// sai_if_channel_attr[0].value.s32 = SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID;
-// sai_if_channel_attr[1].id = SAI_HOSTIF_TABLE_ENTRY_ATTR_TRAP_ID;
-// sai_if_channel_attr[1].value.oid = host_trap_id[0]; // Object referencing FDB
-// trap
-// sai_if_channel_attr[2].id = SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE;
-// sai_if_channel_attr[2].value.s32 = SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_CB;
-// hostif_api->create_hostif_table_entry(&host_table_entry[0], switch_id, 3,
-// sai_if_channel_attr);

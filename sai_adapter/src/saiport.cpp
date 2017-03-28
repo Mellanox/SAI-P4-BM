@@ -1,6 +1,6 @@
-#include "sai_object.h"
+#include "sai_adapter.h"
 
-sai_status_t sai_object::create_port(sai_object_id_t *port_id,
+sai_status_t sai_adapter::create_port(sai_object_id_t *port_id,
                                      sai_object_id_t switch_id,
                                      uint32_t attr_count,
                                      const sai_attribute_t *attr_list) {
@@ -40,7 +40,7 @@ sai_status_t sai_object::create_port(sai_object_id_t *port_id,
   return SAI_STATUS_SUCCESS;
 }
 
-sai_status_t sai_object::remove_port(sai_object_id_t port_id) {
+sai_status_t sai_adapter::remove_port(sai_object_id_t port_id) {
   (*logger)->info("sai_remove_port: {} ", port_id);
   Port_obj *port = switch_metadata_ptr->ports[port_id];
   try {
@@ -58,7 +58,7 @@ sai_status_t sai_object::remove_port(sai_object_id_t port_id) {
   return SAI_STATUS_SUCCESS;
 }
 
-sai_status_t sai_object::set_port_attribute(sai_object_id_t port_id,
+sai_status_t sai_adapter::set_port_attribute(sai_object_id_t port_id,
                                             const sai_attribute_t *attr) {
   Port_obj *port;
   port_id_map_t::iterator it = switch_metadata_ptr->ports.find(port_id);
@@ -74,7 +74,7 @@ sai_status_t sai_object::set_port_attribute(sai_object_id_t port_id,
   return SAI_STATUS_SUCCESS;
 }
 
-sai_status_t sai_object::get_port_attribute(sai_object_id_t port_id,
+sai_status_t sai_adapter::get_port_attribute(sai_object_id_t port_id,
                                             uint32_t attr_count,
                                             sai_attribute_t *attr_list) {
   Port_obj *port = (Port_obj *)sai_id_map_ptr->get_object(port_id);
@@ -84,7 +84,7 @@ sai_status_t sai_object::get_port_attribute(sai_object_id_t port_id,
   return SAI_STATUS_SUCCESS;
 }
 
-void sai_object::set_parsed_port_attribute(Port_obj *port,
+void sai_adapter::set_parsed_port_attribute(Port_obj *port,
                                            sai_attribute_t attribute) {
   (*logger)->info("set_parsed_port_attribute. attribute id = {}", attribute.id);
   (*logger)->info("vlan = {} | bind_mode = {} | hw_lane_list = {} | "
@@ -113,7 +113,7 @@ void sai_object::set_parsed_port_attribute(Port_obj *port,
   }
 }
 
-void sai_object::get_parsed_port_attribute(Port_obj *port,
+void sai_adapter::get_parsed_port_attribute(Port_obj *port,
                                            sai_attribute_t *attribute) {
   switch (attribute->id) {
   case SAI_PORT_ATTR_PORT_VLAN_ID:
@@ -135,7 +135,7 @@ void sai_object::get_parsed_port_attribute(Port_obj *port,
   }
 }
 
-void sai_object::config_port(Port_obj *port) {
+void sai_adapter::config_port(Port_obj *port) {
   BmAddEntryOptions options;
   BmMatchParams match_params;
   match_params.clear();
