@@ -22,7 +22,7 @@ sai_adapter::sai_adapter()
   }
   logger = &logger_o;
   startSaiAdapterMain();
-  
+
   // start P4 link
   switch_list_ptr = &switch_list;
   switch_metadata_ptr = &switch_metadata;
@@ -46,7 +46,8 @@ sai_adapter::sai_adapter()
   bridge_api.get_bridge_attribute = &sai_adapter::get_bridge_attribute;
   bridge_api.create_bridge_port = &sai_adapter::create_bridge_port;
   bridge_api.remove_bridge_port = &sai_adapter::remove_bridge_port;
-  bridge_api.get_bridge_port_attribute = &sai_adapter::get_bridge_port_attribute;
+  bridge_api.get_bridge_port_attribute =
+      &sai_adapter::get_bridge_port_attribute;
 
   fdb_api.create_fdb_entry = &sai_adapter::create_fdb_entry;
   fdb_api.remove_fdb_entry = &sai_adapter::remove_fdb_entry;
@@ -78,7 +79,7 @@ sai_adapter::~sai_adapter() {
 }
 
 sai_status_t sai_adapter::sai_api_query(sai_api_t sai_api_id,
-                                       void **api_method_table) {
+                                        void **api_method_table) {
   switch (sai_api_id) {
     case SAI_API_PORT:
       *api_method_table = &port_api;
@@ -107,6 +108,23 @@ sai_status_t sai_adapter::sai_api_query(sai_api_t sai_api_id,
       return SAI_STATUS_FAILURE;
   }
   return SAI_STATUS_SUCCESS;
+}
+
+void sai_adapter::startSaiAdapterMain() {
+  std::thread SaiAdapterThread(&sai_adapter::SaiAdapterMain, this);
+  SaiAdapterThread.detach();
+}
+
+void sai_adapter::endSaiAdapterMain() {
+  pcap_breakloop(adapter_pcap);
+  pcap_close(adapter_pcap);
+}
+
+void sai_adapter::SaiAdapterMain() {
+  (*logger)->info("SAI Adapter Thread Started");
+  internal_init_switch();
+  PacketSniffer();
+  (*logger)->info("SAI Adapter Thread Ended");
 }
 
 std::string parse_param(uint64_t param, uint32_t num_of_bytes) {

@@ -1,62 +1,8 @@
-// #include <assert.h>
-// #include <inttypes.h>
-// #include <stdio.h>
-// #include <stdlib.h>
 #include "../inc/sai_adapter.h"
 
 #define ETHER_ADDR_LEN 6
 #define CPU_HDR_LEN 6
 #define MAC_LEARN_TRAP_ID 512
-
-void sai_adapter::startSaiAdapterMain() {
-  std::thread SaiAdapterThread(&sai_adapter::SaiAdapterMain, this);
-  SaiAdapterThread.detach();
-}
-
-void sai_adapter::endSaiAdapterMain() {
-  pcap_breakloop(adapter_pcap);
-  pcap_close(adapter_pcap);
-}
-
-void sai_adapter::SaiAdapterMain() {
-  (*logger)->info("SAI Adapter Thread Started");
-  internal_init_switch();
-  PacketSniffer();
-  (*logger)->info("SAI Adapter Thread Ended");
-}
-
-void sai_adapter::PacketSniffer() {
-  const char *dev = "cpu_port";
-
-  char errbuf[PCAP_ERRBUF_SIZE];
-  (*logger)->info("pcap started on dev {}", dev);
-  adapter_pcap = pcap_open_live(dev, BUFSIZ, 0, -1, errbuf);
-  if (adapter_pcap == NULL) {
-    (*logger)->info("pcap_open_live() failed: {}", errbuf);
-    return;
-  }
-  if (pcap_loop(adapter_pcap, 0, sai_adapter::packetHandler, NULL) == -1) {
-    (*logger)->info("pcap_loop() failed: {}", pcap_geterr(adapter_pcap));
-  }
-  return;
-}
-
-void sai_adapter::internal_init_switch() {
-  (*logger)->info("Switch init with default configurations");
-  sai_object_id_t *switch_id;
-  switch_api.create_switch(switch_id, 0, NULL);
-  return;
-}
-
-// void *fdb_miss_event_notification(sai_object_id_t switch_id, const void
-// *buffer,
-//                                   sai_size_t buffer_size, uint32_t
-//                                   attr_count,
-//                                   const sai_attribute_t *attr_list) {
-//   printf("FDB MISS.\n");
-
-//   // Learn new mac.
-// }
 
 typedef struct _ethernet_hdr_t {
   uint8_t dst_addr[ETHER_ADDR_LEN];
@@ -80,25 +26,37 @@ void ReverseBytes(uint8_t *byte_arr, int size) {
   }
 }
 
-void print_mac(const uint8_t *mac) {
-  int i;
-  for (i = ETHER_ADDR_LEN - 1; i > 0; i--) {
-    printf("%.2x:", mac[i]);
-  }
-  printf("%.2x\n", mac[0]);
+void print_mac_to_log(const uint8_t *mac,std::shared_ptr<spdlog::logger> logger) {
+  logger->info("{0:02X}:{1:02X}:{2:02X}:{3:02X}:{4:02X}:{5:02X}", mac[5], mac[4], mac[3], mac[2], mac[1], mac[0]);
 }
 
-void adapter_create_fdb_entry(sai_object_id_t bridge_port_id, sai_mac_t mac,
+void sai_adapter::PacketSniffer() {
+  const char *dev = "cpu_port";
+
+  char errbuf[PCAP_ERRBUF_SIZE];
+  (*logger)->info("pcap started on dev {}", dev);
+  adapter_pcap = pcap_open_live(dev, BUFSIZ, 0, -1, errbuf);
+  if (adapter_pcap == NULL) {
+    (*logger)->info("pcap_open_live() failed: {}", errbuf);
+    return;
+  }
+  if (pcap_loop(adapter_pcap, 0, packetHandler, (u_char*)this) == -1) {
+    (*logger)->info("pcap_loop() failed: {}", pcap_geterr(adapter_pcap));
+  }
+  return;
+}
+
+void sai_adapter::internal_init_switch() {
+  (*logger)->info("Switch init with default configurations");
+  sai_object_id_t *switch_id;
+  switch_api.create_switch(switch_id, 0, NULL);
+  return;
+}
+
+void sai_adapter::adapter_create_fdb_entry(sai_object_id_t bridge_port_id, sai_mac_t mac,
                               sai_fdb_entry_bridge_type_t bridge_type,
                               sai_vlan_id_t vlan_id,
                               sai_object_id_t bridge_id) {
-  sai_fdb_api_t *fdb_api;
-  sai_status_t status = SAI_STATUS_SUCCESS;
-  status = sai_api_query(SAI_API_FDB, (void **)&fdb_api);
-  if (status != SAI_STATUS_SUCCESS) {
-    printf("sai_api_query failed!!!\n");
-    return;
-  }
   sai_attribute_t attr[3];
   attr[0].id = SAI_FDB_ENTRY_ATTR_TYPE;
   attr[0].value.s32 = SAI_FDB_ENTRY_TYPE_STATIC;
@@ -119,129 +77,44 @@ void adapter_create_fdb_entry(sai_object_id_t bridge_port_id, sai_mac_t mac,
     sai_fdb_entry.vlan_id = (sai_vlan_id_t)vlan_id;
   }
   sai_fdb_entry.bridge_id = bridge_id;
-  fdb_api->create_fdb_entry(&sai_fdb_entry, 3, attr);
-  printf("fdb learned\n");
+  fdb_api.create_fdb_entry(&sai_fdb_entry, 3, attr);
 }
 
 void sai_adapter::packetHandler(u_char *userData,
                                 const struct pcap_pkthdr *pkthdr,
                                 const u_char *packet) {
-  // uint64_t* num;
-  // cpu_hdr_t *cpu_hdr = (cpu_hdr_t *)packet;
-  // ReverseBytes((uint8_t *)cpu_hdr, CPU_HDR_LEN);
-  // ethernet_hdr_t *ether = (ethernet_hdr_t *)(packet + CPU_HDR_LEN);
-  // ReverseBytes((uint8_t *)&(ether->ether_type), 2);
-  // ReverseBytes(ether->dst_addr, 6);
-  // ReverseBytes(ether->src_addr, 6);
 
+  sai_adapter *adapter= (sai_adapter *) userData;
   (*logger)->info("CPU packet captured");
+  cpu_hdr_t *cpu_hdr = (cpu_hdr_t *)packet;
+  ReverseBytes((uint8_t *)cpu_hdr, CPU_HDR_LEN);
+  ethernet_hdr_t *ether = (ethernet_hdr_t *)(packet + CPU_HDR_LEN);
+  ReverseBytes((uint8_t *)&(ether->ether_type), 2);
+  ReverseBytes(ether->dst_addr, 6);
+  ReverseBytes(ether->src_addr, 6);
+  if (cpu_hdr->trap_id == 512) {
+    adapter->learn_mac(cpu_hdr->ingress_port, ether->src_addr);
+  }
 }
-// printf("trap_id: %d. bridge_id: %d. ingress_port: %d. bridge_port: %d.\n",
-//        cpu_hdr->trap_id, cpu_hdr->bridge_id, cpu_hdr->ingress_port,
-//        cpu_hdr->bridge_port);
-// printf("source MAC:\n");
-// print_mac(ether->src_addr);
-// printf("dest MAC:\n");
-// print_mac(ether->dst_addr);
-// printf("ether_type = 0x%.4x\n", ether->ether_type);
-// sai_object_id_t bridge_port =
-// temp_sai_get_bridge_port(cpu_hdr->bridge_port);
-// printf("bridge_port_sai_obj_id = %d\n", bridge_port);
 
-// sai_bridge_api_t *bridge_api;
-// sai_status_t status = SAI_STATUS_SUCCESS;
-// status = sai_api_query(SAI_API_BRIDGE, (void **)&bridge_api);
-// if (status != SAI_STATUS_SUCCESS) {
-//   printf("sai_api_query failed!!!\n");
-//   return;
-// }
-
-// sai_attribute_t attr[3];
-// attr[0].id = SAI_BRIDGE_PORT_ATTR_TYPE;
-// attr[1].id = SAI_BRIDGE_PORT_ATTR_VLAN_ID;
-// attr[2].id = SAI_BRIDGE_PORT_ATTR_BRIDGE_ID;
-// // bridge_api->get_bridge_port_attribute(bridge_port, 3, attr);
-// sai_fdb_entry_bridge_type_t bridge_type;
-// switch (attr[0].value.s32) {
-//   case SAI_BRIDGE_PORT_TYPE_PORT:
-//     bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1Q;
-//     break;
-//   case SAI_BRIDGE_PORT_TYPE_SUB_PORT:
-//     bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1D;
-//     break;
-//   default:
-//     printf("packet arrived from non port bridge_port (not supported yet)\n");
-//     break;
-// }
-// adapter_create_fdb_entry(bridge_port, ether->src_addr, bridge_type,
-// attr[1].value.u16, attr[2].value.oid);
-
-// sai_port_api_t* port_api;
-//    // sai_api_query(SAI_API_PORT, (void**)&port_api);
-
-//    // Set packet callback function
-//    sai_switch_api_t* switch_api;
-//    sai_api_query(SAI_API_SWITCH, (void**)&switch_api);
-//    sai_attribute_t sai_attr;
-//    sai_attr.id = SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY;
-//    sai_attr.value.ptr = fdb_miss_event_notification;
-//    switch_api->set_switch_attribute(switch_id, &sai_attr);
-
-//    sai_hostif_api_t* hostif_api;
-// sai_api_query(SAI_API_HOSTIF, (void**)&hostif_api);
-
-//    // create trap group (currently only 1.)
-//    sai_object_id_t prio_group;
-// sai_attribute_t sai_attr_list[2];
-// sai_attr_list[1].id=SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE;
-// sai_attr_list[1].value.u32 = 0; // high_queue_id; // high_queue_id is a queue
-// element created via QoS SAI API
-// sai_attr_list[2].id= SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER;
-// sai_attr_list[2].value.oid = 0; // high_policer_id; //high_policer_id is a
-// policer element created via policer SAI API
-// hostif_api->create_hostif_trap_group(&prio_group, switch_id, 2,
-// sai_attr_list);
-
-// // Configuring Trap-IDs
-//    sai_attribute_t sai_trap_attr[3];
-//    sai_object_id_t host_trap_id[1];
-// // configure STP trap_id
-//    // sai_trap_attr[0].id=SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP;
-//    // sai_trap_attr[0].value=&high_prio_group;
-//    // sai_trap_attr[1].id= SAI_HOSTIF_TRAP_ATTR_TRAP_ACTION;
-//    // sai_trap_attr[1].value= SAI_PACKET_ACTION_TRAP;
-//    // sai_trap_attr[2].id= SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE;
-//    // sai_trap_attr[2].value= SAI_HOSTIF_TRAP_TYPE_STP;
-//    // hostif_api->create_hostif_trap(&host_trap_id[1],2, sai_trap_attr);
-//    // configure FDB miss trap-id
-//    sai_trap_attr[0].id = SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_TRAP_GROUP;
-//    sai_trap_attr[0].value.oid = prio_group;
-//    sai_trap_attr[1].id = SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_TYPE;
-//    sai_trap_attr[1].value.s32 = SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_FDB;
-//    sai_trap_attr[2].id = SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_TRAP_PRIORITY;
-//    sai_trap_attr[2].value.u32 = 0;
-//    hostif_api->create_hostif_user_defined_trap(&host_trap_id[0], switch_id,
-//    3, sai_trap_attr);
-
-//    // Configuring Host tables
-//    sai_object_id_t host_table_entry[1];
-// sai_attribute_t sai_if_channel_attr[3];
-// // sai_if_channel_attr[0].id=SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE;
-// // sai_if_channel_attr[0].value= SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_TRAP_ID;
-// // sai_if_channel_attr[1].id= SAI_HOSTIF_TABLE_ENTRY_ATTR_TRAP_ID;
-// // sai_if_channel_attr[1].value=host_trap_id[1]; // Object referencing STP
-// trap
-// // sai_if_channel_attr[2].id= SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE;
-// //
-// sai_if_channel_attr[2].value=SAI_HOST_INTERFACE_TABLE_ENTRY_CHANNEL_TYPE_CB;
-// // hostif_api->create_hostif_table_entry(&host_table_entry[0], 3,
-// sai_if_channel_attr);
-// sai_if_channel_attr[0].id=SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE;
-// sai_if_channel_attr[0].value.s32 = SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID;
-// sai_if_channel_attr[1].id = SAI_HOSTIF_TABLE_ENTRY_ATTR_TRAP_ID;
-// sai_if_channel_attr[1].value.oid = host_trap_id[0]; // Object referencing FDB
-// trap
-// sai_if_channel_attr[2].id = SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE;
-// sai_if_channel_attr[2].value.s32 = SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_CB;
-// hostif_api->create_hostif_table_entry(&host_table_entry[0], switch_id, 3,
-// sai_if_channel_attr);
+void sai_adapter::learn_mac(uint32_t ingress_port, uint8_t *src_mac) {
+  // TODO: Add LAG support
+  Port_obj *port;
+  BridgePort_obj *bridge_port;
+  Bridge_obj *bridge;
+  for (port_id_map_t::iterator it = switch_metadata_ptr->ports.begin(); it != switch_metadata_ptr->ports.end(); ++ it) {
+    if (it->second->hw_port == ingress_port) {
+      port = it->second;
+    }
+  }
+  for (bridge_port_id_map_t::iterator it = switch_metadata_ptr->bridge_ports.begin(); it != switch_metadata_ptr->bridge_ports.end(); ++ it) {
+    if (it->second->port_id == port->sai_object_id) {
+      bridge_port = it->second;
+      bridge = switch_metadata_ptr->bridges[it->second->bridge_id];
+    }
+  }
+  (*logger)->info("MAC learn:");
+  print_mac_to_log(src_mac, *logger);
+  sai_fdb_entry_bridge_type_t bridge_type;
+  // adapter_create_fdb_entry(bridge_port_id, mac, bridge_type, vlan_id, bridge_id);
+}

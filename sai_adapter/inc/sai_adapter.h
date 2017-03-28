@@ -29,11 +29,11 @@ extern "C" {
 #include <standard_types.h>
 #include <algorithm>
 // #include <atomic>
+#include <pcap.h>
 #include <cstdlib>
 #include <sstream>
 #include <string>
 #include <thread>
-#include <pcap.h>
 
 using namespace std;
 using namespace ::apache::thrift;
@@ -177,8 +177,11 @@ class sai_adapter {
   void SaiAdapterMain();
   void PacketSniffer();
   void internal_init_switch();
-  static void packetHandler(u_char *userData, const struct pcap_pkthdr *pkthdr,
-                   const u_char *packet);
+  static void packetHandler(u_char*, const struct pcap_pkthdr*,const u_char*);
+  void adapter_create_fdb_entry(sai_object_id_t, sai_mac_t,
+                                sai_fdb_entry_bridge_type_t, sai_vlan_id_t,
+                                sai_object_id_t);
+  void learn_mac(uint32_t, uint8_t*);
 };
 
 #endif
