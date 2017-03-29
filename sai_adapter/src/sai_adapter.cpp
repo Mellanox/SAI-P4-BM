@@ -122,6 +122,18 @@ void sai_adapter::endSaiAdapterMain() {
 
 void sai_adapter::SaiAdapterMain() {
   (*logger)->info("SAI Adapter Thread Started");
+
+  // Change to sai_adapter network namespace (hostif_net)
+  int fd = open("/var/run/netns/hostif_net", O_RDONLY);   /* Get descriptor for namespace */
+    if (fd == -1) {
+      (*logger)->error("open netns fd failed");
+      return;
+    }
+   if (setns(fd, 0) == -1) {         /* Join that namespace */
+      (*logger)->error("setns failed");
+      return;
+  }
+
   internal_init_switch();
   PacketSniffer();
   (*logger)->info("SAI Adapter Thread Ended");

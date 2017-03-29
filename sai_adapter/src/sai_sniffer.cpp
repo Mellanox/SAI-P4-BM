@@ -1,4 +1,5 @@
 #include "../inc/sai_adapter.h"
+#include <sched.h>
 
 #define ETHER_ADDR_LEN 6
 #define CPU_HDR_LEN 6
@@ -31,7 +32,8 @@ void print_mac_to_log(const uint8_t *mac,std::shared_ptr<spdlog::logger> logger)
 }
 
 void sai_adapter::PacketSniffer() {
-  const char *dev = "cpu_port";
+  // const char *dev = "cpu_port";
+  const char *dev = "host_port";
 
   char errbuf[PCAP_ERRBUF_SIZE];
   (*logger)->info("pcap started on dev {}", dev);
