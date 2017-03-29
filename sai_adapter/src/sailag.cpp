@@ -4,9 +4,9 @@ sai_status_t sai_adapter::create_lag(sai_object_id_t *lag_id,
                                      sai_object_id_t switch_id,
                                      uint32_t attr_count,
                                      const sai_attribute_t *attr_list) {
-  (*logger)->info("create_lag");
   Lag_obj *lag = new Lag_obj(sai_id_map_ptr);
   lag->l2_if = switch_metadata_ptr->GetNewL2IF();
+  (*logger)->info("create_lag. l2_if = {}. sai_object_id = {}", lag->l2_if, lag->sai_object_id);
   switch_metadata_ptr->lags[lag->sai_object_id] = lag;
   *lag_id = lag->sai_object_id;
   return SAI_STATUS_SUCCESS;

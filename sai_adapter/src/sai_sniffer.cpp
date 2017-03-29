@@ -99,21 +99,35 @@ void sai_adapter::packetHandler(u_char *userData,
 
 void sai_adapter::learn_mac(uint32_t ingress_port, uint8_t *src_mac) {
   // TODO: Add LAG support
-  Port_obj *port;
   BridgePort_obj *bridge_port;
   Bridge_obj *bridge;
+  sai_object_id_t port_id;
   for (port_id_map_t::iterator it = switch_metadata_ptr->ports.begin(); it != switch_metadata_ptr->ports.end(); ++ it) {
     if (it->second->hw_port == ingress_port) {
-      port = it->second;
+      port_id = it->first;
+      break;
     }
   }
+
+  for (lag_id_map_t::iterator it = switch_metadata_ptr->lags.begin(); it!= switch_metadata_ptr->lags.end(); ++it) {
+    for (std::vector<sai_object_id_t>::iterator mem_it = it->second->lag_members.begin(); mem_it != it->second->lag_members.end(); ++mem_it) {
+      if (switch_metadata_ptr->lag_members[*mem_it]->port->hw_port == ingress_port) {
+        (*logger)->info("MAC learning from ingress lag {}", it->first);
+        port_id = it->first;
+        break;
+      }
+    }
+  }
+
   for (bridge_port_id_map_t::iterator it = switch_metadata_ptr->bridge_ports.begin(); it != switch_metadata_ptr->bridge_ports.end(); ++ it) {
-    if (it->second->port_id == port->sai_object_id) {
+    if (it->second->port_id == port_id) {
       bridge_port = it->second;
       bridge = switch_metadata_ptr->bridges[it->second->bridge_id];
+      break;
     }
   }
-  (*logger)->info("MAC learn:");
+  
+  (*logger)->info("MAC learned (bridge sai_object_id {}):", bridge->sai_object_id);
   print_mac_to_log(src_mac, *logger);
   sai_fdb_entry_bridge_type_t bridge_type;
   if (bridge->bridge_type == SAI_BRIDGE_TYPE_1Q) {

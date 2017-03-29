@@ -758,7 +758,6 @@ class L21QLagTest(sai_base_test.ThriftInterfaceDataPlane):
                                     ip_ttl=64)
                 send_packet(self, hw_port1, str(pkt))
                 verify_packets_any(self, pkt, [hw_port2, hw_port3, hw_port4])
-
         finally:
             sai_thrift_delete_fdb(self.client, mac1, bridge)
             sai_thrift_delete_fdb(self.client, mac2, bridge)
