@@ -2,22 +2,22 @@
 #define SWITCH_META_DATA_H
 
 #define NULL_HANDLE -1
-#include <sai.h>
-#include <standard_types.h>
+#include "spdlog/spdlog.h"
 #include <iostream>
 #include <list>
 #include <map>
+#include <sai.h>
+#include <standard_types.h>
 #include <vector>
-#include "spdlog/spdlog.h"
 
 using namespace bm_runtime::standard;
 
-class sai_id_map_t {  // object pointer and it's id
- protected:
-  std::map<sai_object_id_t, void*> id_map;
+class sai_id_map_t { // object pointer and it's id
+protected:
+  std::map<sai_object_id_t, void *> id_map;
   std::vector<sai_object_id_t> unused_id;
 
- public:
+public:
   sai_id_map_t() {
     // init
     unused_id.clear();
@@ -34,7 +34,7 @@ class sai_id_map_t {  // object pointer and it's id
     unused_id.push_back(sai_object_id);
   }
 
-  sai_object_id_t get_new_id(void* obj_ptr) {  // pointer to object
+  sai_object_id_t get_new_id(void *obj_ptr) { // pointer to object
     sai_object_id_t id;
     if (!unused_id.empty()) {
       id = unused_id.back();
@@ -46,17 +46,17 @@ class sai_id_map_t {  // object pointer and it's id
     return id;
   }
 
-  void* get_object(sai_object_id_t sai_object_id) {
+  void *get_object(sai_object_id_t sai_object_id) {
     return id_map[sai_object_id];
   }
 };
 
 class Sai_obj {
- public:
-  sai_object_id_t sai_object_id;  // TODO maybe use the map and don't save here
-  Sai_obj(sai_id_map_t* sai_id_map_ptr) {
+public:
+  sai_object_id_t sai_object_id; // TODO maybe use the map and don't save here
+  Sai_obj(sai_id_map_t *sai_id_map_ptr) {
     sai_object_id =
-        sai_id_map_ptr->get_new_id(this);  // sai_id_map. set map to true.
+        sai_id_map_ptr->get_new_id(this); // sai_id_map. set map to true.
   }
   ~Sai_obj() {
     // free_id(sai_object_id); TODO: fix this
@@ -64,7 +64,7 @@ class Sai_obj {
 };
 
 class Port_obj : public Sai_obj {
- public:
+public:
   uint32_t hw_port;
   uint32_t l2_if;
   uint32_t pvid;
@@ -76,7 +76,7 @@ class Port_obj : public Sai_obj {
   BmEntryHandle handle_lag_if;
   BmEntryHandle handle_port_cfg;
   BmEntryHandle handle_ingress_lag;
-  Port_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
+  Port_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     // printf("create port object");
     this->mtu = 1512;
     this->drop_tagged = 0;
@@ -93,7 +93,7 @@ class Port_obj : public Sai_obj {
 };
 
 class BridgePort_obj : public Sai_obj {
- public:
+public:
   uint32_t port_id;
   uint32_t vlan_id;
   uint32_t bridge_port;
@@ -106,7 +106,7 @@ class BridgePort_obj : public Sai_obj {
   BmEntryHandle handle_subport_ingress_interface_type;
   BmEntryHandle handle_port_ingress_interface_type;
   // BmEntryHandle handle_cfg; // TODO
-  BridgePort_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
+  BridgePort_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->port_id = 0;
     this->vlan_id = 1;
     this->bridge_port = NULL;
@@ -123,11 +123,11 @@ class BridgePort_obj : public Sai_obj {
 };
 
 class Bridge_obj : public Sai_obj {
- public:
+public:
   sai_bridge_type_t bridge_type;
   std::vector<sai_object_id_t> bridge_port_list;
   uint32_t bridge_id;
-  Bridge_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
+  Bridge_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->bridge_type = SAI_BRIDGE_TYPE_1Q;
     this->bridge_port_list.clear();
     this->bridge_id = 1;
@@ -135,17 +135,17 @@ class Bridge_obj : public Sai_obj {
 };
 
 class Vlan_obj : public Sai_obj {
- public:
+public:
   uint16_t vid;
   std::vector<sai_object_id_t> vlan_members;
-  Vlan_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
+  Vlan_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->vlan_members.clear();
     this->vid = 0;
   }
 };
 
 class Vlan_member_obj : public Sai_obj {
- public:
+public:
   sai_object_id_t bridge_port_id;
   sai_object_id_t vlan_oid;
   uint32_t tagging_mode;
@@ -153,22 +153,22 @@ class Vlan_member_obj : public Sai_obj {
   BmEntryHandle handle_egress_vlan_tag;
   BmEntryHandle handle_egress_vlan_filtering;
   BmEntryHandle handle_ingress_vlan_filtering;
-  Vlan_member_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
+  Vlan_member_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->vid = NULL_HANDLE;
-    this->vlan_oid = NULL_HANDLE;  // TODO needed? consider remove.
+    this->vlan_oid = NULL_HANDLE; // TODO needed? consider remove.
     this->tagging_mode = SAI_VLAN_TAGGING_MODE_UNTAGGED;
     this->bridge_port_id = NULL_HANDLE;
   }
 };
 
 class Lag_obj : public Sai_obj {
- public:
+public:
   uint32_t l2_if;
   std::vector<sai_object_id_t> lag_members;
   BmEntryHandle handle_lag_hash;
   BmEntryHandle handle_port_configurations;
-  Port_obj* port_obj;
-  Lag_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
+  Port_obj *port_obj;
+  Lag_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->lag_members.clear();
     this->l2_if = 0;
     this->port_obj = NULL;
@@ -178,28 +178,28 @@ class Lag_obj : public Sai_obj {
 };
 
 class Lag_member_obj : public Sai_obj {
- public:
-  Port_obj* port;
-  Lag_obj* lag;
+public:
+  Port_obj *port;
+  Lag_obj *lag;
   BmEntryHandle handle_egress_lag;
-  Lag_member_obj(sai_id_map_t* sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
+  Lag_member_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->port = NULL;
     this->lag = NULL;
     this->handle_egress_lag = NULL_HANDLE;
   }
 };
 
-typedef std::map<sai_object_id_t, BridgePort_obj*> bridge_port_id_map_t;
-typedef std::map<sai_object_id_t, Port_obj*> port_id_map_t;
-typedef std::map<sai_object_id_t, Bridge_obj*> bridge_id_map_t;
-typedef std::map<sai_object_id_t, Vlan_obj*> vlan_id_map_t;
-typedef std::map<sai_object_id_t, Vlan_member_obj*> vlan_member_id_map_t;
-typedef std::map<sai_object_id_t, Lag_obj*> lag_id_map_t;
+typedef std::map<sai_object_id_t, BridgePort_obj *> bridge_port_id_map_t;
+typedef std::map<sai_object_id_t, Port_obj *> port_id_map_t;
+typedef std::map<sai_object_id_t, Bridge_obj *> bridge_id_map_t;
+typedef std::map<sai_object_id_t, Vlan_obj *> vlan_id_map_t;
+typedef std::map<sai_object_id_t, Vlan_member_obj *> vlan_member_id_map_t;
+typedef std::map<sai_object_id_t, Lag_obj *> lag_id_map_t;
 typedef std::map<sai_object_id_t, uint32_t> l2_if_map_t;
-typedef std::map<sai_object_id_t, Lag_member_obj*> lag_member_id_map_t;
-class Switch_metadata {  // TODO:  add default.. // this object_id is the
-                         // switch_id
- public:
+typedef std::map<sai_object_id_t, Lag_member_obj *> lag_member_id_map_t;
+class Switch_metadata { // TODO:  add default.. // this object_id is the
+                        // switch_id
+public:
   sai_u32_list_t hw_port_list;
   port_id_map_t ports;
   bridge_port_id_map_t bridge_ports;

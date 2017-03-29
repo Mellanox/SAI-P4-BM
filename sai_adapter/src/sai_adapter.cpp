@@ -7,7 +7,7 @@ std::vector<sai_object_id_t> *sai_adapter::switch_list_ptr;
 std::shared_ptr<spdlog::logger> *sai_adapter::logger;
 
 sai_adapter::sai_adapter()
-    :  //  constructor pre initializations
+    : //  constructor pre initializations
       socket(new TSocket("localhost", bm_port)),
       transport(new TBufferedTransport(socket)),
       bprotocol(new TBinaryProtocol(transport)),
@@ -17,8 +17,8 @@ sai_adapter::sai_adapter()
   logger_o = spdlog::get("logger");
   if (logger_o == 0) {
     auto logger_o = spdlog::basic_logger_mt("logger", "logs/log.txt");
-    logger_o->flush_on(spdlog::level::info);    // make err
-    spdlog::set_pattern("[thread %t] %l %v ");  // add %T for time
+    logger_o->flush_on(spdlog::level::info);   // make err
+    spdlog::set_pattern("[thread %t] %l %v "); // add %T for time
   }
   logger = &logger_o;
   startSaiAdapterMain();
@@ -81,31 +81,31 @@ sai_adapter::~sai_adapter() {
 sai_status_t sai_adapter::sai_api_query(sai_api_t sai_api_id,
                                         void **api_method_table) {
   switch (sai_api_id) {
-    case SAI_API_PORT:
-      *api_method_table = &port_api;
-      break;
-    case SAI_API_BRIDGE:
-      *api_method_table = &bridge_api;
-      break;
-    case SAI_API_FDB:
-      *api_method_table = &fdb_api;
-      break;
-    case SAI_API_SWITCH:
-      *api_method_table = &switch_api;
-      break;
-    case SAI_API_VLAN:
-      *api_method_table = &vlan_api;
-      break;
-    case SAI_API_LAG:
-      *api_method_table = &lag_api;
-      break;
-    case SAI_API_HOSTIF:
-      *api_method_table = &hostif_api;
-      break;
-    default:
-      (*logger)->info("api requested was %d, while sai_api_port is %d\n",
-                      sai_api_id, SAI_API_PORT);
-      return SAI_STATUS_FAILURE;
+  case SAI_API_PORT:
+    *api_method_table = &port_api;
+    break;
+  case SAI_API_BRIDGE:
+    *api_method_table = &bridge_api;
+    break;
+  case SAI_API_FDB:
+    *api_method_table = &fdb_api;
+    break;
+  case SAI_API_SWITCH:
+    *api_method_table = &switch_api;
+    break;
+  case SAI_API_VLAN:
+    *api_method_table = &vlan_api;
+    break;
+  case SAI_API_LAG:
+    *api_method_table = &lag_api;
+    break;
+  case SAI_API_HOSTIF:
+    *api_method_table = &hostif_api;
+    break;
+  default:
+    (*logger)->info("api requested was %d, while sai_api_port is %d\n",
+                    sai_api_id, SAI_API_PORT);
+    return SAI_STATUS_FAILURE;
   }
   return SAI_STATUS_SUCCESS;
 }
@@ -124,14 +124,15 @@ void sai_adapter::SaiAdapterMain() {
   (*logger)->info("SAI Adapter Thread Started");
 
   // Change to sai_adapter network namespace (hostif_net)
-  int fd = open("/var/run/netns/hostif_net", O_RDONLY);   /* Get descriptor for namespace */
-    if (fd == -1) {
-      (*logger)->error("open netns fd failed");
-      return;
-    }
-   if (setns(fd, 0) == -1) {         /* Join that namespace */
-      (*logger)->error("setns failed");
-      return;
+  int fd = open("/var/run/netns/hostif_net",
+                O_RDONLY); /* Get descriptor for namespace */
+  if (fd == -1) {
+    (*logger)->error("open netns fd failed");
+    return;
+  }
+  if (setns(fd, 0) == -1) { /* Join that namespace */
+    (*logger)->error("setns failed");
+    return;
   }
 
   internal_init_switch();

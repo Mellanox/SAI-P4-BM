@@ -87,50 +87,49 @@ sai_status_t sai_adapter::get_port_attribute(sai_object_id_t port_id,
 void sai_adapter::set_parsed_port_attribute(Port_obj *port,
                                             sai_attribute_t attribute) {
   (*logger)->info("set_parsed_port_attribute. attribute id = {}", attribute.id);
-  (*logger)->trace(
-      "vlan = {} | bind_mode = {} | hw_lane_list = {} | "
-      "drop_untagged = {} | drop_tagged = {}",
-      SAI_PORT_ATTR_PORT_VLAN_ID, SAI_PORT_ATTR_BIND_MODE,
-      SAI_PORT_ATTR_HW_LANE_LIST, SAI_PORT_ATTR_DROP_UNTAGGED,
-      SAI_PORT_ATTR_DROP_TAGGED);
+  (*logger)->trace("vlan = {} | bind_mode = {} | hw_lane_list = {} | "
+                   "drop_untagged = {} | drop_tagged = {}",
+                   SAI_PORT_ATTR_PORT_VLAN_ID, SAI_PORT_ATTR_BIND_MODE,
+                   SAI_PORT_ATTR_HW_LANE_LIST, SAI_PORT_ATTR_DROP_UNTAGGED,
+                   SAI_PORT_ATTR_DROP_TAGGED);
   switch (attribute.id) {
-    case SAI_PORT_ATTR_PORT_VLAN_ID:
-      port->pvid = attribute.value.u16;
-      break;
-    case SAI_PORT_ATTR_BIND_MODE:
-      port->bind_mode = attribute.value.s32;
-      break;
-    case SAI_PORT_ATTR_HW_LANE_LIST:
-      port->hw_port = attribute.value.u32list.list[0];
-      break;
-    case SAI_PORT_ATTR_DROP_UNTAGGED:
-      port->drop_untagged = attribute.value.booldata;
-      break;
-    case SAI_PORT_ATTR_DROP_TAGGED:
-      port->drop_tagged = attribute.value.booldata;
-      break;
+  case SAI_PORT_ATTR_PORT_VLAN_ID:
+    port->pvid = attribute.value.u16;
+    break;
+  case SAI_PORT_ATTR_BIND_MODE:
+    port->bind_mode = attribute.value.s32;
+    break;
+  case SAI_PORT_ATTR_HW_LANE_LIST:
+    port->hw_port = attribute.value.u32list.list[0];
+    break;
+  case SAI_PORT_ATTR_DROP_UNTAGGED:
+    port->drop_untagged = attribute.value.booldata;
+    break;
+  case SAI_PORT_ATTR_DROP_TAGGED:
+    port->drop_tagged = attribute.value.booldata;
+    break;
   }
 }
 
 void sai_adapter::get_parsed_port_attribute(Port_obj *port,
                                             sai_attribute_t *attribute) {
   switch (attribute->id) {
-    case SAI_PORT_ATTR_PORT_VLAN_ID:
-      attribute->value.u16 = port->pvid;
-      break;
-    case SAI_PORT_ATTR_BIND_MODE:
-      attribute->value.s32 = port->bind_mode;
-      break;
-    case SAI_PORT_ATTR_HW_LANE_LIST:
-      attribute->value.u32list.count = 1;
-      attribute->value.u32list.list[0] = port->hw_port;
-      break;
-    case SAI_PORT_ATTR_DROP_UNTAGGED:
-      attribute->value.booldata = port->drop_untagged;
-      break;
-    case SAI_PORT_ATTR_DROP_TAGGED:
-      attribute->value.booldata = port->drop_tagged;
-      break;
+  case SAI_PORT_ATTR_PORT_VLAN_ID:
+    attribute->value.u16 = port->pvid;
+    break;
+  case SAI_PORT_ATTR_BIND_MODE:
+    attribute->value.s32 = port->bind_mode;
+    break;
+  case SAI_PORT_ATTR_HW_LANE_LIST:
+    attribute->value.u32list.count = 1;
+    attribute->value.u32list.list[0] = port->hw_port;
+    break;
+  case SAI_PORT_ATTR_DROP_UNTAGGED:
+    attribute->value.booldata = port->drop_untagged;
+    break;
+  case SAI_PORT_ATTR_DROP_TAGGED:
+    attribute->value.booldata = port->drop_tagged;
+    break;
   }
 }
 
@@ -153,17 +152,15 @@ void sai_adapter::config_port(Port_obj *port) {
     bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_port_configurations",
                                       entry.entry_handle);
   } catch (...) {
-    (*logger)->warn(
-        "--> InvalidTableOperation while removing "
-        "table_port_configurations entry");
+    (*logger)->warn("--> InvalidTableOperation while removing "
+                    "table_port_configurations entry");
   }
   try {
     port->handle_port_cfg = bm_client_ptr->bm_mt_add_entry(
         cxt_id, "table_port_configurations", match_params,
         "action_set_port_configurations", action_data, options);
   } catch (...) {
-    (*logger)->warn(
-        "--> InvalidTableOperation while adding "
-        "table_port_configurations entry");
+    (*logger)->warn("--> InvalidTableOperation while adding "
+                    "table_port_configurations entry");
   }
 }

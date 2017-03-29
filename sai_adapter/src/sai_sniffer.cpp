@@ -27,8 +27,10 @@ void ReverseBytes(uint8_t *byte_arr, int size) {
   }
 }
 
-void print_mac_to_log(const uint8_t *mac,std::shared_ptr<spdlog::logger> logger) {
-  logger->info("{0:02X}:{1:02X}:{2:02X}:{3:02X}:{4:02X}:{5:02X}", mac[5], mac[4], mac[3], mac[2], mac[1], mac[0]);
+void print_mac_to_log(const uint8_t *mac,
+                      std::shared_ptr<spdlog::logger> logger) {
+  logger->info("{0:02X}:{1:02X}:{2:02X}:{3:02X}:{4:02X}:{5:02X}", mac[5],
+               mac[4], mac[3], mac[2], mac[1], mac[0]);
 }
 
 void sai_adapter::PacketSniffer() {
@@ -42,7 +44,7 @@ void sai_adapter::PacketSniffer() {
     (*logger)->info("pcap_open_live() failed: {}", errbuf);
     return;
   }
-  if (pcap_loop(adapter_pcap, 0, packetHandler, (u_char*)this) == -1) {
+  if (pcap_loop(adapter_pcap, 0, packetHandler, (u_char *)this) == -1) {
     (*logger)->info("pcap_loop() failed: {}", pcap_geterr(adapter_pcap));
   }
   return;
@@ -55,10 +57,10 @@ void sai_adapter::internal_init_switch() {
   return;
 }
 
-void sai_adapter::adapter_create_fdb_entry(sai_object_id_t bridge_port_id, sai_mac_t mac,
-                              sai_fdb_entry_bridge_type_t bridge_type,
-                              sai_vlan_id_t vlan_id,
-                              sai_object_id_t bridge_id) {
+void sai_adapter::adapter_create_fdb_entry(
+    sai_object_id_t bridge_port_id, sai_mac_t mac,
+    sai_fdb_entry_bridge_type_t bridge_type, sai_vlan_id_t vlan_id,
+    sai_object_id_t bridge_id) {
   sai_attribute_t attr[3];
   attr[0].id = SAI_FDB_ENTRY_ATTR_TYPE;
   attr[0].value.s32 = SAI_FDB_ENTRY_TYPE_STATIC;
@@ -86,7 +88,7 @@ void sai_adapter::packetHandler(u_char *userData,
                                 const struct pcap_pkthdr *pkthdr,
                                 const u_char *packet) {
 
-  sai_adapter *adapter= (sai_adapter *) userData;
+  sai_adapter *adapter = (sai_adapter *)userData;
   (*logger)->info("CPU packet captured");
   cpu_hdr_t *cpu_hdr = (cpu_hdr_t *)packet;
   ReverseBytes((uint8_t *)cpu_hdr, CPU_HDR_LEN);
@@ -104,16 +106,21 @@ void sai_adapter::learn_mac(uint32_t ingress_port, uint8_t *src_mac) {
   BridgePort_obj *bridge_port;
   Bridge_obj *bridge;
   sai_object_id_t port_id;
-  for (port_id_map_t::iterator it = switch_metadata_ptr->ports.begin(); it != switch_metadata_ptr->ports.end(); ++ it) {
+  for (port_id_map_t::iterator it = switch_metadata_ptr->ports.begin();
+       it != switch_metadata_ptr->ports.end(); ++it) {
     if (it->second->hw_port == ingress_port) {
       port_id = it->first;
       break;
     }
   }
 
-  for (lag_id_map_t::iterator it = switch_metadata_ptr->lags.begin(); it!= switch_metadata_ptr->lags.end(); ++it) {
-    for (std::vector<sai_object_id_t>::iterator mem_it = it->second->lag_members.begin(); mem_it != it->second->lag_members.end(); ++mem_it) {
-      if (switch_metadata_ptr->lag_members[*mem_it]->port->hw_port == ingress_port) {
+  for (lag_id_map_t::iterator it = switch_metadata_ptr->lags.begin();
+       it != switch_metadata_ptr->lags.end(); ++it) {
+    for (std::vector<sai_object_id_t>::iterator mem_it =
+             it->second->lag_members.begin();
+         mem_it != it->second->lag_members.end(); ++mem_it) {
+      if (switch_metadata_ptr->lag_members[*mem_it]->port->hw_port ==
+          ingress_port) {
         (*logger)->info("MAC learning from ingress lag {}", it->first);
         port_id = it->first;
         break;
@@ -121,15 +128,18 @@ void sai_adapter::learn_mac(uint32_t ingress_port, uint8_t *src_mac) {
     }
   }
 
-  for (bridge_port_id_map_t::iterator it = switch_metadata_ptr->bridge_ports.begin(); it != switch_metadata_ptr->bridge_ports.end(); ++ it) {
+  for (bridge_port_id_map_t::iterator it =
+           switch_metadata_ptr->bridge_ports.begin();
+       it != switch_metadata_ptr->bridge_ports.end(); ++it) {
     if (it->second->port_id == port_id) {
       bridge_port = it->second;
       bridge = switch_metadata_ptr->bridges[it->second->bridge_id];
       break;
     }
   }
-  
-  (*logger)->info("MAC learned (bridge sai_object_id {}):", bridge->sai_object_id);
+
+  (*logger)->info("MAC learned (bridge sai_object_id {}):",
+                  bridge->sai_object_id);
   print_mac_to_log(src_mac, *logger);
   sai_fdb_entry_bridge_type_t bridge_type;
   if (bridge->bridge_type == SAI_BRIDGE_TYPE_1Q) {
@@ -137,5 +147,6 @@ void sai_adapter::learn_mac(uint32_t ingress_port, uint8_t *src_mac) {
   } else {
     bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1D;
   }
-  adapter_create_fdb_entry(bridge_port->sai_object_id, src_mac, bridge_type, bridge_port->vlan_id, bridge->sai_object_id);
+  adapter_create_fdb_entry(bridge_port->sai_object_id, src_mac, bridge_type,
+                           bridge_port->vlan_id, bridge->sai_object_id);
 }

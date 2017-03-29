@@ -71,19 +71,19 @@ sai_status_t sai_adapter::get_switch_attribute(sai_object_id_t switch_id,
   int index = 0;
   for (i = 0; i < attr_count; i++) {
     switch ((attr_list + i)->id) {
-      case SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID:
-        (attr_list + i)->value.oid = switch_metadata_ptr->default_bridge_id;
-        break;
-      case SAI_SWITCH_ATTR_PORT_LIST:
-        for (port_id_map_t::iterator it = switch_metadata_ptr->ports.begin();
-             it != switch_metadata_ptr->ports.end(); ++it) {
-          (attr_list + i)->value.objlist.list[index] = it->first;
-          index += 1;
-        }
-        break;
-      case SAI_SWITCH_ATTR_PORT_NUMBER:
-        (attr_list + i)->value.u32 = switch_metadata_ptr->hw_port_list.count;
-        break;
+    case SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID:
+      (attr_list + i)->value.oid = switch_metadata_ptr->default_bridge_id;
+      break;
+    case SAI_SWITCH_ATTR_PORT_LIST:
+      for (port_id_map_t::iterator it = switch_metadata_ptr->ports.begin();
+           it != switch_metadata_ptr->ports.end(); ++it) {
+        (attr_list + i)->value.objlist.list[index] = it->first;
+        index += 1;
+      }
+      break;
+    case SAI_SWITCH_ATTR_PORT_NUMBER:
+      (attr_list + i)->value.u32 = switch_metadata_ptr->hw_port_list.count;
+      break;
     }
   }
   return SAI_STATUS_SUCCESS;

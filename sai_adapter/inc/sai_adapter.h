@@ -26,11 +26,11 @@ extern "C" {
 #include "../inc/spdlog/spdlog.h"
 
 // General
-#include <standard_types.h>
 #include <algorithm>
+#include <standard_types.h>
 // #include <atomic>
-#include <pcap.h>
 #include <cstdlib>
+#include <pcap.h>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -53,7 +53,7 @@ BmMatchParam parse_valid_match_param(bool param);
 uint64_t parse_mac_64(uint8_t const mac_8[6]);
 
 class sai_adapter {
- public:
+public:
   // thrift
   boost::shared_ptr<TTransport> socket;
   boost::shared_ptr<TTransport> transport;
@@ -170,18 +170,19 @@ class sai_adapter {
   ~sai_adapter();
   sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table);
 
- private:
+private:
   pcap_t *adapter_pcap;
   void startSaiAdapterMain();
   void endSaiAdapterMain();
   void SaiAdapterMain();
   void PacketSniffer();
   void internal_init_switch();
-  static void packetHandler(u_char*, const struct pcap_pkthdr*,const u_char*);
+  static void packetHandler(u_char *, const struct pcap_pkthdr *,
+                            const u_char *);
   void adapter_create_fdb_entry(sai_object_id_t, sai_mac_t,
                                 sai_fdb_entry_bridge_type_t, sai_vlan_id_t,
                                 sai_object_id_t);
-  void learn_mac(uint32_t, uint8_t*);
+  void learn_mac(uint32_t, uint8_t *);
 };
 
 #endif

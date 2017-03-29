@@ -12,9 +12,9 @@ sai_status_t sai_adapter::create_vlan(sai_object_id_t *vlan_id,
   for (uint32_t i = 0; i < attr_count; i++) {
     attribute = attr_list[i];
     switch (attribute.id) {
-      case SAI_VLAN_ATTR_VLAN_ID:
-        vlan->vid = (uint32_t)attribute.value.u16;  // TODO correct casting type
-        break;
+    case SAI_VLAN_ATTR_VLAN_ID:
+      vlan->vid = (uint32_t)attribute.value.u16; // TODO correct casting type
+      break;
     }
   }
   *vlan_id = vlan->sai_object_id;
@@ -42,21 +42,21 @@ sai_status_t sai_adapter::create_vlan_member(sai_object_id_t *vlan_member_id,
   for (uint32_t i = 0; i < attr_count; i++) {
     attribute = attr_list[i];
     switch (attribute.id) {
-      case SAI_VLAN_MEMBER_ATTR_VLAN_ID:
-        vlan_member->vlan_oid = (sai_object_id_t)attribute.value.oid;
-        break;
-      case SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID:
-        vlan_member->bridge_port_id = (sai_object_id_t)attribute.value.oid;
-        break;
-      case SAI_VLAN_MEMBER_ATTR_VLAN_TAGGING_MODE:
-        vlan_member->tagging_mode = (uint32_t)attribute.value.s32;
-        break;
-      default:
-        (*logger)->error(
-            "while parsing vlan member, attribute.id = {} was dumped in "
-            "sai_obj",
-            attribute.id);
-        break;
+    case SAI_VLAN_MEMBER_ATTR_VLAN_ID:
+      vlan_member->vlan_oid = (sai_object_id_t)attribute.value.oid;
+      break;
+    case SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID:
+      vlan_member->bridge_port_id = (sai_object_id_t)attribute.value.oid;
+      break;
+    case SAI_VLAN_MEMBER_ATTR_VLAN_TAGGING_MODE:
+      vlan_member->tagging_mode = (uint32_t)attribute.value.s32;
+      break;
+    default:
+      (*logger)->error(
+          "while parsing vlan member, attribute.id = {} was dumped in "
+          "sai_obj",
+          attribute.id);
+      break;
     }
   }
   Vlan_obj *vlan = switch_metadata_ptr->vlans[vlan_member->vlan_oid];
@@ -179,16 +179,18 @@ sai_status_t sai_adapter::get_vlan_attribute(sai_object_id_t vlan_id,
   return SAI_STATUS_NOT_IMPLEMENTED;
   // implementation
 }
-sai_status_t sai_adapter::set_vlan_member_attribute(
-    sai_object_id_t vlan_member_id, const sai_attribute_t *attr) {
+sai_status_t
+sai_adapter::set_vlan_member_attribute(sai_object_id_t vlan_member_id,
+                                       const sai_attribute_t *attr) {
   (*logger)->info("TODO : set_vlan_member_attribute not implemened");
   return SAI_STATUS_NOT_IMPLEMENTED;
 
   // implementation
 }
-sai_status_t sai_adapter::get_vlan_member_attribute(
-    sai_object_id_t vlan_member_id, const uint32_t attr_count,
-    sai_attribute_t *attr_list) {
+sai_status_t
+sai_adapter::get_vlan_member_attribute(sai_object_id_t vlan_member_id,
+                                       const uint32_t attr_count,
+                                       sai_attribute_t *attr_list) {
   (*logger)->info("TODO : get_vlan_member_attribute not implemened");
   return SAI_STATUS_NOT_IMPLEMENTED;
   // implementation
