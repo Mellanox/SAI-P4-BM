@@ -3,9 +3,9 @@
 sai_status_t sai_adapter::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
                                            uint32_t attr_count,
                                            const sai_attribute_t *attr_list) {
+  (*logger)->info("create_fdb_entry");
   sai_status_t status = SAI_STATUS_SUCCESS;
   // parsing attributes
-
   sai_fdb_entry_type_t entry_type;
   uint32_t bridge_port;
   sai_packet_action_t packet_action;
@@ -39,10 +39,12 @@ sai_status_t sai_adapter::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
       break;
     }
   }
+
   // out_if_type = 0 # port_type (not lag or router). TODO: check how to do it
   // with SAI
-  uint32_t bridge_id =
-      switch_metadata_ptr->bridges[fdb_entry->bridge_id]->bridge_id;
+
+  uint32_t bridge_id = get_bridge_id_from_fdb_entry(fdb_entry);
+  (*logger)->info("create fdb - bridge_id = {}", bridge_id);
   if (packet_action == SAI_PACKET_ACTION_FORWARD) {
     if (entry_type == SAI_FDB_ENTRY_TYPE_STATIC) {
       BmAddEntryOptions options;
@@ -72,8 +74,7 @@ sai_status_t sai_adapter::remove_fdb_entry(const sai_fdb_entry_t *fdb_entry) {
   BmActionData action_data;
   uint64_t mac_address = parse_mac_64(fdb_entry->mac_address);
   match_params.push_back(parse_exact_match_param(mac_address, 6));
-  uint32_t bridge_id =
-      switch_metadata_ptr->bridges[fdb_entry->bridge_id]->bridge_id;
+  uint32_t bridge_id = get_bridge_id_from_fdb_entry(fdb_entry);
   match_params.push_back(parse_exact_match_param(bridge_id, 2));
   BmMtEntry bm_entry;
   bm_client_ptr->bm_mt_get_entry_from_key(bm_entry, cxt_id, "table_fdb",
@@ -86,4 +87,19 @@ sai_status_t sai_adapter::remove_fdb_entry(const sai_fdb_entry_t *fdb_entry) {
                                     bm_entry.entry_handle);
 
   return status;
+}
+
+uint32_t
+sai_adapter::get_bridge_id_from_fdb_entry(const sai_fdb_entry_t *fdb_entry) {
+  if (fdb_entry->bridge_type == SAI_FDB_ENTRY_BRIDGE_TYPE_1Q) {
+    sai_object_id_t vlan_obj_id =
+        switch_metadata_ptr->GetVlanObjIdFromVid(fdb_entry->vlan_id);
+    if (vlan_obj_id != 0) {
+      return switch_metadata_ptr->vlans[vlan_obj_id]->bridge_id;
+    } else {
+      return fdb_entry->vlan_id;
+    }
+  } else {
+    return switch_metadata_ptr->bridges[fdb_entry->bridge_id]->bridge_id;
+  }
 }

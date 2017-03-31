@@ -170,9 +170,10 @@ def sai_thrift_create_bridge_port(client, bridge_port_type, port_id, vlan_id, br
     vport_attr = sai_thrift_attribute_t(id= SAI_BRIDGE_PORT_ATTR_PORT_ID, value=vport_attr_value)
     vport_attr_list.append(vport_attr)
 
-    vport_attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
-    vport_attr = sai_thrift_attribute_t(id= SAI_BRIDGE_PORT_ATTR_VLAN_ID, value=vport_attr_value)
-    vport_attr_list.append(vport_attr)
+    if (bridge_port_type == SAI_BRIDGE_PORT_TYPE_SUB_PORT):
+        vport_attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
+        vport_attr = sai_thrift_attribute_t(id= SAI_BRIDGE_PORT_ATTR_VLAN_ID, value=vport_attr_value)
+        vport_attr_list.append(vport_attr)
 
     vport_attr_value = sai_thrift_attribute_value_t(oid=bridge_id)
     vport_attr = sai_thrift_attribute_t(id= SAI_BRIDGE_PORT_ATTR_BRIDGE_ID, value=vport_attr_value)
@@ -181,7 +182,11 @@ def sai_thrift_create_bridge_port(client, bridge_port_type, port_id, vlan_id, br
     return client.sai_thrift_create_bridge_port(vport_attr_list)
 
 def sai_thrift_create_fdb(client, mac, bridge_type, vlan_id, bridge_id, bridge_port, mac_action, fdb_entry_type):
-    fdb_entry = sai_thrift_fdb_entry_t(mac_address=mac, vlan_id=vlan_id, bridge_type=bridge_type, bridge_id=bridge_id)
+    if bridge_type == SAI_BRIDGE_TYPE_1Q:
+        fdb_entry = sai_thrift_fdb_entry_t(mac_address=mac, bridge_type=SAI_FDB_ENTRY_BRIDGE_TYPE_1Q, vlan_id=vlan_id)
+    else:
+        fdb_entry = sai_thrift_fdb_entry_t(mac_address=mac, bridge_type=SAI_FDB_ENTRY_BRIDGE_TYPE_1D, bridge_id=bridge_id)
+
     #value 0 represents static entry, id=0, represents entry type
     fdb_attribute1_value = sai_thrift_attribute_value_t(s32=fdb_entry_type)
     fdb_attribute1 = sai_thrift_attribute_t(id=SAI_FDB_ENTRY_ATTR_TYPE,
@@ -197,8 +202,11 @@ def sai_thrift_create_fdb(client, mac, bridge_type, vlan_id, bridge_id, bridge_p
     fdb_attr_list = [fdb_attribute1, fdb_attribute2, fdb_attribute3]
     client.sai_thrift_create_fdb_entry(thrift_fdb_entry=fdb_entry, thrift_attr_list=fdb_attr_list)
 
-def sai_thrift_delete_fdb(client, mac, bridge_id):
-    fdb_entry = sai_thrift_fdb_entry_t(mac_address=mac, bridge_id=bridge_id)
+def sai_thrift_delete_fdb(client, mac, vlan_id, bridge_type, bridge_id):
+    if bridge_type == SAI_BRIDGE_TYPE_1Q:
+        fdb_entry = sai_thrift_fdb_entry_t(mac_address=mac, bridge_type=SAI_FDB_ENTRY_BRIDGE_TYPE_1Q, vlan_id=vlan_id)
+    else:
+        fdb_entry = sai_thrift_fdb_entry_t(mac_address=mac, bridge_type=SAI_FDB_ENTRY_BRIDGE_TYPE_1D, bridge_id=bridge_id)
     client.sai_thrift_delete_fdb_entry(thrift_fdb_entry=fdb_entry)
 
 def sai_thrift_flush_fdb_by_vlan(client, vlan_id):

@@ -1,17 +1,12 @@
 #include "../inc/sai_adapter.h"
 
-// Bridge
-
 sai_status_t sai_adapter::create_bridge(sai_object_id_t *bridge_id,
                                         sai_object_id_t switch_id,
                                         uint32_t attr_count,
                                         const sai_attribute_t *attr_list) {
-  uint32_t bridge_id_num = switch_metadata_ptr->GetNewBridgeID();
   Bridge_obj *bridge = new Bridge_obj(sai_id_map_ptr);
   switch_metadata_ptr->bridges[bridge->sai_object_id] = bridge;
-  bridge->bridge_id = bridge_id_num;
-  (*logger)->info("--> Created new bridge {} (sai_object_id={})",
-                  bridge->bridge_id, bridge->sai_object_id);
+
   // parsing attributes
   sai_attribute_t attribute;
   for (uint32_t i = 0; i < attr_count; i++) {
@@ -22,6 +17,17 @@ sai_status_t sai_adapter::create_bridge(sai_object_id_t *bridge_id,
       break;
     }
   }
+
+  if (bridge->bridge_type == SAI_BRIDGE_TYPE_1D) {
+    uint32_t bridge_id_num = switch_metadata_ptr->GetNewBridgeID(0);
+    bridge->bridge_id = bridge_id_num;
+    (*logger)->info("--> Created new .1D bridge {} (sai_object_id={})",
+                    bridge->bridge_id, bridge->sai_object_id);
+  } else { // 1Q bridge
+    (*logger)->info("--> Created new .1Q bridge(sai_object_id={})",
+                    bridge->sai_object_id);
+  }
+
   *bridge_id = bridge->sai_object_id;
   return SAI_STATUS_SUCCESS;
 }
@@ -92,10 +98,10 @@ sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
   match_params.clear();
   action_data.clear();
   int32_t l2_if_type;
-  uint32_t bridge_id =
-      switch_metadata_ptr->bridges[bridge_port->bridge_id]->bridge_id;
   // 1D
   if (bridge_port->bridge_port_type == SAI_BRIDGE_PORT_TYPE_SUB_PORT) {
+    uint32_t bridge_id =
+        switch_metadata_ptr->bridges[bridge_port->bridge_id]->bridge_id;
     match_params.push_back(
         parse_exact_match_param(bridge_port->bridge_port, 1));
     action_data.push_back(parse_param(bridge_id, 2));
@@ -111,27 +117,27 @@ sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
   }
   // 1Q
   else if (bridge_port->bridge_port_type == SAI_BRIDGE_PORT_TYPE_PORT) {
-    match_params.clear();
-    match_params.push_back(parse_exact_match_param(bridge_port->vlan_id, 2));
-    action_data.clear();
-    action_data.push_back(parse_param(bridge_id, 2));
-    if (bridge_port->handle_id_1q == NULL_HANDLE) {
-      try {
-        BmMtEntry entry;
-        bm_client_ptr->bm_mt_get_entry_from_key(
-            entry, cxt_id, "table_bridge_id_1q", match_params, options);
-        bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_bridge_id_1q",
-                                          entry.entry_handle);
-      } catch (...) {
-        (*logger)->debug("--> InvalidTableOperation while removing "
-                         "table_bridge_id_1q entry");
-      }
-      (*logger)->debug("--> adding table_bridge_id_1q entry, key:{}",
-                       bridge_port->vlan_id);
-      bridge_port->handle_id_1q = bm_client_ptr->bm_mt_add_entry(
-          cxt_id, "table_bridge_id_1q", match_params, "action_set_bridge_id",
-          action_data, options);
-    }
+    // match_params.clear();
+    // match_params.push_back(parse_exact_match_param(bridge_port->vlan_id, 2));
+    // action_data.clear();
+    // action_data.push_back(parse_param(bridge_id, 2));
+    // if (bridge_port->handle_id_1q == NULL_HANDLE) {
+    //   try {
+    //     BmMtEntry entry;
+    //     bm_client_ptr->bm_mt_get_entry_from_key(
+    //         entry, cxt_id, "table_bridge_id_1q", match_params, options);
+    //     bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_bridge_id_1q",
+    //                                       entry.entry_handle);
+    //   } catch (...) {
+    //     (*logger)->debug("--> InvalidTableOperation while removing "
+    //                      "table_bridge_id_1q entry");
+    //   }
+    //   (*logger)->debug("--> adding table_bridge_id_1q entry, key:{}",
+    //                    bridge_port->vlan_id);
+    //   bridge_port->handle_id_1q = bm_client_ptr->bm_mt_add_entry(
+    //       cxt_id, "table_bridge_id_1q", match_params, "action_set_bridge_id",
+    //       action_data, options);
+    // }
     l2_if_type = 3;
   }
 
@@ -198,15 +204,6 @@ sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
                                         bridge_port->handle_id_1d);
     } catch (...) {
       (*logger)->debug("--> Unable to remove table_bridge_id_1d entry, "
-                       "possible entry override");
-    }
-  }
-  if (bridge_port->handle_id_1q != NULL_HANDLE) {
-    try {
-      bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_bridge_id_1q",
-                                        bridge_port->handle_id_1q);
-    } catch (...) {
-      (*logger)->debug("--> Unable to remove table_bridge_id_1q entry, "
                        "possible entry override");
     }
   }

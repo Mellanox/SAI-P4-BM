@@ -17,6 +17,19 @@ sai_status_t sai_adapter::create_vlan(sai_object_id_t *vlan_id,
       break;
     }
   }
+
+  uint32_t bridge_id = switch_metadata_ptr->GetNewBridgeID(vlan->vid);
+  vlan->bridge_id = bridge_id;
+  if (vlan->vid != bridge_id) {
+    BmMatchParams match_params;
+    BmActionData action_data;
+    BmAddEntryOptions options;
+    match_params.push_back(parse_exact_match_param(vlan->vid, 2));
+    action_data.push_back(parse_param(bridge_id, 2));
+    vlan->handle_id_1q = bm_client_ptr->bm_mt_add_entry(
+        cxt_id, "table_bridge_id_1q", match_params, "action_set_bridge_id",
+        action_data, options);
+  }
   *vlan_id = vlan->sai_object_id;
   return SAI_STATUS_SUCCESS;
 }
@@ -24,6 +37,10 @@ sai_status_t sai_adapter::create_vlan(sai_object_id_t *vlan_id,
 sai_status_t sai_adapter::remove_vlan(sai_object_id_t vlan_id) {
   (*logger)->info("remove_vlan: {}", vlan_id);
   Vlan_obj *vlan = switch_metadata_ptr->vlans[vlan_id];
+  if (vlan->handle_id_1q != NULL_HANDLE) {
+    bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_bridge_id_1q",
+                                      vlan->handle_id_1q);
+  }
   switch_metadata_ptr->vlans.erase(vlan->sai_object_id);
   sai_id_map_ptr->free_id(vlan->sai_object_id);
   // (*logger)->info("vlans.size={}",switch_metadata_ptr->vlans.size());

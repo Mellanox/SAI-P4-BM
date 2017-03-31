@@ -177,6 +177,8 @@ private:
   void SaiAdapterMain();
   void PacketSniffer();
   void internal_init_switch();
+  static uint32_t
+  get_bridge_id_from_fdb_entry(const sai_fdb_entry_t *fdb_entry);
   static void packetHandler(u_char *, const struct pcap_pkthdr *,
                             const u_char *);
   void adapter_create_fdb_entry(sai_object_id_t, sai_mac_t,

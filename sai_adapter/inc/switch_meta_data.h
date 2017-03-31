@@ -100,7 +100,6 @@ public:
   sai_bridge_port_type_t bridge_port_type;
   sai_object_id_t bridge_id;
   BmEntryHandle handle_id_1d;
-  BmEntryHandle handle_id_1q;
   BmEntryHandle handle_egress_set_vlan;
   BmEntryHandle handle_egress_br_port_to_if;
   BmEntryHandle handle_subport_ingress_interface_type;
@@ -114,7 +113,6 @@ public:
     this->bridge_port_type = SAI_BRIDGE_PORT_TYPE_PORT;
     // TODO NULL_HANDLE is inavlid. consider other notation
     this->handle_id_1d = NULL_HANDLE;
-    this->handle_id_1q = NULL_HANDLE;
     this->handle_egress_set_vlan = NULL_HANDLE;
     this->handle_egress_br_port_to_if = NULL_HANDLE;
     this->handle_subport_ingress_interface_type = NULL_HANDLE;
@@ -126,7 +124,7 @@ class Bridge_obj : public Sai_obj {
 public:
   sai_bridge_type_t bridge_type;
   std::vector<sai_object_id_t> bridge_port_list;
-  uint32_t bridge_id;
+  uint32_t bridge_id; // Valid for .1D bridges.
   Bridge_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->bridge_type = SAI_BRIDGE_TYPE_1Q;
     this->bridge_port_list.clear();
@@ -137,10 +135,13 @@ public:
 class Vlan_obj : public Sai_obj {
 public:
   uint16_t vid;
+  uint32_t bridge_id; // Valid for .1Q bridge
   std::vector<sai_object_id_t> vlan_members;
+  BmEntryHandle handle_id_1q;
   Vlan_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->vlan_members.clear();
     this->vid = 0;
+    this->handle_id_1q = NULL_HANDLE;
   }
 };
 
@@ -218,6 +219,15 @@ public:
     lags.clear();
   }
 
+  uint16_t GetVlanObjIdFromVid(uint16_t vid) {
+    for (vlan_id_map_t::iterator it = vlans.begin(); it != vlans.end(); ++it) {
+      if (it->second->vid == vid) {
+        return it->first;
+      }
+    }
+    return 0;
+  }
+
   uint32_t GetNewBridgePort() {
     std::vector<uint32_t> bridge_port_nums;
     for (bridge_port_id_map_t::iterator it = bridge_ports.begin();
@@ -238,12 +248,21 @@ public:
     return bridge_port_nums.size();
   }
 
-  uint32_t GetNewBridgeID() {
+  uint32_t GetNewBridgeID(uint32_t prefered_id) {
     std::vector<uint32_t> bridge_ids;
     for (bridge_id_map_t::iterator it = bridges.begin(); it != bridges.end();
          ++it) {
       bridge_ids.push_back(it->second->bridge_id);
     }
+    for (vlan_id_map_t::iterator it = vlans.begin(); it != vlans.end(); ++it) {
+      bridge_ids.push_back(it->second->bridge_id);
+    }
+
+    if (std::find(bridge_ids.begin(), bridge_ids.end(), prefered_id) ==
+        bridge_ids.end()) {
+      return prefered_id;
+    }
+
     for (int i = 0; i < bridge_ids.size(); ++i) {
       if (std::find(bridge_ids.begin(), bridge_ids.end(), i) ==
           bridge_ids.end()) {

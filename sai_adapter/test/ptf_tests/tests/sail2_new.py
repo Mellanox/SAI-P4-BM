@@ -49,8 +49,8 @@ class L2AcceptedFrameType(sai_base_test.ThriftInterfaceDataPlane):
         # Create FDB Entries:
         mac_action = SAI_PACKET_ACTION_FORWARD
         fdb_entry_type = SAI_FDB_ENTRY_TYPE_STATIC
-        sai_thrift_create_fdb(self.client, mac1, default_bridge_type, vlan_id, default_bridge, bridge_port1, mac_action, fdb_entry_type)
-        sai_thrift_create_fdb(self.client, mac2, default_bridge_type, vlan_id, default_bridge, bridge_port2, mac_action, fdb_entry_type)
+        sai_thrift_create_fdb(self.client, mac1, default_bridge_type, vlan_id, None, bridge_port1, mac_action, fdb_entry_type)
+        sai_thrift_create_fdb(self.client, mac2, default_bridge_type, vlan_id, None, bridge_port2, mac_action, fdb_entry_type)
         
         untagged_pkt1 = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
                                           eth_src='00:11:11:11:11:11',
@@ -93,8 +93,8 @@ class L2AcceptedFrameType(sai_base_test.ThriftInterfaceDataPlane):
             send_packet(self, hw_port2, str(untagged_pkt2))
             verify_packets(self, untagged_pkt2, [hw_port1])
         finally:
-            sai_thrift_delete_fdb(self.client, mac1, default_bridge)
-            sai_thrift_delete_fdb(self.client, mac2, default_bridge)
+            sai_thrift_delete_fdb(self.client, mac1, vlan_id, default_bridge_type, None)
+            sai_thrift_delete_fdb(self.client, mac2, vlan_id, default_bridge_type, None)
             attr_value = sai_thrift_attribute_value_t(booldata=False)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_DROP_UNTAGGED, value=attr_value) 
             self.client.sai_thrift_set_port_attribute(port1, attr)
@@ -144,8 +144,8 @@ class L21DBridgeBasicTest(sai_base_test.ThriftInterfaceDataPlane):
         # Create FDB Entries:
         mac_action = SAI_PACKET_ACTION_FORWARD
         fdb_entry_type = SAI_FDB_ENTRY_TYPE_STATIC
-        sai_thrift_create_fdb(self.client, mac1, bridge_type, vlan_id, bridge, bridge_port1, mac_action, fdb_entry_type)
-        sai_thrift_create_fdb(self.client, mac2, bridge_type, vlan_id, bridge, bridge_port2, mac_action, fdb_entry_type)
+        sai_thrift_create_fdb(self.client, mac1, bridge_type, None, bridge, bridge_port1, mac_action, fdb_entry_type)
+        sai_thrift_create_fdb(self.client, mac2, bridge_type, None, bridge, bridge_port2, mac_action, fdb_entry_type)
 
         pkt = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
                                 eth_src='00:11:11:11:11:11',
@@ -157,8 +157,8 @@ class L21DBridgeBasicTest(sai_base_test.ThriftInterfaceDataPlane):
             send_packet(self, hw_port1, str(pkt))
             verify_packets(self, pkt, [hw_port2])
         finally:
-            sai_thrift_delete_fdb(self.client, mac1, bridge)
-            sai_thrift_delete_fdb(self.client, mac2, bridge)
+            sai_thrift_delete_fdb(self.client, mac1, None, bridge_type, bridge)
+            sai_thrift_delete_fdb(self.client, mac2, None, bridge_type, bridge)
             bind_mode = SAI_PORT_BIND_MODE_PORT
             vlan_id = 1
             attr_value = sai_thrift_attribute_value_t(s32=bind_mode)
@@ -172,8 +172,8 @@ class L21DBridgeBasicTest(sai_base_test.ThriftInterfaceDataPlane):
             bridge_port_type = SAI_BRIDGE_PORT_TYPE_PORT
             self.client.sai_thrift_remove_bridge_port(bridge_port1)
             self.client.sai_thrift_remove_bridge_port(bridge_port2)
-            bridge_port1 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port1, vlan_id, default_bridge)
-            bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port2, vlan_id, default_bridge)
+            bridge_port1 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port1, None, default_bridge)
+            bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port2, None, default_bridge)
             self.client.sai_thrift_remove_bridge(bridge)
             br_port_list[port1] = bridge_port1
             br_port_list[port2] = bridge_port2
@@ -202,13 +202,6 @@ class L21QBridgeAccess2AccessTest(sai_base_test.ThriftInterfaceDataPlane):
         self.client.sai_thrift_set_port_attribute(port1, attr)
         self.client.sai_thrift_set_port_attribute(port2, attr)
 
-        # Create Bridge ports
-        bridge_port_type = SAI_BRIDGE_PORT_TYPE_PORT
-        self.client.sai_thrift_remove_bridge_port(bridge_port1)
-        self.client.sai_thrift_remove_bridge_port(bridge_port2)
-        bridge_port1 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port1, vlan_id, default_bridge)
-        bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port2, vlan_id, default_bridge)
-
         # Create VLAN
         vlan_attr_value = sai_thrift_attribute_value_t(u16= vlan_id)
         vlan_attr = sai_thrift_attribute_t(id=SAI_VLAN_ATTR_VLAN_ID, value=vlan_attr_value)
@@ -224,8 +217,8 @@ class L21QBridgeAccess2AccessTest(sai_base_test.ThriftInterfaceDataPlane):
         mac_action = SAI_PACKET_ACTION_FORWARD
         fdb_entry_type = SAI_FDB_ENTRY_TYPE_STATIC
         bridge_type = SAI_BRIDGE_TYPE_1Q
-        sai_thrift_create_fdb(self.client, mac1, bridge_type, vlan_id, default_bridge, bridge_port1, mac_action, fdb_entry_type)
-        sai_thrift_create_fdb(self.client, mac2, bridge_type, vlan_id, default_bridge, bridge_port2, mac_action, fdb_entry_type)
+        sai_thrift_create_fdb(self.client, mac1, bridge_type, vlan_id, None, bridge_port1, mac_action, fdb_entry_type)
+        sai_thrift_create_fdb(self.client, mac2, bridge_type, vlan_id, None, bridge_port2, mac_action, fdb_entry_type)
         
         pkt = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
                                 eth_src='00:11:11:11:11:11',
@@ -237,8 +230,8 @@ class L21QBridgeAccess2AccessTest(sai_base_test.ThriftInterfaceDataPlane):
             send_packet(self, hw_port1, str(pkt))
             verify_packets(self, pkt, [hw_port2])
         finally:
-            sai_thrift_delete_fdb(self.client, mac1, default_bridge)
-            sai_thrift_delete_fdb(self.client, mac2, default_bridge)
+            sai_thrift_delete_fdb(self.client, mac1, vlan_id, bridge_type, None)
+            sai_thrift_delete_fdb(self.client, mac2, vlan_id, bridge_type, None)
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan_member(vlan_member2)
             self.client.sai_thrift_remove_vlan(vlan_oid)
@@ -247,12 +240,6 @@ class L21QBridgeAccess2AccessTest(sai_base_test.ThriftInterfaceDataPlane):
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
             self.client.sai_thrift_set_port_attribute(port1, attr)
             self.client.sai_thrift_set_port_attribute(port2, attr)
-            self.client.sai_thrift_remove_bridge_port(bridge_port1)
-            self.client.sai_thrift_remove_bridge_port(bridge_port2)
-            bridge_port1 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port1, vlan_id, default_bridge)
-            bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port2, vlan_id, default_bridge)
-            br_port_list[port1] = bridge_port1
-            br_port_list[port2] = bridge_port2
 
 @group('l2') 
 class L21QBridgeAccess2TrunkTest(sai_base_test.ThriftInterfaceDataPlane):
@@ -280,13 +267,6 @@ class L21QBridgeAccess2TrunkTest(sai_base_test.ThriftInterfaceDataPlane):
         self.client.sai_thrift_set_port_attribute(port1, attr)
         self.client.sai_thrift_set_port_attribute(port2, attr)
 
-        # Create Bridge ports
-        bridge_port_type = SAI_BRIDGE_PORT_TYPE_PORT
-        self.client.sai_thrift_remove_bridge_port(bridge_port1)
-        self.client.sai_thrift_remove_bridge_port(bridge_port2)
-        bridge_port1 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port1, vlan_id, default_bridge)
-        bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port2, vlan_id, default_bridge)
-
         # Create VLAN
         vlan_attr_value = sai_thrift_attribute_value_t(u16= vlan_id)
         vlan_attr = sai_thrift_attribute_t(id=SAI_VLAN_ATTR_VLAN_ID, value=vlan_attr_value)
@@ -303,8 +283,8 @@ class L21QBridgeAccess2TrunkTest(sai_base_test.ThriftInterfaceDataPlane):
         mac_action = SAI_PACKET_ACTION_FORWARD
         fdb_entry_type = SAI_FDB_ENTRY_TYPE_STATIC
         bridge_type = SAI_BRIDGE_TYPE_1Q
-        sai_thrift_create_fdb(self.client, mac1, bridge_type, vlan_id, default_bridge, bridge_port1, mac_action, fdb_entry_type)
-        sai_thrift_create_fdb(self.client, mac2, bridge_type, vlan_id, default_bridge, bridge_port2, mac_action, fdb_entry_type)
+        sai_thrift_create_fdb(self.client, mac1, bridge_type, vlan_id, None, bridge_port1, mac_action, fdb_entry_type)
+        sai_thrift_create_fdb(self.client, mac2, bridge_type, vlan_id, None, bridge_port2, mac_action, fdb_entry_type)
         
         pkt = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
                                 eth_src='00:11:11:11:11:11',
@@ -323,8 +303,8 @@ class L21QBridgeAccess2TrunkTest(sai_base_test.ThriftInterfaceDataPlane):
             send_packet(self, hw_port1, str(pkt))
             verify_packets(self, exp_pkt, [hw_port2])
         finally:
-            sai_thrift_delete_fdb(self.client, mac1, default_bridge)
-            sai_thrift_delete_fdb(self.client, mac2, default_bridge)
+            sai_thrift_delete_fdb(self.client, mac1, vlan_id, bridge_type, None)
+            sai_thrift_delete_fdb(self.client, mac2, vlan_id, bridge_type, None)
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan_member(vlan_member2)
             self.client.sai_thrift_remove_vlan(vlan_oid)
@@ -333,12 +313,6 @@ class L21QBridgeAccess2TrunkTest(sai_base_test.ThriftInterfaceDataPlane):
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value) 
             self.client.sai_thrift_set_port_attribute(port1, attr)
             self.client.sai_thrift_set_port_attribute(port2, attr)
-            self.client.sai_thrift_remove_bridge_port(bridge_port1)
-            self.client.sai_thrift_remove_bridge_port(bridge_port2)
-            bridge_port1 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port1, vlan_id, default_bridge)
-            bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port2, vlan_id, default_bridge)
-            br_port_list[port1] = bridge_port1
-            br_port_list[port2] = bridge_port2
 
 
 @group('l2')
@@ -367,13 +341,6 @@ class L21QBridgeTrunk2TrunkTest(sai_base_test.ThriftInterfaceDataPlane):
         self.client.sai_thrift_set_port_attribute(port1, attr)
         self.client.sai_thrift_set_port_attribute(port2, attr)
 
-        # Create Bridge ports
-        bridge_port_type = SAI_BRIDGE_PORT_TYPE_PORT
-        self.client.sai_thrift_remove_bridge_port(bridge_port1)
-        self.client.sai_thrift_remove_bridge_port(bridge_port2)
-        bridge_port1 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port1, vlan_id, default_bridge)
-        bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port2, vlan_id, default_bridge)
-
         # Create VLAN
         vlan_attr_value = sai_thrift_attribute_value_t(u16= vlan_id)
         vlan_attr = sai_thrift_attribute_t(id=SAI_VLAN_ATTR_VLAN_ID, value=vlan_attr_value)
@@ -388,8 +355,8 @@ class L21QBridgeTrunk2TrunkTest(sai_base_test.ThriftInterfaceDataPlane):
         mac_action = SAI_PACKET_ACTION_FORWARD
         fdb_entry_type = SAI_FDB_ENTRY_TYPE_STATIC
         bridge_type = SAI_BRIDGE_TYPE_1Q
-        sai_thrift_create_fdb(self.client, mac1, bridge_type, vlan_id, default_bridge, bridge_port1, mac_action, fdb_entry_type)
-        sai_thrift_create_fdb(self.client, mac2, bridge_type, vlan_id, default_bridge, bridge_port2, mac_action, fdb_entry_type)
+        sai_thrift_create_fdb(self.client, mac1, bridge_type, vlan_id, None, bridge_port1, mac_action, fdb_entry_type)
+        sai_thrift_create_fdb(self.client, mac2, bridge_type, vlan_id, None, bridge_port2, mac_action, fdb_entry_type)
         
         pkt = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
                                 eth_src='00:11:11:11:11:11',
@@ -409,8 +376,8 @@ class L21QBridgeTrunk2TrunkTest(sai_base_test.ThriftInterfaceDataPlane):
             send_packet(self, hw_port1, str(pkt))
             verify_packets(self, exp_pkt, [hw_port2])
         finally:
-            sai_thrift_delete_fdb(self.client, mac1, default_bridge)
-            sai_thrift_delete_fdb(self.client, mac2, default_bridge)
+            sai_thrift_delete_fdb(self.client, mac1, vlan_id, bridge_type, None)
+            sai_thrift_delete_fdb(self.client, mac2, vlan_id, bridge_type, None)
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan_member(vlan_member2)
             self.client.sai_thrift_remove_vlan(vlan_oid)
@@ -419,13 +386,6 @@ class L21QBridgeTrunk2TrunkTest(sai_base_test.ThriftInterfaceDataPlane):
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value) 
             self.client.sai_thrift_set_port_attribute(port1, attr)
             self.client.sai_thrift_set_port_attribute(port2, attr)
-            self.client.sai_thrift_remove_bridge_port(bridge_port1)
-            self.client.sai_thrift_remove_bridge_port(bridge_port2)
-            bridge_port1 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port1, vlan_id, default_bridge)
-            bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port2, vlan_id, default_bridge)
-            br_port_list[port1] = bridge_port1
-            br_port_list[port2] = bridge_port2
-            
 
 @group('l2')
 class L21QBridgeTrunk2AccessTest(sai_base_test.ThriftInterfaceDataPlane):
@@ -454,13 +414,6 @@ class L21QBridgeTrunk2AccessTest(sai_base_test.ThriftInterfaceDataPlane):
         self.client.sai_thrift_set_port_attribute(port1, attr)
         self.client.sai_thrift_set_port_attribute(port2, attr)
 
-        # Create Bridge ports
-        bridge_port_type = SAI_BRIDGE_PORT_TYPE_PORT
-        self.client.sai_thrift_remove_bridge_port(bridge_port1)
-        self.client.sai_thrift_remove_bridge_port(bridge_port2)
-        bridge_port1 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port1, vlan_id, default_bridge)
-        bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port2, vlan_id, default_bridge)
-
         # Create VLAN
         vlan_attr_value = sai_thrift_attribute_value_t(u16= vlan_id)
         vlan_attr = sai_thrift_attribute_t(id=SAI_VLAN_ATTR_VLAN_ID, value=vlan_attr_value)
@@ -476,8 +429,8 @@ class L21QBridgeTrunk2AccessTest(sai_base_test.ThriftInterfaceDataPlane):
         mac_action = SAI_PACKET_ACTION_FORWARD
         fdb_entry_type = SAI_FDB_ENTRY_TYPE_STATIC
         bridge_type = SAI_BRIDGE_TYPE_1Q
-        sai_thrift_create_fdb(self.client, mac1, bridge_type, vlan_id, default_bridge, bridge_port1, mac_action, fdb_entry_type)
-        sai_thrift_create_fdb(self.client, mac2, bridge_type, vlan_id, default_bridge, bridge_port2, mac_action, fdb_entry_type)
+        sai_thrift_create_fdb(self.client, mac1, bridge_type, vlan_id, None, bridge_port1, mac_action, fdb_entry_type)
+        sai_thrift_create_fdb(self.client, mac2, bridge_type, vlan_id, None, bridge_port2, mac_action, fdb_entry_type)
         
         pkt = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
                                 eth_src='00:11:11:11:11:11',
@@ -496,8 +449,8 @@ class L21QBridgeTrunk2AccessTest(sai_base_test.ThriftInterfaceDataPlane):
             send_packet(self, hw_port1, str(pkt))
             verify_packets(self, exp_pkt, [hw_port2])
         finally:
-            sai_thrift_delete_fdb(self.client, mac1, default_bridge)
-            sai_thrift_delete_fdb(self.client, mac2, default_bridge)
+            sai_thrift_delete_fdb(self.client, mac1, vlan_id, bridge_type, None)
+            sai_thrift_delete_fdb(self.client, mac2, vlan_id, bridge_type, None)
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan_member(vlan_member2)
             self.client.sai_thrift_remove_vlan(vlan_oid)
@@ -506,12 +459,6 @@ class L21QBridgeTrunk2AccessTest(sai_base_test.ThriftInterfaceDataPlane):
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value) 
             self.client.sai_thrift_set_port_attribute(port1, attr)
             self.client.sai_thrift_set_port_attribute(port2, attr)
-            self.client.sai_thrift_remove_bridge_port(bridge_port1)
-            self.client.sai_thrift_remove_bridge_port(bridge_port2)
-            bridge_port1 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port1, vlan_id, default_bridge)
-            bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port2, vlan_id, default_bridge)
-            br_port_list[port1] = bridge_port1
-            br_port_list[port2] = bridge_port2
 
 @group('l2')
 class L21DLagTest(sai_base_test.ThriftInterfaceDataPlane):
@@ -589,8 +536,9 @@ class L21DLagTest(sai_base_test.ThriftInterfaceDataPlane):
         # Create FDB Entries:
         mac_action = SAI_PACKET_ACTION_FORWARD
         fdb_entry_type = SAI_FDB_ENTRY_TYPE_STATIC
-        sai_thrift_create_fdb(self.client, mac1, bridge_type, vlan_id, bridge, bridge_port1, mac_action, fdb_entry_type)
-        sai_thrift_create_fdb(self.client, mac2, bridge_type, vlan_id, bridge, bridge_port2, mac_action, fdb_entry_type)
+        fdb_bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1D
+        sai_thrift_create_fdb(self.client, mac1, fdb_bridge_type, None, bridge, bridge_port1, mac_action, fdb_entry_type)
+        sai_thrift_create_fdb(self.client, mac2, fdb_bridge_type, None, bridge, bridge_port2, mac_action, fdb_entry_type)
 
         pkt = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
                                 eth_src='00:22:22:22:22:22',
@@ -609,8 +557,8 @@ class L21DLagTest(sai_base_test.ThriftInterfaceDataPlane):
                 send_packet(self, hw_port1, str(pkt))
                 verify_packets_any(self, pkt, [hw_port2, hw_port4, hw_port5])
         finally:
-            sai_thrift_delete_fdb(self.client, mac1, bridge)
-            sai_thrift_delete_fdb(self.client, mac2, bridge)
+            sai_thrift_delete_fdb(self.client, mac1, None, bridge_type, bridge)
+            sai_thrift_delete_fdb(self.client, mac2, None, bridge_type, bridge)
             vlan_id = 1
             bind_mode = SAI_PORT_BIND_MODE_PORT
             attr_value = sai_thrift_attribute_value_t(s32=bind_mode)
@@ -633,12 +581,12 @@ class L21DLagTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_lag(lag)
             bridge_port_type = SAI_BRIDGE_PORT_TYPE_PORT
             self.client.sai_thrift_remove_bridge_port(bridge_port1)
-            bridge_port1 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port1, vlan_id, default_bridge)
             self.client.sai_thrift_remove_bridge_port(bridge_port2)
-            bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port2, vlan_id, default_bridge)
-            bridge_port4 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port4, vlan_id, default_bridge)
-            bridge_port5 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port5, vlan_id, default_bridge)
             self.client.sai_thrift_remove_bridge(bridge)
+            bridge_port1 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port1, None, default_bridge)
+            bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port2, None, default_bridge)
+            bridge_port4 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port4, None, default_bridge)
+            bridge_port5 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port5, None, default_bridge)
             br_port_list[port1] = bridge_port1
             br_port_list[port2] = bridge_port2
             br_port_list[port4] = bridge_port4
@@ -687,14 +635,12 @@ class L21QLagTest(sai_base_test.ThriftInterfaceDataPlane):
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
         self.client.sai_thrift_set_port_attribute(lag, attr)
 
-        # Create Bridge ports
+        # Create Lag Bridge port
         bridge_port_type = SAI_BRIDGE_PORT_TYPE_PORT
-        self.client.sai_thrift_remove_bridge_port(bridge_port1)
         self.client.sai_thrift_remove_bridge_port(bridge_port2)
         self.client.sai_thrift_remove_bridge_port(bridge_port3)
         self.client.sai_thrift_remove_bridge_port(bridge_port4)
-        bridge_port1 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port1, vlan_id, default_bridge)
-        bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, lag, vlan_id, default_bridge)
+        bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, lag, None, default_bridge)
         
         # Create VLAN
         vlan_attr_value = sai_thrift_attribute_value_t(u16= vlan_id)
@@ -710,8 +656,8 @@ class L21QLagTest(sai_base_test.ThriftInterfaceDataPlane):
         mac_action = SAI_PACKET_ACTION_FORWARD
         fdb_entry_type = SAI_FDB_ENTRY_TYPE_STATIC
         bridge_type = SAI_BRIDGE_TYPE_1Q
-        sai_thrift_create_fdb(self.client, mac1, bridge_type, vlan_id, default_bridge, bridge_port1, mac_action, fdb_entry_type)
-        sai_thrift_create_fdb(self.client, mac2, bridge_type, vlan_id, default_bridge, bridge_port2, mac_action, fdb_entry_type)
+        sai_thrift_create_fdb(self.client, mac1, bridge_type, vlan_id, None, bridge_port1, mac_action, fdb_entry_type)
+        sai_thrift_create_fdb(self.client, mac2, bridge_type, vlan_id, None, bridge_port2, mac_action, fdb_entry_type)
 
         pkt = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
                                 eth_src='00:22:22:22:22:22',
@@ -730,18 +676,16 @@ class L21QLagTest(sai_base_test.ThriftInterfaceDataPlane):
                 send_packet(self, hw_port1, str(pkt))
                 verify_packets_any(self, pkt, [hw_port2, hw_port3, hw_port4])
         finally:
-            sai_thrift_delete_fdb(self.client, mac1, default_bridge)
-            sai_thrift_delete_fdb(self.client, mac2, default_bridge)
+            sai_thrift_delete_fdb(self.client, mac1, vlan_id, bridge_type, None)
+            sai_thrift_delete_fdb(self.client, mac2, vlan_id, bridge_type, None)
+            vlan_id = 1
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan_member(vlan_member2)
             self.client.sai_thrift_remove_vlan(vlan_oid)
-            self.client.sai_thrift_remove_bridge_port(bridge_port1)
             self.client.sai_thrift_remove_bridge_port(bridge_port2)
-            bridge_port1 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port1, vlan_id, default_bridge)
-            bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port2, vlan_id, default_bridge)
-            bridge_port3 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port3, vlan_id, default_bridge)
-            bridge_port4 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port4, vlan_id, default_bridge)
-            br_port_list[port1] = bridge_port1
+            bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port2, None, default_bridge)
+            bridge_port3 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port3, None, default_bridge)
+            bridge_port4 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port4, None, default_bridge)
             br_port_list[port2] = bridge_port2
             br_port_list[port3] = bridge_port3
             br_port_list[port4] = bridge_port4
@@ -749,7 +693,6 @@ class L21QLagTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_lag_member(lag_member2)
             self.client.sai_thrift_remove_lag_member(lag_member3)
             self.client.sai_thrift_remove_lag(lag)
-            vlan_id = 1
             attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
             self.client.sai_thrift_set_port_attribute(port1, attr)
