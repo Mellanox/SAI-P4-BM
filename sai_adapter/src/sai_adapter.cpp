@@ -13,15 +13,20 @@ sai_adapter::sai_adapter()
       bprotocol(new TBinaryProtocol(transport)),
       protocol(new TMultiplexedProtocol(bprotocol, "standard")),
       bm_client(protocol) {
+  printf("sai_adapter constructor\n");
   // logger
   logger_o = spdlog::get("logger");
   if (logger_o == 0) {
+    printf("logger created\n");
     auto logger_o = spdlog::basic_logger_mt("logger", "logs/log.txt");
     logger_o->flush_on(spdlog::level::info);   // make err
     spdlog::set_pattern("[thread %t] %l %v "); // add %T for time
   }
   logger = &logger_o;
+  (*logger)->info("test");
+  printf("before startsai\n");
   startSaiAdapterMain();
+  printf("after startsai\n");
 
   // start P4 link
   switch_list_ptr = &switch_list;
@@ -67,7 +72,16 @@ sai_adapter::sai_adapter()
   lag_api.remove_lag = &sai_adapter::remove_lag;
   lag_api.create_lag_member = &sai_adapter::create_lag_member;
   lag_api.remove_lag_member = &sai_adapter::remove_lag_member;
-  //
+
+  hostif_api.create_hostif = &sai_adapter::create_hostif;
+  hostif_api.remove_hostif = &sai_adapter::remove_hostif;
+  hostif_api.create_hostif_table_entry = &sai_adapter::create_hostif_table_entry;
+  hostif_api.remove_hostif_table_entry = &sai_adapter::remove_hostif_table_entry;
+  hostif_api.create_hostif_trap_group = &sai_adapter::create_hostif_trap_group;
+  hostif_api.remove_hostif_trap_group = &sai_adapter::remove_hostif_trap_group;
+  hostif_api.create_hostif_trap = &sai_adapter::create_hostif_trap;
+  hostif_api.remove_hostif_trap = &sai_adapter::remove_hostif_trap;
+
   (*logger)->info("BM connection started on port {}", bm_port);
 }
 

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 /// thrift sai server
-#include "../../inc/spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
 #include <string>
 #include <switch_sai_rpc.h>
 #include <thrift/server/TSimpleServer.h>

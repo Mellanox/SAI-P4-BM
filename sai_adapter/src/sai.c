@@ -79,6 +79,7 @@ sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table) {
 
 sai_status_t sai_api_initialize(uint64_t flags,
                                 const service_method_table_t *services) {
+  printf("sai_api_initialize\n");
   sai_adapter = create_sai_adapter();
 }
 

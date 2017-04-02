@@ -84,6 +84,25 @@ sai_status_t sai_adapter_create_lag_member(S_O_Handle, sai_object_id_t *,
                                            const sai_attribute_t *);
 sai_status_t sai_adapter_remove_lag_member(S_O_Handle, sai_object_id_t);
 
+// hostif
+sai_status_t sai_adapter_create_hostif(S_O_Handle, sai_object_id_t *,
+                                       sai_object_id_t, uint32_t,
+                                       const sai_attribute_t *);
+sai_status_t sai_adapter_remove_hostif(S_O_Handle, sai_object_id_t);
+sai_status_t sai_adapter_create_hostif_table_entry(S_O_Handle,
+                                                   sai_object_id_t *,
+                                                   sai_object_id_t, uint32_t,
+                                                   const sai_attribute_t *);
+sai_status_t sai_adapter_remove_hostif_table_entry(S_O_Handle, sai_object_id_t);
+sai_status_t sai_adapter_create_hostif_trap_group(S_O_Handle, sai_object_id_t *,
+                                                  sai_object_id_t, uint32_t,
+                                                  const sai_attribute_t *);
+sai_status_t sai_adapter_remove_hostif_trap_group(S_O_Handle, sai_object_id_t);
+sai_status_t sai_adapter_create_hostif_trap(S_O_Handle, sai_object_id_t *,
+                                            sai_object_id_t, uint32_t,
+                                            const sai_attribute_t *);
+sai_status_t sai_adapter_remove_hostif_trap(S_O_Handle, sai_object_id_t);
+
 #ifdef __cplusplus
 }
 #endif

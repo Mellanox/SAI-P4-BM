@@ -26,11 +26,11 @@ extern "C" {
 #include "../inc/spdlog/spdlog.h"
 
 // General
-#include <algorithm>
 #include <standard_types.h>
+#include <algorithm>
 // #include <atomic>
-#include <cstdlib>
 #include <pcap.h>
+#include <cstdlib>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -53,7 +53,7 @@ BmMatchParam parse_valid_match_param(bool param);
 uint64_t parse_mac_64(uint8_t const mac_8[6]);
 
 class sai_adapter {
-public:
+ public:
   // thrift
   boost::shared_ptr<TTransport> socket;
   boost::shared_ptr<TTransport> transport;
@@ -158,6 +158,28 @@ public:
                                         const sai_attribute_t *attr_list);
   static sai_status_t remove_lag_member(sai_object_id_t lag_member_id);
 
+  // hostif
+  static sai_status_t create_hostif(sai_object_id_t *hif_id,
+                                    sai_object_id_t switch_id,
+                                    uint32_t attr_count,
+                                    const sai_attribute_t *attr_list);
+  static sai_status_t remove_hostif(sai_object_id_t hif_id);
+  static sai_status_t create_hostif_table_entry(
+      sai_object_id_t *hif_table_entry, sai_object_id_t switch_id,
+      uint32_t attr_count, const sai_attribute_t *attr_list);
+  static sai_status_t remove_hostif_table_entry(
+      sai_object_id_t hif_table_entry);
+  static sai_status_t create_hostif_trap_group(
+      sai_object_id_t *hostif_trap_group_id, sai_object_id_t switch_id,
+      uint32_t attr_count, const sai_attribute_t *attr_list);
+  static sai_status_t remove_hostif_trap_group(
+      sai_object_id_t hostif_trap_group_id);
+  static sai_status_t create_hostif_trap(sai_object_id_t *hostif_trap_id,
+                                         sai_object_id_t switch_id,
+                                         uint32_t attr_count,
+                                         const sai_attribute_t *attr_list);
+  static sai_status_t remove_hostif_trap(sai_object_id_t hostif_trap_id);
+
   // api s
   sai_port_api_t port_api;
   sai_bridge_api_t bridge_api;
@@ -170,15 +192,15 @@ public:
   ~sai_adapter();
   sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table);
 
-private:
+ private:
   pcap_t *adapter_pcap;
   void startSaiAdapterMain();
   void endSaiAdapterMain();
   void SaiAdapterMain();
   void PacketSniffer();
   void internal_init_switch();
-  static uint32_t
-  get_bridge_id_from_fdb_entry(const sai_fdb_entry_t *fdb_entry);
+  static uint32_t get_bridge_id_from_fdb_entry(
+      const sai_fdb_entry_t *fdb_entry);
   static void packetHandler(u_char *, const struct pcap_pkthdr *,
                             const u_char *);
   void adapter_create_fdb_entry(sai_object_id_t, sai_mac_t,

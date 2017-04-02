@@ -44,13 +44,17 @@ Function returns 0 if next value exists, -1 at the end of the list. */
 
 int main(int argc, char** argv) {
   sai_hostif_api_t* hostif_api;
-
+  printf("test1\n");
   sai_api_initialize(0, &test_services);
+  printf("test2\n");
   sai_api_query(SAI_API_HOSTIF, (void**)&hostif_api);
+  printf("test3\n");
   sai_object_id_t switch_id = 0;
+  printf("test4\n");
   sai_object_id_t port_id[2];
+  printf("test5\n");
   port_id[0] = 0;
-  port_id[1] = 2;  // TODO
+  port_id[1] = 1;  // TODO
 
   // create trap group (currently only 1.)
   sai_object_id_t prio_group;
@@ -65,6 +69,7 @@ int main(int argc, char** argv) {
   sai_attr_list[1].value.oid = 0;  // high_policer_id; //high_policer_id is a
                                    // policer element created via policer SAI
                                    // API
+  printf("test6\n");
   hostif_api->create_hostif_trap_group(&prio_group, switch_id, 2,
                                        sai_attr_list);
 

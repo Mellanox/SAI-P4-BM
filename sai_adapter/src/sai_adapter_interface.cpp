@@ -3,7 +3,10 @@
 #include "../inc/switch_meta_data.h"
 
 extern "C" {
-S_O_Handle create_sai_adapter() { return new sai_adapter(); }
+S_O_Handle create_sai_adapter() { 
+  printf("create new sai_adapter\n");
+  return new sai_adapter();
+}
 void free_sai_adapter(S_O_Handle p) {
   sai_adapter *q = (sai_adapter *)p;
   q->~sai_adapter();
@@ -188,13 +191,77 @@ sai_status_t sai_adapter_clear_vlan_stats(S_O_Handle p, sai_object_id_t vlan_id,
 sai_status_t sai_adapter_create_lag(S_O_Handle p, sai_object_id_t *lag_id,
                                     sai_object_id_t switch_id,
                                     uint32_t attr_count,
-                                    const sai_attribute_t *attr_list);
-sai_status_t sai_adapter_remove_lag(S_O_Handle p, sai_object_id_t lag_id);
+                                    const sai_attribute_t *attr_list) {
+  sai_adapter *q = (sai_adapter *)p;
+  return q->create_lag(lag_id, switch_id, attr_count, attr_list);
+}
+sai_status_t sai_adapter_remove_lag(S_O_Handle p, sai_object_id_t lag_id) {
+  sai_adapter *q = (sai_adapter *)p;
+  return q->remove_lag(lag_id);
+}
 sai_status_t sai_adapter_create_lag_member(S_O_Handle p,
                                            sai_object_id_t *lag_member_id,
                                            sai_object_id_t switch_id,
                                            uint32_t attr_count,
-                                           const sai_attribute_t *attr_list);
+                                           const sai_attribute_t *attr_list) {
+  sai_adapter *q = (sai_adapter *)p;
+  return q->create_lag_member(lag_member_id, switch_id, attr_count, attr_list);
+}
 sai_status_t sai_adapter_remove_lag_member(S_O_Handle p,
-                                           sai_object_id_t lag_member_id);
+                                           sai_object_id_t lag_member_id) {
+  sai_adapter *q = (sai_adapter *)p;
+  return q->remove_lag_member(lag_member_id);
+}
+
+// hostif
+sai_status_t sai_adapter_create_hostif(S_O_Handle p, sai_object_id_t *hif_id,
+                                       sai_object_id_t switch_id,
+                                       uint32_t attr_count,
+                                       const sai_attribute_t *attr_list) {
+  sai_adapter *q = (sai_adapter *)p;
+  return q->create_hostif(hif_id, switch_id, attr_count, attr_list);
+}
+sai_status_t sai_adapter_remove_hostif(S_O_Handle p, sai_object_id_t hif_id) {
+  sai_adapter *q = (sai_adapter *)p;
+  return q->remove_hostif(hif_id);
+}
+sai_status_t sai_adapter_create_hostif_table_entry(
+    S_O_Handle p, sai_object_id_t *hif_table_entry, sai_object_id_t switch_id,
+    uint32_t attr_count, const sai_attribute_t *attr_list) {
+  sai_adapter *q = (sai_adapter *)p;
+  return q->create_hostif_table_entry(hif_table_entry, switch_id, attr_count,
+                                      attr_list);
+}
+sai_status_t sai_adapter_remove_hostif_table_entry(
+    S_O_Handle p, sai_object_id_t hif_table_entry) {
+  sai_adapter *q = (sai_adapter *)p;
+  return q->remove_hostif_table_entry(hif_table_entry);
+}
+sai_status_t sai_adapter_create_hostif_trap_group(
+    S_O_Handle p, sai_object_id_t *hostif_trap_group_id,
+    sai_object_id_t switch_id, uint32_t attr_count,
+    const sai_attribute_t *attr_list) {
+  sai_adapter *q = (sai_adapter *)p;
+  return q->create_hostif_trap_group(hostif_trap_group_id, switch_id,
+                                     attr_count, attr_list);
+}
+sai_status_t sai_adapter_remove_hostif_trap_group(
+    S_O_Handle p, sai_object_id_t hostif_trap_group_id) {
+  sai_adapter *q = (sai_adapter *)p;
+  return q->remove_hostif_trap_group(hostif_trap_group_id);
+}
+sai_status_t sai_adapter_create_hostif_trap(S_O_Handle p,
+                                            sai_object_id_t *hostif_trap_id,
+                                            sai_object_id_t switch_id,
+                                            uint32_t attr_count,
+                                            const sai_attribute_t *attr_list) {
+  sai_adapter *q = (sai_adapter *)p;
+  return q->create_hostif_trap(hostif_trap_id, switch_id, attr_count,
+                               attr_list);
+}
+sai_status_t sai_adapter_remove_hostif_trap(S_O_Handle p,
+                                            sai_object_id_t hostif_trap_id) {
+  sai_adapter *q = (sai_adapter *)p;
+  return q->remove_hostif_trap(hostif_trap_id);
+}
 }
