@@ -29,6 +29,7 @@ SAI_OBJ_IF_OBJ    = $(patsubst %.cpp,${SAI_SRC_DIR}/${OBJ_DIR}/%.o, $(notdir $(S
 GEN_OBJ    = $(patsubst %.cpp,${OBJ_DIR}/%.o, $(GEN_SRC))
 LACP_SRC = $(wildcard *.c)
 LACP_OBJ = $(patsubst %.c,${OBJ_DIR}/%.o, $(LACP_SRC))
+OBJECTS = ${GEN_OBJ} ${SAI_OBJS} ${SAI_OBJ_IF_OBJ} ${LACP_OBJ} ${STAND_OBJS}
 			
 default: lacp_teaming_sai
 
@@ -47,8 +48,8 @@ ${SAI_SRC_DIR}/${OBJ_DIR}/%.o: ${SAI_SRC_DIR}/%.cpp ${SAI_SRC_HEADERS}
 ${OBJ_DIR}/%.o: %.c
 	gcc ${CPP_OPTS} ${CPP_DEFS} $(INC_DIRS) -c $< -o $@
 
-lacp_teaming_sai: ${GEN_OBJ} ${SAI_OBJS} ${SAI_OBJ_IF_OBJ} ${LACP_OBJ}
-	g++ ${CPP_OPTS} ${CPP_DEFS} -o lacp_teaming_sai ${INC_DIRS} ${LACP_OBJ} ${SAI_OBJS} ${SAI_OBJ_IF_OBJ} ${GEN_OBJ} ${STAND_OBJS} ${LIBS}
+lacp_teaming_sai: ${OBJECTS}
+	g++ ${CPP_OPTS} ${CPP_DEFS} ${OBJECTS} -o lacp_teaming_sai ${INC_DIRS} ${LIBS}
 
 clean:
-	$(RM) -r SaiCppServer ${OBJ_DIR}/*.o
+	$(RM) -r lacp_teaming_sai ${OBJ_DIR}/*.o

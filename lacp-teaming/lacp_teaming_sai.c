@@ -47,10 +47,10 @@ int main(int argc, char** argv) {
 
   sai_api_initialize(0, &test_services);
   sai_api_query(SAI_API_HOSTIF, (void**)&hostif_api);
-  sai_object_id_t switch_id=0;
+  sai_object_id_t switch_id = 0;
   sai_object_id_t port_id[2];
   port_id[0] = 0;
-  port_id[1] = 2; //TODO
+  port_id[1] = 2;  // TODO
 
   // create trap group (currently only 1.)
   sai_object_id_t prio_group;
@@ -73,44 +73,43 @@ int main(int argc, char** argv) {
   sai_attribute_t sai_if_channel_attr[3];
   sai_if_channel_attr[0].id = SAI_HOSTIF_ATTR_TYPE;
   sai_if_channel_attr[0].value.s32 = SAI_HOSTIF_TYPE_NETDEV;
-  sai_if_channel_attr[1].id = SAI_HOSTIF_TYPE_OBJ_ID;
-  sai_if_channel_attr[1].value =
+  sai_if_channel_attr[1].id = SAI_HOSTIF_ATTR_OBJ_ID;
+  sai_if_channel_attr[1].value.oid =
       port_id[0];  // port_id is a port element created via port SAI API
   sai_if_channel_attr[2].id = SAI_HOSTIF_ATTR_NAME;
-  sai_if_channel_attr[2].value =”port0”;
-  hostif_api->create_host_interface(&host_if_id[0], 3, sai_if_channel_attr);
+  strcpy(sai_if_channel_attr[2].value.chardata,"port1");
+  hostif_api->create_hostif(&host_if_id[0], switch_id, 3, sai_if_channel_attr);
   sai_if_channel_attr[0].id = SAI_HOSTIF_ATTR_TYPE;
-  sai_if_channel_attr[0].value = SAI_HOSTIF_TYPE_NETDEV;
-  sai_if_channel_attr[1].id = SAI_HOSTIF_TYPE_OBJ_ID;
-  sai_if_channel_attr[1].value =
+  sai_if_channel_attr[0].value.s32 = SAI_HOSTIF_TYPE_NETDEV;
+  sai_if_channel_attr[1].id = SAI_HOSTIF_ATTR_OBJ_ID;
+  sai_if_channel_attr[1].value.oid =
       port_id[1];  // port_id is a port element created via port SAI API
   sai_if_channel_attr[2].id = SAI_HOSTIF_ATTR_NAME;
-  sai_if_channel_attr[2].value =”port1”;
-  hostif_api->create_host_interface(&host_if_id[1], 3, sai_if_channel_attr);
+  strcpy(sai_if_channel_attr[2].value.chardata,"port2");
+  hostif_api->create_hostif(&host_if_id[1], switch_id, 3, sai_if_channel_attr);
 
   // Configuring Trap-IDs
   sai_attribute_t sai_trap_attr[3];
   sai_object_id_t host_trap_id[1];
   // configure LACP trap_id
   sai_trap_attr[0].id = SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP;
-  sai_trap_attr[0].value = &prio_group;
+  sai_trap_attr[0].value.oid = prio_group;
   sai_trap_attr[1].id = SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION;
-  sai_trap_attr[1].value = SAI_PACKET_ACTION_TRAP;
+  sai_trap_attr[1].value.s32 = SAI_PACKET_ACTION_TRAP;
   sai_trap_attr[2].id = SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE;
-  sai_trap_attr[2].value = SAI_HOSTIF_TRAP_TYPE_LACP;
-  hostif_api->create_hostif_trap(&host_trap_id[0], 3, sai_trap_attr);
+  sai_trap_attr[2].value.s32 = SAI_HOSTIF_TRAP_TYPE_LACP;
+  hostif_api->create_hostif_trap(&host_trap_id[0], switch_id, 3, sai_trap_attr);
 
   // Configuring Host tables
   sai_object_id_t host_table_entry[1];
-  sai_attribute_t sai_if_channel_attr[3];
   sai_if_channel_attr[0].id = SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE;
-  sai_if_channel_attr[0].value = SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID;
+  sai_if_channel_attr[0].value.s32 = SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID;
   sai_if_channel_attr[1].id = SAI_HOSTIF_TABLE_ENTRY_ATTR_TRAP_ID;
-  sai_if_channel_attr[1].value = host_trap_id[1];
+  sai_if_channel_attr[1].value.oid = host_trap_id[1];
   sai_if_channel_attr[2].id = SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE;
-  sai_if_channel_attr[2].value =
+  sai_if_channel_attr[2].value.s32 =
       SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_PHYSICAL_PORT;
-  hostif_api->create_hostif_table_entry(&host_table_entry[0], 3,
+  hostif_api->create_hostif_table_entry(&host_table_entry[0], switch_id, 3,
                                         sai_if_channel_attr);
 
   sai_api_uninitialize();
