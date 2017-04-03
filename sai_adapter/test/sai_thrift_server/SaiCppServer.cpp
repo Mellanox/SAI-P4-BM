@@ -18,8 +18,6 @@ extern "C" {
 }
 #endif
 
-#include <sai.h>
-
 using namespace std;
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -57,7 +55,7 @@ public:
   std::shared_ptr<spdlog::logger> logger;
   ~switch_sai_rpcHandler() {
     // deconstructor
-    logger->debug("switch_sai_rpcHandler destructor called");
+    logger->info("switch_sai_rpcHandler destructor called");
     spdlog::drop_all();
     sai_api_uninitialize();
   }
@@ -66,21 +64,6 @@ public:
     logger = spdlog::get("logger");
     sai_api_initialize(0, &test_services);
     // server_internal_init_switch();
-  }
-
-  void server_internal_init_switch() {
-    logger->info("Switch init with default configurations");
-    sai_status_t status = SAI_STATUS_SUCCESS;
-    sai_switch_api_t *switch_api;
-    status = sai_api_query(SAI_API_SWITCH, (void **)&switch_api);
-    if (status != SAI_STATUS_SUCCESS) {
-      logger->error("sai_api_query failed!!!");
-    }
-    uint32_t count = 0;
-    sai_object_id_t s_id = 1;
-    status = switch_api->create_switch(&s_id, count, NULL);
-    logger->info("Switch inititated");
-    return;
   }
 
   sai_attribute_t

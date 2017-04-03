@@ -11,7 +11,7 @@ typedef struct _ethernet_hdr_t {
   uint16_t ether_type;
 } ethernet_hdr_t;
 
-typedef struct _cpu_hdr_t {
+typedef struct _cpu_hdr_t { // TODO: remove bridge_port and id
   unsigned int ingress_port : 8;
   unsigned int bridge_port : 8;
   unsigned int bridge_id : 16;
@@ -34,26 +34,10 @@ void print_mac_to_log(const uint8_t *mac,
 }
 
 void sai_adapter::PacketSniffer() {
-  // const char *dev = "cpu_port";
-  const char *dev = "host_port";
-
-  char errbuf[PCAP_ERRBUF_SIZE];
-  (*logger)->info("pcap started on dev {}", dev);
-  adapter_pcap = pcap_open_live(dev, BUFSIZ, 0, -1, errbuf);
-  if (adapter_pcap == NULL) {
-    (*logger)->info("pcap_open_live() failed: {}", errbuf);
-    return;
-  }
   if (pcap_loop(adapter_pcap, 0, packetHandler, (u_char *)this) == -1) {
     (*logger)->info("pcap_loop() failed: {}", pcap_geterr(adapter_pcap));
   }
-  return;
-}
-
-void sai_adapter::internal_init_switch() {
-  (*logger)->info("Switch init with default configurations");
-  sai_object_id_t *switch_id;
-  switch_api.create_switch(switch_id, 0, NULL);
+  (*logger)->info("pcap loop ended");
   return;
 }
 

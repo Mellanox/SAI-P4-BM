@@ -13,7 +13,6 @@ sai_adapter::sai_adapter()
       bprotocol(new TBinaryProtocol(transport)),
       protocol(new TMultiplexedProtocol(bprotocol, "standard")),
       bm_client(protocol) {
-  printf("sai_adapter constructor\n");
   // logger
   logger_o = spdlog::get("logger");
   if (logger_o == 0) {
@@ -23,11 +22,7 @@ sai_adapter::sai_adapter()
     spdlog::set_pattern("[thread %t] %l %v "); // add %T for time
   }
   logger = &logger_o;
-  (*logger)->info("test");
-  printf("before startsai\n");
-  startSaiAdapterMain();
-  printf("after startsai\n");
-
+  
   // start P4 link
   switch_list_ptr = &switch_list;
   switch_metadata_ptr = &switch_metadata;
@@ -35,7 +30,9 @@ sai_adapter::sai_adapter()
   switch_metadata.hw_port_list.count = 8;
   bm_client_ptr = &bm_client;
   sai_id_map_ptr = &sai_id_map;
+  printf("before transport open\n");
   transport->open();
+  printf("after transport open\n");
 
   // api set
   switch_api.create_switch = &sai_adapter::create_switch;
@@ -82,13 +79,22 @@ sai_adapter::sai_adapter()
   hostif_api.create_hostif_trap = &sai_adapter::create_hostif_trap;
   hostif_api.remove_hostif_trap = &sai_adapter::remove_hostif_trap;
 
+  printf("before log\n");
+  (*logger)->info("test");
+  printf("after log\n");
+  startSaiAdapterMain();
+  printf("after saiadaptermain\n");
   (*logger)->info("BM connection started on port {}", bm_port);
 }
 
 sai_adapter::~sai_adapter() {
+  printf("destruct1\n");
   endSaiAdapterMain();
-  std::this_thread::sleep_for(std::chrono::milliseconds(5));
+  printf("destruct2\n");
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  printf("destruct3\n");
   transport->close();
+  printf("destruct4\n");
   (*logger)->info("BM clients closed\n");
 }
 
@@ -124,18 +130,16 @@ sai_status_t sai_adapter::sai_api_query(sai_api_t sai_api_id,
   return SAI_STATUS_SUCCESS;
 }
 
+void sai_adapter::internal_init_switch() {
+  sai_object_id_t switch_id2;
+  (*logger)->info("Switch init with default configurations");
+  switch_api.create_switch(&switch_id2, 0, NULL);
+  (*logger)->info("Switch init with default configurations done");
+  return;
+}
+
 void sai_adapter::startSaiAdapterMain() {
-  std::thread SaiAdapterThread(&sai_adapter::SaiAdapterMain, this);
-  SaiAdapterThread.detach();
-}
-
-void sai_adapter::endSaiAdapterMain() {
-  pcap_breakloop(adapter_pcap);
-  pcap_close(adapter_pcap);
-}
-
-void sai_adapter::SaiAdapterMain() {
-  (*logger)->info("SAI Adapter Thread Started");
+  internal_init_switch();
 
   // Change to sai_adapter network namespace (hostif_net)
   int fd = open("/var/run/netns/hostif_net",
@@ -148,8 +152,35 @@ void sai_adapter::SaiAdapterMain() {
     (*logger)->error("setns failed");
     return;
   }
+  const char *dev = "host_port";
 
-  internal_init_switch();
+  char errbuf[PCAP_ERRBUF_SIZE];
+  (*logger)->info("pcap started on dev {}", dev);
+  adapter_pcap = pcap_open_live(dev, BUFSIZ, 0, -1, errbuf);
+  if (adapter_pcap == NULL) {
+    (*logger)->info("pcap_open_live() failed: {}", errbuf);
+    return;
+  }
+
+  SaiAdapterThread = std::thread(&sai_adapter::SaiAdapterMain, this);
+  // SaiAdapterThread.detach();
+  // std::unique_lock<std::mutex> lk(m);
+  // cv.wait(lk, []{return processed;});
+
+}
+
+void sai_adapter::endSaiAdapterMain() {
+  printf("debug main 1\n");
+  pcap_breakloop(adapter_pcap);
+  printf("debug main 2\n");
+  pcap_close(adapter_pcap);
+  printf("debug main 3\n");
+  SaiAdapterThread.join();
+  printf("debug main 4\n");
+}
+
+void sai_adapter::SaiAdapterMain() {
+  (*logger)->info("SAI Adapter Thread Started");
   PacketSniffer();
   (*logger)->info("SAI Adapter Thread Ended");
 }

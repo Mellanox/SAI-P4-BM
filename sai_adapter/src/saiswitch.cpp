@@ -3,6 +3,7 @@
 sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
                                         uint32_t attr_count,
                                         const sai_attribute_t *attr_list) {
+  printf("create switch\n");
   (*logger)->info("create switch");
   if (switch_list_ptr->size() != 0) {
     (*logger)->debug(

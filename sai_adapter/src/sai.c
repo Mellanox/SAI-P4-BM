@@ -2,30 +2,11 @@
 // #include "sai_bm_c_api.h"
 #include <stdlib.h>
 #include "../inc/sai_adapter_interface.h"
+#include <stdio.h>
 // static sai_api_service_t sai_api_service;
 static S_O_Handle sai_adapter;
 static sai_api_t api_id = SAI_API_UNSPECIFIED;
 // switch_device_t device = 0;
-
-const char *sai_profile_get_value(_In_ sai_switch_profile_id_t profile_id,
-                                  _In_ const char *variable) {
-  return NULL;
-}
-
-/*
- * Enumerate all the K/V pairs in a profile.
- * Pointer to NULL passed as variable restarts enumeration.
- * Function returns 0 if next value exists, -1 at the end of the list.
- */
-int sai_profile_get_next_value(_In_ sai_switch_profile_id_t profile_id,
-                               _Out_ const char **variable,
-                               _Out_ const char **value) {
-  return -1;
-}
-
-const service_method_table_t sai_services = {
-    .profile_get_value = sai_profile_get_value,
-    .profile_get_next_value = sai_profile_get_next_value};
 
 #ifdef __cplusplus
 extern "C" {
@@ -83,7 +64,11 @@ sai_status_t sai_api_initialize(uint64_t flags,
   sai_adapter = create_sai_adapter();
 }
 
-sai_status_t sai_api_uninitialize(void) { free_sai_adapter(sai_adapter); }
+sai_status_t sai_api_uninitialize(void) { 
+    printf("sai_api_uninitialize\n");
+    free_sai_adapter(sai_adapter);
+    printf("sai_adapter freed\n");
+}
 
 #ifdef __cplusplus
 }

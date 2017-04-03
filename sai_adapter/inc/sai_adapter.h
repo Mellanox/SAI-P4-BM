@@ -193,7 +193,9 @@ class sai_adapter {
   sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table);
 
  private:
+  // sai_object_id_t switch_id;
   pcap_t *adapter_pcap;
+  std::thread SaiAdapterThread;
   void startSaiAdapterMain();
   void endSaiAdapterMain();
   void SaiAdapterMain();

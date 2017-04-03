@@ -8,9 +8,12 @@ S_O_Handle create_sai_adapter() {
   return new sai_adapter();
 }
 void free_sai_adapter(S_O_Handle p) {
+  printf("free_sai_adapter\n");
   sai_adapter *q = (sai_adapter *)p;
-  q->~sai_adapter();
-  delete p;
+  printf("calling sai_adapter destruct\n");
+  // q->~sai_adapter();
+  printf("deleting p\n");
+  delete q;
 }
 
 // API
