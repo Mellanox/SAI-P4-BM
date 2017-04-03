@@ -28,10 +28,10 @@ SAI_SRC_HEADERS = $(wildcard ${INC_DIR}/*.h)
 SAI_OBJS = $(patsubst %.c,${SAI_SRC_DIR}/${OBJ_DIR}/%.o, $(notdir $(SAI_SRC)))
 SAI_OBJ_IF_SRC = $(wildcard ${SAI_SRC_DIR}/*.cpp)
 SAI_OBJ_IF_OBJ = $(patsubst %.cpp,${SAI_SRC_DIR}/${OBJ_DIR}/%.o, $(notdir $(SAI_OBJ_IF_SRC)))
-LACP_SRC = $(wildcard *.cpp)
-LACP_OBJ = $(patsubst %.cpp,${OBJ_DIR}/%.o, $(LACP_SRC))
-# LACP_SRC = $(wildcard *.c)
-# LACP_OBJ = $(patsubst %.c,${OBJ_DIR}/%.o, $(LACP_SRC))
+# LACP_SRC = $(wildcard *.cpp)
+# LACP_OBJ = $(patsubst %.cpp,${OBJ_DIR}/%.o, $(LACP_SRC))
+LACP_SRC = $(wildcard *.c)
+LACP_OBJ = $(patsubst %.c,${OBJ_DIR}/%.o, $(LACP_SRC))
 OBJECTS = ${SAI_THRIFT_OBJ} ${SAI_OBJS} ${SAI_OBJ_IF_OBJ} ${LACP_OBJ} ${STAND_OBJS}
 			
 default: lacp_teaming_sai
@@ -51,7 +51,7 @@ ${SAI_SRC_DIR}/${OBJ_DIR}/%.o: ${SAI_SRC_DIR}/%.cpp ${SAI_SRC_HEADERS}
 ${OBJ_DIR}/%.o: %.c
 	gcc ${CPP_OPTS} ${CPP_DEFS} $(INC_DIRS) -c $< -o $@
 
-${OBJ_DIR}/%.o: %.cpp
+${OBJ_DIR}/%.o: %.c
 	g++ ${CPP_OPTS} ${CPP_DEFS} $(INC_DIRS) -c $< -o $@
 
 lacp_teaming_sai: ${OBJECTS}

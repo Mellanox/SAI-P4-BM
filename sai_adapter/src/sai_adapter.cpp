@@ -16,7 +16,6 @@ sai_adapter::sai_adapter()
   // logger
   logger_o = spdlog::get("logger");
   if (logger_o == 0) {
-    printf("logger created\n");
     auto logger_o = spdlog::basic_logger_mt("logger", "logs/log.txt");
     logger_o->flush_on(spdlog::level::info);   // make err
     spdlog::set_pattern("[thread %t] %l %v "); // add %T for time
@@ -30,9 +29,7 @@ sai_adapter::sai_adapter()
   switch_metadata.hw_port_list.count = 8;
   bm_client_ptr = &bm_client;
   sai_id_map_ptr = &sai_id_map;
-  printf("before transport open\n");
   transport->open();
-  printf("after transport open\n");
 
   // api set
   switch_api.create_switch = &sai_adapter::create_switch;
@@ -79,22 +76,14 @@ sai_adapter::sai_adapter()
   hostif_api.create_hostif_trap = &sai_adapter::create_hostif_trap;
   hostif_api.remove_hostif_trap = &sai_adapter::remove_hostif_trap;
 
-  printf("before log\n");
-  (*logger)->info("test");
-  printf("after log\n");
   startSaiAdapterMain();
-  printf("after saiadaptermain\n");
   (*logger)->info("BM connection started on port {}", bm_port);
 }
 
 sai_adapter::~sai_adapter() {
-  printf("destruct1\n");
   endSaiAdapterMain();
-  printf("destruct2\n");
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-  printf("destruct3\n");
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000)); // TODO: this needs to be done with cv variable
   transport->close();
-  printf("destruct4\n");
   (*logger)->info("BM clients closed\n");
 }
 
@@ -141,7 +130,7 @@ void sai_adapter::internal_init_switch() {
 void sai_adapter::startSaiAdapterMain() {
   internal_init_switch();
   SaiAdapterThread = std::thread(&sai_adapter::SaiAdapterMain, this);
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // TODO: this needs to be done wih mutex and cv
   // SaiAdapterThread.detach();
   // std::unique_lock<std::mutex> lk(m);
   // cv.wait(lk, []{return processed;});
@@ -149,13 +138,9 @@ void sai_adapter::startSaiAdapterMain() {
 }
 
 void sai_adapter::endSaiAdapterMain() {
-  printf("debug main 1\n");
   pcap_breakloop(adapter_pcap);
-  printf("debug main 2\n");
   pcap_close(adapter_pcap);
-  printf("debug main 3\n");
   SaiAdapterThread.join();
-  printf("debug main 4\n");
 }
 
 void sai_adapter::SaiAdapterMain() {

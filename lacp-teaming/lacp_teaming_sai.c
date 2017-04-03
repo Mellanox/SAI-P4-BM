@@ -3,8 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef __cplusplus
 #include <spdlog/spdlog.h>
 extern "C" {
+#endif
 #include <sai.h>
 const char *test_profile_get_value(_In_ sai_switch_profile_id_t profile_id,
                                    _In_ const char *variable) {
@@ -22,8 +24,9 @@ sai_status_t sai_api_initialize(_In_ uint64_t flags,
 sai_status_t sai_api_query(_In_ sai_api_t sai_api_id,
                            _Out_ void **api_method_table);
 sai_status_t sai_api_uninitialize(void);
+#ifdef __cplusplus
 }
-
+#endif
 /* Enumerate all the K/V pairs in a profile.
 Pointer to NULL passed as variable restarts enumeration.
 Function returns 0 if next value exists, -1 at the end of the list. */
@@ -37,15 +40,10 @@ int main() {
   logger->info("lacp_app running");
 
   sai_hostif_api_t* hostif_api;
-  printf("test1\n");
   sai_api_initialize(0, &test_services);
-  printf("test2\n");
   sai_api_query(SAI_API_HOSTIF, (void**)&hostif_api);
-  printf("test3\n");
   sai_object_id_t switch_id = 0;
-  printf("test4\n");
   sai_object_id_t port_id[2];
-  printf("test5\n");
   port_id[0] = 0;
   port_id[1] = 1;  // TODO
 
@@ -62,7 +60,6 @@ int main() {
   sai_attr_list[1].value.oid = 0;  // high_policer_id; //high_policer_id is a
                                    // policer element created via policer SAI
                                    // API
-  printf("test6\n");
   hostif_api->create_hostif_trap_group(&prio_group, switch_id, 2,
                                        sai_attr_list);
 
@@ -109,10 +106,7 @@ int main() {
       SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_PHYSICAL_PORT;
   hostif_api->create_hostif_table_entry(&host_table_entry[0], switch_id, 3,
                                         sai_if_channel_attr);
-  printf("test7\n");
-  spdlog::drop_all();
-  printf("test8\n");
+  // spdlog::drop_all();
   sai_api_uninitialize();
-  printf("test9\n");
   return 0;
 }

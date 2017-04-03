@@ -4,15 +4,11 @@
 
 extern "C" {
 S_O_Handle create_sai_adapter() { 
-  printf("create new sai_adapter\n");
   return new sai_adapter();
 }
 void free_sai_adapter(S_O_Handle p) {
-  printf("free_sai_adapter\n");
   sai_adapter *q = (sai_adapter *)p;
-  printf("calling sai_adapter destruct\n");
   // q->~sai_adapter();
-  printf("deleting p\n");
   delete q;
 }
 
