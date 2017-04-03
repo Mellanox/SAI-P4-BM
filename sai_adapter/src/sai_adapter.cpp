@@ -140,29 +140,8 @@ void sai_adapter::internal_init_switch() {
 
 void sai_adapter::startSaiAdapterMain() {
   internal_init_switch();
-
-  // Change to sai_adapter network namespace (hostif_net)
-  int fd = open("/var/run/netns/hostif_net",
-                O_RDONLY); /* Get descriptor for namespace */
-  if (fd == -1) {
-    (*logger)->error("open netns fd failed");
-    return;
-  }
-  if (setns(fd, 0) == -1) { /* Join that namespace */
-    (*logger)->error("setns failed");
-    return;
-  }
-  const char *dev = "host_port";
-
-  char errbuf[PCAP_ERRBUF_SIZE];
-  (*logger)->info("pcap started on dev {}", dev);
-  adapter_pcap = pcap_open_live(dev, BUFSIZ, 0, -1, errbuf);
-  if (adapter_pcap == NULL) {
-    (*logger)->info("pcap_open_live() failed: {}", errbuf);
-    return;
-  }
-
   SaiAdapterThread = std::thread(&sai_adapter::SaiAdapterMain, this);
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   // SaiAdapterThread.detach();
   // std::unique_lock<std::mutex> lk(m);
   // cv.wait(lk, []{return processed;});
@@ -181,6 +160,18 @@ void sai_adapter::endSaiAdapterMain() {
 
 void sai_adapter::SaiAdapterMain() {
   (*logger)->info("SAI Adapter Thread Started");
+  // Change to sai_adapter network namespace (hostif_net)
+  int fd = open("/var/run/netns/hostif_net",
+                O_RDONLY); /* Get descriptor for namespace */
+  if (fd == -1) {
+    (*logger)->error("open netns fd failed");
+    return;
+  }
+  if (setns(fd, 0) == -1) { /* Join that namespace */
+    (*logger)->error("setns failed");
+    return;
+  }
+
   PacketSniffer();
   (*logger)->info("SAI Adapter Thread Ended");
 }
