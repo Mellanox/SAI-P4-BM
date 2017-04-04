@@ -23,7 +23,12 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
       break;
     }
   }
-
+  if (hostif->hostif_type == SAI_HOSTIF_TYPE_NETDEV) {
+    if (hostif->netdev_name == "") {
+      (*logger)->error("trying to create netdev wihout any name");
+    }
+    (*logger)->info("creating netdev {}", hostif->netdev_name);
+  }
   *hif_id = hostif->sai_object_id;
 }
 

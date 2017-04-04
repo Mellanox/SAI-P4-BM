@@ -52,7 +52,7 @@ ${OBJ_DIR}/%.o: %.c
 	gcc ${CPP_OPTS} ${CPP_DEFS} $(INC_DIRS) -c $< -o $@
 
 ${OBJ_DIR}/%.o: %.c
-	g++ ${CPP_OPTS} ${CPP_DEFS} $(INC_DIRS) -c $< -o $@
+	gcc ${CPP_OPTS} ${CPP_DEFS} $(INC_DIRS) -c $< -o $@
 
 lacp_teaming_sai: ${OBJECTS}
 	g++ ${CPP_OPTS} ${CPP_DEFS} ${OBJECTS} -o lacp_teaming_sai ${INC_DIRS} ${LIBS}
