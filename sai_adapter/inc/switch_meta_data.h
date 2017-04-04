@@ -190,6 +190,38 @@ public:
   }
 };
 
+class HostIF_obj : public Sai_obj {
+public:
+  
+  HostIF_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
+    
+  }
+};
+
+class HostIF_Table_obj : public Sai_obj {
+public:
+  
+  HostIF_Table_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
+    
+  }
+};
+
+class HostIF_Trap_obj : public Sai_obj {
+public:
+  
+  HostIF_Trap_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
+    
+  }
+};
+
+class HostIF_Trap_Group_obj : public Sai_obj {
+public:
+  
+  HostIF_Trap_Group_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
+    
+  }
+};
+
 typedef std::map<sai_object_id_t, BridgePort_obj *> bridge_port_id_map_t;
 typedef std::map<sai_object_id_t, Port_obj *> port_id_map_t;
 typedef std::map<sai_object_id_t, Bridge_obj *> bridge_id_map_t;
@@ -198,6 +230,10 @@ typedef std::map<sai_object_id_t, Vlan_member_obj *> vlan_member_id_map_t;
 typedef std::map<sai_object_id_t, Lag_obj *> lag_id_map_t;
 typedef std::map<sai_object_id_t, uint32_t> l2_if_map_t;
 typedef std::map<sai_object_id_t, Lag_member_obj *> lag_member_id_map_t;
+typedef std::map<sai_object_id_t, HostIF_obj *> hostif_id_map_t;
+typedef std::map<sai_object_id_t, HostIF_Table_obj *> hostif_table_id_map_t;
+typedef std::map<sai_object_id_t, HostIF_Trap_obj *> hostif_trap_id_map_t;
+typedef std::map<sai_object_id_t, HostIF_Trap_Group_obj *> hostif_trap_group_id_map_t;
 class Switch_metadata { // TODO:  add default.. // this object_id is the
                         // switch_id
 public:
@@ -209,6 +245,10 @@ public:
   vlan_member_id_map_t vlan_members;
   lag_id_map_t lags;
   lag_member_id_map_t lag_members;
+  hostif_id_map_t hostifs;
+  hostif_table_id_map_t hostif_tables;
+  hostif_trap_id_map_t hostif_traps;
+  hostif_trap_group_id_map_t hostif_trap_groups;
   sai_object_id_t default_bridge_id;
   Switch_metadata() {
     ports.clear();
