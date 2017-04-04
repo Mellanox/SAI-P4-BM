@@ -192,9 +192,13 @@ public:
 
 class HostIF_obj : public Sai_obj {
 public:
-  
+  Port_obj *port;
+  sai_hostif_type_t hostif_type;
+  std::string netdev_name;
   HostIF_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
-    
+    this->port = nullptr;
+    this->hostif_type = SAI_HOSTIF_TYPE_NETDEV;
+    this->netdev_name = "";
   }
 };
 
