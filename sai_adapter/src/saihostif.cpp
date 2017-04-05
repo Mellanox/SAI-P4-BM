@@ -1,4 +1,7 @@
 #include "../inc/sai_adapter.h"
+// extern "C" {
+//   int tun_alloc(char*);
+// }
 
 sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
                                     sai_object_id_t switch_id,
@@ -7,6 +10,7 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
 	(*logger)->info("create_hostif");
   HostIF_obj *hostif = new HostIF_obj(sai_id_map_ptr);
   switch_metadata_ptr->hostifs[hostif->sai_object_id] = hostif;
+  char* netdev_name;
   // parsing attributes
   sai_attribute_t attribute;
   for (uint32_t i = 0; i < attr_count; i++) {
@@ -20,6 +24,7 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
       break;
     case SAI_HOSTIF_ATTR_NAME:
       hostif->netdev_name = string(attribute.value.chardata);
+      netdev_name = attribute.value.chardata;
       break;
     }
   }
@@ -28,6 +33,7 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
       (*logger)->error("trying to create netdev wihout any name");
     }
     (*logger)->info("creating netdev {}", hostif->netdev_name);
+    tun_alloc(netdev_name, 1);
   }
   *hif_id = hostif->sai_object_id;
 }
