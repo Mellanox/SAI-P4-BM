@@ -1,0 +1,30 @@
+[thread 4420] [info] Switch init with default configurations 
+[thread 4420] [info] create switch 
+[thread 4420] [info] Default 1Q bridge. sai_object_id 0 bridge_id 1 
+[thread 4420] [info] Default port_id 2. hw_port = 0 
+[thread 4420] [info] Default bridge_port_id 3. bridge_port = 0 
+[thread 4420] [info] Default port_id 4. hw_port = 1 
+[thread 4420] [info] Default bridge_port_id 5. bridge_port = 1 
+[thread 4420] [info] Default port_id 6. hw_port = 2 
+[thread 4420] [info] Default bridge_port_id 7. bridge_port = 2 
+[thread 4420] [info] Default port_id 8. hw_port = 3 
+[thread 4420] [info] Default bridge_port_id 9. bridge_port = 3 
+[thread 4420] [info] Default port_id 10. hw_port = 4 
+[thread 4420] [info] Default bridge_port_id 11. bridge_port = 4 
+[thread 4420] [info] Default port_id 12. hw_port = 5 
+[thread 4420] [info] Default bridge_port_id 13. bridge_port = 5 
+[thread 4420] [info] Default port_id 14. hw_port = 6 
+[thread 4420] [info] Default bridge_port_id 15. bridge_port = 6 
+[thread 4420] [info] Default port_id 16. hw_port = 7 
+[thread 4420] [info] Default bridge_port_id 17. bridge_port = 7 
+[thread 4420] [info] Switch init with default configurations done 
+[thread 4422] [info] SAI Adapter Thread Started 
+[thread 4422] [info] pcap started on dev host_port 
+[thread 4422] [info] release pcap lock 
+[thread 4420] [info] Sniffer initialization done 
+[thread 4420] [info] BM connection started on port 9090 
+[thread 4420] [info] --> new port sai_id = 18, tot port num: 9 
+[thread 4422] [info] pcap loop ended 
+[thread 4422] [info] SAI Adapter Thread Ended 
+[thread 4420] [info] BM clients closed
+ 

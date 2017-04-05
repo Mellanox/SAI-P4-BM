@@ -5,6 +5,8 @@ sai_id_map_t *sai_adapter::sai_id_map_ptr;
 Switch_metadata *sai_adapter::switch_metadata_ptr;
 std::vector<sai_object_id_t> *sai_adapter::switch_list_ptr;
 std::shared_ptr<spdlog::logger> *sai_adapter::logger;
+bool sai_adapter::pcap_loop_started;
+std::mutex sai_adapter::m;
 
 sai_adapter::sai_adapter()
     : //  constructor pre initializations
@@ -18,7 +20,7 @@ sai_adapter::sai_adapter()
   if (logger_o == 0) {
     logger_o = spdlog::basic_logger_mt("logger", "logs/log.txt");
     logger_o->flush_on(spdlog::level::info);   // make err
-    spdlog::set_pattern("[thread %t] %l %v "); // add %T for time
+    spdlog::set_pattern("[thread %t] [%l] %v "); // add %T for time
   }
   logger = &logger_o;
   
@@ -77,12 +79,12 @@ sai_adapter::sai_adapter()
   hostif_api.remove_hostif_trap = &sai_adapter::remove_hostif_trap;
 
   startSaiAdapterMain();
+  printf("startSaiAdapterMain\n");
   (*logger)->info("BM connection started on port {}", bm_port);
 }
 
 sai_adapter::~sai_adapter() {
   endSaiAdapterMain();
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000)); // TODO: this needs to be done with cv variable
   transport->close();
   (*logger)->info("BM clients closed\n");
 }
@@ -129,12 +131,14 @@ void sai_adapter::internal_init_switch() {
 
 void sai_adapter::startSaiAdapterMain() {
   internal_init_switch();
+  pcap_loop_started = false;
   SaiAdapterThread = std::thread(&sai_adapter::SaiAdapterMain, this);
-  std::this_thread::sleep_for(std::chrono::milliseconds(10000)); // TODO: this needs to be done wih mutex and cv
-  // SaiAdapterThread.detach();
-  // std::unique_lock<std::mutex> lk(m);
-  // cv.wait(lk, []{return processed;});
-
+  {
+    std::unique_lock<std::mutex> lk(m);
+    cv.wait(lk,[]{return pcap_loop_started;});
+  }
+  std::this_thread::sleep_for(std::chrono::milliseconds(500)); // TODO consider later release of lock
+  (*logger)->info("Sniffer initialization done");
 }
 
 void sai_adapter::endSaiAdapterMain() {
@@ -150,10 +154,12 @@ void sai_adapter::SaiAdapterMain() {
                 O_RDONLY); /* Get descriptor for namespace */
   if (fd == -1) {
     (*logger)->error("open netns fd failed");
+    release_pcap_lock();
     return;
   }
   if (setns(fd, 0) == -1) { /* Join that namespace */
     (*logger)->error("setns failed");
+    release_pcap_lock();
     return;
   }
 

@@ -33,18 +33,31 @@ void print_mac_to_log(const uint8_t *mac,
                mac[4], mac[3], mac[2], mac[1], mac[0]);
 }
 
+void sai_adapter::release_pcap_lock(){
+  (*logger)->info("release pcap lock");
+  std::unique_lock<std::mutex> lk(m);
+  pcap_loop_started = true;
+  lk.unlock();
+  cv.notify_one();
+}
+
 void sai_adapter::PacketSniffer() {
   const char *dev = "host_port";
 
   char errbuf[PCAP_ERRBUF_SIZE];
+
   (*logger)->info("pcap started on dev {}", dev);
   adapter_pcap = pcap_open_live(dev, BUFSIZ, 0, -1, errbuf);
   if (adapter_pcap == NULL) {
-    (*logger)->info("pcap_open_live() failed: {}", errbuf);
+    (*logger)->error("pcap_open_live() failed: {}", errbuf);
+    release_pcap_lock();
     return;
   }
+  
+  release_pcap_lock();
+
   if (pcap_loop(adapter_pcap, 0, packetHandler, (u_char *)this) == -1) {
-    (*logger)->info("pcap_loop() failed: {}", pcap_geterr(adapter_pcap));
+    (*logger)->error("pcap_loop() failed: {}", pcap_geterr(adapter_pcap));
   }
   (*logger)->info("pcap loop ended");
   return;

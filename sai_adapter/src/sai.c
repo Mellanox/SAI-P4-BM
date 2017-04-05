@@ -1,5 +1,4 @@
-#include "../inc/SAI/sai.h"
-// #include "sai_bm_c_api.h"
+#include <sai.h>
 #include <stdlib.h>
 #include "../inc/sai_adapter_interface.h"
 #include <stdio.h>

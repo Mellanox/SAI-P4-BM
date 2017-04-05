@@ -1,7 +1,6 @@
 #ifndef SAI_ADAPTER_H
 #define SAI_ADAPTER_H
 
-#include <iostream>
 
 // SAI
 #ifdef __cplusplus
@@ -23,19 +22,21 @@ extern "C" {
 #include <thrift/protocol/TMultiplexedProtocol.h>
 #include <thrift/transport/TSocket.h>
 #include <thrift/transport/TTransportUtils.h>
+#include <standard_types.h>
 
 // LOG
 #include "../inc/spdlog/spdlog.h"
 
 // General
-#include <standard_types.h>
-#include <algorithm>
-// #include <atomic>
-#include <pcap.h>
-#include <cstdlib>
-#include <sstream>
+#include <iostream>
 #include <string>
 #include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <algorithm>
+#include <cstdlib>
+#include <sstream>
+#include <pcap.h>
 
 using namespace std;
 using namespace ::apache::thrift;
@@ -197,10 +198,16 @@ class sai_adapter {
  private:
   // sai_object_id_t switch_id;
   pcap_t *adapter_pcap;
+  // sai adapter threading handlers
   std::thread SaiAdapterThread;
+  static bool pcap_loop_started;
+  static std::mutex m;
+  std::condition_variable cv;
   void startSaiAdapterMain();
   void endSaiAdapterMain();
   void SaiAdapterMain();
+  void release_pcap_lock();
+  //
   void PacketSniffer();
   void internal_init_switch();
   static uint32_t get_bridge_id_from_fdb_entry(

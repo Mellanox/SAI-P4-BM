@@ -32,20 +32,14 @@ Pointer to NULL passed as variable restarts enumeration.
 Function returns 0 if next value exists, -1 at the end of the list. */
 
 int main() {
-  // auto logger = spdlog::basic_logger_mt("logger", "logs/log.txt");
-  // logger->flush_on(spdlog::level::info);     // make err
-  // spdlog::set_pattern("[thread %t] %l %v "); // add %T for time
-  // auto inline_log = spdlog::stdout_color_mt("inline_log");
-  // inline_log->info("lacp_app running");
-  // logger->info("lacp_app running");
   printf("lacp_app running\n");
   sai_hostif_api_t* hostif_api;
   sai_api_initialize(0, &test_services);
   sai_api_query(SAI_API_HOSTIF, (void**)&hostif_api);
   sai_object_id_t switch_id = 0;
   sai_object_id_t port_id[2];
-  port_id[0] = 0;
-  port_id[1] = 1;  // TODO
+  port_id[0] = 5;
+  port_id[1] = 6;  // TODO
 
   // create trap group (currently only 1.)
   sai_object_id_t prio_group;
