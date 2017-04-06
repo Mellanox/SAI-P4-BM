@@ -1,0 +1,30 @@
+#define ETHER_ADDR_LEN 6
+#define CPU_HDR_LEN 6
+#define MAC_LEARN_TRAP_ID 512
+
+typedef struct _ethernet_hdr_t {
+  uint8_t dst_addr[ETHER_ADDR_LEN];
+  uint8_t src_addr[ETHER_ADDR_LEN];
+  uint16_t ether_type;
+} ethernet_hdr_t;
+
+typedef struct _cpu_hdr_t { // TODO: remove bridge_port and id
+  unsigned int ingress_port : 8;
+  unsigned int bridge_port : 8;
+  unsigned int bridge_id : 16;
+  unsigned int trap_id : 16;
+} cpu_hdr_t;
+
+typedef void(*adapter_packet_handler_fn)(ethernet_hdr_t*, cpu_hdr_t*);
+typedef std::map<uint16_t, adapter_packet_handler_fn> hostif_table_map_t;
+
+class hostif_table_t {
+	public:
+		hostif_table_t();
+		~hostif_table_t();
+    void lookup(ethernet_hdr_t*, cpu_hdr_t*);
+    void add_entry(uint16_t, adapter_packet_handler_fn);
+    void remove_entry(uint16_t);
+	private:
+    hostif_table_map_t hostif_table_map;
+};

@@ -131,6 +131,11 @@ void sai_adapter::internal_init_switch() {
 
 void sai_adapter::startSaiAdapterMain() {
   internal_init_switch();
+
+  HostIF_Table_obj *hostif_table = new HostIF_Table_obj(sai_id_map_ptr);
+  switch_metadata_ptr->hostif_tables[hostif_table->sai_object_id] = hostif_table;
+  hostif_table->trap_id = MAC_LEARN_TRAP_ID;
+  hostif_table->packet_handler = &sai_adapter::learn_mac;
   pcap_loop_started = false;
   SaiAdapterThread = std::thread(&sai_adapter::SaiAdapterMain, this);
   {

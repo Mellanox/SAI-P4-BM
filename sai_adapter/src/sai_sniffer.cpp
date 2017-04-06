@@ -1,23 +1,6 @@
 #include "../inc/sai_adapter.h"
 #include <sched.h>
 
-#define ETHER_ADDR_LEN 6
-#define CPU_HDR_LEN 6
-#define MAC_LEARN_TRAP_ID 512
-
-typedef struct _ethernet_hdr_t {
-  uint8_t dst_addr[ETHER_ADDR_LEN];
-  uint8_t src_addr[ETHER_ADDR_LEN];
-  uint16_t ether_type;
-} ethernet_hdr_t;
-
-typedef struct _cpu_hdr_t { // TODO: remove bridge_port and id
-  unsigned int ingress_port : 8;
-  unsigned int bridge_port : 8;
-  unsigned int bridge_id : 16;
-  unsigned int trap_id : 16;
-} cpu_hdr_t;
-
 void ReverseBytes(uint8_t *byte_arr, int size) {
   uint8_t tmp;
   for (int lo = 0, hi = size - 1; hi > lo; lo++, hi--) {
@@ -96,19 +79,21 @@ void sai_adapter::packetHandler(u_char *userData,
 
   sai_adapter *adapter = (sai_adapter *)userData;
   (*logger)->info("CPU packet captured");
-  cpu_hdr_t *cpu_hdr = (cpu_hdr_t *)packet;
-  ReverseBytes((uint8_t *)cpu_hdr, CPU_HDR_LEN);
+  cpu_hdr_t *cpu = (cpu_hdr_t *)packet;
+  ReverseBytes((uint8_t *)cpu, CPU_HDR_LEN);
   ethernet_hdr_t *ether = (ethernet_hdr_t *)(packet + CPU_HDR_LEN);
   ReverseBytes((uint8_t *)&(ether->ether_type), 2);
   ReverseBytes(ether->dst_addr, 6);
   ReverseBytes(ether->src_addr, 6);
-  if (cpu_hdr->trap_id == 512) {
-    adapter->learn_mac(cpu_hdr->ingress_port, ether->src_addr);
-  }
+  switch_metadata_ptr->lookup(ether, cpu);
+  // if (cpu_hdr->trap_id == 512) {
+  //   adapter->learn_mac(ether, cpu_hdr);
+  // }
 }
 
-void sai_adapter::learn_mac(uint32_t ingress_port, uint8_t *src_mac) {
-  // TODO: Add LAG support
+void sai_adapter::learn_mac(ethernet_hdr_t* ether, cpu_hdr_t* cpu) {
+  uint32_t ingress_port = cpu->ingress_port;
+  uint8_t *src_mac = ether->src_addr;
   BridgePort_obj *bridge_port;
   Bridge_obj *bridge;
   sai_object_id_t port_id;

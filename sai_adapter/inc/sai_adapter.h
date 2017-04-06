@@ -15,6 +15,7 @@ extern "C" {
 
 // INTERNAL
 #include "switch_meta_data.h"
+// #include "sai_hostif_table.h"
 
 // thrift bm clinet
 #include <Standard.h>
@@ -217,7 +218,10 @@ class sai_adapter {
   void adapter_create_fdb_entry(sai_object_id_t, sai_mac_t,
                                 sai_fdb_entry_bridge_type_t, sai_vlan_id_t,
                                 sai_object_id_t);
-  void learn_mac(uint32_t, uint8_t *);
+  void learn_mac(ethernet_hdr_t*, cpu_hdr_t*);
+  // hostif_table_t hostif_table;
+  // static hostif_table_t* hostif_table_p;
 };
+
 
 #endif

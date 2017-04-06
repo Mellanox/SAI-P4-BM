@@ -12,6 +12,25 @@
 
 using namespace bm_runtime::standard;
 
+#define ETHER_ADDR_LEN 6
+#define CPU_HDR_LEN 6
+#define MAC_LEARN_TRAP_ID 512
+
+typedef struct _ethernet_hdr_t {
+  uint8_t dst_addr[ETHER_ADDR_LEN];
+  uint8_t src_addr[ETHER_ADDR_LEN];
+  uint16_t ether_type;
+} ethernet_hdr_t;
+
+typedef struct _cpu_hdr_t { // TODO: remove bridge_port and id
+  unsigned int ingress_port : 8;
+  unsigned int bridge_port : 8;
+  unsigned int bridge_id : 16;
+  unsigned int trap_id : 16;
+} cpu_hdr_t;
+
+typedef void(*adapter_packet_handler_fn)(ethernet_hdr_t*, cpu_hdr_t*);
+
 class sai_id_map_t { // object pointer and it's id
 protected:
   std::map<sai_object_id_t, void *> id_map;
@@ -204,9 +223,10 @@ public:
 
 class HostIF_Table_obj : public Sai_obj {
 public:
-  
+  adapter_packet_handler_fn packet_handler;
+  uint16_t trap_id;
   HostIF_Table_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
-    
+    this->trap_id = 0;
   }
 };
 
@@ -238,6 +258,7 @@ typedef std::map<sai_object_id_t, HostIF_obj *> hostif_id_map_t;
 typedef std::map<sai_object_id_t, HostIF_Table_obj *> hostif_table_id_map_t;
 typedef std::map<sai_object_id_t, HostIF_Trap_obj *> hostif_trap_id_map_t;
 typedef std::map<sai_object_id_t, HostIF_Trap_Group_obj *> hostif_trap_group_id_map_t;
+
 class Switch_metadata { // TODO:  add default.. // this object_id is the
                         // switch_id
 public:
@@ -261,6 +282,16 @@ public:
     vlans.clear();
     vlan_members.clear();
     lags.clear();
+  }
+
+  void lookup(ethernet_hdr_t* ether, cpu_hdr_t* cpu) {
+    for (hostif_table_id_map_t::iterator it = hostif_tables.begin(); it!=hostif_tables.end(); ++it) {
+      if (it->second->trap_id == cpu->trap_id) {
+        it->second->packet_handler(ether, cpu);
+        return;
+      }
+    }
+    printf("hostif_table lookup failed\n"); // TODO logger / return value
   }
 
   uint16_t GetVlanObjIdFromVid(uint16_t vid) {
