@@ -36,10 +36,12 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
     tun_alloc(netdev_name, 1);
   }
   *hif_id = hostif->sai_object_id;
+  return SAI_STATUS_SUCCESS;
 }
 
 sai_status_t sai_adapter::remove_hostif(sai_object_id_t hif_id) {
   (*logger)->info("remove_hostif");
+  return SAI_STATUS_SUCCESS;
 }
 
 sai_status_t sai_adapter::create_hostif_table_entry(
@@ -51,7 +53,52 @@ sai_status_t sai_adapter::create_hostif_table_entry(
   switch_metadata_ptr->hostif_table_entries[hostif_table_entry->sai_object_id] =
       hostif_table_entry;
 
+  // parse attribute
+  sai_attribute_t attribute;
+  for (uint32_t i = 0; i < attr_count; i++) {
+    attribute = attr_list[i];
+    switch (attribute.id) {
+    case SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE:
+      hostif_table_entry->entry_type = (sai_hostif_table_entry_type_t) attribute.value.s32;
+      break;
+    case SAI_HOSTIF_TABLE_ENTRY_ATTR_TRAP_ID:
+    	(*logger)->info("trap oid {}", attribute.value.oid);
+      	hostif_table_entry->trap_id = switch_metadata_ptr->hostif_traps[attribute.value.oid]->trap_id;
+      	(*logger)->info("trap id {}", hostif_table_entry->trap_id);
+      break;
+    case SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE:
+      hostif_table_entry->channel_type = (sai_hostif_table_entry_channel_type_t) attribute.value.s32;
+      break;
+    }
+  }
+  (*logger)->info("after parsing attr");
+  adapter_packet_handler_fn handler_fn;
+  switch (hostif_table_entry->channel_type) {
+  	case SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_PHYSICAL_PORT:
+  		handler_fn = netdev_phys_port_fn;
+  		(*logger)->info("netdev_phys_port_fn");
+  		break;
+  	default:
+  		(*logger)->error("channel type not supported");
+  		return SAI_STATUS_NOT_SUPPORTED;
+  		break;
+  }
+
+  (*logger)->info("after parsing channel type");
+  switch (hostif_table_entry->entry_type) {
+  	case SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID:
+  		(*logger)->info("add host if trap id. trap_id {}", hostif_table_entry->trap_id);
+    	add_hostif_trap_id_table_entry(hostif_table_entry->trap_id, handler_fn);
+    	(*logger)->info("after add hostif table entry");
+    	break;
+    default:
+  		(*logger)->error("hostif table entry type not supported");
+  		return SAI_STATUS_NOT_SUPPORTED;
+  		break;
+  }
+
   *hif_table_entry = hostif_table_entry->sai_object_id;
+  return SAI_STATUS_SUCCESS;
 }
 
 sai_status_t
@@ -69,11 +116,13 @@ sai_status_t sai_adapter::create_hostif_trap_group(
       hostif_trap_group;
 
   *hostif_trap_group_id = hostif_trap_group->sai_object_id;
+  return SAI_STATUS_SUCCESS;
 }
 
 sai_status_t
 sai_adapter::remove_hostif_trap_group(sai_object_id_t hostif_trap_group_id) {
   (*logger)->info("remove_hostif_trap_group");
+  return SAI_STATUS_SUCCESS;
 }
 
 sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
@@ -81,8 +130,11 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
                                              uint32_t attr_count,
                                              const sai_attribute_t *attr_list) {
   (*logger)->info("create_hostif_trap");
-  // parsing attributes
   HostIF_Trap_obj *hostif_trap = new HostIF_Trap_obj(sai_id_map_ptr);
+  hostif_trap->trap_id = switch_metadata_ptr->GetNewTrapID();
+  switch_metadata_ptr->hostif_traps[hostif_trap->sai_object_id] = hostif_trap;
+  
+  // parsing attributes
   sai_attribute_t attribute;
   for (uint32_t i = 0; i < attr_count; i++) {
     attribute = attr_list[i];
@@ -99,7 +151,6 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
           attribute.id);
     }
   }
-  switch_metadata_ptr->hostif_traps[hostif_trap->sai_object_id] = hostif_trap;
   *hostif_trap_id = hostif_trap->sai_object_id;
 
   if (hostif_trap->trap_type == SAI_HOSTIF_TRAP_TYPE_LACP &&
@@ -112,22 +163,22 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
     match_params.push_back(
         parse_exact_match_param(1652522221570, 6)); // dmac : 01-80-c2-00-00-02
     action_data.push_back(
-        parse_param(hostif_trap->sai_object_id, 2)); // trap_id
+        parse_param(hostif_trap->trap_id, 2));
     hostif_trap->handle_l2_trap = bm_client_ptr->bm_mt_add_entry(
         cxt_id, "table_l2_trap", match_params, "action_set_trap_id",
         action_data, options);
-    (*logger)->info("added l2 trap - lacp , trap_id: {}",
-                    hostif_trap->sai_object_id);
+    (*logger)->info("added l2 trap - lacp , trap_id: {}.",
+                    hostif_trap->trap_id, hostif_trap->sai_object_id);
 
     action_data.clear();
     match_params.clear();
     match_params.push_back(
-        parse_exact_match_param(hostif_trap->sai_object_id, 2)); // trap_id
+        parse_exact_match_param(hostif_trap->trap_id, 2)); 
     hostif_trap->handle_trap_id = bm_client_ptr->bm_mt_add_entry(
         cxt_id, "table_trap_id", match_params, "action_trap_to_cpu",
         action_data, options);
-    (*logger)->info("added LACP trap to cpu, trap_id: {}",
-                    hostif_trap->sai_object_id);
+    (*logger)->info("added LACP trap to cpu, trap_id: {}. sai_object_id: {}",
+                   hostif_trap->trap_id, hostif_trap->sai_object_id);
   } else {
     (*logger)->warn(
         "unsupported trap requested, trap type is: {}, trap_action is: {} \n ",
@@ -171,4 +222,9 @@ void sai_adapter::lookup_hostif_trap_id_table(ethernet_hdr_t *ether,
   } else {
     printf("hostif_table lookup failed\n"); // TODO logger / return value
   }
+}
+
+void sai_adapter::netdev_phys_port_fn(ethernet_hdr_t *ether, cpu_hdr_t *cpu) {
+	(*logger)->info("trap arrived at physical netdev @ ingress_port {}", cpu->ingress_port);
+	return;
 }

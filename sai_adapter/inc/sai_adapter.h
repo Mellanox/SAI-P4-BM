@@ -241,7 +241,7 @@ private:
                                        sai_fdb_entry_bridge_type_t,
                                        sai_vlan_id_t, sai_object_id_t);
   static void learn_mac(ethernet_hdr_t *, cpu_hdr_t *);
-  static void lacp_packet(ethernet_hdr_t *, cpu_hdr_t *);
+  static void netdev_phys_port_fn(ethernet_hdr_t *, cpu_hdr_t *);
   static void lookup_hostif_trap_id_table(ethernet_hdr_t *, cpu_hdr_t *);
   static void add_hostif_trap_id_table_entry(uint16_t,
                                              adapter_packet_handler_fn);

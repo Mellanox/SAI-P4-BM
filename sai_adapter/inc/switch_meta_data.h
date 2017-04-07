@@ -220,9 +220,12 @@ class HostIF_Trap_obj : public Sai_obj {
 public:
   sai_hostif_trap_type_t trap_type;
   sai_packet_action_t trap_action;
+  uint16_t trap_id;
   BmEntryHandle handle_l2_trap;
   BmEntryHandle handle_trap_id;
-  HostIF_Trap_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {}
+  HostIF_Trap_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
+    this->trap_id = 0;
+  }
 };
 
 class HostIF_Trap_Group_obj : public Sai_obj {
@@ -334,6 +337,7 @@ public:
     }
     return bridge_ids.size();
   }
+
   uint32_t GetNewL2IF() {
     std::vector<uint32_t> l2_ifs_nums;
     for (port_id_map_t::iterator it = ports.begin(); it != ports.end(); ++it) {
@@ -352,6 +356,19 @@ public:
     spdlog::get("logger")->debug("--> Get_New_L2_if: new if is: {} ",
                                  l2_ifs_nums.size());
     return l2_ifs_nums.size();
+  }
+
+  uint16_t GetNewTrapID() {
+    std::vector<uint16_t> trap_ids;
+    for (hostif_trap_id_map_t::iterator it = hostif_traps.begin(); it!=hostif_traps.end(); ++it) {
+      trap_ids.push_back(it->second->trap_id);
+    }
+    for (int i=0; i<trap_ids.size(); ++i) {
+      if (std::find(trap_ids.begin(), trap_ids.end(), i) == trap_ids.end()) {
+         return i;
+      }
+    }
+    return trap_ids.size();
   }
 };
 
