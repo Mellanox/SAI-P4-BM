@@ -7,6 +7,7 @@ std::vector<sai_object_id_t> *sai_adapter::switch_list_ptr;
 std::shared_ptr<spdlog::logger> *sai_adapter::logger;
 bool sai_adapter::pcap_loop_started;
 std::mutex sai_adapter::m;
+hostif_trap_id_table_t sai_adapter::hostif_trap_id_table;
 
 sai_adapter::sai_adapter()
     : //  constructor pre initializations
@@ -19,11 +20,11 @@ sai_adapter::sai_adapter()
   logger_o = spdlog::get("logger");
   if (logger_o == 0) {
     logger_o = spdlog::basic_logger_mt("logger", "logs/log.txt");
-    logger_o->flush_on(spdlog::level::info);   // make err
+    logger_o->flush_on(spdlog::level::info);     // make err
     spdlog::set_pattern("[thread %t] [%l] %v "); // add %T for time
   }
   logger = &logger_o;
-  
+
   // start P4 link
   switch_list_ptr = &switch_list;
   switch_metadata_ptr = &switch_metadata;
@@ -71,15 +72,16 @@ sai_adapter::sai_adapter()
 
   hostif_api.create_hostif = &sai_adapter::create_hostif;
   hostif_api.remove_hostif = &sai_adapter::remove_hostif;
-  hostif_api.create_hostif_table_entry = &sai_adapter::create_hostif_table_entry;
-  hostif_api.remove_hostif_table_entry = &sai_adapter::remove_hostif_table_entry;
+  hostif_api.create_hostif_table_entry =
+      &sai_adapter::create_hostif_table_entry;
+  hostif_api.remove_hostif_table_entry =
+      &sai_adapter::remove_hostif_table_entry;
   hostif_api.create_hostif_trap_group = &sai_adapter::create_hostif_trap_group;
   hostif_api.remove_hostif_trap_group = &sai_adapter::remove_hostif_trap_group;
   hostif_api.create_hostif_trap = &sai_adapter::create_hostif_trap;
   hostif_api.remove_hostif_trap = &sai_adapter::remove_hostif_trap;
 
   startSaiAdapterMain();
-  printf("startSaiAdapterMain\n");
   (*logger)->info("BM connection started on port {}", bm_port);
 }
 
@@ -131,18 +133,14 @@ void sai_adapter::internal_init_switch() {
 
 void sai_adapter::startSaiAdapterMain() {
   internal_init_switch();
-
-  HostIF_Table_obj *hostif_table = new HostIF_Table_obj(sai_id_map_ptr);
-  switch_metadata_ptr->hostif_tables[hostif_table->sai_object_id] = hostif_table;
-  hostif_table->trap_id = MAC_LEARN_TRAP_ID;
-  hostif_table->packet_handler = &sai_adapter::learn_mac;
   pcap_loop_started = false;
   SaiAdapterThread = std::thread(&sai_adapter::SaiAdapterMain, this);
   {
     std::unique_lock<std::mutex> lk(m);
-    cv.wait(lk,[]{return pcap_loop_started;});
+    cv.wait(lk, [] { return pcap_loop_started; });
   }
-  std::this_thread::sleep_for(std::chrono::milliseconds(500)); // TODO consider later release of lock
+  std::this_thread::sleep_for(
+      std::chrono::milliseconds(500)); // TODO consider later release of lock
   (*logger)->info("Sniffer initialization done");
 }
 

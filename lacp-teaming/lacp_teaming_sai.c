@@ -66,7 +66,7 @@ int main() {
   sai_if_channel_attr[1].value.oid =
       port_id[0];  // port_id is a port element created via port SAI API
   sai_if_channel_attr[2].id = SAI_HOSTIF_ATTR_NAME;
-  strcpy(sai_if_channel_attr[2].value.chardata,"port1");
+  strcpy(sai_if_channel_attr[2].value.chardata,"port5");
   hostif_api->create_hostif(&host_if_id[0], switch_id, 3, sai_if_channel_attr);
   sai_if_channel_attr[0].id = SAI_HOSTIF_ATTR_TYPE;
   sai_if_channel_attr[0].value.s32 = SAI_HOSTIF_TYPE_NETDEV;
@@ -74,7 +74,7 @@ int main() {
   sai_if_channel_attr[1].value.oid =
       port_id[1];  // port_id is a port element created via port SAI API
   sai_if_channel_attr[2].id = SAI_HOSTIF_ATTR_NAME;
-  strcpy(sai_if_channel_attr[2].value.chardata,"port2");
+  strcpy(sai_if_channel_attr[2].value.chardata,"port6");
   hostif_api->create_hostif(&host_if_id[1], switch_id, 3, sai_if_channel_attr);
 
   // Configuring Trap-IDs

@@ -1,7 +1,7 @@
-#include <sai.h>
-#include <stdlib.h>
 #include "../inc/sai_adapter_interface.h"
+#include <sai.h>
 #include <stdio.h>
+#include <stdlib.h>
 // static sai_api_service_t sai_api_service;
 static S_O_Handle sai_adapter;
 static sai_api_t api_id = SAI_API_UNSPECIFIED;
@@ -62,9 +62,7 @@ sai_status_t sai_api_initialize(uint64_t flags,
   sai_adapter = create_sai_adapter();
 }
 
-sai_status_t sai_api_uninitialize(void) { 
-    free_sai_adapter(sai_adapter);
-}
+sai_status_t sai_api_uninitialize(void) { free_sai_adapter(sai_adapter); }
 
 #ifdef __cplusplus
 }

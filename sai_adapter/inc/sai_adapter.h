@@ -1,7 +1,6 @@
 #ifndef SAI_ADAPTER_H
 #define SAI_ADAPTER_H
 
-
 // SAI
 #ifdef __cplusplus
 extern "C" {
@@ -19,25 +18,25 @@ extern "C" {
 
 // thrift bm clinet
 #include <Standard.h>
+#include <standard_types.h>
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/protocol/TMultiplexedProtocol.h>
 #include <thrift/transport/TSocket.h>
 #include <thrift/transport/TTransportUtils.h>
-#include <standard_types.h>
 
 // LOG
 #include "../inc/spdlog/spdlog.h"
 
 // General
+#include <algorithm>
+#include <condition_variable>
+#include <cstdlib>
 #include <iostream>
+#include <mutex>
+#include <pcap.h>
+#include <sstream>
 #include <string>
 #include <thread>
-#include <mutex>
-#include <condition_variable>
-#include <algorithm>
-#include <cstdlib>
-#include <sstream>
-#include <pcap.h>
 
 using namespace std;
 using namespace ::apache::thrift;
@@ -45,6 +44,26 @@ using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
 
 using namespace bm_runtime::standard;
+
+#define ETHER_ADDR_LEN 6
+#define CPU_HDR_LEN 6
+#define MAC_LEARN_TRAP_ID 512
+
+typedef struct _ethernet_hdr_t {
+  uint8_t dst_addr[ETHER_ADDR_LEN];
+  uint8_t src_addr[ETHER_ADDR_LEN];
+  uint16_t ether_type;
+} ethernet_hdr_t;
+
+typedef struct _cpu_hdr_t { // TODO: remove bridge_port and id
+  unsigned int ingress_port : 8;
+  unsigned int bridge_port : 8;
+  unsigned int bridge_id : 16;
+  unsigned int trap_id : 16;
+} cpu_hdr_t;
+
+typedef void (*adapter_packet_handler_fn)(ethernet_hdr_t *, cpu_hdr_t *);
+typedef std::map<uint16_t, adapter_packet_handler_fn> hostif_trap_id_table_t;
 
 const int bm_port = 9090;
 const int32_t cxt_id = 0;
@@ -57,7 +76,7 @@ BmMatchParam parse_valid_match_param(bool param);
 uint64_t parse_mac_64(uint8_t const mac_8[6]);
 
 class sai_adapter {
- public:
+public:
   // thrift
   boost::shared_ptr<TTransport> socket;
   boost::shared_ptr<TTransport> transport;
@@ -168,16 +187,18 @@ class sai_adapter {
                                     uint32_t attr_count,
                                     const sai_attribute_t *attr_list);
   static sai_status_t remove_hostif(sai_object_id_t hif_id);
-  static sai_status_t create_hostif_table_entry(
-      sai_object_id_t *hif_table_entry, sai_object_id_t switch_id,
-      uint32_t attr_count, const sai_attribute_t *attr_list);
-  static sai_status_t remove_hostif_table_entry(
-      sai_object_id_t hif_table_entry);
-  static sai_status_t create_hostif_trap_group(
-      sai_object_id_t *hostif_trap_group_id, sai_object_id_t switch_id,
-      uint32_t attr_count, const sai_attribute_t *attr_list);
-  static sai_status_t remove_hostif_trap_group(
-      sai_object_id_t hostif_trap_group_id);
+  static sai_status_t
+  create_hostif_table_entry(sai_object_id_t *hif_table_entry,
+                            sai_object_id_t switch_id, uint32_t attr_count,
+                            const sai_attribute_t *attr_list);
+  static sai_status_t
+  remove_hostif_table_entry(sai_object_id_t hif_table_entry);
+  static sai_status_t
+  create_hostif_trap_group(sai_object_id_t *hostif_trap_group_id,
+                           sai_object_id_t switch_id, uint32_t attr_count,
+                           const sai_attribute_t *attr_list);
+  static sai_status_t
+  remove_hostif_trap_group(sai_object_id_t hostif_trap_group_id);
   static sai_status_t create_hostif_trap(sai_object_id_t *hostif_trap_id,
                                          sai_object_id_t switch_id,
                                          uint32_t attr_count,
@@ -196,7 +217,7 @@ class sai_adapter {
   ~sai_adapter();
   sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table);
 
- private:
+private:
   // sai_object_id_t switch_id;
   pcap_t *adapter_pcap;
   // sai adapter threading handlers
@@ -204,6 +225,7 @@ class sai_adapter {
   static bool pcap_loop_started;
   static std::mutex m;
   std::condition_variable cv;
+  static hostif_trap_id_table_t hostif_trap_id_table;
   void startSaiAdapterMain();
   void endSaiAdapterMain();
   void SaiAdapterMain();
@@ -211,17 +233,20 @@ class sai_adapter {
   //
   void PacketSniffer();
   void internal_init_switch();
-  static uint32_t get_bridge_id_from_fdb_entry(
-      const sai_fdb_entry_t *fdb_entry);
+  static uint32_t
+  get_bridge_id_from_fdb_entry(const sai_fdb_entry_t *fdb_entry);
   static void packetHandler(u_char *, const struct pcap_pkthdr *,
                             const u_char *);
-  void adapter_create_fdb_entry(sai_object_id_t, sai_mac_t,
-                                sai_fdb_entry_bridge_type_t, sai_vlan_id_t,
-                                sai_object_id_t);
-  void learn_mac(ethernet_hdr_t*, cpu_hdr_t*);
+  static void adapter_create_fdb_entry(sai_object_id_t, sai_mac_t,
+                                       sai_fdb_entry_bridge_type_t,
+                                       sai_vlan_id_t, sai_object_id_t);
+  static void learn_mac(ethernet_hdr_t *, cpu_hdr_t *);
+  static void lacp_packet(ethernet_hdr_t *, cpu_hdr_t *);
+  static void lookup_hostif_trap_id_table(ethernet_hdr_t *, cpu_hdr_t *);
+  static void add_hostif_trap_id_table_entry(uint16_t,
+                                             adapter_packet_handler_fn);
   // hostif_table_t hostif_table;
   // static hostif_table_t* hostif_table_p;
 };
-
 
 #endif

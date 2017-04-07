@@ -16,7 +16,7 @@ void print_mac_to_log(const uint8_t *mac,
                mac[4], mac[3], mac[2], mac[1], mac[0]);
 }
 
-void sai_adapter::release_pcap_lock(){
+void sai_adapter::release_pcap_lock() {
   (*logger)->info("release pcap lock");
   std::unique_lock<std::mutex> lk(m);
   pcap_loop_started = true;
@@ -36,7 +36,7 @@ void sai_adapter::PacketSniffer() {
     release_pcap_lock();
     return;
   }
-  
+
   release_pcap_lock();
 
   if (pcap_loop(adapter_pcap, 0, packetHandler, (u_char *)this) == -1) {
@@ -70,7 +70,7 @@ void sai_adapter::adapter_create_fdb_entry(
     sai_fdb_entry.vlan_id = vlan_id;
   }
   sai_fdb_entry.bridge_id = bridge_id;
-  fdb_api.create_fdb_entry(&sai_fdb_entry, 3, attr);
+  create_fdb_entry(&sai_fdb_entry, 3, attr);
 }
 
 void sai_adapter::packetHandler(u_char *userData,
@@ -85,13 +85,23 @@ void sai_adapter::packetHandler(u_char *userData,
   ReverseBytes((uint8_t *)&(ether->ether_type), 2);
   ReverseBytes(ether->dst_addr, 6);
   ReverseBytes(ether->src_addr, 6);
-  switch_metadata_ptr->lookup(ether, cpu);
+  HostIF_Table_Entry_obj *hostif_table_entry =
+      switch_metadata_ptr->GetTableEntryFromTrapID(cpu->trap_id);
+  if (hostif_table_entry == nullptr) {
+    (*logger)->error("CPU packet recieved with unknown trap_id");
+    return;
+  }
+  switch (hostif_table_entry->entry_type) {
+  case SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID:
+    lookup_hostif_trap_id_table(ether, cpu);
+    break;
+  }
   // if (cpu_hdr->trap_id == 512) {
   //   adapter->learn_mac(ether, cpu_hdr);
   // }
 }
 
-void sai_adapter::learn_mac(ethernet_hdr_t* ether, cpu_hdr_t* cpu) {
+void sai_adapter::learn_mac(ethernet_hdr_t *ether, cpu_hdr_t *cpu) {
   uint32_t ingress_port = cpu->ingress_port;
   uint8_t *src_mac = ether->src_addr;
   BridgePort_obj *bridge_port;
