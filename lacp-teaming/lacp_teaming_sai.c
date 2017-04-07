@@ -32,7 +32,7 @@ Pointer to NULL passed as variable restarts enumeration.
 Function returns 0 if next value exists, -1 at the end of the list. */
 
 int main() {
-  printf("lacp_app running\n");
+  printf("lacp_app initializing\n");
   sai_hostif_api_t* hostif_api;
   sai_api_initialize(0, &test_services);
   sai_api_query(SAI_API_HOSTIF, (void**)&hostif_api);
@@ -100,6 +100,21 @@ int main() {
       SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_PHYSICAL_PORT;
   hostif_api->create_hostif_table_entry(&host_table_entry[0], switch_id, 3,
                                         sai_if_channel_attr);
+  
+
+
+  // waitng for lacp link up - TODO
+  printf("lacp_app runing, press ENTER to quit\n");
+  getchar();   
+
+
+  // removing configurations
+  printf("lacp_app teardown initiated\n");
+  hostif_api->remove_hostif_table_entry(host_table_entry[0]);
+  hostif_api->remove_hostif_trap(host_trap_id[0]);
+  hostif_api->remove_hostif(host_if_id[1]);
+  hostif_api->remove_hostif(host_if_id[0]);
+  hostif_api->remove_hostif_trap_group(prio_group);
   // spdlog::drop_all();
   sai_api_uninitialize();
   return 0;
