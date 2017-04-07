@@ -222,9 +222,7 @@ public:
   sai_packet_action_t trap_action;
   BmEntryHandle handle_l2_trap;
   BmEntryHandle handle_trap_id;
-  HostIF_Trap_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
-    
-  }
+  HostIF_Trap_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {}
 };
 
 class HostIF_Trap_Group_obj : public Sai_obj {
