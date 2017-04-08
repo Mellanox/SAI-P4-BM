@@ -46,7 +46,7 @@ using namespace ::apache::thrift::transport;
 using namespace bm_runtime::standard;
 
 #define ETHER_ADDR_LEN 6
-#define CPU_HDR_LEN 6
+#define CPU_HDR_LEN 3
 #define MAC_LEARN_TRAP_ID 512
 
 typedef struct _ethernet_hdr_t {
@@ -57,12 +57,10 @@ typedef struct _ethernet_hdr_t {
 
 typedef struct _cpu_hdr_t { // TODO: remove bridge_port and id
   unsigned int ingress_port : 8;
-  unsigned int bridge_port : 8;
-  unsigned int bridge_id : 16;
   unsigned int trap_id : 16;
 } cpu_hdr_t;
 
-typedef void (*adapter_packet_handler_fn)(ethernet_hdr_t *, cpu_hdr_t *);
+typedef void (*adapter_packet_handler_fn)(u_char*, cpu_hdr_t *, int);
 typedef std::map<uint16_t, adapter_packet_handler_fn> hostif_trap_id_table_t;
 
 const int bm_port = 9090;
@@ -240,9 +238,9 @@ private:
   static void adapter_create_fdb_entry(sai_object_id_t, sai_mac_t,
                                        sai_fdb_entry_bridge_type_t,
                                        sai_vlan_id_t, sai_object_id_t);
-  static void learn_mac(ethernet_hdr_t *, cpu_hdr_t *);
-  static void netdev_phys_port_fn(ethernet_hdr_t *, cpu_hdr_t *);
-  static void lookup_hostif_trap_id_table(ethernet_hdr_t *, cpu_hdr_t *);
+  static void learn_mac(u_char*, cpu_hdr_t *, int);
+  static void netdev_phys_port_fn(u_char *, cpu_hdr_t *, int);
+  static void lookup_hostif_trap_id_table(u_char* packet, cpu_hdr_t *, int);
   static void add_hostif_trap_id_table_entry(uint16_t,
                                              adapter_packet_handler_fn);
   // hostif_table_t hostif_table;

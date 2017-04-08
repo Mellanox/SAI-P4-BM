@@ -33,7 +33,7 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
       (*logger)->error("trying to create netdev wihout any name");
     }
     (*logger)->info("creating netdev {}", hostif->netdev_name);
-    tun_alloc(netdev_name, 1);
+    hostif->netdev_fd = tun_alloc(netdev_name, 1);
   }
   *hif_id = hostif->sai_object_id;
   return SAI_STATUS_SUCCESS;
@@ -133,7 +133,7 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
   HostIF_Trap_obj *hostif_trap = new HostIF_Trap_obj(sai_id_map_ptr);
   hostif_trap->trap_id = switch_metadata_ptr->GetNewTrapID();
   switch_metadata_ptr->hostif_traps[hostif_trap->sai_object_id] = hostif_trap;
-  
+
   // parsing attributes
   sai_attribute_t attribute;
   for (uint32_t i = 0; i < attr_count; i++) {
@@ -213,18 +213,20 @@ void sai_adapter::add_hostif_trap_id_table_entry(
   hostif_trap_id_table[trap_id] = handler_fn;
 }
 
-void sai_adapter::lookup_hostif_trap_id_table(ethernet_hdr_t *ether,
-                                              cpu_hdr_t *cpu) {
+void sai_adapter::lookup_hostif_trap_id_table(u_char* packet,
+                                              cpu_hdr_t *cpu, int pkt_len) {
   hostif_trap_id_table_t::iterator it = hostif_trap_id_table.find(cpu->trap_id);
   if (it != hostif_trap_id_table.end()) {
-    it->second(ether, cpu);
+    it->second(packet, cpu, pkt_len);
     return;
   } else {
     printf("hostif_table lookup failed\n"); // TODO logger / return value
   }
 }
 
-void sai_adapter::netdev_phys_port_fn(ethernet_hdr_t *ether, cpu_hdr_t *cpu) {
-	(*logger)->info("trap arrived at physical netdev @ ingress_port {}", cpu->ingress_port);
+void sai_adapter::netdev_phys_port_fn(u_char* packet, cpu_hdr_t *cpu, int pkt_len) {
+	(*logger)->info("trap arrived to physical netdev cahnnel @ ingress_port {}. len = {}", cpu->ingress_port, pkt_len);
+	HostIF_obj *hostif = switch_metadata_ptr->GetHostIFFromPhysicalPort(cpu->ingress_port);
+	write(hostif->netdev_fd, packet, pkt_len);
 	return;
 }

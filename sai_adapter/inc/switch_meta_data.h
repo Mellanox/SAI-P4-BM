@@ -195,6 +195,7 @@ public:
   Port_obj *port;
   sai_hostif_type_t hostif_type;
   std::string netdev_name;
+  int netdev_fd;
   HostIF_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->port = nullptr;
     this->hostif_type = SAI_HOSTIF_TYPE_NETDEV;
@@ -282,6 +283,7 @@ public:
         return it->second;
       }
     }
+    spdlog::get("logger")->error("hostif_table_entry not found for trap_id {} ", trap_id);
     return nullptr;
   }
 
@@ -291,7 +293,18 @@ public:
         return it->first;
       }
     }
+    spdlog::get("logger")->error("vlan object not found for vid {} ", vid);
     return 0;
+  }
+
+  HostIF_obj* GetHostIFFromPhysicalPort(int port_num) {
+    for (hostif_id_map_t::iterator it = hostifs.begin(); it!=hostifs.end(); ++it) {
+      if (it->second->port->hw_port == port_num) {
+        return it->second;
+      }
+    }
+    spdlog::get("logger")->error("hostif not found for physical port {} ", port_num);
+    return nullptr;
   }
 
   uint32_t GetNewBridgePort() {

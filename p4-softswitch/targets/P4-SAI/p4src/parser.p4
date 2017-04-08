@@ -12,8 +12,11 @@
 // parser starts here
 // check if needs to add clone_to_cpu encapsulation
 parser start {
-    return select(current(0, 64)) {
-        0 : parse_cpu_header;
+    set_metadata(ingress_metadata.cpu_port, (standard_metadata.ingress_port>>3));
+    set_metadata(ingress_metadata.parse_cpu, current(0, 64));
+    set_metadata(ingress_metadata.parse_cpu, ingress_metadata.parse_cpu | ingress_metadata.cpu_port);
+    return select(ingress_metadata.parse_cpu) {
+        1 : parse_cpu_header;
         default: parse_ethernet;
     }
 }

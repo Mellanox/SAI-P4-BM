@@ -166,8 +166,6 @@ action action_set_mc_fdb_miss() {
 
 action action_cpu_encap() { 
 	add_header(cpu_header);
-	cpu_header.ingress_port = standard_metadata.ingress_port;
+	cpu_header.port = standard_metadata.ingress_port;
 	cpu_header.trap_id = ingress_metadata.trap_id;
-	cpu_header.bridge_id = ingress_metadata.bridge_id;
-	cpu_header.bridge_port = ingress_metadata.bridge_port;
 }

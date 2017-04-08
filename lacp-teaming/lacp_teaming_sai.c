@@ -38,8 +38,8 @@ int main() {
   sai_api_query(SAI_API_HOSTIF, (void**)&hostif_api);
   sai_object_id_t switch_id = 0;
   sai_object_id_t port_id[2];
-  port_id[0] = 5;
-  port_id[1] = 6;  // TODO
+  port_id[0] = 12;
+  port_id[1] = 14;  // TODO get this from SAI functions
 
   // create trap group (currently only 1.)
   sai_object_id_t prio_group;
