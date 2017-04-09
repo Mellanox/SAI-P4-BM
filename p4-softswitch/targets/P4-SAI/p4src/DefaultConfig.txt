@@ -64,3 +64,5 @@ table_set_default table_flood action_forward_mc_set_if_list 1 0
 mc_node_create 0 0 1 2 3 4 5 6 7
 mc_mgrp_create 1
 mc_node_associate 1 0
+
+table_add table_cpu_forward action_forward_cpu 1  =>
