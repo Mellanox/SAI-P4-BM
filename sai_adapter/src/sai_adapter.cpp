@@ -8,6 +8,7 @@ std::shared_ptr<spdlog::logger> *sai_adapter::logger;
 bool sai_adapter::pcap_loop_started;
 std::mutex sai_adapter::m;
 hostif_trap_id_table_t sai_adapter::hostif_trap_id_table;
+pcap_t *sai_adapter::adapter_pcap;
 
 sai_adapter::sai_adapter()
     : //  constructor pre initializations

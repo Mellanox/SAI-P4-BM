@@ -79,8 +79,9 @@ void sai_adapter::packetHandler(u_char *userData,
 
   sai_adapter *adapter = (sai_adapter *)userData;
   cpu_hdr_t *cpu = (cpu_hdr_t *)packet;
-  ReverseBytes((uint8_t *)cpu, CPU_HDR_LEN);
-  (*logger)->info("CPU packet captured. trap_id = {}", cpu->trap_id);
+  // ReverseBytes((uint8_t *)cpu, CPU_HDR_LEN);
+  cpu->trap_id = ntohs(cpu->trap_id);
+  (*logger)->info("CPU packet captured. trap_id = {}. ingress_port = {}", cpu->trap_id, cpu->ingress_port);
   u_char* decap_packet = (u_char*) (packet + CPU_HDR_LEN);
   HostIF_Table_Entry_obj *hostif_table_entry =
       switch_metadata_ptr->GetTableEntryFromTrapID(cpu->trap_id);
@@ -90,7 +91,7 @@ void sai_adapter::packetHandler(u_char *userData,
   }
   switch (hostif_table_entry->entry_type) {
   case SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID:
-    lookup_hostif_trap_id_table(decap_packet, cpu, pkthdr->len - CPU_HDR_LEN);
+    adapter->lookup_hostif_trap_id_table(decap_packet, cpu, pkthdr->len - CPU_HDR_LEN);
     break;
   }
   // if (cpu_hdr->trap_id == 512) {

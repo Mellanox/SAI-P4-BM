@@ -85,7 +85,7 @@ header_type ingress_metadata_t {
         bit     drop_untagged;
         bit<11> trap_id;
         bit     cpu_port;
-        bit     parse_cpu;
+        bit<64> parse_cpu;
 	}
 }
 
@@ -118,7 +118,7 @@ metadata intrinsic_metadata_t intrinsic_metadata;
 
 header_type cpu_header_t {
     fields {
-        bit<16> trap_id;
         bit<8>  port;
+        bit<16> trap_id;
     }
 }

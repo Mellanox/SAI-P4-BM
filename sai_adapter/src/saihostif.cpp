@@ -2,40 +2,6 @@
 // extern "C" {
 //   int tun_alloc(char*);
 // }
-void callback(u_char *out_port,const struct pcap_pkthdr* pkthdr,const u_char* packet)
-{
-  // pcap_t* out_pcap = (pcap_t*) out;
-  int hw_port = *((int*) out_port)
-  if (pcap_inject(adapter_pcap, packet, pkthdr->len) == -1) {
-    printf("error on injecting packet [%s]\n", pcap_geterr(adapter_pcap));
-  }
-}
-
-int pktinit(char *in_dev, char *out_dev, int* hw_port) 
-{
-    char errbuf[PCAP_ERRBUF_SIZE];
-    pcap_t *in_pcap, *out_pcap;
-    char dev_buff[64] = {0};
-    int i =0;
-    // pcap_lookupnet(dev, &pNet, &pMask, errbuf);
-    in_pcap = pcap_open_live(in_dev, BUFSIZ, 0,-1, errbuf);
-    if(in_pcap == NULL)
-    {
-        printf("pcap_open_live() failed due to [%s] on dev %s\n", errbuf, in_dev);
-        return -1;
-    }
-    // out_pcap = pcap_open_live(out_dev, BUFSIZ, 0,-1, errbuf);
-    // if(out_pcap == NULL)
-    // {
-        // printf("pcap_open_live() failed due to [%s] on dev %s\n", errbuf, out_dev);
-        // return -1;
-    // }
-    // printf("started sinffing @ dev %s. mirror to dev %s\n", in_dev, out_dev);
-    if (pcap_loop(in_pcap, 0, callback, (u_char*) hw_port) == -1) {
-        printf("pcap_loop() failed: %s\n", pcap_geterr(in_pcap));
-    }
-    return 0;
-}
 
 sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
                                         sai_object_id_t switch_id,
@@ -45,7 +11,6 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
   HostIF_obj *hostif = new HostIF_obj(sai_id_map_ptr);
   switch_metadata_ptr->hostifs[hostif->sai_object_id] = hostif;
   char *netdev_name;
-  char cpu_port_name[] = "host_port";
   // parsing attributes
   sai_attribute_t attribute;
   for (uint32_t i = 0; i < attr_count; i++) {
@@ -69,7 +34,9 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
     }
     (*logger)->info("creating netdev {}", hostif->netdev_name);
     hostif->netdev_fd = tun_alloc(netdev_name, 1);
-    hostif->netdev_thread = std::thread(pktinit, netdev_name, &hostif->port->hw_port);
+    int hw_port = hostif->port->hw_port;
+    hostif->netdev_thread = std::thread(phys_netdev_sniffer, hostif->netdev_fd, hw_port);
+    hostif->netdev_thread.detach();
   }
   *hif_id = hostif->sai_object_id;
   return SAI_STATUS_SUCCESS;
@@ -265,4 +232,36 @@ void sai_adapter::netdev_phys_port_fn(u_char* packet, cpu_hdr_t *cpu, int pkt_le
 	HostIF_obj *hostif = switch_metadata_ptr->GetHostIFFromPhysicalPort(cpu->ingress_port);
 	write(hostif->netdev_fd, packet, pkt_len);
 	return;
+}
+
+void sai_adapter::phys_netdev_packet_handler(int hw_port, int length, const u_char* packet)
+{
+  (*logger)->info("recieved packet on physical netdev port {}", hw_port);
+  u_char *encaped_packet = (u_char*) malloc(sizeof(u_char) * (CPU_HDR_LEN + length));
+  cpu_hdr_t *cpu_hdr = (cpu_hdr_t*) encaped_packet;
+  cpu_hdr->ingress_port = hw_port;
+  memcpy(encaped_packet + CPU_HDR_LEN, packet, length);
+  // sai_adapter *adapter = (sai_adapter*) arg_array[1];
+  if (pcap_inject(adapter_pcap, encaped_packet, length + CPU_HDR_LEN) == -1) {
+    printf("error on injecting packet [%s]\n", pcap_geterr(adapter_pcap));
+  }
+  free(encaped_packet);
+}
+
+int sai_adapter::phys_netdev_sniffer(int in_dev_fd, int hw_port) 
+{
+    u_char buffer[1500]; // change to get_mtu?
+    uint16_t length;
+    while (1) {
+      // read(in_dev_fd, (char*) &length, sizeof(length));
+      // length = ntohs(length);
+
+      length = read(in_dev_fd, buffer, sizeof(buffer));
+      (*logger)->info("received packet of length: {}", length);
+      ethernet_hdr_t* ether = (ethernet_hdr_t *) buffer;
+      (*logger)->info("ethertype: {0:02X}. DMAC:", ntohs(ether->ether_type));
+      print_mac_to_log(ether->dst_addr, *logger);
+      phys_netdev_packet_handler(hw_port, length, buffer);
+    }
+    return 0;
 }

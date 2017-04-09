@@ -172,6 +172,7 @@ action action_cpu_encap() {
 }
 
 action action_forward_cpu() {
+	remove_header(cpu_header);
 	standard_metadata.egress_spec = cpu_header.port;
 	// modify_field(standard_metadata.egress_spec,cpu_header.port);
 }

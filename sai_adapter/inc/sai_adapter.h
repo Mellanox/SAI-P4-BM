@@ -72,7 +72,7 @@ string parse_param(uint64_t param, uint32_t num_of_bytes);
 BmMatchParam parse_exact_match_param(uint64_t param, uint32_t num_of_bytes);
 BmMatchParam parse_valid_match_param(bool param);
 uint64_t parse_mac_64(uint8_t const mac_8[6]);
-
+void print_mac_to_log(const uint8_t *, std::shared_ptr<spdlog::logger>);
 class sai_adapter {
 public:
   // thrift
@@ -217,7 +217,7 @@ public:
 
 private:
   // sai_object_id_t switch_id;
-  pcap_t *adapter_pcap;
+  static pcap_t *adapter_pcap;
   // sai adapter threading handlers
   std::thread SaiAdapterThread;
   static bool pcap_loop_started;
@@ -243,6 +243,8 @@ private:
   static void lookup_hostif_trap_id_table(u_char* packet, cpu_hdr_t *, int);
   static void add_hostif_trap_id_table_entry(uint16_t,
                                              adapter_packet_handler_fn);
+  static void phys_netdev_packet_handler(int, int, const u_char*);
+  static int phys_netdev_sniffer(int, int);
   // hostif_table_t hostif_table;
   // static hostif_table_t* hostif_table_p;
 };

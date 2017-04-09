@@ -12,15 +12,19 @@
 // parser starts here
 // check if needs to add clone_to_cpu encapsulation
 parser start {
-    set_metadata(ingress_metadata.cpu_port, (standard_metadata.ingress_port>>3));
-    set_metadata(ingress_metadata.parse_cpu, current(0, 64));
-    set_metadata(ingress_metadata.parse_cpu, ingress_metadata.parse_cpu | ingress_metadata.cpu_port);
-    return select(ingress_metadata.parse_cpu) {
-        1 : parse_cpu_header;
-        default: parse_ethernet;
+    return select(current(0, 64)) {
+        0 : parse_cpu_header; // output deparsing of cpu_header when packet is egressed to cpu port
+        default: parse_ethernet_or_ingress_cpu;
     }
 }
 
+parser parse_ethernet_or_ingress_cpu {
+    set_metadata(ingress_metadata.cpu_port, (standard_metadata.ingress_port >> 3));
+    return select(ingress_metadata.cpu_port) {
+        0: parse_ethernet;
+        1: parse_cpu_header;
+    }
+}
 
 parser parse_cpu_header {
     extract(cpu_header);
