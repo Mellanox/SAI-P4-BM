@@ -196,6 +196,7 @@ public:
   sai_hostif_type_t hostif_type;
   std::string netdev_name;
   int netdev_fd;
+  std::thread netdev_thread;
   HostIF_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->port = nullptr;
     this->hostif_type = SAI_HOSTIF_TYPE_NETDEV;

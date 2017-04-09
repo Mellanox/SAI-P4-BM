@@ -2,6 +2,40 @@
 // extern "C" {
 //   int tun_alloc(char*);
 // }
+void callback(u_char *out_port,const struct pcap_pkthdr* pkthdr,const u_char* packet)
+{
+  // pcap_t* out_pcap = (pcap_t*) out;
+  int hw_port = *((int*) out_port)
+  if (pcap_inject(adapter_pcap, packet, pkthdr->len) == -1) {
+    printf("error on injecting packet [%s]\n", pcap_geterr(adapter_pcap));
+  }
+}
+
+int pktinit(char *in_dev, char *out_dev, int* hw_port) 
+{
+    char errbuf[PCAP_ERRBUF_SIZE];
+    pcap_t *in_pcap, *out_pcap;
+    char dev_buff[64] = {0};
+    int i =0;
+    // pcap_lookupnet(dev, &pNet, &pMask, errbuf);
+    in_pcap = pcap_open_live(in_dev, BUFSIZ, 0,-1, errbuf);
+    if(in_pcap == NULL)
+    {
+        printf("pcap_open_live() failed due to [%s] on dev %s\n", errbuf, in_dev);
+        return -1;
+    }
+    // out_pcap = pcap_open_live(out_dev, BUFSIZ, 0,-1, errbuf);
+    // if(out_pcap == NULL)
+    // {
+        // printf("pcap_open_live() failed due to [%s] on dev %s\n", errbuf, out_dev);
+        // return -1;
+    // }
+    // printf("started sinffing @ dev %s. mirror to dev %s\n", in_dev, out_dev);
+    if (pcap_loop(in_pcap, 0, callback, (u_char*) hw_port) == -1) {
+        printf("pcap_loop() failed: %s\n", pcap_geterr(in_pcap));
+    }
+    return 0;
+}
 
 sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
                                         sai_object_id_t switch_id,
@@ -11,6 +45,7 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
   HostIF_obj *hostif = new HostIF_obj(sai_id_map_ptr);
   switch_metadata_ptr->hostifs[hostif->sai_object_id] = hostif;
   char *netdev_name;
+  char cpu_port_name[] = "host_port";
   // parsing attributes
   sai_attribute_t attribute;
   for (uint32_t i = 0; i < attr_count; i++) {
@@ -34,6 +69,7 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
     }
     (*logger)->info("creating netdev {}", hostif->netdev_name);
     hostif->netdev_fd = tun_alloc(netdev_name, 1);
+    hostif->netdev_thread = std::thread(pktinit, netdev_name, &hostif->port->hw_port);
   }
   *hif_id = hostif->sai_object_id;
   return SAI_STATUS_SUCCESS;
