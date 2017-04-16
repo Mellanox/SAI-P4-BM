@@ -7,17 +7,19 @@ INC_DIR = ${SAI_ADAPTER_DIR}/inc
 SAI_INC_DIR    = ${INC_DIR}/SAI
 SAI_SRC_DIR = ${SAI_ADAPTER_DIR}/src
 # LOG_DIR    = ${INC_DIR}/spdlog
+TEAM_DIR = ~/libteam/libteam
+TEAM_INC = -I${TEAM_DIR}/include
 LIBS_DIRS  =-L${USR_DIR}/lib -L${USR_DIR}/${THRIFT_VER}/lib
 CPP_DEFS   =-D=HAVE_CONFIG_H
 CPP_OPTS   =-Wall -O3 -std=c++11 -pthread -w
-LIBS       =-lthrift -lpcap ${LIBS_DIRS}
+LIBS       =-lthrift -lpcap ${LIBS_DIRS} -lteam
 SAI_THRIFT_SRC_DIR    = ${SAI_ADAPTER_DIR}/test/sai_thrift_src/gen-cpp
 
 STAND_OBJS = ${BM_DIR}/Standard.o  \
              ${BM_DIR}/standard_types.o \
              ${BM_DIR}/standard_constants.o
 
-INC_DIRS  =-I${USR_DIR}/include -I${THRIFT_DIR}/include/thrift -I${INC_DIR} -I${SAI_INC_DIR} -I${BM_DIR} -I${SAI_THRIFT_SRC_DIR}
+INC_DIRS  =-I${USR_DIR}/include -I${THRIFT_DIR}/include/thrift -I${INC_DIR} -I${SAI_INC_DIR} -I${BM_DIR} -I${SAI_THRIFT_SRC_DIR} -I${TEAM_INC}
 
 
 OBJ_DIR = obj

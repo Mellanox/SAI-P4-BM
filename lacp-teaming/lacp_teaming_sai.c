@@ -1,13 +1,19 @@
-#include <assert.h>
-#include <inttypes.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #ifdef __cplusplus
 #include <spdlog/spdlog.h>
 extern "C" {
 #endif
 #include <sai.h>
+#include <assert.h>
+#include <inttypes.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <signal.h>
+#include <string.h>
+#include <sys/select.h>
+#include <team.h>
+
 const char *test_profile_get_value(_In_ sai_switch_profile_id_t profile_id,
                                    _In_ const char *variable) {
   return NULL;
@@ -30,6 +36,75 @@ sai_status_t sai_api_uninitialize(void);
 /* Enumerate all the K/V pairs in a profile.
 Pointer to NULL passed as variable restarts enumeration.
 Function returns 0 if next value exists, -1 at the end of the list. */
+
+
+// team monitor auxillary
+static char *get_port_name(struct team_handle *th, uint32_t ifindex) {
+  static char ifname[32];
+
+  return team_ifindex2ifname(th, ifindex, ifname, sizeof(ifname));
+}
+
+static int die = 0;
+
+static void sigint_handler(int signum) { die = 1; }
+
+static void do_main_loop(struct team_handle *th) {
+  fd_set rfds;
+  fd_set rfds_tmp;
+  int fdmax;
+  int ret;
+  int tfd;
+
+  FD_ZERO(&rfds);
+  tfd = team_get_event_fd(th);
+  FD_SET(tfd, &rfds);
+  fdmax = tfd + 1;
+
+  while (1) {
+    rfds_tmp = rfds;
+    ret = select(fdmax, &rfds_tmp, NULL, NULL, NULL);
+    if (die) break;
+    if (ret == -1) {
+      perror("select()");
+    }
+    if (FD_ISSET(tfd, &rfds_tmp)) team_handle_events(th);
+  }
+}
+
+static int option_change_handler_func(struct team_handle *th, void *arg,
+                                      team_change_type_mask_t type_mask) {
+  struct team_option *option;
+  // printf("------------------\noption change\n\toption list:\n");
+  bool carr_up;
+  struct team_port *port;  
+
+  sai_lag_api_t* lag_api;
+  sai_api_query(SAI_API_LAG, (void**)&lag_api);
+
+  team_for_each_option(option, th) {
+    if (team_is_option_changed(option) & (strcmp("enabled", team_get_option_name(option)) == 0)) {
+      team_carrier_get(th, &carr_up);
+      if (carr_up) {
+          sai_object_id_t lag_id, s_id = 0;
+          sai_attribute_t sai_attr;
+          lag_api->create_lag(&lag_id, s_id, 0, &sai_attr);
+          team_for_each_port(port, th) {
+            if (team_is_port_link_up(port)) {
+              printf("add lag member %s\n", get_port_name(th, team_get_port_ifindex(port)));
+            }
+          }
+      } else {
+        printf("REMOVE LAG\n");
+      }
+    }
+  }
+  return 0;
+}
+
+static struct team_change_handler option_change_handler = {
+    .func = option_change_handler_func, .type_mask = TEAM_OPTION_CHANGE,
+};
 
 int main() {
   printf("lacp_app initializing\n");
@@ -104,8 +179,48 @@ int main() {
 
 
   // waitng for lacp link up - TODO
-  printf("lacp_app runing, press ENTER to quit\n");
-  getchar();   
+  int status = system("./teamd_sw.sh");
+
+  printf("lacp_app runing\n");
+   
+   struct team_handle *th;
+  int err;
+  char *ifname = "team0";
+  uint32_t ifindex;
+
+  th = team_alloc();
+  if (!th) {
+    fprintf(stderr, "team alloc failed.\n");
+    return 1;
+  }
+
+  ifindex = team_ifname2ifindex(th, ifname);
+  if (!ifindex) {
+    fprintf(stderr, "Netdevice %s not found.\n", ifname);
+    return 1;
+  }
+
+  err = team_init(th, ifindex);
+  if (err) {
+    fprintf(stderr, "team init failed\n");
+    return err;
+  }
+
+  err = team_change_handler_register(th, &option_change_handler, NULL);
+  if (err) {
+    fprintf(stderr, "option change handler register failed\n");
+    return err;
+  }
+
+  signal(SIGINT, sigint_handler);
+
+  do_main_loop(th);
+
+  team_change_handler_unregister(th, &option_change_handler, NULL);
+  // team_change_handler_unregister(th, &port_change_handler, NULL);
+  team_free(th);
+
+
 
 
   // removing configurations

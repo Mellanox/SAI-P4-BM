@@ -37,6 +37,8 @@ extern "C" {
 #include <sstream>
 #include <string>
 #include <thread>
+#include <sys/select.h>
+#include <team.h>
 
 using namespace std;
 using namespace ::apache::thrift;
