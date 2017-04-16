@@ -95,15 +95,20 @@ static int option_change_handler_func(struct team_handle *th, void *arg,
 				      team_change_type_mask_t type_mask)
 {
 	struct team_option *option;
-
 	// printf("------------------\noption change\n\toption list:\n");
 	team_for_each_option(option, th) {
 		if (team_is_option_changed(option)) {
-			if (strcmp("enabled", team_get_option_name(option)) == 0) {
-				printf("\topt %s changed to %s. ifindex = %d\n", team_get_option_name(option), team_get_option_value_bool(option) ? "True" : "False", team_get_option_port_ifindex(option));	
+			uint32_t ifindex = team_get_option_port_ifindex(option);
+			if ((strcmp("enabled", team_get_option_name(option)) == 0) | (strcmp("user_linkup_enabled", team_get_option_name(option)) == 0) | (strcmp("user_linkup", team_get_option_name(option)) == 0)) {
+				printf("\topt %s changed to %s. ifindex = %d\n", team_get_option_name(option), team_get_option_value_bool(option) ? "True" : "False", ifindex);
+			} else {
+				printf("\topt %s changed to %s. ifindex = %d\n", team_get_option_name(option), team_get_option_value_string(option), ifindex);
 			}
 		}
 	}
+	bool carr;
+	team_carrier_get(th, &carr);
+	printf("Carrier is %s\n", carr ? "UP" : "DOWN");
 	return 0;
 }
 

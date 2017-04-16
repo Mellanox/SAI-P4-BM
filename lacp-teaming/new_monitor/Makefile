@@ -1,6 +1,6 @@
 CPP_DEFS = -D=HAVE_CONFIG_H
 CPP_OPTS = -Wall -O3 -std=c++11
-TEAM_DIR = ../libteam
+TEAM_DIR = ~/libteam/libteam
 TEAM_INC = -I${TEAM_DIR}/include
 TEAM_LIB = -lteam
 
