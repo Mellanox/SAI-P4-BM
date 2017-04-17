@@ -12,7 +12,7 @@ TEAM_INC = -I${TEAM_DIR}/include
 LIBS_DIRS  =-L${USR_DIR}/lib -L${USR_DIR}/${THRIFT_VER}/lib
 CPP_DEFS   =-D=HAVE_CONFIG_H
 CPP_OPTS   =-Wall -O3 -std=c++11 -pthread -w
-LIBS       =-lthrift -lpcap ${LIBS_DIRS} -lteam
+LIBS       =-lthrift -lpcap ${LIBS_DIRS} -lteam -ljansson
 SAI_THRIFT_SRC_DIR    = ${SAI_ADAPTER_DIR}/test/sai_thrift_src/gen-cpp
 
 STAND_OBJS = ${BM_DIR}/Standard.o  \

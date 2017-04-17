@@ -13,6 +13,9 @@ extern "C" {
 #include <string.h>
 #include <sys/select.h>
 #include <team.h>
+#include <jansson.h>
+
+#define APPNAME "lacp_teaming_sai"
 
 const char *test_profile_get_value(_In_ sai_switch_profile_id_t profile_id,
                                    _In_ const char *variable) {
@@ -106,8 +109,30 @@ static struct team_change_handler option_change_handler = {
     .func = option_change_handler_func, .type_mask = TEAM_OPTION_CHANGE,
 };
 
-int main() {
-  printf("lacp_app initializing\n");
+void usage() {
+  fprintf(stderr, "Usage: %s TEAM_CONF_FILE \n", APPNAME);
+  return 1;
+}
+
+int main ( int argc, char **argv ) {
+  if (argc < 2) {
+    usage();
+    return -1;
+  }
+
+  json_error_t jerror;
+  size_t jflags = JSON_REJECT_DUPLICATES;
+  json_t *json = json_load_file(argv[1], jflags, &jerror);
+  const char* team_dev_name = json_string_value(json_object_get(json, "device"));
+  printf("team_dev_name:%s\n", team_dev_name);
+  json_t *ports_json = json_object_get(json, "ports");
+  void *it = json_object_iter(ports_json);
+  printf("ports:\n");
+  while (it!=NULL) {
+    printf("%s ; ", json_object_iter_key(it));
+    it = json_object_iter_next(ports_json, it);
+  }
+  printf("\nlacp_app initializing\n");
   sai_hostif_api_t* hostif_api;
   sai_api_initialize(0, &test_services);
   sai_api_query(SAI_API_HOSTIF, (void**)&hostif_api);
