@@ -300,6 +300,7 @@ public:
 
   HostIF_obj* GetHostIFFromPhysicalPort(int port_num) {
     for (hostif_id_map_t::iterator it = hostifs.begin(); it!=hostifs.end(); ++it) {
+      spdlog::get("logger")->debug("hostif hw_port {} ", it->second->port->hw_port);
       if (it->second->port->hw_port == port_num) {
         return it->second;
       }

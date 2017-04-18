@@ -42,6 +42,11 @@ Function returns 0 if next value exists, -1 at the end of the list. */
 
 
 // team monitor auxillary
+typedef struct _lacp_port_t {
+  sai_object_id_t port_id;
+  char netdev_name[32];
+} lacp_port_t;
+
 static char *get_port_name(struct team_handle *th, uint32_t ifindex) {
   static char ifname[32];
 
@@ -49,6 +54,7 @@ static char *get_port_name(struct team_handle *th, uint32_t ifindex) {
 }
 
 static int die = 0;
+static bool lag_up = false;
 
 static void sigint_handler(int signum) { die = 1; }
 
@@ -75,30 +81,64 @@ static void do_main_loop(struct team_handle *th) {
   }
 }
 
+sai_object_id_t lag_id;
+sai_lag_api_t* lag_api;
+sai_object_id_t s_id = 0;
+int num_of_ports;
+lacp_port_t *ports;
+
+void create_lag() {     
+  sai_attribute_t sai_attr;
+  lag_api->create_lag(&lag_id, s_id, 0, &sai_attr);
+}
+
+void remove_lag() {
+  lag_api->remove_lag(lag_id);
+}
+
+sai_object_id_t get_port_id_by_name(char *port_name) {
+  for (int i=0; i<num_of_ports; ++i) {
+    if (strcmp(ports[i].netdev_name, port_name) == 0) {
+      return ports[i].port_id;
+    }
+  }
+  printf("port name %s doesn't exist\n", port_name);
+  return -1;
+}
+
 static int option_change_handler_func(struct team_handle *th, void *arg,
                                       team_change_type_mask_t type_mask) {
   struct team_option *option;
   // printf("------------------\noption change\n\toption list:\n");
   bool carr_up;
-  struct team_port *port;  
+  struct team_port *port;
+  sai_object_id_t ports_id[num_of_ports];
 
-  sai_lag_api_t* lag_api;
-  sai_api_query(SAI_API_LAG, (void**)&lag_api);
-
+  
   team_for_each_option(option, th) {
+    char *port_name;
+    sai_object_id_t port_id;
     if (team_is_option_changed(option) & (strcmp("enabled", team_get_option_name(option)) == 0)) {
       team_carrier_get(th, &carr_up);
       if (carr_up) {
-          sai_object_id_t lag_id, s_id = 0;
-          sai_attribute_t sai_attr;
-          lag_api->create_lag(&lag_id, s_id, 0, &sai_attr);
-          team_for_each_port(port, th) {
-            if (team_is_port_link_up(port)) {
-              printf("add lag member %s\n", get_port_name(th, team_get_port_ifindex(port)));
+          if (!lag_up) {     
+            printf("CREATE LAG. members:\n"); 
+            team_for_each_port(port, th) {
+              if (team_is_port_link_up(port)) {
+                port_name = get_port_name(th, team_get_port_ifindex(port));
+                port_id = get_port_id_by_name(port_name);
+                printf("%s: %d\n", port_name, port_id);
+              }
             }
+            create_lag(ports_id);
+            lag_up = true;
           }
       } else {
-        printf("REMOVE LAG\n");
+        if (lag_up) {
+          lag_up = false;
+          remove_lag();
+          printf("REMOVE LAG\n");
+        }
       }
     }
   }
@@ -110,36 +150,88 @@ static struct team_change_handler option_change_handler = {
 };
 
 void usage() {
-  fprintf(stderr, "Usage: %s TEAM_CONF_FILE \n", APPNAME);
+  fprintf(stderr, "Usage: %s TEAM_CONF_FILE  port1 port2 [port3...]\n", APPNAME);
   return 1;
 }
 
+int teaming_init(const char* json_path, char* team_dev_name) {
+  json_error_t jerror;
+  size_t jflags = JSON_REJECT_DUPLICATES;
+  json_t *json = json_load_file(json_path, jflags, &jerror);
+  // team_dev_name = json_string_value(json_object_get(json, "device"));
+  strcpy(team_dev_name, json_string_value(json_object_get(json, "device")));
+  json_t *ports_json = json_object_get(json, "ports");
+  void *it = json_object_iter(ports_json);
+  for (int i=0; i<num_of_ports; ++i) {
+    if (it == NULL) { 
+      printf("Number of ports given as argument is less then ports defined in config file\n");
+      return -1;
+    }
+    strcpy(ports[i].netdev_name, json_object_iter_key(it));
+    printf("port %d: '%s'\n", i, ports[i].netdev_name);
+    it = json_object_iter_next(ports_json, it);
+  }
+  return 0;
+}
+
+void run_team_monitor(char* team_dev_name) {
+  struct team_handle *th;
+  int err;
+  uint32_t ifindex;
+
+  th = team_alloc();
+  if (!th) {
+    fprintf(stderr, "team alloc failed.\n");
+    return 1;
+  }
+
+  ifindex = team_ifname2ifindex(th, team_dev_name);
+  if (!ifindex) {
+    fprintf(stderr, "Netdevice %s not found.\n", team_dev_name);
+    return 1;
+  }
+
+  err = team_init(th, ifindex);
+  if (err) {
+    fprintf(stderr, "team init failed\n");
+    return err;
+  }
+
+  err = team_change_handler_register(th, &option_change_handler, NULL);
+  if (err) {
+    fprintf(stderr, "option change handler register failed\n");
+    return err;
+  }
+
+  signal(SIGINT, sigint_handler);
+
+  do_main_loop(th);
+
+  team_change_handler_unregister(th, &option_change_handler, NULL);
+  // team_change_handler_unregister(th, &port_change_handler, NULL);
+  team_free(th);
+}
+
 int main ( int argc, char **argv ) {
-  if (argc < 2) {
+  if (argc < 4) {
     usage();
     return -1;
   }
-
-  json_error_t jerror;
-  size_t jflags = JSON_REJECT_DUPLICATES;
-  json_t *json = json_load_file(argv[1], jflags, &jerror);
-  const char* team_dev_name = json_string_value(json_object_get(json, "device"));
-  printf("team_dev_name:%s\n", team_dev_name);
-  json_t *ports_json = json_object_get(json, "ports");
-  void *it = json_object_iter(ports_json);
-  printf("ports:\n");
-  while (it!=NULL) {
-    printf("%s ; ", json_object_iter_key(it));
-    it = json_object_iter_next(ports_json, it);
+  num_of_ports = argc - 2;
+  char team_dev_name[32];
+  ports = (lacp_port_t*) malloc(num_of_ports * sizeof(lacp_port_t));
+  if (teaming_init(argv[1], &team_dev_name) == -1) {
+    return -1;
   }
-  printf("\nlacp_app initializing\n");
+  printf("\nlacp_app initializing on team device %s with %d ports\n", team_dev_name, num_of_ports);
   sai_hostif_api_t* hostif_api;
   sai_api_initialize(0, &test_services);
   sai_api_query(SAI_API_HOSTIF, (void**)&hostif_api);
+  sai_api_query(SAI_API_LAG, (void**)&lag_api);
   sai_object_id_t switch_id = 0;
   sai_object_id_t port_id[2];
-  port_id[0] = 12;
-  port_id[1] = 14;  // TODO get this from SAI functions
+  ports[0].port_id = 12;
+  ports[1].port_id = 14;  // TODO get this from SAI functions
 
   // create trap group (currently only 1.)
   sai_object_id_t prio_group;
@@ -158,25 +250,19 @@ int main ( int argc, char **argv ) {
                                        sai_attr_list);
 
   // Create host interface channel
-  sai_object_id_t host_if_id[2];
+  sai_object_id_t host_if_id[num_of_ports];
   sai_attribute_t sai_if_channel_attr[3];
-  sai_if_channel_attr[0].id = SAI_HOSTIF_ATTR_TYPE;
-  sai_if_channel_attr[0].value.s32 = SAI_HOSTIF_TYPE_NETDEV;
-  sai_if_channel_attr[1].id = SAI_HOSTIF_ATTR_OBJ_ID;
-  sai_if_channel_attr[1].value.oid =
-      port_id[0];  // port_id is a port element created via port SAI API
-  sai_if_channel_attr[2].id = SAI_HOSTIF_ATTR_NAME;
-  strcpy(sai_if_channel_attr[2].value.chardata,"port5");
-  hostif_api->create_hostif(&host_if_id[0], switch_id, 3, sai_if_channel_attr);
-  sai_if_channel_attr[0].id = SAI_HOSTIF_ATTR_TYPE;
-  sai_if_channel_attr[0].value.s32 = SAI_HOSTIF_TYPE_NETDEV;
-  sai_if_channel_attr[1].id = SAI_HOSTIF_ATTR_OBJ_ID;
-  sai_if_channel_attr[1].value.oid =
-      port_id[1];  // port_id is a port element created via port SAI API
-  sai_if_channel_attr[2].id = SAI_HOSTIF_ATTR_NAME;
-  strcpy(sai_if_channel_attr[2].value.chardata,"port6");
-  hostif_api->create_hostif(&host_if_id[1], switch_id, 3, sai_if_channel_attr);
-
+  for (int i=0; i<num_of_ports; ++i) {
+    sai_if_channel_attr[0].id = SAI_HOSTIF_ATTR_TYPE;
+    sai_if_channel_attr[0].value.s32 = SAI_HOSTIF_TYPE_NETDEV;
+    sai_if_channel_attr[1].id = SAI_HOSTIF_ATTR_OBJ_ID;
+    sai_if_channel_attr[1].value.oid =
+        ports[i].port_id;
+    sai_if_channel_attr[2].id = SAI_HOSTIF_ATTR_NAME;
+    strcpy(sai_if_channel_attr[2].value.chardata,ports[i].netdev_name);
+    hostif_api->create_hostif(&host_if_id[0], switch_id, 3, sai_if_channel_attr);  
+  }
+  
   // Configuring Trap-IDs
   sai_attribute_t sai_trap_attr[3];
   sai_object_id_t host_trap_id[1];
@@ -201,52 +287,12 @@ int main ( int argc, char **argv ) {
   hostif_api->create_hostif_table_entry(&host_table_entry[0], switch_id, 3,
                                         sai_if_channel_attr);
   
-
-
-  // waitng for lacp link up - TODO
   int status = system("./teamd_sw.sh");
 
   printf("lacp_app runing\n");
-   
-   struct team_handle *th;
-  int err;
-  char *ifname = "team0";
-  uint32_t ifindex;
+  run_team_monitor(team_dev_name);
 
-  th = team_alloc();
-  if (!th) {
-    fprintf(stderr, "team alloc failed.\n");
-    return 1;
-  }
-
-  ifindex = team_ifname2ifindex(th, ifname);
-  if (!ifindex) {
-    fprintf(stderr, "Netdevice %s not found.\n", ifname);
-    return 1;
-  }
-
-  err = team_init(th, ifindex);
-  if (err) {
-    fprintf(stderr, "team init failed\n");
-    return err;
-  }
-
-  err = team_change_handler_register(th, &option_change_handler, NULL);
-  if (err) {
-    fprintf(stderr, "option change handler register failed\n");
-    return err;
-  }
-
-  signal(SIGINT, sigint_handler);
-
-  do_main_loop(th);
-
-  team_change_handler_unregister(th, &option_change_handler, NULL);
-  // team_change_handler_unregister(th, &port_change_handler, NULL);
-  team_free(th);
-
-
-
+  free(ports);
 
   // removing configurations
   printf("lacp_app teardown initiated\n");
