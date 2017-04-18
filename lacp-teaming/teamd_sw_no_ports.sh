@@ -1,1 +1,0 @@
-sudo teamd -d -f lacp_1_no_ports.conf

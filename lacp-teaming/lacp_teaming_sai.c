@@ -223,7 +223,7 @@ int main ( int argc, char **argv ) {
   if (teaming_init(argv[1], &team_dev_name) == -1) {
     return -1;
   }
-  printf("\nlacp_app initializing on team device %s with %d ports\n", team_dev_name, num_of_ports);
+  printf("\n%s initializing on team device %s with %d ports\n",APPNAME, team_dev_name, num_of_ports);
   sai_hostif_api_t* hostif_api;
   sai_api_initialize(0, &test_services);
   sai_api_query(SAI_API_HOSTIF, (void**)&hostif_api);
@@ -287,15 +287,23 @@ int main ( int argc, char **argv ) {
   hostif_api->create_hostif_table_entry(&host_table_entry[0], switch_id, 3,
                                         sai_if_channel_attr);
   
-  int status = system("./teamd_sw.sh");
-
-  printf("lacp_app runing\n");
+  int status = system("teamd -d -f lacp_1.conf");
+  if (status != 0) {
+    pritnf("error performing system opertaion: \n");
+    return -1;
+  }
+  status = system("ip link set team0 up");
+  if (status != 0) {
+    pritnf("error performing system opertaion: \n");
+    return -1;
+  }
+  printf("%s runing\n",APPNAME);
   run_team_monitor(team_dev_name);
 
   free(ports);
 
   // removing configurations
-  printf("lacp_app teardown initiated\n");
+  printf("%s teardown initiated\n",APPNAME);
   hostif_api->remove_hostif_table_entry(host_table_entry[0]);
   hostif_api->remove_hostif_trap(host_trap_id[0]);
   hostif_api->remove_hostif(host_if_id[1]);
