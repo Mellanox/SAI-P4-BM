@@ -85,6 +85,44 @@ sai_object_id_t get_port_id_by_name(char *port_name) {
   return -1;
 }
 
+sai_get_port_id_by_front_port(uint32_t hw_port) {
+    sai_switch_api_t *switch_api;
+    sai_port_api_t *port_api;
+    sai_api_query(SAI_API_SWITCH, (void **)&switch_api);
+    sai_api_query(SAI_API_PORT, (void **)&port_api);
+
+    sai_attribute_t sai_attr;
+    sai_attr.id = SAI_SWITCH_ATTR_PORT_NUMBER;
+    sai_object_id_t s_id = 1;
+    switch_api->get_switch_attribute(s_id, 1, &sai_attr);
+    uint32_t max_ports = sai_attr.value.u32;
+
+    sai_attr.id = SAI_SWITCH_ATTR_PORT_LIST;
+    sai_attr.value.objlist.list =
+        (sai_object_id_t *)malloc(sizeof(sai_object_id_t) * max_ports);
+    sai_attr.value.objlist.count = max_ports;
+    switch_api->get_switch_attribute(s_id, 1, &sai_attr);
+
+    sai_attribute_t hw_lane_list_attr;
+
+    for (int i = 0; i < max_ports; i++) {
+      hw_lane_list_attr.id = SAI_PORT_ATTR_HW_LANE_LIST;
+      hw_lane_list_attr.value.u32list.list =
+          (uint32_t *)malloc(sizeof(uint32_t)); // hw_lane list with only 1 lane (TODO??)
+      port_api->get_port_attribute(
+          sai_attr.value.objlist.list[i], 1,
+          &hw_lane_list_attr);
+      if (hw_lane_list_attr.value.u32list.list[0] == hw_port) {
+        free(hw_lane_list_attr.value.u32list.list);
+        free(sai_attr.value.objlist.list);
+        return sai_attr.value.objlist.list[i];
+      }
+      free(hw_lane_list_attr.value.u32list.list);
+    }
+    free(sai_attr.value.objlist.list);
+    printf("didn't find port");  
+    return -1;
+  }
 
 
 
@@ -248,15 +286,13 @@ int main ( int argc, char **argv ) {
   if (teaming_init(conf_file, team_dev_name) == -1) {
     return -1;
   }
+
   printf("%s initializing on team device %s with %d ports\n",APPNAME, team_dev_name, num_of_ports);
   sai_hostif_api_t* hostif_api;
   sai_api_initialize(0, &test_services);
   sai_api_query(SAI_API_HOSTIF, (void**)&hostif_api);
   sai_api_query(SAI_API_LAG, (void**)&lag_api);
   sai_object_id_t switch_id = 0;
-  sai_object_id_t port_id[2];
-  ports[0].port_id = 12;
-  ports[1].port_id = 14;  // TODO get this from SAI functions (argv[2]..argv[-1] are hw_ports of switch)
 
   // create trap group (currently only 1.)
   sai_object_id_t prio_group;
@@ -278,6 +314,7 @@ int main ( int argc, char **argv ) {
   sai_object_id_t host_if_id[num_of_ports];
   sai_attribute_t sai_if_channel_attr[3];
   for (int i=0; i<num_of_ports; ++i) {
+    ports[i].port_id = sai_get_port_id_by_front_port(atoi(argv[i+2]));
     sai_if_channel_attr[0].id = SAI_HOSTIF_ATTR_TYPE;
     sai_if_channel_attr[0].value.s32 = SAI_HOSTIF_TYPE_NETDEV;
     sai_if_channel_attr[1].id = SAI_HOSTIF_ATTR_OBJ_ID;
