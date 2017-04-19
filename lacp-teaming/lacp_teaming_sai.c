@@ -141,7 +141,7 @@ static int option_change_handler_func(struct team_handle *th, void *arg,
       team_carrier_get(th, &carr_up);
       if (carr_up) {
           if (!lag_up) {     
-            printf("CREATE LAG. members:\n"); 
+            printf("CREATE LAG.\n"); 
             team_for_each_port(port, th) {
               if (team_is_port_link_up(port)) {
                 port_name = get_port_name(th, team_get_port_ifindex(port));
