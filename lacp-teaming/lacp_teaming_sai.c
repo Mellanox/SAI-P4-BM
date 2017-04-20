@@ -2,22 +2,20 @@
 #include <spdlog/spdlog.h>
 extern "C" {
 #endif
-#include <sai.h>
 #include <assert.h>
+#include <errno.h>
 #include <inttypes.h>
+#include <jansson.h>
+#include <sai.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
-#include <signal.h>
 #include <string.h>
 #include <sys/select.h>
 #include <team.h>
-#include <jansson.h>
 
 #define APPNAME "lacp_teaming_sai"
-
-
 
 // sai functions
 const char *test_profile_get_value(_In_ sai_switch_profile_id_t profile_id,
@@ -43,8 +41,6 @@ sai_status_t sai_api_uninitialize(void);
 Pointer to NULL passed as variable restarts enumeration.
 Function returns 0 if next value exists, -1 at the end of the list. */
 
-
-
 // sai lag creation functions
 
 typedef struct _lacp_port_t {
@@ -53,30 +49,28 @@ typedef struct _lacp_port_t {
 } lacp_port_t;
 
 sai_object_id_t lag_id;
-sai_lag_api_t* lag_api;
+sai_lag_api_t *lag_api;
 sai_object_id_t s_id = 0;
 int num_of_ports;
 lacp_port_t *ports;
 
-void create_lag(sai_object_id_t *port_ids, int cur_num_of_ports) {     
+void create_lag(sai_object_id_t *port_ids, int cur_num_of_ports) {
   sai_attribute_t sai_attr[2];
   lag_api->create_lag(&lag_id, s_id, 0, &sai_attr[0]);
   sai_attr[0].id = SAI_LAG_MEMBER_ATTR_LAG_ID;
   sai_attr[0].value.oid = lag_id;
   sai_attr[1].id = SAI_LAG_MEMBER_ATTR_PORT_ID;
   sai_object_id_t lag_member_id;
-  for (int i=0; i<cur_num_of_ports;++i) {
+  for (int i = 0; i < cur_num_of_ports; ++i) {
     sai_attr[1].value.oid = port_ids[i];
     lag_api->create_lag_member(&lag_member_id, s_id, 2, sai_attr);
   }
 }
 
-void remove_lag() {
-  lag_api->remove_lag(lag_id);
-}
+void remove_lag() { lag_api->remove_lag(lag_id); }
 
 sai_object_id_t get_port_id_by_name(char *port_name) {
-  for (int i=0; i<num_of_ports; ++i) {
+  for (int i = 0; i < num_of_ports; ++i) {
     if (strcmp(ports[i].netdev_name, port_name) == 0) {
       return ports[i].port_id;
     }
@@ -86,45 +80,42 @@ sai_object_id_t get_port_id_by_name(char *port_name) {
 }
 
 sai_get_port_id_by_front_port(uint32_t hw_port) {
-    sai_switch_api_t *switch_api;
-    sai_port_api_t *port_api;
-    sai_api_query(SAI_API_SWITCH, (void **)&switch_api);
-    sai_api_query(SAI_API_PORT, (void **)&port_api);
+  sai_switch_api_t *switch_api;
+  sai_port_api_t *port_api;
+  sai_api_query(SAI_API_SWITCH, (void **)&switch_api);
+  sai_api_query(SAI_API_PORT, (void **)&port_api);
 
-    sai_attribute_t sai_attr;
-    sai_attr.id = SAI_SWITCH_ATTR_PORT_NUMBER;
-    sai_object_id_t s_id = 1;
-    switch_api->get_switch_attribute(s_id, 1, &sai_attr);
-    uint32_t max_ports = sai_attr.value.u32;
+  sai_attribute_t sai_attr;
+  sai_attr.id = SAI_SWITCH_ATTR_PORT_NUMBER;
+  sai_object_id_t s_id = 1;
+  switch_api->get_switch_attribute(s_id, 1, &sai_attr);
+  uint32_t max_ports = sai_attr.value.u32;
 
-    sai_attr.id = SAI_SWITCH_ATTR_PORT_LIST;
-    sai_attr.value.objlist.list =
-        (sai_object_id_t *)malloc(sizeof(sai_object_id_t) * max_ports);
-    sai_attr.value.objlist.count = max_ports;
-    switch_api->get_switch_attribute(s_id, 1, &sai_attr);
+  sai_attr.id = SAI_SWITCH_ATTR_PORT_LIST;
+  sai_attr.value.objlist.list =
+      (sai_object_id_t *)malloc(sizeof(sai_object_id_t) * max_ports);
+  sai_attr.value.objlist.count = max_ports;
+  switch_api->get_switch_attribute(s_id, 1, &sai_attr);
 
-    sai_attribute_t hw_lane_list_attr;
+  sai_attribute_t hw_lane_list_attr;
 
-    for (int i = 0; i < max_ports; i++) {
-      hw_lane_list_attr.id = SAI_PORT_ATTR_HW_LANE_LIST;
-      hw_lane_list_attr.value.u32list.list =
-          (uint32_t *)malloc(sizeof(uint32_t)); // hw_lane list with only 1 lane (TODO??)
-      port_api->get_port_attribute(
-          sai_attr.value.objlist.list[i], 1,
-          &hw_lane_list_attr);
-      if (hw_lane_list_attr.value.u32list.list[0] == hw_port) {
-        free(hw_lane_list_attr.value.u32list.list);
-        free(sai_attr.value.objlist.list);
-        return sai_attr.value.objlist.list[i];
-      }
+  for (int i = 0; i < max_ports; i++) {
+    hw_lane_list_attr.id = SAI_PORT_ATTR_HW_LANE_LIST;
+    hw_lane_list_attr.value.u32list.list = (uint32_t *)malloc(
+        sizeof(uint32_t)); // hw_lane list with only 1 lane (TODO??)
+    port_api->get_port_attribute(sai_attr.value.objlist.list[i], 1,
+                                 &hw_lane_list_attr);
+    if (hw_lane_list_attr.value.u32list.list[0] == hw_port) {
       free(hw_lane_list_attr.value.u32list.list);
+      free(sai_attr.value.objlist.list);
+      return sai_attr.value.objlist.list[i];
     }
-    free(sai_attr.value.objlist.list);
-    printf("didn't find port");  
-    return -1;
+    free(hw_lane_list_attr.value.u32list.list);
   }
-
-
+  free(sai_attr.value.objlist.list);
+  printf("didn't find port");
+  return -1;
+}
 
 // team monitor auxillary
 
@@ -154,11 +145,13 @@ static void do_main_loop(struct team_handle *th) {
   while (1) {
     rfds_tmp = rfds;
     ret = select(fdmax, &rfds_tmp, NULL, NULL, NULL);
-    if (die) break;
+    if (die)
+      break;
     if (ret == -1) {
       perror("select()");
     }
-    if (FD_ISSET(tfd, &rfds_tmp)) team_handle_events(th);
+    if (FD_ISSET(tfd, &rfds_tmp))
+      team_handle_events(th);
   }
 }
 
@@ -170,26 +163,26 @@ static int option_change_handler_func(struct team_handle *th, void *arg,
   struct team_port *port;
   sai_object_id_t ports_id[num_of_ports];
 
-  
   team_for_each_option(option, th) {
     char *port_name;
     sai_object_id_t port_ids[num_of_ports];
     int cur_num_of_ports = 0;
-    if (team_is_option_changed(option) & (strcmp("enabled", team_get_option_name(option)) == 0)) {
+    if (team_is_option_changed(option) &
+        (strcmp("enabled", team_get_option_name(option)) == 0)) {
       team_carrier_get(th, &carr_up);
       if (carr_up) {
-          if (!lag_up) {     
-            printf("CREATE LAG.\n"); 
-            team_for_each_port(port, th) {
-              if (team_is_port_link_up(port)) {
-                port_name = get_port_name(th, team_get_port_ifindex(port));
-                port_ids[cur_num_of_ports] = get_port_id_by_name(port_name);
-                cur_num_of_ports++;
-              }
+        if (!lag_up) {
+          printf("CREATE LAG.\n");
+          team_for_each_port(port, th) {
+            if (team_is_port_link_up(port)) {
+              port_name = get_port_name(th, team_get_port_ifindex(port));
+              port_ids[cur_num_of_ports] = get_port_id_by_name(port_name);
+              cur_num_of_ports++;
             }
-            create_lag(port_ids, cur_num_of_ports);
-            lag_up = true;
           }
+          create_lag(port_ids, cur_num_of_ports);
+          lag_up = true;
+        }
       } else {
         if (lag_up) {
           lag_up = false;
@@ -206,16 +199,17 @@ static struct team_change_handler option_change_handler = {
     .func = option_change_handler_func, .type_mask = TEAM_OPTION_CHANGE,
 };
 
-int teaming_init(const char* json_path, char* team_dev_name) {
+int teaming_init(const char *json_path, char *team_dev_name) {
   json_error_t jerror;
   size_t jflags = JSON_REJECT_DUPLICATES;
   json_t *json = json_load_file(json_path, jflags, &jerror);
   strcpy(team_dev_name, json_string_value(json_object_get(json, "device")));
   json_t *ports_json = json_object_get(json, "ports");
   void *it = json_object_iter(ports_json);
-  for (int i=0; i<num_of_ports; ++i) {
-    if (it == NULL) { 
-      printf("Number of ports given as argument is less then ports defined in config file\n");
+  for (int i = 0; i < num_of_ports; ++i) {
+    if (it == NULL) {
+      printf("Number of ports given as argument is less then ports defined in "
+             "config file\n");
       return -1;
     }
     strcpy(ports[i].netdev_name, json_object_iter_key(it));
@@ -225,7 +219,7 @@ int teaming_init(const char* json_path, char* team_dev_name) {
   return 0;
 }
 
-void run_team_monitor(char* team_dev_name) {
+void run_team_monitor(char *team_dev_name) {
   struct team_handle *th;
   int err;
   uint32_t ifindex;
@@ -263,17 +257,15 @@ void run_team_monitor(char* team_dev_name) {
   team_free(th);
 }
 
-
-
 // main
 
 void usage() {
-  fprintf(stderr, "Usage: %s TEAM_CONF_FILE  port1 port2 [port3...]\n", APPNAME);
+  fprintf(stderr, "Usage: %s TEAM_CONF_FILE  port1 port2 [port3...]\n",
+          APPNAME);
   return 1;
 }
 
-
-int main ( int argc, char **argv ) {
+int main(int argc, char **argv) {
   if (argc < 4) {
     usage();
     return -1;
@@ -282,16 +274,17 @@ int main ( int argc, char **argv ) {
   char team_dev_name[32];
   char conf_file[32];
   strcpy(conf_file, argv[1]);
-  ports = (lacp_port_t*) malloc(num_of_ports * sizeof(lacp_port_t));
+  ports = (lacp_port_t *)malloc(num_of_ports * sizeof(lacp_port_t));
   if (teaming_init(conf_file, team_dev_name) == -1) {
     return -1;
   }
 
-  printf("%s initializing on team device %s with %d ports\n",APPNAME, team_dev_name, num_of_ports);
-  sai_hostif_api_t* hostif_api;
+  printf("%s initializing on team device %s with %d ports\n", APPNAME,
+         team_dev_name, num_of_ports);
+  sai_hostif_api_t *hostif_api;
   sai_api_initialize(0, &test_services);
-  sai_api_query(SAI_API_HOSTIF, (void**)&hostif_api);
-  sai_api_query(SAI_API_LAG, (void**)&lag_api);
+  sai_api_query(SAI_API_HOSTIF, (void **)&hostif_api);
+  sai_api_query(SAI_API_LAG, (void **)&lag_api);
   sai_object_id_t switch_id = 0;
 
   // create trap group (currently only 1.)
@@ -301,30 +294,30 @@ int main ( int argc, char **argv ) {
   // sai_attr_list[0].id = SAI_HOSTIF_TRAP_GROUP_ATTR_PRIO;
   // sai_attr_list[0].value = 7;
   sai_attr_list[0].id = SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE;
-  sai_attr_list[0].value.u32 = 0;  // high_queue_id; // high_queue_id is a queue
-                                   // element created via QoS SAI API
+  sai_attr_list[0].value.u32 = 0; // high_queue_id; // high_queue_id is a queue
+                                  // element created via QoS SAI API
   sai_attr_list[1].id = SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER;
-  sai_attr_list[1].value.oid = 0;  // high_policer_id; //high_policer_id is a
-                                   // policer element created via policer SAI
-                                   // API
+  sai_attr_list[1].value.oid = 0; // high_policer_id; //high_policer_id is a
+                                  // policer element created via policer SAI
+                                  // API
   hostif_api->create_hostif_trap_group(&prio_group, switch_id, 2,
                                        sai_attr_list);
 
   // Create host interface channel
   sai_object_id_t host_if_id[num_of_ports];
   sai_attribute_t sai_if_channel_attr[3];
-  for (int i=0; i<num_of_ports; ++i) {
-    ports[i].port_id = sai_get_port_id_by_front_port(atoi(argv[i+2]));
+  for (int i = 0; i < num_of_ports; ++i) {
+    ports[i].port_id = sai_get_port_id_by_front_port(atoi(argv[i + 2]));
     sai_if_channel_attr[0].id = SAI_HOSTIF_ATTR_TYPE;
     sai_if_channel_attr[0].value.s32 = SAI_HOSTIF_TYPE_NETDEV;
     sai_if_channel_attr[1].id = SAI_HOSTIF_ATTR_OBJ_ID;
-    sai_if_channel_attr[1].value.oid =
-        ports[i].port_id;
+    sai_if_channel_attr[1].value.oid = ports[i].port_id;
     sai_if_channel_attr[2].id = SAI_HOSTIF_ATTR_NAME;
-    strcpy(sai_if_channel_attr[2].value.chardata,ports[i].netdev_name);
-    hostif_api->create_hostif(&host_if_id[i], switch_id, 3, sai_if_channel_attr);  
+    strcpy(sai_if_channel_attr[2].value.chardata, ports[i].netdev_name);
+    hostif_api->create_hostif(&host_if_id[i], switch_id, 3,
+                              sai_if_channel_attr);
   }
-  
+
   // Configuring Trap-IDs
   sai_attribute_t sai_trap_attr[3];
   sai_object_id_t host_trap_id[1];
@@ -356,7 +349,7 @@ int main ( int argc, char **argv ) {
     printf("error performing system opertaion: \t%s\n", cmd);
     return -1;
   }
-  strcpy(cmd ,"ip link set ");
+  strcpy(cmd, "ip link set ");
   strcat(cmd, team_dev_name);
   strcat(cmd, " up");
   // printf("running system cmd:\t%s\n", cmd);
@@ -365,13 +358,13 @@ int main ( int argc, char **argv ) {
     printf("error performing system opertaion: \t%s\n", cmd);
     return -1;
   }
-  printf("%s runing\n",APPNAME);
+  printf("%s runing\n", APPNAME);
   run_team_monitor(team_dev_name);
 
   free(ports);
 
   // removing configurations
-  printf("%s teardown initiated\n",APPNAME);
+  printf("%s teardown initiated\n", APPNAME);
   hostif_api->remove_hostif_table_entry(host_table_entry[0]);
   hostif_api->remove_hostif_trap(host_trap_id[0]);
   hostif_api->remove_hostif(host_if_id[1]);

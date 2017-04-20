@@ -36,9 +36,9 @@ extern "C" {
 #include <pcap.h>
 #include <sstream>
 #include <string>
-#include <thread>
 #include <sys/select.h>
 #include <team.h>
+#include <thread>
 
 using namespace std;
 using namespace ::apache::thrift;
@@ -62,7 +62,7 @@ typedef struct _cpu_hdr_t { // TODO: remove bridge_port and id
   unsigned int trap_id : 16;
 } cpu_hdr_t;
 
-typedef void (*adapter_packet_handler_fn)(u_char*, cpu_hdr_t *, int);
+typedef void (*adapter_packet_handler_fn)(u_char *, cpu_hdr_t *, int);
 typedef std::map<uint16_t, adapter_packet_handler_fn> hostif_trap_id_table_t;
 
 const int bm_port = 9090;
@@ -240,12 +240,12 @@ private:
   static void adapter_create_fdb_entry(sai_object_id_t, sai_mac_t,
                                        sai_fdb_entry_bridge_type_t,
                                        sai_vlan_id_t, sai_object_id_t);
-  static void learn_mac(u_char*, cpu_hdr_t *, int);
+  static void learn_mac(u_char *, cpu_hdr_t *, int);
   static void netdev_phys_port_fn(u_char *, cpu_hdr_t *, int);
-  static void lookup_hostif_trap_id_table(u_char* packet, cpu_hdr_t *, int);
+  static void lookup_hostif_trap_id_table(u_char *packet, cpu_hdr_t *, int);
   static void add_hostif_trap_id_table_entry(uint16_t,
                                              adapter_packet_handler_fn);
-  static void phys_netdev_packet_handler(int, int, const u_char*);
+  static void phys_netdev_packet_handler(int, int, const u_char *);
   static int phys_netdev_sniffer(int, int);
   // hostif_table_t hostif_table;
   // static hostif_table_t* hostif_table_p;

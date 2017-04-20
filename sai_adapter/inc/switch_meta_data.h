@@ -284,7 +284,8 @@ public:
         return it->second;
       }
     }
-    spdlog::get("logger")->error("hostif_table_entry not found for trap_id {} ", trap_id);
+    spdlog::get("logger")->error("hostif_table_entry not found for trap_id {} ",
+                                 trap_id);
     return nullptr;
   }
 
@@ -298,14 +299,17 @@ public:
     return 0;
   }
 
-  HostIF_obj* GetHostIFFromPhysicalPort(int port_num) {
-    for (hostif_id_map_t::iterator it = hostifs.begin(); it!=hostifs.end(); ++it) {
-      spdlog::get("logger")->debug("hostif hw_port {} ", it->second->port->hw_port);
+  HostIF_obj *GetHostIFFromPhysicalPort(int port_num) {
+    for (hostif_id_map_t::iterator it = hostifs.begin(); it != hostifs.end();
+         ++it) {
+      spdlog::get("logger")->debug("hostif hw_port {} ",
+                                   it->second->port->hw_port);
       if (it->second->port->hw_port == port_num) {
         return it->second;
       }
     }
-    spdlog::get("logger")->error("hostif not found for physical port {} ", port_num);
+    spdlog::get("logger")->error("hostif not found for physical port {} ",
+                                 port_num);
     return nullptr;
   }
 
@@ -375,12 +379,13 @@ public:
 
   uint16_t GetNewTrapID() {
     std::vector<uint16_t> trap_ids;
-    for (hostif_trap_id_map_t::iterator it = hostif_traps.begin(); it!=hostif_traps.end(); ++it) {
+    for (hostif_trap_id_map_t::iterator it = hostif_traps.begin();
+         it != hostif_traps.end(); ++it) {
       trap_ids.push_back(it->second->trap_id);
     }
-    for (int i=0; i<trap_ids.size(); ++i) {
+    for (int i = 0; i < trap_ids.size(); ++i) {
       if (std::find(trap_ids.begin(), trap_ids.end(), i) == trap_ids.end()) {
-         return i;
+        return i;
       }
     }
     return trap_ids.size();

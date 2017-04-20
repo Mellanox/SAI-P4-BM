@@ -81,8 +81,9 @@ void sai_adapter::packetHandler(u_char *userData,
   cpu_hdr_t *cpu = (cpu_hdr_t *)packet;
   // ReverseBytes((uint8_t *)cpu, CPU_HDR_LEN);
   cpu->trap_id = ntohs(cpu->trap_id);
-  (*logger)->info("CPU packet captured. trap_id = {}. ingress_port = {}", cpu->trap_id, cpu->ingress_port);
-  u_char* decap_packet = (u_char*) (packet + CPU_HDR_LEN);
+  (*logger)->info("CPU packet captured. trap_id = {}. ingress_port = {}",
+                  cpu->trap_id, cpu->ingress_port);
+  u_char *decap_packet = (u_char *)(packet + CPU_HDR_LEN);
   HostIF_Table_Entry_obj *hostif_table_entry =
       switch_metadata_ptr->GetTableEntryFromTrapID(cpu->trap_id);
   if (hostif_table_entry == nullptr) {
@@ -91,7 +92,8 @@ void sai_adapter::packetHandler(u_char *userData,
   }
   switch (hostif_table_entry->entry_type) {
   case SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID:
-    adapter->lookup_hostif_trap_id_table(decap_packet, cpu, pkthdr->len - CPU_HDR_LEN);
+    adapter->lookup_hostif_trap_id_table(decap_packet, cpu,
+                                         pkthdr->len - CPU_HDR_LEN);
     break;
   }
   // if (cpu_hdr->trap_id == 512) {
@@ -99,10 +101,10 @@ void sai_adapter::packetHandler(u_char *userData,
   // }
 }
 
-void sai_adapter::learn_mac(u_char* packet, cpu_hdr_t *cpu, int pkt_len) {
+void sai_adapter::learn_mac(u_char *packet, cpu_hdr_t *cpu, int pkt_len) {
   uint32_t ingress_port = cpu->ingress_port;
   (*logger)->info("learn_mac from port {}", ingress_port);
-  ethernet_hdr_t *ether = (ethernet_hdr_t *) packet;
+  ethernet_hdr_t *ether = (ethernet_hdr_t *)packet;
   ether->ether_type = ntohs(ether->ether_type);
   ReverseBytes(ether->dst_addr, 6);
   ReverseBytes(ether->src_addr, 6);

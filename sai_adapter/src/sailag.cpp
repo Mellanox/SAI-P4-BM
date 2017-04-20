@@ -18,7 +18,7 @@ sai_status_t sai_adapter::remove_lag(sai_object_id_t lag_id) {
   Lag_obj *lag = switch_metadata_ptr->lags[lag_id];
   int members_size = lag->lag_members.size();
   (*logger)->info("removing lag's {} members", members_size);
-  for (int i=0; i<members_size; ++i) {
+  for (int i = 0; i < members_size; ++i) {
     remove_lag_member(lag->lag_members.back());
   }
   try {
