@@ -25,6 +25,8 @@
 #include <bm/bm_sim/target_parser.h>
 
 #include "simple_switch.h"
+#include <fcntl.h>
+#include <unistd.h>
 
 namespace {
 SimpleSwitch *simple_switch;
@@ -52,13 +54,23 @@ main(int argc, char* argv[]) {
   if (enable_swap_flag) simple_switch->enable_config_swap();
 
   int thrift_port = simple_switch->get_runtime_port();
+  int fd = open("/proc/1/ns/net",
+                O_RDONLY); /* Get descriptor for namespace */
+  if (setns(fd, 0) == -1) { /* Join that namespace */
+    return -1;
+  }
   bm_runtime::start_server(simple_switch, thrift_port);
   using ::sswitch_runtime::SimpleSwitchIf;
   using ::sswitch_runtime::SimpleSwitchProcessor;
   bm_runtime::add_service<SimpleSwitchIf, SimpleSwitchProcessor>(
       "simple_switch", sswitch_runtime::get_handler(simple_switch));
+  fd = open("/var/run/netns/sw_net",
+                O_RDONLY); /* Get descriptor for namespace */
+  if (setns(fd, 0) == -1) { /* Join that namespace */
+    return -1;
+  }
+  
   simple_switch->start_and_return();
-
   while (true) std::this_thread::sleep_for(std::chrono::seconds(100));
 
   return 0;
