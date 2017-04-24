@@ -70,11 +70,7 @@ void sai_adapter::adapter_create_fdb_entry(
     sai_fdb_entry.vlan_id = vlan_id;
   }
   sai_fdb_entry.bridge_id = bridge_id;
-  try {
-    create_fdb_entry(&sai_fdb_entry, 3, attr);
-  } catch (int i) {
-
-  }
+  create_fdb_entry(&sai_fdb_entry, 3, attr);
 }
 
 void sai_adapter::packetHandler(u_char *userData,

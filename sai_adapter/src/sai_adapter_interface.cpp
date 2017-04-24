@@ -116,6 +116,13 @@ sai_status_t sai_adapter_remove_fdb_entry(S_O_Handle p,
   sai_adapter *q = (sai_adapter *)p;
   return q->remove_fdb_entry(fdb_entry);
 }
+sai_status_t sai_adapter_flush_fdb_entries(S_O_Handle p,
+                                          sai_object_id_t switch_id,
+                                          uint32_t attr_count,
+                                          const sai_attribute_t *attr_list) {
+  sai_adapter *q = (sai_adapter *)p;
+  return q->flush_fdb_entries(switch_id, attr_count, attr_list);
+}
 
 // VLAN
 sai_status_t sai_adapter_create_vlan(S_O_Handle p, sai_object_id_t *vlan_id,

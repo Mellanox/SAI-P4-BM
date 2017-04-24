@@ -54,6 +54,7 @@ sai_adapter::sai_adapter()
 
   fdb_api.create_fdb_entry = &sai_adapter::create_fdb_entry;
   fdb_api.remove_fdb_entry = &sai_adapter::remove_fdb_entry;
+  fdb_api.flush_fdb_entries = &sai_adapter::flush_fdb_entries;
 
   vlan_api.create_vlan = &sai_adapter::create_vlan;
   vlan_api.remove_vlan = &sai_adapter::remove_vlan;

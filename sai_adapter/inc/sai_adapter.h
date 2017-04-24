@@ -142,6 +142,10 @@ public:
                                        uint32_t attr_count,
                                        const sai_attribute_t *attr_list);
   static sai_status_t remove_fdb_entry(const sai_fdb_entry_t *fdb_entry);
+  static sai_status_t flush_fdb_entries(sai_object_id_t switch_id,
+                                       uint32_t attr_count,
+                                       const sai_attribute_t *attr_list);
+
   // vlan
   static sai_status_t create_vlan(sai_object_id_t *vlan_id,
                                   sai_object_id_t switch_id,

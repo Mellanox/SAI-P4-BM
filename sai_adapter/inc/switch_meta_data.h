@@ -104,6 +104,10 @@ public:
   BmEntryHandle handle_egress_br_port_to_if;
   BmEntryHandle handle_subport_ingress_interface_type;
   BmEntryHandle handle_port_ingress_interface_type;
+  std::map<uint32_t, BmEntryHandle> handle_fdb_port; // per bridge_id, valid for .1Q
+  std::map<uint32_t, BmEntryHandle> handle_fdb_learn_port; // per bridge_id, valid for .1Q
+  BmEntryHandle handle_fdb_sub_port; // valid for .1D 
+  BmEntryHandle handle_fdb_learn_sub_port; // valid for .1D 
   // BmEntryHandle handle_cfg; // TODO
   BridgePort_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->port_id = 0;
@@ -117,7 +121,34 @@ public:
     this->handle_egress_br_port_to_if = NULL_HANDLE;
     this->handle_subport_ingress_interface_type = NULL_HANDLE;
     this->handle_port_ingress_interface_type = NULL_HANDLE;
+    this->handle_fdb_sub_port = NULL_HANDLE;
+    this->handle_fdb_learn_sub_port = NULL_HANDLE;
   }
+
+  bool does_fdb_exist(uint32_t bridge_id) {
+    if (bridge_port_type == SAI_BRIDGE_PORT_TYPE_SUB_PORT) {
+      return (handle_fdb_sub_port == NULL_HANDLE);
+    } else {
+      return (handle_fdb_port.count(bridge_id) == 1);
+    }
+  }
+
+  void set_fdb_handle(BmEntryHandle handle_fdb, uint32_t bridge_id) {
+    if (bridge_port_type == SAI_BRIDGE_PORT_TYPE_SUB_PORT) {
+      handle_fdb_sub_port = handle_fdb;
+    } else {
+      handle_fdb_port[bridge_id] = handle_fdb;
+    }
+  }
+
+  void set_fdb_learn_handle(BmEntryHandle handle_fdb, uint32_t bridge_id) {
+    if (bridge_port_type == SAI_BRIDGE_PORT_TYPE_SUB_PORT) {
+      handle_fdb_learn_sub_port = handle_fdb;
+    } else {
+      handle_fdb_learn_port[bridge_id] = handle_fdb;
+    }
+  }
+  
 };
 
 class Bridge_obj : public Sai_obj {

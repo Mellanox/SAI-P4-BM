@@ -49,6 +49,8 @@ sai_status_t sai_adapter_get_bridge_port_attribute(
 sai_status_t sai_adapter_create_fdb_entry(S_O_Handle, sai_fdb_entry_t *,
                                           uint32_t, const sai_attribute_t *);
 sai_status_t sai_adapter_remove_fdb_entry(S_O_Handle, sai_fdb_entry_t *);
+sai_status_t sai_adapter_flush_fdb_entries(S_O_Handle, sai_object_id_t,
+                                          uint32_t, const sai_attribute_t *);
 
 // VLAN
 sai_status_t sai_adapter_create_vlan(S_O_Handle, sai_object_id_t *,
