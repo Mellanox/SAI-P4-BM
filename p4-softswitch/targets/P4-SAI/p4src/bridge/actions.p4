@@ -1,4 +1,4 @@
-#include "defines.p4"
+#include "../inc/defines.p4"
 // primitives
 action _drop() {
     drop();

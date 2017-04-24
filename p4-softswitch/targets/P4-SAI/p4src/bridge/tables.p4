@@ -1,4 +1,4 @@
-#include "defines.p4"
+#include "../inc/defines.p4"
 
 // PORT
 table table_ingress_lag {
