@@ -1305,23 +1305,46 @@ int main(int argc, char **argv) {
   logger->info("creating server for SAI on port {}", sai_port);
 
   // open server to sai functions
+  logger->info("debug1");
+  int fd = open("/proc/1/ns/net",
+                O_RDONLY); 
+  if (setns(fd, 0) == -1) {
+    return -1;
+  }
   boost::shared_ptr<switch_sai_rpcHandler> handler(new switch_sai_rpcHandler());
+  logger->info("debug2");
+  fd = open("/var/run/netns/sw_net",
+                O_RDONLY);  
+  if (setns(fd, 0) == -1) {
+    return -1;
+  }
   boost::shared_ptr<TProcessor> processor(new switch_sai_rpcProcessor(handler));
+  logger->info("debug3");
   boost::shared_ptr<TServerTransport> serverTransport(
       new TServerSocket(sai_port));
+  logger->info("debug4");
   boost::shared_ptr<TTransportFactory> transportFactory(
       new TBufferedTransportFactory());
+  logger->info("debug5");
   boost::shared_ptr<TProtocolFactory> protocolFactory(
       new TBinaryProtocolFactory());
+  logger->info("debug6");
 
   TSimpleServer server(processor, serverTransport, transportFactory,
                        protocolFactory);
-
+  logger->info("debug7");
   server_ptr = &server;
   signal(SIGINT, close_rpc_server);
+  logger->info("debug8");
   logger->info("SAI rpc server started on port {}", sai_port);
   server.serve();
   logger->info("thrift done");
   spdlog::drop_all();
   return 0;
 }
+
+// fd = open("/proc/1/ns/net",
+//                 O_RDONLY); 
+//   if (setns(fd, 0) == -1) {
+//     return -1;
+//   }
