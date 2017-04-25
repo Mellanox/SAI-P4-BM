@@ -17,6 +17,7 @@
 
 // table size
 #define FDB_TABLE_SIZE 512 // TODO
+#define L3_IF_TABLE_SIZE 12 // TODO
 
 //phy
 #define PHY_PORT_NUM 		64  // TODO
@@ -46,6 +47,11 @@
 #define MAC_BASE_MC_LOOKUP  0 
 #define SG_IP_BASE_MC_LOOKUP  2 
 #define G_IP_BASE_MC_LOOKUP  1 //need to add  
+
+// L3
+#define ROUTER_IF_NUM 12 //TODO
+#define ROUTER_LPM_SIZE 1024 //TODO
+
 
 
 // OUT_IF TYPE

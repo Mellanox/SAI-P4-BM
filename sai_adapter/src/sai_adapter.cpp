@@ -12,7 +12,7 @@ pcap_t *sai_adapter::adapter_pcap;
 
 sai_adapter::sai_adapter()
     : //  constructor pre initializations
-      socket(new TSocket("localhost", bm_port)),
+      socket(new TSocket("localhost", bm_port_bridge)),
       transport(new TBufferedTransport(socket)),
       bprotocol(new TBinaryProtocol(transport)),
       protocol(new TMultiplexedProtocol(bprotocol, "standard")),
