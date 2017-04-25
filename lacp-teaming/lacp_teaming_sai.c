@@ -339,6 +339,7 @@ int main(int argc, char **argv) {
   sai_api_query(SAI_API_LAG, (void **)&lag_api);
   sai_api_query(SAI_API_BRIDGE, (void **)&bridge_api);
   sai_api_query(SAI_API_SWITCH, (void **)&switch_api);
+  sai_api_query(SAI_API_FDB, (void **)&fdb_api);
   sai_attribute_t sai_attr;
   sai_attr.id = SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID;
   switch_api->get_switch_attribute(switch_id, 1, &sai_attr);

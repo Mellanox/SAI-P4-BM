@@ -59,17 +59,21 @@ sai_status_t sai_adapter::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
         match_params.push_back(parse_exact_match_param(bridge_id, 2));
         (*logger)->info("--> mac: {}, b_id: {}", mac_address, bridge_id);
         action_data.push_back(parse_param(bridge_port, 1));
-        handle_fdb = bm_client_ptr->bm_mt_add_entry(cxt_id, "table_fdb", match_params,
-                                       "action_set_egress_br_port", action_data,
-                                       options);
-        action_data.clear();
-        handle_learn_fdb = bm_client_ptr->bm_mt_add_entry(cxt_id, "table_learn_fdb", match_params,
-                                       "_nop", action_data, options);
-        bridge_port_obj->set_fdb_handle(handle_fdb, handle_learn_fdb, bridge_id);
+        try {
+          handle_fdb = bm_client_ptr->bm_mt_add_entry(cxt_id, "table_fdb", match_params,
+                                         "action_set_egress_br_port", action_data,
+                                         options);
+          action_data.clear();
+          handle_learn_fdb = bm_client_ptr->bm_mt_add_entry(cxt_id, "table_learn_fdb", match_params,
+                                         "_nop", action_data, options);
+          bridge_port_obj->set_fdb_handle(handle_fdb, handle_learn_fdb, bridge_id);
+        } catch (...) {
+          (*logger)->warn("trying to add existing fdb_entry");
+        }
       }
     }
   } else {
-    (*logger)->error("trying to add existing fdb_entry");        
+    (*logger)->warn("trying to add existing fdb_entry");
   }
   return status;
 }
