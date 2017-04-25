@@ -1305,14 +1305,13 @@ int main(int argc, char **argv) {
   logger->info("creating server for SAI on port {}", sai_port);
 
   // open server to sai functions
-  int fd = open("/proc/1/ns/net",
-                O_RDONLY); 
+  int fd = open("/proc/1/ns/net", O_RDONLY);
   if (setns(fd, 0) == -1) {
     return -1;
   }
   boost::shared_ptr<switch_sai_rpcHandler> handler(new switch_sai_rpcHandler());
   // fd = open("/var/run/netns/sw_net",
-  //               O_RDONLY);  
+  //               O_RDONLY);
   // if (setns(fd, 0) == -1) {
   //   return -1;
   // }
@@ -1336,7 +1335,7 @@ int main(int argc, char **argv) {
 }
 
 // fd = open("/proc/1/ns/net",
-//                 O_RDONLY); 
+//                 O_RDONLY);
 //   if (setns(fd, 0) == -1) {
 //     return -1;
 //   }

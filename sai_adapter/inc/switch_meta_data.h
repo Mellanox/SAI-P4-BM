@@ -104,10 +104,12 @@ public:
   BmEntryHandle handle_egress_br_port_to_if;
   BmEntryHandle handle_subport_ingress_interface_type;
   BmEntryHandle handle_port_ingress_interface_type;
-  std::map<uint32_t, BmEntryHandle> handle_fdb_port; // per bridge_id, valid for .1Q
-  std::map<uint32_t, BmEntryHandle> handle_fdb_learn_port; // per bridge_id, valid for .1Q
-  BmEntryHandle handle_fdb_sub_port; // valid for .1D 
-  BmEntryHandle handle_fdb_learn_sub_port; // valid for .1D 
+  std::map<uint32_t, BmEntryHandle>
+      handle_fdb_port; // per bridge_id, valid for .1Q
+  std::map<uint32_t, BmEntryHandle>
+      handle_fdb_learn_port;               // per bridge_id, valid for .1Q
+  BmEntryHandle handle_fdb_sub_port;       // valid for .1D
+  BmEntryHandle handle_fdb_learn_sub_port; // valid for .1D
   // BmEntryHandle handle_cfg; // TODO
   BridgePort_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->port_id = 0;
@@ -133,7 +135,8 @@ public:
     }
   }
 
-  void set_fdb_handle(BmEntryHandle handle_fdb, BmEntryHandle handle_learn_fdb, uint32_t bridge_id) {
+  void set_fdb_handle(BmEntryHandle handle_fdb, BmEntryHandle handle_learn_fdb,
+                      uint32_t bridge_id) {
     if (bridge_port_type == SAI_BRIDGE_PORT_TYPE_SUB_PORT) {
       handle_fdb_sub_port = handle_fdb;
       handle_fdb_learn_sub_port = handle_learn_fdb;
@@ -152,7 +155,6 @@ public:
       handle_fdb_learn_port.erase(bridge_id);
     }
   }
-  
 };
 
 class Bridge_obj : public Sai_obj {
@@ -325,12 +327,14 @@ public:
   }
 
   BridgePort_obj *GetBrPortObjFromBrPort(uint16_t bridge_port) {
-    for (bridge_port_id_map_t::iterator it = bridge_ports.begin(); it != bridge_ports.end(); ++it) {
+    for (bridge_port_id_map_t::iterator it = bridge_ports.begin();
+         it != bridge_ports.end(); ++it) {
       if (it->second->bridge_port == bridge_port) {
         return it->second;
       }
     }
-    spdlog::get("logger")->error("bridge_port object not found for bridge_port {} ", bridge_port);
+    spdlog::get("logger")->error(
+        "bridge_port object not found for bridge_port {} ", bridge_port);
     return nullptr;
   }
 

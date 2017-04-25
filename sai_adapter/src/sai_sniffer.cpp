@@ -117,7 +117,8 @@ void sai_adapter::learn_mac(u_char *packet, cpu_hdr_t *cpu, int pkt_len) {
        it != switch_metadata_ptr->ports.end(); ++it) {
     if (it->second->hw_port == ingress_port) {
       port_id = it->first;
-      (*logger)->info("MAC learning from ingress port {} (sai_object_id)", port_id);
+      (*logger)->info("MAC learning from ingress port {} (sai_object_id)",
+                      port_id);
       break;
     }
   }
@@ -128,7 +129,8 @@ void sai_adapter::learn_mac(u_char *packet, cpu_hdr_t *cpu, int pkt_len) {
          mem_it != it->second->lag_members.end(); ++mem_it) {
       if (switch_metadata_ptr->lag_members[*mem_it]->port->hw_port ==
           ingress_port) {
-        (*logger)->info("MAC learning from ingress lag {} (sai_object_id)", it->first);
+        (*logger)->info("MAC learning from ingress lag {} (sai_object_id)",
+                        it->first);
         port_id = it->first;
         break;
       }
