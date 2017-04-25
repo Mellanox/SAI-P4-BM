@@ -65,8 +65,7 @@ sai_status_t sai_adapter::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
         action_data.clear();
         handle_learn_fdb = bm_client_ptr->bm_mt_add_entry(cxt_id, "table_learn_fdb", match_params,
                                        "_nop", action_data, options);
-        bridge_port_obj->set_fdb_handle(handle_fdb, bridge_id);
-        bridge_port_obj->set_fdb_learn_handle(handle_learn_fdb, bridge_id);
+        bridge_port_obj->set_fdb_handle(handle_fdb, handle_learn_fdb, bridge_id);
       }
     }
   } else {
@@ -88,10 +87,16 @@ sai_status_t sai_adapter::remove_fdb_entry(const sai_fdb_entry_t *fdb_entry) {
   BmMtEntry bm_entry;
   bm_client_ptr->bm_mt_get_entry_from_key(bm_entry, cxt_id, "table_fdb",
                                           match_params, options);
+
+  std::string bridge_port_str = bm_entry.action_entry.action_data.back();
+  uint32_t *bridge_port = (uint32_t*) bridge_port_str.c_str();
+  BridgePort_obj *bridge_port_obj = switch_metadata_ptr->GetBrPortObjFromBrPort(*bridge_port);
+  (*logger)->info("removing fdb from bridge_port: {}. sai_id {}", bridge_port_obj->bridge_port, bridge_port_obj->sai_object_id);
+  bridge_port_obj->remove_fdb_handle(bridge_id);
   bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb", bm_entry.entry_handle);
   bm_client_ptr->bm_mt_get_entry_from_key(bm_entry, cxt_id, "table_learn_fdb",
                                           match_params, options);
-
+ 
   bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_learn_fdb",
                                     bm_entry.entry_handle);
 
@@ -144,9 +149,11 @@ sai_status_t sai_adapter::flush_fdb_entries(sai_object_id_t switch_id,
     } else {
       for (std::map<uint32_t, BmEntryHandle>::iterator it = bridge_port_obj->handle_fdb_port.begin(); it!=bridge_port_obj->handle_fdb_port.end(); ++it) {
         bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb", it->second);
+        bridge_port_obj->handle_fdb_port.erase(it->first);
       }
       for (std::map<uint32_t, BmEntryHandle>::iterator it = bridge_port_obj->handle_fdb_learn_port.begin(); it!=bridge_port_obj->handle_fdb_learn_port.end(); ++it) {
         bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_learn_fdb", it->second);
+        bridge_port_obj->handle_fdb_learn_port.erase(it->first);
       }
     }
   }

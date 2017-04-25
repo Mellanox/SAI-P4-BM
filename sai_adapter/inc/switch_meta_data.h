@@ -127,25 +127,29 @@ public:
 
   bool does_fdb_exist(uint32_t bridge_id) {
     if (bridge_port_type == SAI_BRIDGE_PORT_TYPE_SUB_PORT) {
-      return (handle_fdb_sub_port == NULL_HANDLE);
+      return (handle_fdb_sub_port != NULL_HANDLE);
     } else {
       return (handle_fdb_port.count(bridge_id) == 1);
     }
   }
 
-  void set_fdb_handle(BmEntryHandle handle_fdb, uint32_t bridge_id) {
+  void set_fdb_handle(BmEntryHandle handle_fdb, BmEntryHandle handle_learn_fdb, uint32_t bridge_id) {
     if (bridge_port_type == SAI_BRIDGE_PORT_TYPE_SUB_PORT) {
       handle_fdb_sub_port = handle_fdb;
+      handle_fdb_learn_sub_port = handle_learn_fdb;
     } else {
       handle_fdb_port[bridge_id] = handle_fdb;
+      handle_fdb_learn_port[bridge_id] = handle_learn_fdb;
     }
   }
 
-  void set_fdb_learn_handle(BmEntryHandle handle_fdb, uint32_t bridge_id) {
+  void remove_fdb_handle(uint32_t bridge_id) {
     if (bridge_port_type == SAI_BRIDGE_PORT_TYPE_SUB_PORT) {
-      handle_fdb_learn_sub_port = handle_fdb;
+      handle_fdb_sub_port = NULL_HANDLE;
+      handle_fdb_learn_sub_port = NULL_HANDLE;
     } else {
-      handle_fdb_learn_port[bridge_id] = handle_fdb;
+      handle_fdb_port.erase(bridge_id);
+      handle_fdb_learn_port.erase(bridge_id);
     }
   }
   
@@ -317,6 +321,16 @@ public:
     }
     spdlog::get("logger")->error("hostif_table_entry not found for trap_id {} ",
                                  trap_id);
+    return nullptr;
+  }
+
+  BridgePort_obj *GetBrPortObjFromBrPort(uint16_t bridge_port) {
+    for (bridge_port_id_map_t::iterator it = bridge_ports.begin(); it != bridge_ports.end(); ++it) {
+      if (it->second->bridge_port == bridge_port) {
+        return it->second;
+      }
+    }
+    spdlog::get("logger")->error("bridge_port object not found for bridge_port {} ", bridge_port);
     return nullptr;
   }
 
