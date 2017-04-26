@@ -15,8 +15,17 @@
 #define VID_WDT				12
 #define PACKET_TYPE_WDT		2 // TODO
 
+////////////////////////////
 // table size
+////////////////////////////
+// L2
 #define FDB_TABLE_SIZE 512 // TODO
+// L3
+#define L3_IF_TABLE_SIZE 12 // TODO
+#define ROUTER_IF_TABLE_SIZE 12 //TODO
+#define ROUTER_LPM_TABLE_SIZE 1024 //TODO
+#define NHOP_TABLE_SIZE 128 //TODO
+////////////////////////////
 
 //phy
 #define PHY_PORT_NUM 		64  // TODO
@@ -53,3 +62,9 @@
 #define OUT_IF_IS_LAG 		1 // TODO
 #define OUT_IF_IS_ROUTER	2 // TODO
 
+
+// L2 
+// ERIF_TYPE
+#define BRIDGE_PORT_1D 		0x1
+#define BRIDGE_PORT_1Q 		0x2
+#define ROUTER_PORT 		0x3

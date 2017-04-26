@@ -65,7 +65,8 @@ typedef struct _cpu_hdr_t { // TODO: remove bridge_port and id
 typedef void (*adapter_packet_handler_fn)(u_char *, cpu_hdr_t *, int);
 typedef std::map<uint16_t, adapter_packet_handler_fn> hostif_trap_id_table_t;
 
-const int bm_port = 9090;
+const int bm_port_bridge = 9090;
+const int bm_port_router = 9091;
 const int32_t cxt_id = 0;
 
 // static StandardClient* bm_client_ptr;

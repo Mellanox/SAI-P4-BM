@@ -1,14 +1,13 @@
-// This is P4 sample source for sai
-// Fill in these files with your P4 code
+// This is P4 source for sai bridge
 
 
 // includes
-#include "headers.p4"
-#include "parser.p4"
+#include "../inc/headers.p4"
+#include "../inc/parser.p4"
+#include "../inc/defines.p4"
+#include "../inc/field_lists.p4"
 #include "tables.p4"
 #include "actions.p4"
-#include "defines.p4"
-#include "field_lists.p4"
 
 // headers
 header   ethernet_t 	  ethernet;
