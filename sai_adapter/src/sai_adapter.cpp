@@ -54,6 +54,7 @@ sai_adapter::sai_adapter()
 
   fdb_api.create_fdb_entry = &sai_adapter::create_fdb_entry;
   fdb_api.remove_fdb_entry = &sai_adapter::remove_fdb_entry;
+  fdb_api.flush_fdb_entries = &sai_adapter::flush_fdb_entries;
 
   vlan_api.create_vlan = &sai_adapter::create_vlan;
   vlan_api.remove_vlan = &sai_adapter::remove_vlan;
@@ -154,18 +155,18 @@ void sai_adapter::endSaiAdapterMain() {
 void sai_adapter::SaiAdapterMain() {
   (*logger)->info("SAI Adapter Thread Started");
   // Change to sai_adapter network namespace (hostif_net)
-  int fd = open("/var/run/netns/hostif_net",
-                O_RDONLY); /* Get descriptor for namespace */
-  if (fd == -1) {
-    (*logger)->error("open netns fd failed");
-    release_pcap_lock();
-    return;
-  }
-  if (setns(fd, 0) == -1) { /* Join that namespace */
-    (*logger)->error("setns failed");
-    release_pcap_lock();
-    return;
-  }
+  // int fd = open("/var/run/netns/hostif_net",
+  //               O_RDONLY); /* Get descriptor for namespace */
+  // if (fd == -1) {
+  //   (*logger)->error("open netns fd failed");
+  //   release_pcap_lock();
+  //   return;
+  // }
+  // if (setns(fd, 0) == -1) { /* Join that namespace */
+  //   (*logger)->error("setns failed");
+  //   release_pcap_lock();
+  //   return;
+  // }
 
   PacketSniffer();
   (*logger)->info("SAI Adapter Thread Ended");

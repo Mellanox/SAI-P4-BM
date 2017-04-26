@@ -53,6 +53,7 @@ sai_object_id_t lag_id;
 sai_object_id_t lag_bridge_port_id;
 sai_lag_api_t *lag_api;
 sai_bridge_api_t *bridge_api;
+sai_fdb_api_t *fdb_api;
 sai_object_id_t default_bridge_id; 
 sai_object_id_t switch_id = 0;
 int num_of_ports;
@@ -65,9 +66,14 @@ void create_lag(lacp_port_t **lag_ports, int cur_num_of_ports) {
   sai_attr[0].value.oid = lag_id;
   sai_attr[1].id = SAI_LAG_MEMBER_ATTR_PORT_ID;
   sai_object_id_t lag_member_id;
+
+  sai_attribute_t fdb_flush_attr;
+  fdb_flush_attr.id = SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID;
   for (int i = 0; i < cur_num_of_ports; ++i) {
     sai_attr[1].value.oid = lag_ports[i]->port_id;
     lag_api->create_lag_member(&lag_member_id, switch_id, 2, sai_attr);
+    fdb_flush_attr.value.oid = lag_ports[i]->bridge_port_id;
+    fdb_api->flush_fdb_entries(switch_id, 1, &fdb_flush_attr);
     bridge_api->remove_bridge_port(lag_ports[i]->bridge_port_id);
   }
 
@@ -333,6 +339,7 @@ int main(int argc, char **argv) {
   sai_api_query(SAI_API_LAG, (void **)&lag_api);
   sai_api_query(SAI_API_BRIDGE, (void **)&bridge_api);
   sai_api_query(SAI_API_SWITCH, (void **)&switch_api);
+  sai_api_query(SAI_API_FDB, (void **)&fdb_api);
   sai_attribute_t sai_attr;
   sai_attr.id = SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID;
   switch_api->get_switch_attribute(switch_id, 1, &sai_attr);

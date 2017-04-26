@@ -1,3 +1,3 @@
 rm -rf logs/log.txt
-# sudo ip netns exec hostif_net ./SaiCppServer
-sudo ./SaiCppServer
+# sudo ip netns exec sw_net ./SaiCppServer
+sudo ip netns exec sw_net ./SaiCppServer
