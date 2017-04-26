@@ -660,10 +660,47 @@ public:
     logger->info("sai_thrift_get_vlan_id");
   }
 
+  void sai_thrift_parse_vr_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+          logger->info("i = {}", i);
+          attribute = (sai_thrift_attribute_t)*it;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+              case SAI_VIRTUAL_ROUTER_ATTR_ADMIN_V4_STATE:
+              case SAI_VIRTUAL_ROUTER_ATTR_ADMIN_V6_STATE:
+                  logger->info("parse vr bool. i = {}. bool = {}", i, attribute.value.booldata);
+                  attr_list[i].value.booldata = attribute.value.booldata;
+                  break;
+              case SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS:
+                  logger->info("parse vr mac");
+                  parse_mac_str(attribute.value.mac, attr_list[i].value.mac);
+                  break;
+          }
+      }
+      logger->info("after parsing");
+  }
+
   sai_thrift_object_id_t sai_thrift_create_virtual_router(
       const std::vector<sai_thrift_attribute_t> &thrift_attr_list) {
     // Your implementation goes here
     logger->info("sai_thrift_create_virtual_router");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_virtual_router_api_t *vr_api;
+    sai_object_id_t vr_id = 0;
+    status = sai_api_query(SAI_API_VIRTUAL_ROUTER, (void **) &vr_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        return status;
+    }
+    uint32_t attr_count = thrift_attr_list.size();
+    sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * attr_count);
+    logger->info("attr_count = {}", attr_count);
+    sai_thrift_parse_vr_attributes(thrift_attr_list, attr_list);
+    sai_object_id_t switch_id = 0;
+    vr_api->create_virtual_router(&vr_id, switch_id, attr_count, attr_list);
+    free(attr_list);
+    return vr_id;
   }
 
   sai_thrift_status_t
@@ -679,6 +716,36 @@ public:
     logger->info("sai_thrift_create_route");
   }
 
+  void sai_thrift_parse_router_interface_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+          attribute = (sai_thrift_attribute_t)*it;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+              case SAI_ROUTER_INTERFACE_ATTR_VIRTUAL_ROUTER_ID:
+              case SAI_ROUTER_INTERFACE_ATTR_PORT_ID:
+              case SAI_ROUTER_INTERFACE_ATTR_VLAN_ID:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
+              case SAI_ROUTER_INTERFACE_ATTR_TYPE:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
+              case SAI_ROUTER_INTERFACE_ATTR_SRC_MAC_ADDRESS:
+                  parse_mac_str(attribute.value.mac, attr_list[i].value.mac);
+                  break;
+              case SAI_ROUTER_INTERFACE_ATTR_ADMIN_V4_STATE:
+              case SAI_ROUTER_INTERFACE_ATTR_ADMIN_V6_STATE:
+                  attr_list[i].value.booldata = attribute.value.booldata;
+                  break;
+              case SAI_ROUTER_INTERFACE_ATTR_INGRESS_ACL:
+                  attr_list[i].value.oid = attribute.value.oid;
+              default:
+                  break;
+          }
+      }
+  }
+
   sai_thrift_status_t
   sai_thrift_remove_route(const sai_thrift_route_entry_t &thrift_route_entry) {
     // Your implementation goes here
@@ -687,14 +754,35 @@ public:
 
   sai_thrift_object_id_t sai_thrift_create_router_interface(
       const std::vector<sai_thrift_attribute_t> &thrift_attr_list) {
-    // Your implementation goes here
     logger->info("sai_thrift_create_router_interface");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_router_interface_api_t *rif_api;
+    sai_object_id_t rif_id = 0;
+    status = sai_api_query(SAI_API_ROUTER_INTERFACE, (void **) &rif_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        return status;
+    }
+    sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+    sai_thrift_parse_router_interface_attributes(thrift_attr_list, attr_list);
+    uint32_t attr_count = thrift_attr_list.size();
+    sai_object_id_t switch_id =0;
+    status = rif_api->create_router_interface(&rif_id, switch_id, attr_count, attr_list);
+    free(attr_list);
+    return rif_id;
   }
 
   sai_thrift_status_t
   sai_thrift_remove_router_interface(const sai_thrift_object_id_t rif_id) {
     // Your implementation goes here
     logger->info("sai_thrift_remove_router_interface");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_router_interface_api_t *rif_api;
+    status = sai_api_query(SAI_API_ROUTER_INTERFACE, (void **) &rif_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        return status;
+    }
+    status = rif_api->remove_router_interface((sai_object_id_t)rif_id);
+    return status;
   }
 
   sai_thrift_status_t sai_thrift_set_router_interface_attribute(
@@ -1305,7 +1393,16 @@ int main(int argc, char **argv) {
   logger->info("creating server for SAI on port {}", sai_port);
 
   // open server to sai functions
+  int fd = open("/proc/1/ns/net", O_RDONLY);
+  if (setns(fd, 0) == -1) {
+    return -1;
+  }
   boost::shared_ptr<switch_sai_rpcHandler> handler(new switch_sai_rpcHandler());
+  // fd = open("/var/run/netns/sw_net",
+  //               O_RDONLY);
+  // if (setns(fd, 0) == -1) {
+  //   return -1;
+  // }
   boost::shared_ptr<TProcessor> processor(new switch_sai_rpcProcessor(handler));
   boost::shared_ptr<TServerTransport> serverTransport(
       new TServerSocket(sai_port));
@@ -1316,7 +1413,6 @@ int main(int argc, char **argv) {
 
   TSimpleServer server(processor, serverTransport, transportFactory,
                        protocolFactory);
-
   server_ptr = &server;
   signal(SIGINT, close_rpc_server);
   logger->info("SAI rpc server started on port {}", sai_port);
@@ -1325,3 +1421,9 @@ int main(int argc, char **argv) {
   spdlog::drop_all();
   return 0;
 }
+
+// fd = open("/proc/1/ns/net",
+//                 O_RDONLY);
+//   if (setns(fd, 0) == -1) {
+//     return -1;
+//   }

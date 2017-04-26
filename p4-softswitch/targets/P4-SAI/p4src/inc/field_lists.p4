@@ -28,6 +28,9 @@ field_list ipv4_checksum_list {
 
 field_list lag_hash_fieldlist { 
     ethernet.srcAddr;
+    // ipv4.srcAddr;
+    // ipv4.dstAddr;
+    // ethernet.dstAddr;
     ipv4.id;
 }
 

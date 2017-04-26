@@ -43,7 +43,7 @@ control control_bridge {
 		control_1q_bridge_flow();
 	}
 
-	// control_learn_fdb();
+	apply(table_learn_fdb); 
 	if((ethernet.dstAddr&0x010000000000)==0x0){   //unicast 
 		control_unicast_fdb();
 	} else if(ethernet.dstAddr==0xffffffffffff){  //broadcast
@@ -97,7 +97,6 @@ control control_router_flow{
 // }
 
 control control_unicast_fdb{
-	apply(table_learn_fdb); //TODO: is this only relevant for unicast?
 	apply(table_l3_interface){//should be for unicast only TDB
 		miss{ 
 				apply(table_fdb) {

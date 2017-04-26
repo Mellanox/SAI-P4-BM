@@ -54,6 +54,7 @@ sai_adapter::sai_adapter()
 
   fdb_api.create_fdb_entry = &sai_adapter::create_fdb_entry;
   fdb_api.remove_fdb_entry = &sai_adapter::remove_fdb_entry;
+  fdb_api.flush_fdb_entries = &sai_adapter::flush_fdb_entries;
 
   vlan_api.create_vlan = &sai_adapter::create_vlan;
   vlan_api.remove_vlan = &sai_adapter::remove_vlan;
@@ -82,8 +83,23 @@ sai_adapter::sai_adapter()
   hostif_api.create_hostif_trap = &sai_adapter::create_hostif_trap;
   hostif_api.remove_hostif_trap = &sai_adapter::remove_hostif_trap;
 
+  router_interface_api.create_router_interface = &sai_adapter::create_router_interface;
+  router_interface_api.remove_router_interface = &sai_adapter::remove_router_interface;
+
+  virtual_router_api.create_virtual_router = &sai_adapter::create_virtual_router;
+  virtual_router_api.remove_virtual_router = &sai_adapter::remove_virtual_router;
+
+  neighbor_api.create_neighbor_entry = &sai_adapter::create_neighbor_entry;
+  neighbor_api.remove_neighbor_entry = &sai_adapter::remove_neighbor_entry;
+
+  next_hop_api.create_next_hop = &sai_adapter::create_next_hop;
+  next_hop_api.remove_next_hop = &sai_adapter::remove_next_hop;
+
+  route_api.create_route_entry = &sai_adapter::create_route_entry;
+  route_api.remove_route_entry = &sai_adapter::remove_route_entry;
+
   startSaiAdapterMain();
-  (*logger)->info("BM connection started on port {}", bm_port);
+  (*logger)->info("BM connection started on port {}", bm_port_bridge);
 }
 
 sai_adapter::~sai_adapter() {
@@ -115,6 +131,24 @@ sai_status_t sai_adapter::sai_api_query(sai_api_t sai_api_id,
     break;
   case SAI_API_HOSTIF:
     *api_method_table = &hostif_api;
+    break;
+  case SAI_API_VIRTUAL_ROUTER:
+    *api_method_table = &virtual_router_api;
+    break;
+  case SAI_API_ROUTE:
+    *api_method_table = &route_api;
+    break;
+  case SAI_API_NEXT_HOP:
+    *api_method_table = &next_hop_api;
+    break;
+  case SAI_API_NEXT_HOP_GROUP:
+    *api_method_table = &next_hop_group_api;
+    break;
+  case SAI_API_ROUTER_INTERFACE:
+    *api_method_table = &router_interface_api;
+    break;
+  case SAI_API_NEIGHBOR:
+    *api_method_table = &neighbor_api;
     break;
   default:
     (*logger)->info("api requested was %d, while sai_api_port is %d\n",
@@ -154,18 +188,18 @@ void sai_adapter::endSaiAdapterMain() {
 void sai_adapter::SaiAdapterMain() {
   (*logger)->info("SAI Adapter Thread Started");
   // Change to sai_adapter network namespace (hostif_net)
-  int fd = open("/var/run/netns/hostif_net",
-                O_RDONLY); /* Get descriptor for namespace */
-  if (fd == -1) {
-    (*logger)->error("open netns fd failed");
-    release_pcap_lock();
-    return;
-  }
-  if (setns(fd, 0) == -1) { /* Join that namespace */
-    (*logger)->error("setns failed");
-    release_pcap_lock();
-    return;
-  }
+  // int fd = open("/var/run/netns/hostif_net",
+  //               O_RDONLY); /* Get descriptor for namespace */
+  // if (fd == -1) {
+  //   (*logger)->error("open netns fd failed");
+  //   release_pcap_lock();
+  //   return;
+  // }
+  // if (setns(fd, 0) == -1) { /* Join that namespace */
+  //   (*logger)->error("setns failed");
+  //   release_pcap_lock();
+  //   return;
+  // }
 
   PacketSniffer();
   (*logger)->info("SAI Adapter Thread Ended");
