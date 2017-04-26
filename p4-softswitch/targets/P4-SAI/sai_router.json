@@ -1,0 +1,1735 @@
+{
+    "header_types": [
+        {
+            "name": "standard_metadata_t",
+            "id": 0,
+            "fields": [
+                [
+                    "ingress_port",
+                    9
+                ],
+                [
+                    "packet_length",
+                    32
+                ],
+                [
+                    "egress_spec",
+                    9
+                ],
+                [
+                    "egress_port",
+                    9
+                ],
+                [
+                    "egress_instance",
+                    32
+                ],
+                [
+                    "instance_type",
+                    32
+                ],
+                [
+                    "clone_spec",
+                    32
+                ],
+                [
+                    "_padding",
+                    5
+                ]
+            ],
+            "length_exp": null,
+            "max_length": null
+        },
+        {
+            "name": "ethernet_t",
+            "id": 1,
+            "fields": [
+                [
+                    "dstAddr",
+                    48
+                ],
+                [
+                    "srcAddr",
+                    48
+                ],
+                [
+                    "etherType",
+                    16
+                ]
+            ],
+            "length_exp": null,
+            "max_length": null
+        },
+        {
+            "name": "vlan_t",
+            "id": 2,
+            "fields": [
+                [
+                    "pcp",
+                    3
+                ],
+                [
+                    "cfi",
+                    1
+                ],
+                [
+                    "vid",
+                    12
+                ],
+                [
+                    "etherType",
+                    16
+                ]
+            ],
+            "length_exp": null,
+            "max_length": null
+        },
+        {
+            "name": "ipv4_t",
+            "id": 3,
+            "fields": [
+                [
+                    "version",
+                    4
+                ],
+                [
+                    "ihl",
+                    4
+                ],
+                [
+                    "diffserv",
+                    8
+                ],
+                [
+                    "ipv4_length",
+                    16
+                ],
+                [
+                    "id",
+                    16
+                ],
+                [
+                    "flags",
+                    3
+                ],
+                [
+                    "offset",
+                    13
+                ],
+                [
+                    "ttl",
+                    8
+                ],
+                [
+                    "protocol",
+                    8
+                ],
+                [
+                    "checksum",
+                    16
+                ],
+                [
+                    "srcAddr",
+                    32
+                ],
+                [
+                    "dstAddr",
+                    32
+                ]
+            ],
+            "length_exp": null,
+            "max_length": null
+        },
+        {
+            "name": "tcp_t",
+            "id": 4,
+            "fields": [
+                [
+                    "srcPort",
+                    16
+                ],
+                [
+                    "dstPort",
+                    16
+                ],
+                [
+                    "seqNo",
+                    32
+                ],
+                [
+                    "ackNo",
+                    32
+                ],
+                [
+                    "dataOffset",
+                    4
+                ],
+                [
+                    "res",
+                    4
+                ],
+                [
+                    "flags",
+                    8
+                ],
+                [
+                    "window",
+                    16
+                ],
+                [
+                    "checksum",
+                    16
+                ],
+                [
+                    "urgentPtr",
+                    16
+                ]
+            ],
+            "length_exp": null,
+            "max_length": null
+        },
+        {
+            "name": "udp_t",
+            "id": 5,
+            "fields": [
+                [
+                    "srcPort",
+                    16
+                ],
+                [
+                    "dstPort",
+                    16
+                ],
+                [
+                    "length_",
+                    16
+                ],
+                [
+                    "checksum",
+                    16
+                ]
+            ],
+            "length_exp": null,
+            "max_length": null
+        },
+        {
+            "name": "ingress_metadata_t",
+            "id": 6,
+            "fields": [
+                [
+                    "port",
+                    6
+                ],
+                [
+                    "l2_if",
+                    6
+                ],
+                [
+                    "is_tagged",
+                    1
+                ],
+                [
+                    "is_lag",
+                    1
+                ],
+                [
+                    "lag_id",
+                    16
+                ],
+                [
+                    "bind_mode",
+                    1
+                ],
+                [
+                    "l2_if_type",
+                    2
+                ],
+                [
+                    "bridge_port",
+                    8
+                ],
+                [
+                    "bridge_id",
+                    12
+                ],
+                [
+                    "stp_state",
+                    2
+                ],
+                [
+                    "stp_id",
+                    3
+                ],
+                [
+                    "vid",
+                    12
+                ],
+                [
+                    "unknown_unicast",
+                    1
+                ],
+                [
+                    "mcast_mode",
+                    2
+                ],
+                [
+                    "mc_fdb_miss",
+                    1
+                ],
+                [
+                    "ipmc",
+                    1
+                ],
+                [
+                    "isip",
+                    1
+                ],
+                [
+                    "go_to_router",
+                    1
+                ],
+                [
+                    "mtu",
+                    32
+                ],
+                [
+                    "drop_tagged",
+                    1
+                ],
+                [
+                    "drop_untagged",
+                    1
+                ],
+                [
+                    "trap_id",
+                    11
+                ],
+                [
+                    "cpu_port",
+                    1
+                ],
+                [
+                    "parse_cpu",
+                    64
+                ],
+                [
+                    "_padding",
+                    5
+                ]
+            ],
+            "length_exp": null,
+            "max_length": null
+        },
+        {
+            "name": "intrinsic_metadata_t",
+            "id": 7,
+            "fields": [
+                [
+                    "ingress_global_timestamp",
+                    48
+                ],
+                [
+                    "lf_field_list",
+                    8
+                ],
+                [
+                    "mcast_grp",
+                    16
+                ],
+                [
+                    "egress_rid",
+                    16
+                ],
+                [
+                    "resubmit_flag",
+                    8
+                ],
+                [
+                    "recirculate_flag",
+                    8
+                ]
+            ],
+            "length_exp": null,
+            "max_length": null
+        },
+        {
+            "name": "cpu_header_t",
+            "id": 8,
+            "fields": [
+                [
+                    "port",
+                    8
+                ],
+                [
+                    "trap_id",
+                    16
+                ]
+            ],
+            "length_exp": null,
+            "max_length": null
+        },
+        {
+            "name": "router_metadata_t",
+            "id": 9,
+            "fields": [
+                [
+                    "ingress_rif",
+                    3
+                ],
+                [
+                    "egress_rif",
+                    3
+                ],
+                [
+                    "erif_type",
+                    2
+                ],
+                [
+                    "ingress_vrf",
+                    8
+                ],
+                [
+                    "next_hop_dst_ip",
+                    32
+                ],
+                [
+                    "next_hop_id",
+                    8
+                ],
+                [
+                    "next_hop_group_id",
+                    3
+                ],
+                [
+                    "next_hop_hash",
+                    3
+                ],
+                [
+                    "packet_action",
+                    2
+                ],
+                [
+                    "l3_lpm_key",
+                    40
+                ]
+            ],
+            "length_exp": null,
+            "max_length": null
+        }
+    ],
+    "headers": [
+        {
+            "name": "standard_metadata",
+            "id": 0,
+            "header_type": "standard_metadata_t",
+            "metadata": true
+        },
+        {
+            "name": "intrinsic_metadata",
+            "id": 1,
+            "header_type": "intrinsic_metadata_t",
+            "metadata": true
+        },
+        {
+            "name": "ethernet",
+            "id": 2,
+            "header_type": "ethernet_t",
+            "metadata": false
+        },
+        {
+            "name": "vlan",
+            "id": 3,
+            "header_type": "vlan_t",
+            "metadata": false
+        },
+        {
+            "name": "ipv4",
+            "id": 4,
+            "header_type": "ipv4_t",
+            "metadata": false
+        },
+        {
+            "name": "tcp",
+            "id": 5,
+            "header_type": "tcp_t",
+            "metadata": false
+        },
+        {
+            "name": "udp",
+            "id": 6,
+            "header_type": "udp_t",
+            "metadata": false
+        },
+        {
+            "name": "cpu_header",
+            "id": 7,
+            "header_type": "cpu_header_t",
+            "metadata": false
+        },
+        {
+            "name": "ingress_metadata",
+            "id": 8,
+            "header_type": "ingress_metadata_t",
+            "metadata": true
+        },
+        {
+            "name": "router_metadata",
+            "id": 9,
+            "header_type": "router_metadata_t",
+            "metadata": true
+        }
+    ],
+    "header_stacks": [],
+    "parsers": [
+        {
+            "name": "parser",
+            "id": 0,
+            "init_state": "start",
+            "parse_states": [
+                {
+                    "name": "parse_vlan",
+                    "id": 0,
+                    "parser_ops": [
+                        {
+                            "op": "extract",
+                            "parameters": [
+                                {
+                                    "type": "regular",
+                                    "value": "vlan"
+                                }
+                            ]
+                        },
+                        {
+                            "op": "set",
+                            "parameters": [
+                                {
+                                    "type": "field",
+                                    "value": [
+                                        "ingress_metadata",
+                                        "is_tagged"
+                                    ]
+                                },
+                                {
+                                    "type": "expression",
+                                    "value": {
+                                        "type": "expression",
+                                        "value": {
+                                            "op": "|",
+                                            "left": {
+                                                "type": "expression",
+                                                "value": {
+                                                    "op": "|",
+                                                    "left": {
+                                                        "type": "expression",
+                                                        "value": {
+                                                            "op": "|",
+                                                            "left": {
+                                                                "type": "expression",
+                                                                "value": {
+                                                                    "op": "|",
+                                                                    "left": {
+                                                                        "type": "expression",
+                                                                        "value": {
+                                                                            "op": "|",
+                                                                            "left": {
+                                                                                "type": "expression",
+                                                                                "value": {
+                                                                                    "op": "|",
+                                                                                    "left": {
+                                                                                        "type": "expression",
+                                                                                        "value": {
+                                                                                            "op": "|",
+                                                                                            "left": {
+                                                                                                "type": "expression",
+                                                                                                "value": {
+                                                                                                    "op": "|",
+                                                                                                    "left": {
+                                                                                                        "type": "expression",
+                                                                                                        "value": {
+                                                                                                            "op": "|",
+                                                                                                            "left": {
+                                                                                                                "type": "expression",
+                                                                                                                "value": {
+                                                                                                                    "op": "|",
+                                                                                                                    "left": {
+                                                                                                                        "type": "expression",
+                                                                                                                        "value": {
+                                                                                                                            "op": "|",
+                                                                                                                            "left": {
+                                                                                                                                "type": "expression",
+                                                                                                                                "value": {
+                                                                                                                                    "op": ">>",
+                                                                                                                                    "left": {
+                                                                                                                                        "type": "field",
+                                                                                                                                        "value": [
+                                                                                                                                            "vlan",
+                                                                                                                                            "vid"
+                                                                                                                                        ]
+                                                                                                                                    },
+                                                                                                                                    "right": {
+                                                                                                                                        "type": "hexstr",
+                                                                                                                                        "value": "0xb"
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            },
+                                                                                                                            "right": {
+                                                                                                                                "type": "expression",
+                                                                                                                                "value": {
+                                                                                                                                    "op": ">>",
+                                                                                                                                    "left": {
+                                                                                                                                        "type": "field",
+                                                                                                                                        "value": [
+                                                                                                                                            "vlan",
+                                                                                                                                            "vid"
+                                                                                                                                        ]
+                                                                                                                                    },
+                                                                                                                                    "right": {
+                                                                                                                                        "type": "hexstr",
+                                                                                                                                        "value": "0xa"
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    },
+                                                                                                                    "right": {
+                                                                                                                        "type": "expression",
+                                                                                                                        "value": {
+                                                                                                                            "op": ">>",
+                                                                                                                            "left": {
+                                                                                                                                "type": "field",
+                                                                                                                                "value": [
+                                                                                                                                    "vlan",
+                                                                                                                                    "vid"
+                                                                                                                                ]
+                                                                                                                            },
+                                                                                                                            "right": {
+                                                                                                                                "type": "hexstr",
+                                                                                                                                "value": "0x9"
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            },
+                                                                                                            "right": {
+                                                                                                                "type": "expression",
+                                                                                                                "value": {
+                                                                                                                    "op": ">>",
+                                                                                                                    "left": {
+                                                                                                                        "type": "field",
+                                                                                                                        "value": [
+                                                                                                                            "vlan",
+                                                                                                                            "vid"
+                                                                                                                        ]
+                                                                                                                    },
+                                                                                                                    "right": {
+                                                                                                                        "type": "hexstr",
+                                                                                                                        "value": "0x8"
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    },
+                                                                                                    "right": {
+                                                                                                        "type": "expression",
+                                                                                                        "value": {
+                                                                                                            "op": ">>",
+                                                                                                            "left": {
+                                                                                                                "type": "field",
+                                                                                                                "value": [
+                                                                                                                    "vlan",
+                                                                                                                    "vid"
+                                                                                                                ]
+                                                                                                            },
+                                                                                                            "right": {
+                                                                                                                "type": "hexstr",
+                                                                                                                "value": "0x7"
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            },
+                                                                                            "right": {
+                                                                                                "type": "expression",
+                                                                                                "value": {
+                                                                                                    "op": ">>",
+                                                                                                    "left": {
+                                                                                                        "type": "field",
+                                                                                                        "value": [
+                                                                                                            "vlan",
+                                                                                                            "vid"
+                                                                                                        ]
+                                                                                                    },
+                                                                                                    "right": {
+                                                                                                        "type": "hexstr",
+                                                                                                        "value": "0x6"
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    },
+                                                                                    "right": {
+                                                                                        "type": "expression",
+                                                                                        "value": {
+                                                                                            "op": ">>",
+                                                                                            "left": {
+                                                                                                "type": "field",
+                                                                                                "value": [
+                                                                                                    "vlan",
+                                                                                                    "vid"
+                                                                                                ]
+                                                                                            },
+                                                                                            "right": {
+                                                                                                "type": "hexstr",
+                                                                                                "value": "0x5"
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            },
+                                                                            "right": {
+                                                                                "type": "expression",
+                                                                                "value": {
+                                                                                    "op": ">>",
+                                                                                    "left": {
+                                                                                        "type": "field",
+                                                                                        "value": [
+                                                                                            "vlan",
+                                                                                            "vid"
+                                                                                        ]
+                                                                                    },
+                                                                                    "right": {
+                                                                                        "type": "hexstr",
+                                                                                        "value": "0x4"
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    "right": {
+                                                                        "type": "expression",
+                                                                        "value": {
+                                                                            "op": ">>",
+                                                                            "left": {
+                                                                                "type": "field",
+                                                                                "value": [
+                                                                                    "vlan",
+                                                                                    "vid"
+                                                                                ]
+                                                                            },
+                                                                            "right": {
+                                                                                "type": "hexstr",
+                                                                                "value": "0x3"
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            },
+                                                            "right": {
+                                                                "type": "expression",
+                                                                "value": {
+                                                                    "op": ">>",
+                                                                    "left": {
+                                                                        "type": "field",
+                                                                        "value": [
+                                                                            "vlan",
+                                                                            "vid"
+                                                                        ]
+                                                                    },
+                                                                    "right": {
+                                                                        "type": "hexstr",
+                                                                        "value": "0x2"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "right": {
+                                                        "type": "expression",
+                                                        "value": {
+                                                            "op": ">>",
+                                                            "left": {
+                                                                "type": "field",
+                                                                "value": [
+                                                                    "vlan",
+                                                                    "vid"
+                                                                ]
+                                                            },
+                                                            "right": {
+                                                                "type": "hexstr",
+                                                                "value": "0x1"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "right": {
+                                                "type": "field",
+                                                "value": [
+                                                    "vlan",
+                                                    "vid"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "transition_key": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "vlan",
+                                "etherType"
+                            ]
+                        }
+                    ],
+                    "transitions": [
+                        {
+                            "type": "hexstr",
+                            "value": "0x0800",
+                            "mask": null,
+                            "next_state": "parse_ipv4"
+                        },
+                        {
+                            "type": "default",
+                            "value": null,
+                            "mask": null,
+                            "next_state": null
+                        }
+                    ]
+                },
+                {
+                    "name": "parse_ipv4",
+                    "id": 1,
+                    "parser_ops": [
+                        {
+                            "op": "extract",
+                            "parameters": [
+                                {
+                                    "type": "regular",
+                                    "value": "ipv4"
+                                }
+                            ]
+                        },
+                        {
+                            "op": "set",
+                            "parameters": [
+                                {
+                                    "type": "field",
+                                    "value": [
+                                        "ingress_metadata",
+                                        "isip"
+                                    ]
+                                },
+                                {
+                                    "type": "hexstr",
+                                    "value": "0x1"
+                                }
+                            ]
+                        }
+                    ],
+                    "transition_key": [],
+                    "transitions": [
+                        {
+                            "type": "default",
+                            "value": null,
+                            "mask": null,
+                            "next_state": "post_parse_ipv4"
+                        }
+                    ]
+                },
+                {
+                    "name": "start",
+                    "id": 2,
+                    "parser_ops": [],
+                    "transition_key": [
+                        {
+                            "type": "lookahead",
+                            "value": [
+                                0,
+                                64
+                            ]
+                        }
+                    ],
+                    "transitions": [
+                        {
+                            "type": "hexstr",
+                            "value": "0x0000000000000000",
+                            "mask": null,
+                            "next_state": "parse_cpu_header"
+                        },
+                        {
+                            "type": "default",
+                            "value": null,
+                            "mask": null,
+                            "next_state": "parse_ethernet_or_ingress_cpu"
+                        }
+                    ]
+                },
+                {
+                    "name": "parse_cpu_header",
+                    "id": 3,
+                    "parser_ops": [
+                        {
+                            "op": "extract",
+                            "parameters": [
+                                {
+                                    "type": "regular",
+                                    "value": "cpu_header"
+                                }
+                            ]
+                        }
+                    ],
+                    "transition_key": [],
+                    "transitions": [
+                        {
+                            "type": "default",
+                            "value": null,
+                            "mask": null,
+                            "next_state": "parse_ethernet"
+                        }
+                    ]
+                },
+                {
+                    "name": "post_parse_ipv4",
+                    "id": 4,
+                    "parser_ops": [],
+                    "transition_key": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ipv4",
+                                "protocol"
+                            ]
+                        }
+                    ],
+                    "transitions": [
+                        {
+                            "type": "hexstr",
+                            "value": "0x06",
+                            "mask": null,
+                            "next_state": "parse_tcp"
+                        },
+                        {
+                            "type": "hexstr",
+                            "value": "0x11",
+                            "mask": null,
+                            "next_state": "parse_udp"
+                        },
+                        {
+                            "type": "default",
+                            "value": null,
+                            "mask": null,
+                            "next_state": null
+                        }
+                    ]
+                },
+                {
+                    "name": "parse_ethernet",
+                    "id": 5,
+                    "parser_ops": [
+                        {
+                            "op": "extract",
+                            "parameters": [
+                                {
+                                    "type": "regular",
+                                    "value": "ethernet"
+                                }
+                            ]
+                        },
+                        {
+                            "op": "set",
+                            "parameters": [
+                                {
+                                    "type": "field",
+                                    "value": [
+                                        "ingress_metadata",
+                                        "is_tagged"
+                                    ]
+                                },
+                                {
+                                    "type": "hexstr",
+                                    "value": "0x0"
+                                }
+                            ]
+                        }
+                    ],
+                    "transition_key": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ethernet",
+                                "etherType"
+                            ]
+                        }
+                    ],
+                    "transitions": [
+                        {
+                            "type": "hexstr",
+                            "value": "0x8100",
+                            "mask": null,
+                            "next_state": "parse_vlan"
+                        },
+                        {
+                            "type": "hexstr",
+                            "value": "0x0800",
+                            "mask": null,
+                            "next_state": "parse_ipv4"
+                        },
+                        {
+                            "type": "default",
+                            "value": null,
+                            "mask": null,
+                            "next_state": null
+                        }
+                    ]
+                },
+                {
+                    "name": "parse_ethernet_or_ingress_cpu",
+                    "id": 6,
+                    "parser_ops": [
+                        {
+                            "op": "set",
+                            "parameters": [
+                                {
+                                    "type": "field",
+                                    "value": [
+                                        "ingress_metadata",
+                                        "cpu_port"
+                                    ]
+                                },
+                                {
+                                    "type": "expression",
+                                    "value": {
+                                        "type": "expression",
+                                        "value": {
+                                            "op": ">>",
+                                            "left": {
+                                                "type": "field",
+                                                "value": [
+                                                    "standard_metadata",
+                                                    "ingress_port"
+                                                ]
+                                            },
+                                            "right": {
+                                                "type": "hexstr",
+                                                "value": "0x3"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "transition_key": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ingress_metadata",
+                                "cpu_port"
+                            ]
+                        }
+                    ],
+                    "transitions": [
+                        {
+                            "type": "hexstr",
+                            "value": "0x00",
+                            "mask": null,
+                            "next_state": "parse_ethernet"
+                        },
+                        {
+                            "type": "hexstr",
+                            "value": "0x01",
+                            "mask": null,
+                            "next_state": "parse_cpu_header"
+                        }
+                    ]
+                },
+                {
+                    "name": "parse_udp",
+                    "id": 7,
+                    "parser_ops": [
+                        {
+                            "op": "extract",
+                            "parameters": [
+                                {
+                                    "type": "regular",
+                                    "value": "udp"
+                                }
+                            ]
+                        }
+                    ],
+                    "transition_key": [],
+                    "transitions": [
+                        {
+                            "type": "default",
+                            "value": null,
+                            "mask": null,
+                            "next_state": null
+                        }
+                    ]
+                },
+                {
+                    "name": "parse_tcp",
+                    "id": 8,
+                    "parser_ops": [
+                        {
+                            "op": "extract",
+                            "parameters": [
+                                {
+                                    "type": "regular",
+                                    "value": "tcp"
+                                }
+                            ]
+                        }
+                    ],
+                    "transition_key": [],
+                    "transitions": [
+                        {
+                            "type": "default",
+                            "value": null,
+                            "mask": null,
+                            "next_state": null
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "parse_vsets": [],
+    "deparsers": [
+        {
+            "name": "deparser",
+            "id": 0,
+            "order": [
+                "cpu_header",
+                "ethernet",
+                "vlan",
+                "ipv4",
+                "udp",
+                "tcp"
+            ]
+        }
+    ],
+    "meter_arrays": [],
+    "actions": [
+        {
+            "name": "action_set_erif_set_nh_dstip",
+            "id": 0,
+            "runtime_data": [
+                {
+                    "name": "next_hop_dst_ip",
+                    "bitwidth": 32
+                },
+                {
+                    "name": "egress_rif",
+                    "bitwidth": 3
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "router_metadata",
+                                "next_hop_dst_ip"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "router_metadata",
+                                "egress_rif"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_set_smac_vid",
+            "id": 1,
+            "runtime_data": [
+                {
+                    "name": "smac",
+                    "bitwidth": 48
+                },
+                {
+                    "name": "vid",
+                    "bitwidth": 12
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ethernet",
+                                "srcAddr"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "vlan",
+                                "vid"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 1
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "standard_metadata",
+                                "egress_spec"
+                            ]
+                        },
+                        {
+                            "type": "hexstr",
+                            "value": "0x0"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_set_packet_dmac",
+            "id": 2,
+            "runtime_data": [
+                {
+                    "name": "dmac",
+                    "bitwidth": 48
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ethernet",
+                                "dstAddr"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_trap_to_cpu",
+            "id": 3,
+            "runtime_data": [],
+            "primitives": []
+        },
+        {
+            "name": "_drop",
+            "id": 4,
+            "runtime_data": [],
+            "primitives": [
+                {
+                    "op": "drop",
+                    "parameters": []
+                }
+            ]
+        },
+        {
+            "name": "action_set_erif_set_nh_dstip_from_pkt",
+            "id": 5,
+            "runtime_data": [
+                {
+                    "name": "egress_rif",
+                    "bitwidth": 3
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "router_metadata",
+                                "next_hop_dst_ip"
+                            ]
+                        },
+                        {
+                            "type": "field",
+                            "value": [
+                                "ipv4",
+                                "dstAddr"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "router_metadata",
+                                "egress_rif"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_set_vrf",
+            "id": 6,
+            "runtime_data": [
+                {
+                    "name": "vrf",
+                    "bitwidth": 8
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "router_metadata",
+                                "ingress_vrf"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "router_metadata",
+                                "l3_lpm_key"
+                            ]
+                        },
+                        {
+                            "type": "expression",
+                            "value": {
+                                "type": "expression",
+                                "value": {
+                                    "op": "+",
+                                    "left": {
+                                        "type": "expression",
+                                        "value": {
+                                            "op": "<<",
+                                            "left": {
+                                                "type": "local",
+                                                "value": 0
+                                            },
+                                            "right": {
+                                                "type": "hexstr",
+                                                "value": "0x20"
+                                            }
+                                        }
+                                    },
+                                    "right": {
+                                        "type": "field",
+                                        "value": [
+                                            "ipv4",
+                                            "dstAddr"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_set_nhop_grp_id",
+            "id": 7,
+            "runtime_data": [
+                {
+                    "name": "next_hop_group_id",
+                    "bitwidth": 3
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "router_metadata",
+                                "next_hop_group_id"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_set_nhop_id",
+            "id": 8,
+            "runtime_data": [
+                {
+                    "name": "next_hop_id",
+                    "bitwidth": 8
+                },
+                {
+                    "name": "pkt_action",
+                    "bitwidth": 2
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "router_metadata",
+                                "packet_action"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 1
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "router_metadata",
+                                "next_hop_id"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "pipelines": [
+        {
+            "name": "ingress",
+            "id": 0,
+            "init_table": "table_ingress_vrf",
+            "tables": [
+                {
+                    "name": "table_ingress_vrf",
+                    "id": 0,
+                    "match_type": "exact",
+                    "type": "simple",
+                    "max_size": 12,
+                    "with_counters": false,
+                    "direct_meters": null,
+                    "support_timeout": false,
+                    "key": [
+                        {
+                            "match_type": "exact",
+                            "target": [
+                                "router_metadata",
+                                "ingress_rif"
+                            ],
+                            "mask": null
+                        }
+                    ],
+                    "actions": [
+                        "action_set_vrf",
+                        "_drop"
+                    ],
+                    "next_tables": {
+                        "action_set_vrf": "table_router",
+                        "_drop": "table_router"
+                    },
+                    "base_default_next": "table_router"
+                },
+                {
+                    "name": "table_router",
+                    "id": 1,
+                    "match_type": "lpm",
+                    "type": "simple",
+                    "max_size": 1024,
+                    "with_counters": false,
+                    "direct_meters": null,
+                    "support_timeout": false,
+                    "key": [
+                        {
+                            "match_type": "lpm",
+                            "target": [
+                                "router_metadata",
+                                "l3_lpm_key"
+                            ],
+                            "mask": null
+                        }
+                    ],
+                    "actions": [
+                        "action_set_nhop_id",
+                        "action_set_nhop_grp_id",
+                        "_drop"
+                    ],
+                    "next_tables": {
+                        "action_set_nhop_id": "table_next_hop",
+                        "action_set_nhop_grp_id": "table_next_hop_group",
+                        "_drop": "table_next_hop"
+                    },
+                    "base_default_next": "table_next_hop"
+                },
+                {
+                    "name": "table_next_hop_group",
+                    "id": 2,
+                    "match_type": "exact",
+                    "type": "simple",
+                    "max_size": 16,
+                    "with_counters": false,
+                    "direct_meters": null,
+                    "support_timeout": false,
+                    "key": [
+                        {
+                            "match_type": "exact",
+                            "target": [
+                                "router_metadata",
+                                "next_hop_group_id"
+                            ],
+                            "mask": null
+                        }
+                    ],
+                    "actions": [
+                        "action_set_nhop_id",
+                        "_drop"
+                    ],
+                    "next_tables": {
+                        "action_set_nhop_id": "table_next_hop",
+                        "_drop": "table_next_hop"
+                    },
+                    "base_default_next": "table_next_hop"
+                },
+                {
+                    "name": "table_next_hop",
+                    "id": 3,
+                    "match_type": "exact",
+                    "type": "simple",
+                    "max_size": 128,
+                    "with_counters": false,
+                    "direct_meters": null,
+                    "support_timeout": false,
+                    "key": [
+                        {
+                            "match_type": "exact",
+                            "target": [
+                                "router_metadata",
+                                "next_hop_id"
+                            ],
+                            "mask": null
+                        }
+                    ],
+                    "actions": [
+                        "action_set_erif_set_nh_dstip",
+                        "action_set_erif_set_nh_dstip_from_pkt",
+                        "_drop"
+                    ],
+                    "next_tables": {
+                        "action_set_erif_set_nh_dstip": "table_Neigh",
+                        "action_set_erif_set_nh_dstip_from_pkt": "table_Neigh",
+                        "_drop": "table_Neigh"
+                    },
+                    "base_default_next": "table_Neigh"
+                },
+                {
+                    "name": "table_Neigh",
+                    "id": 4,
+                    "match_type": "exact",
+                    "type": "simple",
+                    "max_size": 1024,
+                    "with_counters": false,
+                    "direct_meters": null,
+                    "support_timeout": false,
+                    "key": [
+                        {
+                            "match_type": "exact",
+                            "target": [
+                                "router_metadata",
+                                "egress_rif"
+                            ],
+                            "mask": null
+                        },
+                        {
+                            "match_type": "exact",
+                            "target": [
+                                "router_metadata",
+                                "next_hop_dst_ip"
+                            ],
+                            "mask": null
+                        }
+                    ],
+                    "actions": [
+                        "action_set_packet_dmac",
+                        "action_trap_to_cpu"
+                    ],
+                    "next_tables": {
+                        "action_set_packet_dmac": "table_egress_L3_if",
+                        "action_trap_to_cpu": "table_egress_L3_if"
+                    },
+                    "base_default_next": "table_egress_L3_if"
+                },
+                {
+                    "name": "table_egress_L3_if",
+                    "id": 5,
+                    "match_type": "exact",
+                    "type": "simple",
+                    "max_size": 1,
+                    "with_counters": false,
+                    "direct_meters": null,
+                    "support_timeout": false,
+                    "key": [
+                        {
+                            "match_type": "exact",
+                            "target": [
+                                "router_metadata",
+                                "egress_rif"
+                            ],
+                            "mask": null
+                        }
+                    ],
+                    "actions": [
+                        "action_set_smac_vid",
+                        "_drop"
+                    ],
+                    "next_tables": {
+                        "action_set_smac_vid": null,
+                        "_drop": null
+                    },
+                    "base_default_next": null
+                }
+            ],
+            "conditionals": []
+        },
+        {
+            "name": "egress",
+            "id": 1,
+            "init_table": null,
+            "tables": [],
+            "conditionals": []
+        }
+    ],
+    "calculations": [],
+    "checksums": [],
+    "learn_lists": [],
+    "field_lists": [],
+    "counter_arrays": [],
+    "register_arrays": [],
+    "force_arith": [
+        [
+            "standard_metadata",
+            "ingress_port"
+        ],
+        [
+            "standard_metadata",
+            "packet_length"
+        ],
+        [
+            "standard_metadata",
+            "egress_spec"
+        ],
+        [
+            "standard_metadata",
+            "egress_port"
+        ],
+        [
+            "standard_metadata",
+            "egress_instance"
+        ],
+        [
+            "standard_metadata",
+            "instance_type"
+        ],
+        [
+            "standard_metadata",
+            "clone_spec"
+        ],
+        [
+            "standard_metadata",
+            "_padding"
+        ],
+        [
+            "intrinsic_metadata",
+            "ingress_global_timestamp"
+        ],
+        [
+            "intrinsic_metadata",
+            "lf_field_list"
+        ],
+        [
+            "intrinsic_metadata",
+            "mcast_grp"
+        ],
+        [
+            "intrinsic_metadata",
+            "egress_rid"
+        ],
+        [
+            "intrinsic_metadata",
+            "resubmit_flag"
+        ],
+        [
+            "intrinsic_metadata",
+            "recirculate_flag"
+        ]
+    ]
+}

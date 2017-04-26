@@ -18,6 +18,7 @@ header   udp_t			  udp;
 header   cpu_header_t     cpu_header;  
 
 // metadata
+metadata 	ingress_metadata_t 	 ingress_metadata; // TODO remove - needed for parser - cpu host if
 metadata 	router_metadata_t 	 router_metadata;
 
 control ingress {
@@ -25,12 +26,14 @@ control ingress {
 }
 
 control control_1q_uni_router{
-	apply(table_ingress_L3_if);
 	apply(table_ingress_vrf);
 	// apply(table_L3_ingress_acl); TODO
-	apply(table_router);
-	//apply(table_next_hop_group); TODO
-	apply(table_next_hop);
+	apply(table_router){
+		action_set_nhop_grp_id{
+			apply(table_next_hop_group);
+		}
+	}
+	apply(table_next_hop);	
 	//apply(table_erif_check); TODO - mtu size, etc..
 	apply(table_Neigh);
 	apply(table_egress_L3_if);
@@ -39,16 +42,6 @@ control control_1q_uni_router{
 
 
 control egress{
-	if(router_metadata.rif_type == BRIDGE_PORT_1D){
-		apply(table_egress_1D_bridge);
-	} 
-	else if(router_metadata.rif_type == BRIDGE_PORT_1Q)
-	{
-		apply(table_egress_1Q_bridge);
-	}
-	else{
-		apply(table_egress_router_port);	// router port
-	}
 }
 	
 

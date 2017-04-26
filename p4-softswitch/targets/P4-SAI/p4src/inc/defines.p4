@@ -21,10 +21,12 @@
 // L2
 #define FDB_TABLE_SIZE 512 // TODO
 // L3
-#define L3_IF_TABLE_SIZE 12 // TODO
+#define L3_EGRESS_IF_TABLE_SIZE 1 // TODO
 #define ROUTER_IF_TABLE_SIZE 12 //TODO
 #define ROUTER_LPM_TABLE_SIZE 1024 //TODO
+#define NEIGH_TABLE_SIZE 1024 // TODO
 #define NHOP_TABLE_SIZE 128 //TODO
+#define NHOP_GRP_TABLE_SIZE 16 //TODO
 ////////////////////////////
 
 //phy
@@ -63,8 +65,12 @@
 #define OUT_IF_IS_ROUTER	2 // TODO
 
 
-// L2 
+// L3
 // ERIF_TYPE
-#define BRIDGE_PORT_1D 		0x1
-#define BRIDGE_PORT_1Q 		0x2
-#define ROUTER_PORT 		0x3
+#define VLAN_IF 0
+
+// PACKET_ACTION
+#define ACTION_FORWARD 0x1
+#define ACTION_TRAP 0x2
+#define ACTION_COPY 0x3
+#define ACTION_DROP 0x4

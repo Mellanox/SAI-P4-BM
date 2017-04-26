@@ -1,5 +1,6 @@
 #include "defines.p4"
 
+
 header_type ethernet_t {
     fields {
         bit<48> dstAddr;
@@ -136,6 +137,9 @@ header_type router_metadata_t{
         bit<8> ingress_vrf;
         bit<32> next_hop_dst_ip;
         bit<8> next_hop_id;
+        bit<3> next_hop_group_id;
+        bit<3> next_hop_hash;
         bit<2> packet_action;
+        bit<40> l3_lpm_key;
     }    
 }
