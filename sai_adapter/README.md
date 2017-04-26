@@ -6,6 +6,9 @@ The sai lib (C lib) uses P4 thrift to configure the soft switch as described bel
 The sai_api lib is currently under development.
 In the meantime, please include sai.h, check the [unit test](test/unittest) folder for example.
 Please build it from the src folder using "make".
+## depenedcies:
+* libteam: (Sudo apt-get install libteam-dev)
+* libjansson-dev: (Sudo apt-get install libjansson-dev)
 
 ## PTF tests
 SAI Tests were written using the [ptf](https://github.com/p4lang/ptf) framework. 
