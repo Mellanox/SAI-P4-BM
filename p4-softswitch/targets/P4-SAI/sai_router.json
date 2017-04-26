@@ -840,60 +840,8 @@
                     ]
                 },
                 {
-                    "name": "start",
-                    "id": 2,
-                    "parser_ops": [],
-                    "transition_key": [
-                        {
-                            "type": "lookahead",
-                            "value": [
-                                0,
-                                64
-                            ]
-                        }
-                    ],
-                    "transitions": [
-                        {
-                            "type": "hexstr",
-                            "value": "0x0000000000000000",
-                            "mask": null,
-                            "next_state": "parse_cpu_header"
-                        },
-                        {
-                            "type": "default",
-                            "value": null,
-                            "mask": null,
-                            "next_state": "parse_ethernet_or_ingress_cpu"
-                        }
-                    ]
-                },
-                {
-                    "name": "parse_cpu_header",
-                    "id": 3,
-                    "parser_ops": [
-                        {
-                            "op": "extract",
-                            "parameters": [
-                                {
-                                    "type": "regular",
-                                    "value": "cpu_header"
-                                }
-                            ]
-                        }
-                    ],
-                    "transition_key": [],
-                    "transitions": [
-                        {
-                            "type": "default",
-                            "value": null,
-                            "mask": null,
-                            "next_state": "parse_ethernet"
-                        }
-                    ]
-                },
-                {
                     "name": "post_parse_ipv4",
-                    "id": 4,
+                    "id": 2,
                     "parser_ops": [],
                     "transition_key": [
                         {
@@ -926,8 +874,84 @@
                     ]
                 },
                 {
-                    "name": "parse_ethernet",
+                    "name": "parse_cpu_header",
+                    "id": 3,
+                    "parser_ops": [
+                        {
+                            "op": "extract",
+                            "parameters": [
+                                {
+                                    "type": "regular",
+                                    "value": "cpu_header"
+                                }
+                            ]
+                        }
+                    ],
+                    "transition_key": [],
+                    "transitions": [
+                        {
+                            "type": "default",
+                            "value": null,
+                            "mask": null,
+                            "next_state": "parse_ethernet"
+                        }
+                    ]
+                },
+                {
+                    "name": "start",
+                    "id": 4,
+                    "parser_ops": [],
+                    "transition_key": [
+                        {
+                            "type": "lookahead",
+                            "value": [
+                                0,
+                                64
+                            ]
+                        }
+                    ],
+                    "transitions": [
+                        {
+                            "type": "hexstr",
+                            "value": "0x0000000000000000",
+                            "mask": null,
+                            "next_state": "parse_cpu_header"
+                        },
+                        {
+                            "type": "default",
+                            "value": null,
+                            "mask": null,
+                            "next_state": "parse_ethernet_or_ingress_cpu"
+                        }
+                    ]
+                },
+                {
+                    "name": "parse_tcp",
                     "id": 5,
+                    "parser_ops": [
+                        {
+                            "op": "extract",
+                            "parameters": [
+                                {
+                                    "type": "regular",
+                                    "value": "tcp"
+                                }
+                            ]
+                        }
+                    ],
+                    "transition_key": [],
+                    "transitions": [
+                        {
+                            "type": "default",
+                            "value": null,
+                            "mask": null,
+                            "next_state": null
+                        }
+                    ]
+                },
+                {
+                    "name": "parse_ethernet",
+                    "id": 6,
                     "parser_ops": [
                         {
                             "op": "extract",
@@ -987,7 +1011,7 @@
                 },
                 {
                     "name": "parse_ethernet_or_ingress_cpu",
-                    "id": 6,
+                    "id": 7,
                     "parser_ops": [
                         {
                             "op": "set",
@@ -1048,30 +1072,6 @@
                 },
                 {
                     "name": "parse_udp",
-                    "id": 7,
-                    "parser_ops": [
-                        {
-                            "op": "extract",
-                            "parameters": [
-                                {
-                                    "type": "regular",
-                                    "value": "udp"
-                                }
-                            ]
-                        }
-                    ],
-                    "transition_key": [],
-                    "transitions": [
-                        {
-                            "type": "default",
-                            "value": null,
-                            "mask": null,
-                            "next_state": null
-                        }
-                    ]
-                },
-                {
-                    "name": "parse_tcp",
                     "id": 8,
                     "parser_ops": [
                         {
@@ -1079,7 +1079,7 @@
                             "parameters": [
                                 {
                                     "type": "regular",
-                                    "value": "tcp"
+                                    "value": "udp"
                                 }
                             ]
                         }
