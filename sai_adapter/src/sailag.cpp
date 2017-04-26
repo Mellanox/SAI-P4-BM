@@ -16,6 +16,11 @@ sai_status_t sai_adapter::remove_lag(sai_object_id_t lag_id) {
   (*logger)->info("remove_lag: {}", lag_id);
   sai_status_t status = SAI_STATUS_SUCCESS;
   Lag_obj *lag = switch_metadata_ptr->lags[lag_id];
+  int members_size = lag->lag_members.size();
+  (*logger)->info("removing lag's {} members", members_size);
+  for (int i = 0; i < members_size; ++i) {
+    remove_lag_member(lag->lag_members.back());
+  }
   try {
     if (lag->handle_port_configurations != NULL_HANDLE) {
       bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_port_configurations",

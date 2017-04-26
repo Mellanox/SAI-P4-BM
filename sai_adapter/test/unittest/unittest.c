@@ -53,14 +53,19 @@ Function returns 0 if next value exists, -1 at the end of the list. */
 
 int main(int argc, char **argv)
 {
+    printf("sai_api sai_api_initialize\n");
     sai_port_api_t* port_api;
 
     sai_api_initialize(0, &test_services);
+    printf("sai_api_initialized\n");
     sai_api_query(SAI_API_PORT, (void**)&port_api);
     sai_object_id_t port_id;
     sai_object_id_t switch_id = 0;
     uint32_t attr_count = 0;
     sai_attribute_t *attr_list = NULL;
+    printf("sai_create_port\n");
     sai_status_t status = port_api->create_port(&port_id, switch_id, attr_count, attr_list);
+    printf("port_created\n");
     sai_api_uninitialize();
+    printf("sai_api_uninitialized\n");
 }

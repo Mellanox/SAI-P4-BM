@@ -58,6 +58,17 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
           entry, cxt_id, "table_egress_br_port_to_if", match_params, options);
       bridge_port->handle_egress_br_port_to_if = entry.entry_handle;
     }
+
+    // Create MAC learn hostif_table_entry
+    HostIF_Table_Entry_obj *hostif_table_entry =
+        new HostIF_Table_Entry_obj(sai_id_map_ptr);
+    switch_metadata_ptr
+        ->hostif_table_entries[hostif_table_entry->sai_object_id] =
+        hostif_table_entry;
+    hostif_table_entry->entry_type = SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID;
+    hostif_table_entry->trap_id = MAC_LEARN_TRAP_ID;
+    add_hostif_trap_id_table_entry(MAC_LEARN_TRAP_ID, learn_mac);
+
     switch_list_ptr->push_back(switch_obj->sai_object_id);
     return switch_obj->sai_object_id;
   }

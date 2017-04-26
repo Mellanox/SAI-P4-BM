@@ -1,23 +1,6 @@
 #include "../inc/sai_adapter.h"
 #include <sched.h>
 
-#define ETHER_ADDR_LEN 6
-#define CPU_HDR_LEN 6
-#define MAC_LEARN_TRAP_ID 512
-
-typedef struct _ethernet_hdr_t {
-  uint8_t dst_addr[ETHER_ADDR_LEN];
-  uint8_t src_addr[ETHER_ADDR_LEN];
-  uint16_t ether_type;
-} ethernet_hdr_t;
-
-typedef struct _cpu_hdr_t {
-  unsigned int ingress_port : 8;
-  unsigned int bridge_port : 8;
-  unsigned int bridge_id : 16;
-  unsigned int trap_id : 16;
-} cpu_hdr_t;
-
 void ReverseBytes(uint8_t *byte_arr, int size) {
   uint8_t tmp;
   for (int lo = 0, hi = size - 1; hi > lo; lo++, hi--) {
@@ -33,27 +16,33 @@ void print_mac_to_log(const uint8_t *mac,
                mac[4], mac[3], mac[2], mac[1], mac[0]);
 }
 
+void sai_adapter::release_pcap_lock() {
+  (*logger)->info("release pcap lock");
+  std::unique_lock<std::mutex> lk(m);
+  pcap_loop_started = true;
+  lk.unlock();
+  cv.notify_one();
+}
+
 void sai_adapter::PacketSniffer() {
-  // const char *dev = "cpu_port";
-  const char *dev = "host_port";
+  const char *dev = "switch_port";
 
   char errbuf[PCAP_ERRBUF_SIZE];
+
   (*logger)->info("pcap started on dev {}", dev);
   adapter_pcap = pcap_open_live(dev, BUFSIZ, 0, -1, errbuf);
   if (adapter_pcap == NULL) {
-    (*logger)->info("pcap_open_live() failed: {}", errbuf);
+    (*logger)->error("pcap_open_live() failed: {}", errbuf);
+    release_pcap_lock();
     return;
   }
-  if (pcap_loop(adapter_pcap, 0, packetHandler, (u_char *)this) == -1) {
-    (*logger)->info("pcap_loop() failed: {}", pcap_geterr(adapter_pcap));
-  }
-  return;
-}
 
-void sai_adapter::internal_init_switch() {
-  (*logger)->info("Switch init with default configurations");
-  sai_object_id_t *switch_id;
-  switch_api.create_switch(switch_id, 0, NULL);
+  release_pcap_lock();
+
+  if (pcap_loop(adapter_pcap, 0, packetHandler, (u_char *)this) == -1) {
+    (*logger)->error("pcap_loop() failed: {}", pcap_geterr(adapter_pcap));
+  }
+  (*logger)->info("pcap loop ended");
   return;
 }
 
@@ -81,7 +70,7 @@ void sai_adapter::adapter_create_fdb_entry(
     sai_fdb_entry.vlan_id = vlan_id;
   }
   sai_fdb_entry.bridge_id = bridge_id;
-  fdb_api.create_fdb_entry(&sai_fdb_entry, 3, attr);
+  create_fdb_entry(&sai_fdb_entry, 3, attr);
 }
 
 void sai_adapter::packetHandler(u_char *userData,
@@ -89,20 +78,38 @@ void sai_adapter::packetHandler(u_char *userData,
                                 const u_char *packet) {
 
   sai_adapter *adapter = (sai_adapter *)userData;
-  (*logger)->info("CPU packet captured");
-  cpu_hdr_t *cpu_hdr = (cpu_hdr_t *)packet;
-  ReverseBytes((uint8_t *)cpu_hdr, CPU_HDR_LEN);
-  ethernet_hdr_t *ether = (ethernet_hdr_t *)(packet + CPU_HDR_LEN);
-  ReverseBytes((uint8_t *)&(ether->ether_type), 2);
-  ReverseBytes(ether->dst_addr, 6);
-  ReverseBytes(ether->src_addr, 6);
-  if (cpu_hdr->trap_id == 512) {
-    adapter->learn_mac(cpu_hdr->ingress_port, ether->src_addr);
+  cpu_hdr_t *cpu = (cpu_hdr_t *)packet;
+  // ReverseBytes((uint8_t *)cpu, CPU_HDR_LEN);
+  cpu->trap_id = ntohs(cpu->trap_id);
+  (*logger)->info("CPU packet captured. trap_id = {}. ingress_port = {}",
+                  cpu->trap_id, cpu->ingress_port);
+  u_char *decap_packet = (u_char *)(packet + CPU_HDR_LEN);
+  HostIF_Table_Entry_obj *hostif_table_entry =
+      switch_metadata_ptr->GetTableEntryFromTrapID(cpu->trap_id);
+  if (hostif_table_entry == nullptr) {
+    (*logger)->error("CPU packet recieved with unknown trap_id");
+    return;
   }
+  switch (hostif_table_entry->entry_type) {
+  case SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID:
+    adapter->lookup_hostif_trap_id_table(decap_packet, cpu,
+                                         pkthdr->len - CPU_HDR_LEN);
+    break;
+  }
+  // if (cpu_hdr->trap_id == 512) {
+  //   adapter->learn_mac(ether, cpu_hdr);
+  // }
 }
 
-void sai_adapter::learn_mac(uint32_t ingress_port, uint8_t *src_mac) {
-  // TODO: Add LAG support
+void sai_adapter::learn_mac(u_char *packet, cpu_hdr_t *cpu, int pkt_len) {
+  uint32_t ingress_port = cpu->ingress_port;
+  (*logger)->info("learn_mac from port {}", ingress_port);
+  ethernet_hdr_t *ether = (ethernet_hdr_t *)packet;
+  ether->ether_type = ntohs(ether->ether_type);
+  ReverseBytes(ether->dst_addr, 6);
+  ReverseBytes(ether->src_addr, 6);
+  uint8_t *src_mac = ether->src_addr;
+  print_mac_to_log(src_mac, *logger);
   BridgePort_obj *bridge_port;
   Bridge_obj *bridge;
   sai_object_id_t port_id;
@@ -110,10 +117,11 @@ void sai_adapter::learn_mac(uint32_t ingress_port, uint8_t *src_mac) {
        it != switch_metadata_ptr->ports.end(); ++it) {
     if (it->second->hw_port == ingress_port) {
       port_id = it->first;
+      (*logger)->info("MAC learning from ingress port {} (sai_object_id)",
+                      port_id);
       break;
     }
   }
-
   for (lag_id_map_t::iterator it = switch_metadata_ptr->lags.begin();
        it != switch_metadata_ptr->lags.end(); ++it) {
     for (std::vector<sai_object_id_t>::iterator mem_it =
@@ -121,23 +129,23 @@ void sai_adapter::learn_mac(uint32_t ingress_port, uint8_t *src_mac) {
          mem_it != it->second->lag_members.end(); ++mem_it) {
       if (switch_metadata_ptr->lag_members[*mem_it]->port->hw_port ==
           ingress_port) {
-        (*logger)->info("MAC learning from ingress lag {}", it->first);
+        (*logger)->info("MAC learning from ingress lag {} (sai_object_id)",
+                        it->first);
         port_id = it->first;
         break;
       }
     }
   }
-
   for (bridge_port_id_map_t::iterator it =
            switch_metadata_ptr->bridge_ports.begin();
        it != switch_metadata_ptr->bridge_ports.end(); ++it) {
     if (it->second->port_id == port_id) {
       bridge_port = it->second;
       bridge = switch_metadata_ptr->bridges[it->second->bridge_id];
+      (*logger)->info("bridge_port_id {}", bridge_port->sai_object_id);
       break;
     }
   }
-
   (*logger)->info("MAC learned (bridge sai_object_id {}):",
                   bridge->sai_object_id);
   print_mac_to_log(src_mac, *logger);

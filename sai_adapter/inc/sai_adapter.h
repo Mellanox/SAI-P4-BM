@@ -1,12 +1,12 @@
 #ifndef SAI_ADAPTER_H
 #define SAI_ADAPTER_H
 
-#include <iostream>
-
 // SAI
 #ifdef __cplusplus
 extern "C" {
 #endif
+// TUN/TAP if
+#include "tun_if.h"
 #include <sai.h>
 #ifdef __cplusplus
 }
@@ -14,9 +14,11 @@ extern "C" {
 
 // INTERNAL
 #include "switch_meta_data.h"
+// #include "sai_hostif_table.h"
 
 // thrift bm clinet
 #include <Standard.h>
+#include <standard_types.h>
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/protocol/TMultiplexedProtocol.h>
 #include <thrift/transport/TSocket.h>
@@ -27,12 +29,15 @@ extern "C" {
 
 // General
 #include <algorithm>
-#include <standard_types.h>
-// #include <atomic>
+#include <condition_variable>
 #include <cstdlib>
+#include <iostream>
+#include <mutex>
 #include <pcap.h>
 #include <sstream>
 #include <string>
+#include <sys/select.h>
+#include <team.h>
 #include <thread>
 
 using namespace std;
@@ -41,6 +46,24 @@ using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
 
 using namespace bm_runtime::standard;
+
+#define ETHER_ADDR_LEN 6
+#define CPU_HDR_LEN 3
+#define MAC_LEARN_TRAP_ID 512
+
+typedef struct _ethernet_hdr_t {
+  uint8_t dst_addr[ETHER_ADDR_LEN];
+  uint8_t src_addr[ETHER_ADDR_LEN];
+  uint16_t ether_type;
+} ethernet_hdr_t;
+
+typedef struct _cpu_hdr_t { // TODO: remove bridge_port and id
+  unsigned int ingress_port : 8;
+  unsigned int trap_id : 16;
+} cpu_hdr_t;
+
+typedef void (*adapter_packet_handler_fn)(u_char *, cpu_hdr_t *, int);
+typedef std::map<uint16_t, adapter_packet_handler_fn> hostif_trap_id_table_t;
 
 const int bm_port = 9090;
 const int32_t cxt_id = 0;
@@ -51,7 +74,7 @@ string parse_param(uint64_t param, uint32_t num_of_bytes);
 BmMatchParam parse_exact_match_param(uint64_t param, uint32_t num_of_bytes);
 BmMatchParam parse_valid_match_param(bool param);
 uint64_t parse_mac_64(uint8_t const mac_8[6]);
-
+void print_mac_to_log(const uint8_t *, std::shared_ptr<spdlog::logger>);
 class sai_adapter {
 public:
   // thrift
@@ -119,6 +142,10 @@ public:
                                        uint32_t attr_count,
                                        const sai_attribute_t *attr_list);
   static sai_status_t remove_fdb_entry(const sai_fdb_entry_t *fdb_entry);
+  static sai_status_t flush_fdb_entries(sai_object_id_t switch_id,
+                                        uint32_t attr_count,
+                                        const sai_attribute_t *attr_list);
+
   // vlan
   static sai_status_t create_vlan(sai_object_id_t *vlan_id,
                                   sai_object_id_t switch_id,
@@ -158,6 +185,30 @@ public:
                                         const sai_attribute_t *attr_list);
   static sai_status_t remove_lag_member(sai_object_id_t lag_member_id);
 
+  // hostif
+  static sai_status_t create_hostif(sai_object_id_t *hif_id,
+                                    sai_object_id_t switch_id,
+                                    uint32_t attr_count,
+                                    const sai_attribute_t *attr_list);
+  static sai_status_t remove_hostif(sai_object_id_t hif_id);
+  static sai_status_t
+  create_hostif_table_entry(sai_object_id_t *hif_table_entry,
+                            sai_object_id_t switch_id, uint32_t attr_count,
+                            const sai_attribute_t *attr_list);
+  static sai_status_t
+  remove_hostif_table_entry(sai_object_id_t hif_table_entry);
+  static sai_status_t
+  create_hostif_trap_group(sai_object_id_t *hostif_trap_group_id,
+                           sai_object_id_t switch_id, uint32_t attr_count,
+                           const sai_attribute_t *attr_list);
+  static sai_status_t
+  remove_hostif_trap_group(sai_object_id_t hostif_trap_group_id);
+  static sai_status_t create_hostif_trap(sai_object_id_t *hostif_trap_id,
+                                         sai_object_id_t switch_id,
+                                         uint32_t attr_count,
+                                         const sai_attribute_t *attr_list);
+  static sai_status_t remove_hostif_trap(sai_object_id_t hostif_trap_id);
+
   // api s
   sai_port_api_t port_api;
   sai_bridge_api_t bridge_api;
@@ -171,20 +222,37 @@ public:
   sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table);
 
 private:
-  pcap_t *adapter_pcap;
+  // sai_object_id_t switch_id;
+  static pcap_t *adapter_pcap;
+  // sai adapter threading handlers
+  std::thread SaiAdapterThread;
+  static bool pcap_loop_started;
+  static std::mutex m;
+  std::condition_variable cv;
+  static hostif_trap_id_table_t hostif_trap_id_table;
   void startSaiAdapterMain();
   void endSaiAdapterMain();
   void SaiAdapterMain();
+  void release_pcap_lock();
+  //
   void PacketSniffer();
   void internal_init_switch();
   static uint32_t
   get_bridge_id_from_fdb_entry(const sai_fdb_entry_t *fdb_entry);
   static void packetHandler(u_char *, const struct pcap_pkthdr *,
                             const u_char *);
-  void adapter_create_fdb_entry(sai_object_id_t, sai_mac_t,
-                                sai_fdb_entry_bridge_type_t, sai_vlan_id_t,
-                                sai_object_id_t);
-  void learn_mac(uint32_t, uint8_t *);
+  static void adapter_create_fdb_entry(sai_object_id_t, sai_mac_t,
+                                       sai_fdb_entry_bridge_type_t,
+                                       sai_vlan_id_t, sai_object_id_t);
+  static void learn_mac(u_char *, cpu_hdr_t *, int);
+  static void netdev_phys_port_fn(u_char *, cpu_hdr_t *, int);
+  static void lookup_hostif_trap_id_table(u_char *packet, cpu_hdr_t *, int);
+  static void add_hostif_trap_id_table_entry(uint16_t,
+                                             adapter_packet_handler_fn);
+  static void phys_netdev_packet_handler(int, int, const u_char *);
+  static int phys_netdev_sniffer(int, int);
+  // hostif_table_t hostif_table;
+  // static hostif_table_t* hostif_table_p;
 };
 
 #endif

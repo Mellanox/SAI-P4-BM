@@ -148,7 +148,8 @@ action action_set_lag_hash_size(in bit<6> lag_size) {
 }
 
 action action_set_out_port(in bit<6> port){
-	standard_metadata.egress_spec 	= port;
+	standard_metadata.egress_spec = port;
+	// modify_field(standard_metadata.egress_spec, port);
 }
 
 //action broadcast() {
@@ -156,7 +157,7 @@ action action_set_out_port(in bit<6> port){
 //}
 
 action set_egr(in bit<6> egress_spec) {
-    modify_field(standard_metadata.egress_spec, egress_spec);
+    standard_metadata.egress_spec = egress_spec;
 }
 
 // mc
@@ -166,8 +167,12 @@ action action_set_mc_fdb_miss() {
 
 action action_cpu_encap() { 
 	add_header(cpu_header);
-	cpu_header.ingress_port = standard_metadata.ingress_port;
+	cpu_header.port = standard_metadata.ingress_port;
 	cpu_header.trap_id = ingress_metadata.trap_id;
-	cpu_header.bridge_id = ingress_metadata.bridge_id;
-	cpu_header.bridge_port = ingress_metadata.bridge_port;
+}
+
+action action_forward_cpu() {
+	remove_header(cpu_header);
+	standard_metadata.egress_spec = cpu_header.port;
+	// modify_field(standard_metadata.egress_spec,cpu_header.port);
 }

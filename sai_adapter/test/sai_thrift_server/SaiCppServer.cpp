@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 /// thrift sai server
-#include "../../inc/spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
 #include <string>
 #include <switch_sai_rpc.h>
 #include <thrift/server/TSimpleServer.h>
@@ -17,8 +17,6 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-
-#include <sai.h>
 
 using namespace std;
 using namespace ::apache::thrift;
@@ -57,7 +55,7 @@ public:
   std::shared_ptr<spdlog::logger> logger;
   ~switch_sai_rpcHandler() {
     // deconstructor
-    logger->debug("switch_sai_rpcHandler destructor called");
+    logger->info("switch_sai_rpcHandler destructor called");
     spdlog::drop_all();
     sai_api_uninitialize();
   }
@@ -66,21 +64,6 @@ public:
     logger = spdlog::get("logger");
     sai_api_initialize(0, &test_services);
     // server_internal_init_switch();
-  }
-
-  void server_internal_init_switch() {
-    logger->info("Switch init with default configurations");
-    sai_status_t status = SAI_STATUS_SUCCESS;
-    sai_switch_api_t *switch_api;
-    status = sai_api_query(SAI_API_SWITCH, (void **)&switch_api);
-    if (status != SAI_STATUS_SUCCESS) {
-      logger->error("sai_api_query failed!!!");
-    }
-    uint32_t count = 0;
-    sai_object_id_t s_id = 1;
-    status = switch_api->create_switch(&s_id, count, NULL);
-    logger->info("Switch inititated");
-    return;
   }
 
   sai_attribute_t
@@ -1322,7 +1305,16 @@ int main(int argc, char **argv) {
   logger->info("creating server for SAI on port {}", sai_port);
 
   // open server to sai functions
+  int fd = open("/proc/1/ns/net", O_RDONLY);
+  if (setns(fd, 0) == -1) {
+    return -1;
+  }
   boost::shared_ptr<switch_sai_rpcHandler> handler(new switch_sai_rpcHandler());
+  // fd = open("/var/run/netns/sw_net",
+  //               O_RDONLY);
+  // if (setns(fd, 0) == -1) {
+  //   return -1;
+  // }
   boost::shared_ptr<TProcessor> processor(new switch_sai_rpcProcessor(handler));
   boost::shared_ptr<TServerTransport> serverTransport(
       new TServerSocket(sai_port));
@@ -1333,7 +1325,6 @@ int main(int argc, char **argv) {
 
   TSimpleServer server(processor, serverTransport, transportFactory,
                        protocolFactory);
-
   server_ptr = &server;
   signal(SIGINT, close_rpc_server);
   logger->info("SAI rpc server started on port {}", sai_port);
@@ -1342,3 +1333,9 @@ int main(int argc, char **argv) {
   spdlog::drop_all();
   return 0;
 }
+
+// fd = open("/proc/1/ns/net",
+//                 O_RDONLY);
+//   if (setns(fd, 0) == -1) {
+//     return -1;
+//   }

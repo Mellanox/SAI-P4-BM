@@ -23,18 +23,18 @@ metadata 	ingress_metadata_t 	 ingress_metadata;
 metadata 	egress_metadata_t 	 egress_metadata;
 
 control ingress {
-	// phy
-	control_ingress_port();	//bridging
-    if((ingress_metadata.l2_if_type == L2_1Q_BRIDGE) or (ingress_metadata.l2_if_type == L2_1D_BRIDGE)) {
-    	control_bridge();
+	if (ingress_metadata.cpu_port == 0) {
+		// phy
+		control_ingress_port();	
+    	if((ingress_metadata.l2_if_type == L2_1Q_BRIDGE) or (ingress_metadata.l2_if_type == L2_1D_BRIDGE)) {
+    		control_bridge();  //bridging
+		}
+		// router
+		if ((ingress_metadata.l2_if_type == L2_ROUTER_TYPE) or (ingress_metadata.go_to_router == 1)) { 
+			control_router_flow();
+		}
+		//todo: bridge after router
 	}
-
-	// router
-	if ((ingress_metadata.l2_if_type == L2_ROUTER_TYPE) or (ingress_metadata.go_to_router == 1)) { 
-		control_router_flow();
-	}
-
-	//todo: bridge after router
 }
 
 control control_bridge { 
@@ -44,7 +44,7 @@ control control_bridge {
 		control_1q_bridge_flow();
 	}
 
-	// control_learn_fdb();
+	apply(table_learn_fdb); 
 	if((ethernet.dstAddr&0x010000000000)==0x0){   //unicast 
 		control_unicast_fdb();
 	} else if(ethernet.dstAddr==0xffffffffffff){  //broadcast
@@ -98,7 +98,6 @@ control control_router_flow{
 // }
 
 control control_unicast_fdb{
-	apply(table_learn_fdb); //TODO: is this only relevant for unicast?
 	apply(table_l3_interface){//should be for unicast only TDB
 		miss{ 
 				apply(table_fdb) {
@@ -136,35 +135,45 @@ control control_mc_fdb{
 
 
 control egress{
-	if(ingress_metadata.l2_if_type == L2_1D_BRIDGE){
-		apply(table_egress_vbridge_STP);
-	}
-	if(ingress_metadata.l2_if_type == L2_1Q_BRIDGE){
-		apply(table_egress_xSTP);
-		apply(table_egress_vlan_filtering);
-	}
+	if (ingress_metadata.cpu_port == 1) {
+		control_cpu();
+	} else {
+		if(ingress_metadata.l2_if_type == L2_1D_BRIDGE){
+			apply(table_egress_vbridge_STP);
+		}
+		if(ingress_metadata.l2_if_type == L2_1Q_BRIDGE){
+			apply(table_egress_xSTP);
+			apply(table_egress_vlan_filtering);
+		}
 
-	apply(table_egress_br_port_to_if);
-	if(ingress_metadata.l2_if_type == L2_1D_BRIDGE){
-		apply(table_egress_set_vlan);
-	}
-	apply(table_egress_vlan_tag);
+		apply(table_egress_br_port_to_if);
+		if(ingress_metadata.l2_if_type == L2_1D_BRIDGE){
+			apply(table_egress_set_vlan);
+		}
+		apply(table_egress_vlan_tag);
 
-	if (egress_metadata.out_if_type == OUT_IF_IS_LAG) { 
-		apply(table_lag_hash);
-		apply(table_egress_lag);
+		if (egress_metadata.out_if_type == OUT_IF_IS_LAG) { 
+			apply(table_lag_hash);
+			apply(table_egress_lag);
+		}
+		else if(egress_metadata.out_if == OUT_IF_IS_ROUTER){
+			control_1q_egress_uni_router();
+		}
+		//apply(egress_acl); // TODO
+		//if((egress_metadata.stp_state == STP_FORWARDING) and (egress_metadata.tag_mode == TAG) ){
+			// TODO: go to egress
+		//}
+		apply(table_egress_clone_internal);
 	}
-	else if(egress_metadata.out_if == OUT_IF_IS_ROUTER){
-		control_1q_egress_uni_router();
-	}
-	//apply(egress_acl); // TODO
-	//if((egress_metadata.stp_state == STP_FORWARDING) and (egress_metadata.tag_mode == TAG) ){
-		// TODO: go to egress
-	//}
-	apply(table_egress_clone_internal);
+}
+
+control control_cpu {
+	apply(table_cpu_forward);
 }
 
 control control_1q_egress_uni_router {
 
 }
+
+
 

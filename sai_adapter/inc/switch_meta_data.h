@@ -104,6 +104,12 @@ public:
   BmEntryHandle handle_egress_br_port_to_if;
   BmEntryHandle handle_subport_ingress_interface_type;
   BmEntryHandle handle_port_ingress_interface_type;
+  std::map<uint32_t, BmEntryHandle>
+      handle_fdb_port; // per bridge_id, valid for .1Q
+  std::map<uint32_t, BmEntryHandle>
+      handle_fdb_learn_port;               // per bridge_id, valid for .1Q
+  BmEntryHandle handle_fdb_sub_port;       // valid for .1D
+  BmEntryHandle handle_fdb_learn_sub_port; // valid for .1D
   // BmEntryHandle handle_cfg; // TODO
   BridgePort_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->port_id = 0;
@@ -117,6 +123,37 @@ public:
     this->handle_egress_br_port_to_if = NULL_HANDLE;
     this->handle_subport_ingress_interface_type = NULL_HANDLE;
     this->handle_port_ingress_interface_type = NULL_HANDLE;
+    this->handle_fdb_sub_port = NULL_HANDLE;
+    this->handle_fdb_learn_sub_port = NULL_HANDLE;
+  }
+
+  bool does_fdb_exist(uint32_t bridge_id) {
+    if (bridge_port_type == SAI_BRIDGE_PORT_TYPE_SUB_PORT) {
+      return (handle_fdb_sub_port != NULL_HANDLE);
+    } else {
+      return (handle_fdb_port.count(bridge_id) == 1);
+    }
+  }
+
+  void set_fdb_handle(BmEntryHandle handle_fdb, BmEntryHandle handle_learn_fdb,
+                      uint32_t bridge_id) {
+    if (bridge_port_type == SAI_BRIDGE_PORT_TYPE_SUB_PORT) {
+      handle_fdb_sub_port = handle_fdb;
+      handle_fdb_learn_sub_port = handle_learn_fdb;
+    } else {
+      handle_fdb_port[bridge_id] = handle_fdb;
+      handle_fdb_learn_port[bridge_id] = handle_learn_fdb;
+    }
+  }
+
+  void remove_fdb_handle(uint32_t bridge_id) {
+    if (bridge_port_type == SAI_BRIDGE_PORT_TYPE_SUB_PORT) {
+      handle_fdb_sub_port = NULL_HANDLE;
+      handle_fdb_learn_sub_port = NULL_HANDLE;
+    } else {
+      handle_fdb_port.erase(bridge_id);
+      handle_fdb_learn_port.erase(bridge_id);
+    }
   }
 };
 
@@ -190,6 +227,52 @@ public:
   }
 };
 
+class HostIF_obj : public Sai_obj {
+public:
+  Port_obj *port;
+  sai_hostif_type_t hostif_type;
+  std::string netdev_name;
+  int netdev_fd;
+  std::thread netdev_thread;
+  HostIF_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
+    this->port = nullptr;
+    this->hostif_type = SAI_HOSTIF_TYPE_NETDEV;
+    this->netdev_name = "";
+  }
+};
+
+class HostIF_Table_Entry_obj : public Sai_obj {
+public:
+  sai_hostif_table_entry_type_t entry_type;
+  sai_hostif_table_entry_channel_type_t channel_type;
+  uint16_t trap_id;
+  HostIF_Table_Entry_obj(sai_id_map_t *sai_id_map_ptr)
+      : Sai_obj(sai_id_map_ptr) {
+    this->trap_id = 0;
+    this->entry_type = SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID;
+    this->channel_type =
+        SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_PHYSICAL_PORT;
+  }
+};
+
+class HostIF_Trap_obj : public Sai_obj {
+public:
+  sai_hostif_trap_type_t trap_type;
+  sai_packet_action_t trap_action;
+  uint16_t trap_id;
+  BmEntryHandle handle_l2_trap;
+  BmEntryHandle handle_trap_id;
+  HostIF_Trap_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
+    this->trap_id = 0;
+  }
+};
+
+class HostIF_Trap_Group_obj : public Sai_obj {
+public:
+  HostIF_Trap_Group_obj(sai_id_map_t *sai_id_map_ptr)
+      : Sai_obj(sai_id_map_ptr) {}
+};
+
 typedef std::map<sai_object_id_t, BridgePort_obj *> bridge_port_id_map_t;
 typedef std::map<sai_object_id_t, Port_obj *> port_id_map_t;
 typedef std::map<sai_object_id_t, Bridge_obj *> bridge_id_map_t;
@@ -198,6 +281,13 @@ typedef std::map<sai_object_id_t, Vlan_member_obj *> vlan_member_id_map_t;
 typedef std::map<sai_object_id_t, Lag_obj *> lag_id_map_t;
 typedef std::map<sai_object_id_t, uint32_t> l2_if_map_t;
 typedef std::map<sai_object_id_t, Lag_member_obj *> lag_member_id_map_t;
+typedef std::map<sai_object_id_t, HostIF_obj *> hostif_id_map_t;
+typedef std::map<sai_object_id_t, HostIF_Table_Entry_obj *>
+    hostif_table_entry_id_map_t;
+typedef std::map<sai_object_id_t, HostIF_Trap_obj *> hostif_trap_id_map_t;
+typedef std::map<sai_object_id_t, HostIF_Trap_Group_obj *>
+    hostif_trap_group_id_map_t;
+
 class Switch_metadata { // TODO:  add default.. // this object_id is the
                         // switch_id
 public:
@@ -209,6 +299,10 @@ public:
   vlan_member_id_map_t vlan_members;
   lag_id_map_t lags;
   lag_member_id_map_t lag_members;
+  hostif_id_map_t hostifs;
+  hostif_table_entry_id_map_t hostif_table_entries;
+  hostif_trap_id_map_t hostif_traps;
+  hostif_trap_group_id_map_t hostif_trap_groups;
   sai_object_id_t default_bridge_id;
   Switch_metadata() {
     ports.clear();
@@ -219,13 +313,53 @@ public:
     lags.clear();
   }
 
-  uint16_t GetVlanObjIdFromVid(uint16_t vid) {
+  HostIF_Table_Entry_obj *GetTableEntryFromTrapID(uint16_t trap_id) {
+    for (hostif_table_entry_id_map_t::iterator it =
+             hostif_table_entries.begin();
+         it != hostif_table_entries.end(); ++it) {
+      if (it->second->trap_id == trap_id) {
+        return it->second;
+      }
+    }
+    spdlog::get("logger")->error("hostif_table_entry not found for trap_id {} ",
+                                 trap_id);
+    return nullptr;
+  }
+
+  BridgePort_obj *GetBrPortObjFromBrPort(uint16_t bridge_port) {
+    for (bridge_port_id_map_t::iterator it = bridge_ports.begin();
+         it != bridge_ports.end(); ++it) {
+      if (it->second->bridge_port == bridge_port) {
+        return it->second;
+      }
+    }
+    spdlog::get("logger")->error(
+        "bridge_port object not found for bridge_port {} ", bridge_port);
+    return nullptr;
+  }
+
+  sai_object_id_t GetVlanObjIdFromVid(uint16_t vid) {
     for (vlan_id_map_t::iterator it = vlans.begin(); it != vlans.end(); ++it) {
       if (it->second->vid == vid) {
         return it->first;
       }
     }
+    spdlog::get("logger")->error("vlan object not found for vid {} ", vid);
     return 0;
+  }
+
+  HostIF_obj *GetHostIFFromPhysicalPort(int port_num) {
+    for (hostif_id_map_t::iterator it = hostifs.begin(); it != hostifs.end();
+         ++it) {
+      spdlog::get("logger")->debug("hostif hw_port {} ",
+                                   it->second->port->hw_port);
+      if (it->second->port->hw_port == port_num) {
+        return it->second;
+      }
+    }
+    spdlog::get("logger")->error("hostif not found for physical port {} ",
+                                 port_num);
+    return nullptr;
   }
 
   uint32_t GetNewBridgePort() {
@@ -271,6 +405,7 @@ public:
     }
     return bridge_ids.size();
   }
+
   uint32_t GetNewL2IF() {
     std::vector<uint32_t> l2_ifs_nums;
     for (port_id_map_t::iterator it = ports.begin(); it != ports.end(); ++it) {
@@ -289,6 +424,20 @@ public:
     spdlog::get("logger")->debug("--> Get_New_L2_if: new if is: {} ",
                                  l2_ifs_nums.size());
     return l2_ifs_nums.size();
+  }
+
+  uint16_t GetNewTrapID() {
+    std::vector<uint16_t> trap_ids;
+    for (hostif_trap_id_map_t::iterator it = hostif_traps.begin();
+         it != hostif_traps.end(); ++it) {
+      trap_ids.push_back(it->second->trap_id);
+    }
+    for (int i = 0; i < trap_ids.size(); ++i) {
+      if (std::find(trap_ids.begin(), trap_ids.end(), i) == trap_ids.end()) {
+        return i;
+      }
+    }
+    return trap_ids.size();
   }
 };
 

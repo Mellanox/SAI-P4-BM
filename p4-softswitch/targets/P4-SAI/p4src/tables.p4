@@ -310,3 +310,13 @@ table table_egress_clone_internal {
     actions {_nop; action_cpu_encap;} 
     // size: 16;
 }
+
+//-----------
+// cpu forwarding
+//-----------
+table table_cpu_forward {
+    reads {
+        cpu_header : valid;
+    }
+    actions {action_forward_cpu;}
+}

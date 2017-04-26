@@ -60,6 +60,7 @@ table_set_default table_mc_l2_sg_g  action_set_mc_fdb_miss
 table_set_default table_fdb action_set_unknown_unicast 1
 table_set_default table_broadcast action_forward_mc_set_if_list 1 0
 table_set_default table_flood action_forward_mc_set_if_list 1 0
+table_add table_cpu_forward action_forward_cpu 1  =>
 
 mc_node_create 0 0 1 2 3 4 5 6 7
 mc_mgrp_create 1

@@ -5,6 +5,10 @@ sai_id_map_t *sai_adapter::sai_id_map_ptr;
 Switch_metadata *sai_adapter::switch_metadata_ptr;
 std::vector<sai_object_id_t> *sai_adapter::switch_list_ptr;
 std::shared_ptr<spdlog::logger> *sai_adapter::logger;
+bool sai_adapter::pcap_loop_started;
+std::mutex sai_adapter::m;
+hostif_trap_id_table_t sai_adapter::hostif_trap_id_table;
+pcap_t *sai_adapter::adapter_pcap;
 
 sai_adapter::sai_adapter()
     : //  constructor pre initializations
@@ -16,12 +20,11 @@ sai_adapter::sai_adapter()
   // logger
   logger_o = spdlog::get("logger");
   if (logger_o == 0) {
-    auto logger_o = spdlog::basic_logger_mt("logger", "logs/log.txt");
-    logger_o->flush_on(spdlog::level::info);   // make err
-    spdlog::set_pattern("[thread %t] %l %v "); // add %T for time
+    logger_o = spdlog::basic_logger_mt("logger", "logs/log.txt");
+    logger_o->flush_on(spdlog::level::info);     // make err
+    spdlog::set_pattern("[thread %t] [%l] %v "); // add %T for time
   }
   logger = &logger_o;
-  startSaiAdapterMain();
 
   // start P4 link
   switch_list_ptr = &switch_list;
@@ -51,6 +54,7 @@ sai_adapter::sai_adapter()
 
   fdb_api.create_fdb_entry = &sai_adapter::create_fdb_entry;
   fdb_api.remove_fdb_entry = &sai_adapter::remove_fdb_entry;
+  fdb_api.flush_fdb_entries = &sai_adapter::flush_fdb_entries;
 
   vlan_api.create_vlan = &sai_adapter::create_vlan;
   vlan_api.remove_vlan = &sai_adapter::remove_vlan;
@@ -67,13 +71,24 @@ sai_adapter::sai_adapter()
   lag_api.remove_lag = &sai_adapter::remove_lag;
   lag_api.create_lag_member = &sai_adapter::create_lag_member;
   lag_api.remove_lag_member = &sai_adapter::remove_lag_member;
-  //
+
+  hostif_api.create_hostif = &sai_adapter::create_hostif;
+  hostif_api.remove_hostif = &sai_adapter::remove_hostif;
+  hostif_api.create_hostif_table_entry =
+      &sai_adapter::create_hostif_table_entry;
+  hostif_api.remove_hostif_table_entry =
+      &sai_adapter::remove_hostif_table_entry;
+  hostif_api.create_hostif_trap_group = &sai_adapter::create_hostif_trap_group;
+  hostif_api.remove_hostif_trap_group = &sai_adapter::remove_hostif_trap_group;
+  hostif_api.create_hostif_trap = &sai_adapter::create_hostif_trap;
+  hostif_api.remove_hostif_trap = &sai_adapter::remove_hostif_trap;
+
+  startSaiAdapterMain();
   (*logger)->info("BM connection started on port {}", bm_port);
 }
 
 sai_adapter::~sai_adapter() {
   endSaiAdapterMain();
-  std::this_thread::sleep_for(std::chrono::milliseconds(5));
   transport->close();
   (*logger)->info("BM clients closed\n");
 }
@@ -110,32 +125,49 @@ sai_status_t sai_adapter::sai_api_query(sai_api_t sai_api_id,
   return SAI_STATUS_SUCCESS;
 }
 
+void sai_adapter::internal_init_switch() {
+  sai_object_id_t switch_id2;
+  (*logger)->info("Switch init with default configurations");
+  switch_api.create_switch(&switch_id2, 0, NULL);
+  (*logger)->info("Switch init with default configurations done");
+  return;
+}
+
 void sai_adapter::startSaiAdapterMain() {
-  std::thread SaiAdapterThread(&sai_adapter::SaiAdapterMain, this);
-  SaiAdapterThread.detach();
+  internal_init_switch();
+  pcap_loop_started = false;
+  SaiAdapterThread = std::thread(&sai_adapter::SaiAdapterMain, this);
+  {
+    std::unique_lock<std::mutex> lk(m);
+    cv.wait(lk, [] { return pcap_loop_started; });
+  }
+  std::this_thread::sleep_for(
+      std::chrono::milliseconds(500)); // TODO consider later release of lock
+  (*logger)->info("Sniffer initialization done");
 }
 
 void sai_adapter::endSaiAdapterMain() {
   pcap_breakloop(adapter_pcap);
   pcap_close(adapter_pcap);
+  SaiAdapterThread.join();
 }
 
 void sai_adapter::SaiAdapterMain() {
   (*logger)->info("SAI Adapter Thread Started");
-
   // Change to sai_adapter network namespace (hostif_net)
-  int fd = open("/var/run/netns/hostif_net",
-                O_RDONLY); /* Get descriptor for namespace */
-  if (fd == -1) {
-    (*logger)->error("open netns fd failed");
-    return;
-  }
-  if (setns(fd, 0) == -1) { /* Join that namespace */
-    (*logger)->error("setns failed");
-    return;
-  }
+  // int fd = open("/var/run/netns/hostif_net",
+  //               O_RDONLY); /* Get descriptor for namespace */
+  // if (fd == -1) {
+  //   (*logger)->error("open netns fd failed");
+  //   release_pcap_lock();
+  //   return;
+  // }
+  // if (setns(fd, 0) == -1) { /* Join that namespace */
+  //   (*logger)->error("setns failed");
+  //   release_pcap_lock();
+  //   return;
+  // }
 
-  internal_init_switch();
   PacketSniffer();
   (*logger)->info("SAI Adapter Thread Ended");
 }
