@@ -103,6 +103,8 @@ header_type egress_metadata_t {
     }
 }
 
+
+
 header_type intrinsic_metadata_t {
     fields {
         bit <48> ingress_global_timestamp;
@@ -121,4 +123,19 @@ header_type cpu_header_t {
         bit<8>  port;
         bit<16> trap_id;
     }
+}
+
+
+
+// TODO review all wdt.
+header_type router_metadata_t{
+    fields{
+        bit<3> ingress_rif;
+        bit<3> egress_rif;
+        bit<2> erif_type;
+        bit<8> ingress_vrf;
+        bit<32> next_hop_dst_ip;
+        bit<8> next_hop_id;
+        bit<2> packet_action;
+    }    
 }

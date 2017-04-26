@@ -2,16 +2,17 @@ action _nop() {
 	no_op();
 }
 
-action_set_ingress_rif(){
-	
-}
-action_set_vrf(){
-	
+action_set_ingress_rif(in bit<3> irif){
+	router_metadata.ingress_rif	= irif;
 }
 
-action_set_acl_id(){
-	
+action_set_vrf(in bit<8> vrif){
+	router_metadata.ingress_vrif = vrif;
 }
+
+// action_set_acl_id(){
+	
+//}
 
 action_set_pkt_type_set_nhop(){
 	

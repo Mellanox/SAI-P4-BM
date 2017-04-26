@@ -2,8 +2,8 @@
 
 table table_ingress_L3_if {
 	reads{
-		ingress_metadata.bridge_port 	: exact;
-		ingress_metadata.vlan			: exact;
+		router_metadata.bridge_port 	: exact;
+		router_metadata.vlan			: exact;
 	}
 	actions{action_set_ingress_rif}
 	size: L3_IF_TABLE_SIZE; // TODO
@@ -11,15 +11,15 @@ table table_ingress_L3_if {
 
 table table_ingress_vrf {
 	reads{
-		ingress_metadata.rif : exact;
+		router_metadata.rif : exact;
 	}
-	actions{action_set_vrf ; action_set_acl_id }
+	actions{action_set_vrf} //; action_set_acl_id }
 	size: ROUTER_IF_TABLE_SIZE;
 }
 
 table table_router {
 	reads{
-		ingress_metadata.l3_LPM_key : lpm;
+		router_metadata.l3_LPM_key : lpm;
 	}
 	actions{action_set_pkt_type_set_nhop}
 	size: ROUTER_LPM_TABLE_SIZE;
@@ -27,7 +27,7 @@ table table_router {
 
 table table_next_hop {
 	reads{
-		egress_metadata.next_hop : exact;
+		router_metadata.next_hop : exact;
 	}
 	actions{ action_set_erif_set_nh_dstip }
 	size: NHOP_TABLE_SIZE;
@@ -43,8 +43,8 @@ table table_next_hop {
 
 table table_Neigh {
 	reads{
-		egress_metadata.erif 		: exact;
-		egress_metadata.nh_dstip 	: exact;
+		router_metadata.egress_rif 		: exact;
+		router_metadata.next_hop_dst_ip 	: exact;
 	}
 	actions{action_set_packet_dmac}
 		//TODO :action_trap ;action_forward ;action_drop; action_copy_to_cpu}
@@ -53,14 +53,30 @@ table table_Neigh {
 
 table table_egress_L3_if {
 	reads{
-		egress_metadata.erif : exact;
+		router_metadata.egress_rif : exact;
 	}
-	actions{action_set_smac_vid }
+	actions{action_set_smac_vid_erif_type } // TODO check if type is ok here - not mentioned in visio
 	size: ;
 }
 
 // egress tables:
-table  {
+table table_egress_1D_bridge {
+	reads{
+		a : exact;
+	}
+	actions{ ; ; }
+	size: ;
+}
+
+table table_egress_1Q_bridge {
+	reads{
+		a : exact;
+	}
+	actions{ ; ; }
+	size: ;
+}
+
+table table_egress_router_port {
 	reads{
 		a : exact;
 	}

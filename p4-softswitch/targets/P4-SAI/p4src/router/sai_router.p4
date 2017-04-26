@@ -18,8 +18,7 @@ header   udp_t			  udp;
 header   cpu_header_t     cpu_header;  
 
 // metadata
-metadata 	ingress_metadata_t 	 ingress_metadata;
-metadata 	egress_metadata_t 	 egress_metadata;
+metadata 	router_metadata_t 	 router_metadata;
 
 control ingress {
 	control_1q_uni_router();
@@ -40,15 +39,15 @@ control control_1q_uni_router{
 
 
 control egress{
-	if(egress_metadata.l2_if_type == L2_1D_BRIDGE){
+	if(router_metadata.rif_type == BRIDGE_PORT_1D){
 		apply(table_egress_1D_bridge);
 	} 
-	else if(egress_metadata.l2_if_type == L2_1Q_BRIDGE)
+	else if(router_metadata.rif_type == BRIDGE_PORT_1Q)
 	{
 		apply(table_egress_1Q_bridge);
 	}
 	else{
-		apply(table_egress_1Q_port);	// router port
+		apply(table_egress_router_port);	// router port
 	}
 }
 	
