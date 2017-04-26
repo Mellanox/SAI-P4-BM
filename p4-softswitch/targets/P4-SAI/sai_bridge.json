@@ -1652,39 +1652,40 @@
             ]
         },
         {
-            "name": "action_set_port_configurations",
+            "name": "action_forward_vlan_tag",
             "id": 18,
             "runtime_data": [
                 {
-                    "name": "pvid",
+                    "name": "pcp",
+                    "bitwidth": 3
+                },
+                {
+                    "name": "cfi",
+                    "bitwidth": 1
+                },
+                {
+                    "name": "vid",
                     "bitwidth": 12
-                },
-                {
-                    "name": "bind_mode",
-                    "bitwidth": 1
-                },
-                {
-                    "name": "mtu",
-                    "bitwidth": 32
-                },
-                {
-                    "name": "drop_tagged",
-                    "bitwidth": 1
-                },
-                {
-                    "name": "drop_untagged",
-                    "bitwidth": 1
                 }
             ],
             "primitives": [
+                {
+                    "op": "add_header",
+                    "parameters": [
+                        {
+                            "type": "header",
+                            "value": "vlan"
+                        }
+                    ]
+                },
                 {
                     "op": "modify_field",
                     "parameters": [
                         {
                             "type": "field",
                             "value": [
-                                "ingress_metadata",
-                                "vid"
+                                "vlan",
+                                "pcp"
                             ]
                         },
                         {
@@ -1699,8 +1700,8 @@
                         {
                             "type": "field",
                             "value": [
-                                "ingress_metadata",
-                                "bind_mode"
+                                "vlan",
+                                "cfi"
                             ]
                         },
                         {
@@ -1715,8 +1716,8 @@
                         {
                             "type": "field",
                             "value": [
-                                "ingress_metadata",
-                                "mtu"
+                                "vlan",
+                                "vid"
                             ]
                         },
                         {
@@ -1731,13 +1732,16 @@
                         {
                             "type": "field",
                             "value": [
-                                "ingress_metadata",
-                                "drop_tagged"
+                                "vlan",
+                                "etherType"
                             ]
                         },
                         {
-                            "type": "runtime_data",
-                            "value": 3
+                            "type": "field",
+                            "value": [
+                                "ethernet",
+                                "etherType"
+                            ]
                         }
                     ]
                 },
@@ -1747,13 +1751,13 @@
                         {
                             "type": "field",
                             "value": [
-                                "ingress_metadata",
-                                "drop_untagged"
+                                "ethernet",
+                                "etherType"
                             ]
                         },
                         {
-                            "type": "runtime_data",
-                            "value": 4
+                            "type": "hexstr",
+                            "value": "0x8100"
                         }
                     ]
                 }
@@ -1949,40 +1953,39 @@
             ]
         },
         {
-            "name": "action_forward_vlan_tag",
+            "name": "action_set_port_configurations",
             "id": 24,
             "runtime_data": [
                 {
-                    "name": "pcp",
-                    "bitwidth": 3
+                    "name": "pvid",
+                    "bitwidth": 12
                 },
                 {
-                    "name": "cfi",
+                    "name": "bind_mode",
                     "bitwidth": 1
                 },
                 {
-                    "name": "vid",
-                    "bitwidth": 12
+                    "name": "mtu",
+                    "bitwidth": 32
+                },
+                {
+                    "name": "drop_tagged",
+                    "bitwidth": 1
+                },
+                {
+                    "name": "drop_untagged",
+                    "bitwidth": 1
                 }
             ],
             "primitives": [
-                {
-                    "op": "add_header",
-                    "parameters": [
-                        {
-                            "type": "header",
-                            "value": "vlan"
-                        }
-                    ]
-                },
                 {
                     "op": "modify_field",
                     "parameters": [
                         {
                             "type": "field",
                             "value": [
-                                "vlan",
-                                "pcp"
+                                "ingress_metadata",
+                                "vid"
                             ]
                         },
                         {
@@ -1997,8 +2000,8 @@
                         {
                             "type": "field",
                             "value": [
-                                "vlan",
-                                "cfi"
+                                "ingress_metadata",
+                                "bind_mode"
                             ]
                         },
                         {
@@ -2013,8 +2016,8 @@
                         {
                             "type": "field",
                             "value": [
-                                "vlan",
-                                "vid"
+                                "ingress_metadata",
+                                "mtu"
                             ]
                         },
                         {
@@ -2029,16 +2032,13 @@
                         {
                             "type": "field",
                             "value": [
-                                "vlan",
-                                "etherType"
+                                "ingress_metadata",
+                                "drop_tagged"
                             ]
                         },
                         {
-                            "type": "field",
-                            "value": [
-                                "ethernet",
-                                "etherType"
-                            ]
+                            "type": "runtime_data",
+                            "value": 3
                         }
                     ]
                 },
@@ -2048,13 +2048,13 @@
                         {
                             "type": "field",
                             "value": [
-                                "ethernet",
-                                "etherType"
+                                "ingress_metadata",
+                                "drop_untagged"
                             ]
                         },
                         {
-                            "type": "hexstr",
-                            "value": "0x8100"
+                            "type": "runtime_data",
+                            "value": 4
                         }
                     ]
                 }
