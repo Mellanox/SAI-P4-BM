@@ -34,7 +34,8 @@ Now, follow these steps to run the PTF tests:
 
 ### LOGS
 During the tests, the following logs are outputted:
-1) BM server log can be found under SAI-P4-BM/p4-softswitch/targets/P4-SAI/log.txt
+1) BM server logs can be found under SAI-P4-BM/p4-softswitch/targets/P4-SAI/logs/
+    - running the script: log_aggregation.py (found in the target dir) will merge the bridge and router logs together.
 2) thrift server log is outputted to SAI-P4-BM/sai_adapter/test/sai_thrift_server/logs/log.txt
 3) PTF log is stdout.  
 
