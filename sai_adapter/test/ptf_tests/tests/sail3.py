@@ -29,18 +29,34 @@ class L3IPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         print
         print "Sending packet port 1 -> port 2 (192.168.0.1 -> 10.10.10.1 [id = 101])"
-        switch_init(self.client)
-        port1 = port_list[0]
-        port2 = port_list[1]
+        switch_init2(self.client)
+        port0 = port_list[0]
+        port1 = port_list[1]
         v4_enabled = 1
-        v6_enabled = 1
+        v6_enabled = 0
         mac_valid = 0
         mac = ''
+        vlan_id0 = 10
+        vlan_id1 = 15
+
+        bridge_port0 = br_port_list[port0]
+        bridge_port1 = br_port_list[port1]
+
+        vlan_attr_value = sai_thrift_attribute_value_t(u16= vlan_id0)
+        vlan_attr = sai_thrift_attribute_t(id=SAI_VLAN_ATTR_VLAN_ID, value=vlan_attr_value)
+        vlan_oid0 = self.client.sai_thrift_create_vlan([vlan_attr])
+        vlan_attr_value = sai_thrift_attribute_value_t(u16= vlan_id1)
+        vlan_attr = sai_thrift_attribute_t(id=SAI_VLAN_ATTR_VLAN_ID, value=vlan_attr_value)
+        vlan_oid1 = self.client.sai_thrift_create_vlan([vlan_attr])
+
+        tagging_mode = SAI_VLAN_TAGGING_MODE_UNTAGGED
+        vlan_member0 = sai_thrift_create_vlan_member(self.client, vlan_oid0, bridge_port0, tagging_mode)
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_oid1, bridge_port1, tagging_mode)
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
-        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 1, port1, 0, v4_enabled, v6_enabled, mac)
-        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, port2, 0, v4_enabled, v6_enabled, mac)
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan_id0, v4_enabled, v6_enabled, mac)
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan_id1, v4_enabled, v6_enabled, mac)
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV4
         ip_addr1 = '10.10.10.1'
@@ -75,7 +91,10 @@ class L3IPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
 
             self.client.sai_thrift_remove_router_interface(rif_id1)
             self.client.sai_thrift_remove_router_interface(rif_id2)
-
+            self.client.sai_thrift_remove_vlan_member(vlan_member0)
+            self.client.sai_thrift_remove_vlan_member(vlan_member1)
+            self.client.sai_thrift_remove_vlan(vlan_oid0)
+            self.client.sai_thrift_remove_vlan(vlan_oid1)
             self.client.sai_thrift_remove_virtual_router(vr_id)
 
 @group('l3')

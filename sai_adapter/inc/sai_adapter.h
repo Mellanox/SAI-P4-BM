@@ -210,6 +210,35 @@ public:
                                          const sai_attribute_t *attr_list);
   static sai_status_t remove_hostif_trap(sai_object_id_t hostif_trap_id);
 
+  // ROUTER
+  static sai_status_t create_virtual_router (sai_object_id_t *vr_id,
+                                            sai_object_id_t switch_id,
+                                            uint32_t attr_count,
+                                            const sai_attribute_t *attr_list);
+  static sai_status_t remove_virtual_router(sai_object_id_t vr_id);
+
+  static sai_status_t create_router_interface (sai_object_id_t *lag_member_id,
+                                            sai_object_id_t switch_id,
+                                            uint32_t attr_count,
+                                            const sai_attribute_t *attr_list);
+  static sai_status_t remove_router_interface (sai_object_id_t router_interface_id);
+
+  static sai_status_t create_neighbor_entry (const sai_neighbor_entry_t *neighbor_entry,
+                                            uint32_t attr_count,
+                                            const sai_attribute_t *attr_list);
+  static sai_status_t remove_neighbor_entry(const sai_neighbor_entry_t *neighbor_entry);
+
+  static sai_status_t create_next_hop (sai_object_id_t *next_hop_id,
+                                            sai_object_id_t switch_id,
+                                            uint32_t attr_count,
+                                            const sai_attribute_t *attr_list);
+  static sai_status_t remove_next_hop(sai_object_id_t next_hop_id);
+
+  static sai_status_t create_route_entry(const sai_route_entry_t *route_entry,
+                                         uint32_t attr_count,
+                                         const sai_attribute_t *attr_list);
+  static sai_status_t remove_route_entry(const sai_route_entry_t *route_entry);
+
   // api s
   sai_port_api_t port_api;
   sai_bridge_api_t bridge_api;
@@ -218,6 +247,12 @@ public:
   sai_vlan_api_t vlan_api;
   sai_lag_api_t lag_api;
   sai_hostif_api_t hostif_api;
+  sai_virtual_router_api_t virtual_router_api;
+  sai_route_api_t route_api;
+  sai_next_hop_api_t next_hop_api;
+  sai_next_hop_group_api_t next_hop_group_api;
+  sai_router_interface_api_t router_interface_api;
+  sai_neighbor_api_t neighbor_api;
   sai_adapter();
   ~sai_adapter();
   sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table);
