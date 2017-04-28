@@ -26,7 +26,7 @@ sai_status_t sai_adapter::create_vlan(sai_object_id_t *vlan_id,
     BmAddEntryOptions options;
     match_params.push_back(parse_exact_match_param(vlan->vid, 2));
     action_data.push_back(parse_param(bridge_id, 2));
-    vlan->handle_id_1q = bm_client_ptr->bm_mt_add_entry(
+    vlan->handle_id_1q = bm_bridge_client_ptr->bm_mt_add_entry(
         cxt_id, "table_bridge_id_1q", match_params, "action_set_bridge_id",
         action_data, options);
   }
@@ -38,7 +38,7 @@ sai_status_t sai_adapter::remove_vlan(sai_object_id_t vlan_id) {
   (*logger)->info("remove_vlan: {}", vlan_id);
   Vlan_obj *vlan = switch_metadata_ptr->vlans[vlan_id];
   if (vlan->handle_id_1q != NULL_HANDLE) {
-    bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_bridge_id_1q",
+    bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_bridge_id_1q",
                                       vlan->handle_id_1q);
   }
   switch_metadata_ptr->vlans.erase(vlan->sai_object_id);
@@ -103,7 +103,7 @@ sai_status_t sai_adapter::create_vlan_member(sai_object_id_t *vlan_member_id,
     action_data.push_back(parse_param(vlan_pcp, 1));
     action_data.push_back(parse_param(vlan_cfi, 1));
     action_data.push_back(parse_param(vlan_member->vid, 2));
-    vlan_member->handle_egress_vlan_tag = bm_client_ptr->bm_mt_add_entry(
+    vlan_member->handle_egress_vlan_tag = bm_bridge_client_ptr->bm_mt_add_entry(
         cxt_id, "table_egress_vlan_tag", match_params,
         "action_forward_vlan_tag", action_data, options);
   } else if (vlan_member->tagging_mode ==
@@ -116,7 +116,7 @@ sai_status_t sai_adapter::create_vlan_member(sai_object_id_t *vlan_member_id,
     action_data.push_back(parse_param(vlan_pcp, 1));
     action_data.push_back(parse_param(vlan_cfi, 1));
     action_data.push_back(parse_param(0, 2));
-    vlan_member->handle_egress_vlan_tag = bm_client_ptr->bm_mt_add_entry(
+    vlan_member->handle_egress_vlan_tag = bm_bridge_client_ptr->bm_mt_add_entry(
         cxt_id, "table_egress_vlan_tag", match_params,
         "action_forward_vlan_tag", action_data, options);
   } else {
@@ -126,7 +126,7 @@ sai_status_t sai_adapter::create_vlan_member(sai_object_id_t *vlan_member_id,
     match_params.push_back(parse_exact_match_param(vlan_member->vid, 2));
     match_params.push_back(parse_valid_match_param(true));
     action_data.clear();
-    vlan_member->handle_egress_vlan_tag = bm_client_ptr->bm_mt_add_entry(
+    vlan_member->handle_egress_vlan_tag = bm_bridge_client_ptr->bm_mt_add_entry(
         cxt_id, "table_egress_vlan_tag", match_params,
         "action_forward_vlan_untag", action_data, options);
   }
@@ -134,10 +134,10 @@ sai_status_t sai_adapter::create_vlan_member(sai_object_id_t *vlan_member_id,
   match_params.push_back(parse_exact_match_param(bridge_port, 1));
   match_params.push_back(parse_exact_match_param(vlan_member->vid, 2));
   action_data.clear();
-  vlan_member->handle_egress_vlan_filtering = bm_client_ptr->bm_mt_add_entry(
+  vlan_member->handle_egress_vlan_filtering = bm_bridge_client_ptr->bm_mt_add_entry(
       cxt_id, "table_egress_vlan_filtering", match_params, "_nop", action_data,
       options);
-  vlan_member->handle_ingress_vlan_filtering = bm_client_ptr->bm_mt_add_entry(
+  vlan_member->handle_ingress_vlan_filtering = bm_bridge_client_ptr->bm_mt_add_entry(
       cxt_id, "table_ingress_vlan_filtering", match_params, "_nop", action_data,
       options);
   *vlan_member_id = vlan_member->sai_object_id;
@@ -150,21 +150,21 @@ sai_status_t sai_adapter::remove_vlan_member(sai_object_id_t vlan_member_id) {
   Vlan_member_obj *vlan_member =
       switch_metadata_ptr->vlan_members[vlan_member_id];
   try {
-    bm_client_ptr->bm_mt_delete_entry(
+    bm_bridge_client_ptr->bm_mt_delete_entry(
         cxt_id, "table_egress_vlan_filtering",
         vlan_member->handle_egress_vlan_filtering);
-    bm_client_ptr->bm_mt_delete_entry(
+    bm_bridge_client_ptr->bm_mt_delete_entry(
         cxt_id, "table_ingress_vlan_filtering",
         vlan_member->handle_ingress_vlan_filtering);
     if (vlan_member->tagging_mode == SAI_VLAN_TAGGING_MODE_TAGGED) {
-      bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_egress_vlan_tag",
+      bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_egress_vlan_tag",
                                         vlan_member->handle_egress_vlan_tag);
     } else if (vlan_member->tagging_mode ==
                SAI_VLAN_TAGGING_MODE_PRIORITY_TAGGED) {
-      bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_egress_vlan_tag",
+      bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_egress_vlan_tag",
                                         vlan_member->handle_egress_vlan_tag);
     } else {
-      bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_egress_vlan_tag",
+      bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_egress_vlan_tag",
                                         vlan_member->handle_egress_vlan_tag);
     }
   } catch (...) {

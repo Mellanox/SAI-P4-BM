@@ -1,6 +1,6 @@
 #include "../inc/sai_adapter.h"
 
-StandardClient *sai_adapter::bm_client_ptr;
+StandardClient *sai_adapter::bm_bridge_client_ptr;
 sai_id_map_t *sai_adapter::sai_id_map_ptr;
 Switch_metadata *sai_adapter::switch_metadata_ptr;
 std::vector<sai_object_id_t> *sai_adapter::switch_list_ptr;
@@ -16,7 +16,13 @@ sai_adapter::sai_adapter()
       transport(new TBufferedTransport(socket)),
       bprotocol(new TBinaryProtocol(transport)),
       protocol(new TMultiplexedProtocol(bprotocol, "standard")),
-      bm_client(protocol) {
+      bm_bridge_client(protocol),
+      router_socket(new TSocket("localhost", bm_port_router)),
+      router_transport(new TBufferedTransport(router_socket)),
+      router_bprotocol(new TBinaryProtocol(router_transport)),
+      router_protocol(new TMultiplexedProtocol(router_bprotocol, "standard")),
+      bm_router_client(router_protocol),
+       {
   // logger
   logger_o = spdlog::get("logger");
   if (logger_o == 0) {
@@ -31,7 +37,8 @@ sai_adapter::sai_adapter()
   switch_metadata_ptr = &switch_metadata;
   switch_metadata.hw_port_list.list = list;
   switch_metadata.hw_port_list.count = 8;
-  bm_client_ptr = &bm_client;
+  bm_bridge_client_ptr = &bm_bridge_client;
+  bm_router_client_ptr = &bm_router_client;
   sai_id_map_ptr = &sai_id_map;
   transport->open();
 

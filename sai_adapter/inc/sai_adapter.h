@@ -69,8 +69,6 @@ const int bm_port_bridge = 9090;
 const int bm_port_router = 9091;
 const int32_t cxt_id = 0;
 
-// static StandardClient* bm_client_ptr;
-// static sai_id_map_t* sai_id_map_ptr;
 string parse_param(uint64_t param, uint32_t num_of_bytes);
 BmMatchParam parse_exact_match_param(uint64_t param, uint32_t num_of_bytes);
 BmMatchParam parse_valid_match_param(bool param);
@@ -83,7 +81,12 @@ public:
   boost::shared_ptr<TTransport> transport;
   boost::shared_ptr<TProtocol> bprotocol;
   boost::shared_ptr<TProtocol> protocol;
-  StandardClient bm_client;
+  boost::shared_ptr<TTransport> router_socket;
+  boost::shared_ptr<TTransport> router_transport;
+  boost::shared_ptr<TProtocol> router_bprotocol;
+  boost::shared_ptr<TProtocol> router_protocol;
+  StandardClient bm_bridge_client;
+  StandardClient bm_router_client;
   // generals
   sai_id_map_t sai_id_map;
   Switch_metadata switch_metadata;
@@ -93,7 +96,8 @@ public:
   std::shared_ptr<spdlog::logger> logger_o;
   static vector<sai_object_id_t> *switch_list_ptr;
   static sai_id_map_t *sai_id_map_ptr;
-  static StandardClient *bm_client_ptr;
+  static StandardClient *bm_bridge_client_ptr;
+  static StandardClient *bm_router_client_ptr;
   static Switch_metadata *switch_metadata_ptr;
   static std::shared_ptr<spdlog::logger> *logger;
   // switch

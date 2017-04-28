@@ -47,14 +47,14 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
       // Store default table entries
       match_params.clear();
       match_params.push_back(parse_exact_match_param(port->l2_if, 1));
-      bm_client_ptr->bm_mt_get_entry_from_key(
+      bm_bridge_client_ptr->bm_mt_get_entry_from_key(
           entry, cxt_id, "table_port_ingress_interface_type", match_params,
           options);
       bridge_port->handle_port_ingress_interface_type = entry.entry_handle;
       match_params.clear();
       match_params.push_back(
           parse_exact_match_param(bridge_port->bridge_port, 1));
-      bm_client_ptr->bm_mt_get_entry_from_key(
+      bm_bridge_client_ptr->bm_mt_get_entry_from_key(
           entry, cxt_id, "table_egress_br_port_to_if", match_params, options);
       bridge_port->handle_egress_br_port_to_if = entry.entry_handle;
     }

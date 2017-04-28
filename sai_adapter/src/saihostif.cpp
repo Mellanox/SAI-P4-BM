@@ -171,7 +171,7 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
     match_params.push_back(
         parse_exact_match_param(1652522221570, 6)); // dmac : 01-80-c2-00-00-02
     action_data.push_back(parse_param(hostif_trap->trap_id, 2));
-    hostif_trap->handle_l2_trap = bm_client_ptr->bm_mt_add_entry(
+    hostif_trap->handle_l2_trap = bm_bridge_client_ptr->bm_mt_add_entry(
         cxt_id, "table_l2_trap", match_params, "action_set_trap_id",
         action_data, options);
     (*logger)->info("added l2 trap - lacp , trap_id: {}.", hostif_trap->trap_id,
@@ -180,7 +180,7 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
     action_data.clear();
     match_params.clear();
     match_params.push_back(parse_exact_match_param(hostif_trap->trap_id, 2));
-    hostif_trap->handle_trap_id = bm_client_ptr->bm_mt_add_entry(
+    hostif_trap->handle_trap_id = bm_bridge_client_ptr->bm_mt_add_entry(
         cxt_id, "table_trap_id", match_params, "action_trap_to_cpu",
         action_data, options);
     (*logger)->info("added LACP trap to cpu, trap_id: {}. sai_object_id: {}",
@@ -198,9 +198,9 @@ sai_status_t sai_adapter::remove_hostif_trap(sai_object_id_t hostif_trap_id) {
       switch_metadata_ptr->hostif_traps[hostif_trap_id];
   if (hostif_trap->trap_type == SAI_HOSTIF_TRAP_TYPE_LACP) {
     try {
-      bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_l2_trap",
+      bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_l2_trap",
                                         hostif_trap->handle_l2_trap);
-      bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_trap_id",
+      bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_trap_id",
                                         hostif_trap->handle_trap_id);
     } catch (...) {
       (*logger)->warn("--> unable to remove hostif_trap tables entries");

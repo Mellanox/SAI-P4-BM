@@ -1,4 +1,11 @@
 {
+    "__meta__": {
+        "version": [
+            2,
+            5
+        ],
+        "compiler": "https://github.com/p4lang/p4c-bm"
+    },
     "header_types": [
         {
             "name": "standard_metadata_t",
@@ -487,8 +494,120 @@
             "init_state": "start",
             "parse_states": [
                 {
-                    "name": "parse_vlan",
+                    "name": "start",
                     "id": 0,
+                    "parser_ops": [],
+                    "transition_key": [
+                        {
+                            "type": "lookahead",
+                            "value": [
+                                0,
+                                64
+                            ]
+                        }
+                    ],
+                    "transitions": [
+                        {
+                            "type": "hexstr",
+                            "value": "0x0000000000000000",
+                            "mask": null,
+                            "next_state": "parse_cpu_header"
+                        },
+                        {
+                            "type": "default",
+                            "value": null,
+                            "mask": null,
+                            "next_state": "parse_ethernet_or_ingress_cpu"
+                        }
+                    ]
+                },
+                {
+                    "name": "parse_cpu_header",
+                    "id": 1,
+                    "parser_ops": [
+                        {
+                            "op": "extract",
+                            "parameters": [
+                                {
+                                    "type": "regular",
+                                    "value": "cpu_header"
+                                }
+                            ]
+                        }
+                    ],
+                    "transition_key": [],
+                    "transitions": [
+                        {
+                            "type": "default",
+                            "value": null,
+                            "mask": null,
+                            "next_state": "parse_ethernet"
+                        }
+                    ]
+                },
+                {
+                    "name": "parse_ethernet",
+                    "id": 2,
+                    "parser_ops": [
+                        {
+                            "op": "extract",
+                            "parameters": [
+                                {
+                                    "type": "regular",
+                                    "value": "ethernet"
+                                }
+                            ]
+                        },
+                        {
+                            "op": "set",
+                            "parameters": [
+                                {
+                                    "type": "field",
+                                    "value": [
+                                        "ingress_metadata",
+                                        "is_tagged"
+                                    ]
+                                },
+                                {
+                                    "type": "hexstr",
+                                    "value": "0x0"
+                                }
+                            ]
+                        }
+                    ],
+                    "transition_key": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ethernet",
+                                "etherType"
+                            ]
+                        }
+                    ],
+                    "transitions": [
+                        {
+                            "type": "hexstr",
+                            "value": "0x8100",
+                            "mask": null,
+                            "next_state": "parse_vlan"
+                        },
+                        {
+                            "type": "hexstr",
+                            "value": "0x0800",
+                            "mask": null,
+                            "next_state": "parse_ipv4"
+                        },
+                        {
+                            "type": "default",
+                            "value": null,
+                            "mask": null,
+                            "next_state": null
+                        }
+                    ]
+                },
+                {
+                    "name": "parse_vlan",
+                    "id": 3,
                     "parser_ops": [
                         {
                             "op": "extract",
@@ -801,7 +920,7 @@
                 },
                 {
                     "name": "parse_ipv4",
-                    "id": 1,
+                    "id": 4,
                     "parser_ops": [
                         {
                             "op": "extract",
@@ -841,7 +960,7 @@
                 },
                 {
                     "name": "post_parse_ipv4",
-                    "id": 2,
+                    "id": 5,
                     "parser_ops": [],
                     "transition_key": [
                         {
@@ -874,60 +993,8 @@
                     ]
                 },
                 {
-                    "name": "parse_cpu_header",
-                    "id": 3,
-                    "parser_ops": [
-                        {
-                            "op": "extract",
-                            "parameters": [
-                                {
-                                    "type": "regular",
-                                    "value": "cpu_header"
-                                }
-                            ]
-                        }
-                    ],
-                    "transition_key": [],
-                    "transitions": [
-                        {
-                            "type": "default",
-                            "value": null,
-                            "mask": null,
-                            "next_state": "parse_ethernet"
-                        }
-                    ]
-                },
-                {
-                    "name": "start",
-                    "id": 4,
-                    "parser_ops": [],
-                    "transition_key": [
-                        {
-                            "type": "lookahead",
-                            "value": [
-                                0,
-                                64
-                            ]
-                        }
-                    ],
-                    "transitions": [
-                        {
-                            "type": "hexstr",
-                            "value": "0x0000000000000000",
-                            "mask": null,
-                            "next_state": "parse_cpu_header"
-                        },
-                        {
-                            "type": "default",
-                            "value": null,
-                            "mask": null,
-                            "next_state": "parse_ethernet_or_ingress_cpu"
-                        }
-                    ]
-                },
-                {
                     "name": "parse_tcp",
-                    "id": 5,
+                    "id": 6,
                     "parser_ops": [
                         {
                             "op": "extract",
@@ -950,57 +1017,21 @@
                     ]
                 },
                 {
-                    "name": "parse_ethernet",
-                    "id": 6,
+                    "name": "parse_udp",
+                    "id": 7,
                     "parser_ops": [
                         {
                             "op": "extract",
                             "parameters": [
                                 {
                                     "type": "regular",
-                                    "value": "ethernet"
-                                }
-                            ]
-                        },
-                        {
-                            "op": "set",
-                            "parameters": [
-                                {
-                                    "type": "field",
-                                    "value": [
-                                        "ingress_metadata",
-                                        "is_tagged"
-                                    ]
-                                },
-                                {
-                                    "type": "hexstr",
-                                    "value": "0x0"
+                                    "value": "udp"
                                 }
                             ]
                         }
                     ],
-                    "transition_key": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "ethernet",
-                                "etherType"
-                            ]
-                        }
-                    ],
+                    "transition_key": [],
                     "transitions": [
-                        {
-                            "type": "hexstr",
-                            "value": "0x8100",
-                            "mask": null,
-                            "next_state": "parse_vlan"
-                        },
-                        {
-                            "type": "hexstr",
-                            "value": "0x0800",
-                            "mask": null,
-                            "next_state": "parse_ipv4"
-                        },
                         {
                             "type": "default",
                             "value": null,
@@ -1011,7 +1042,7 @@
                 },
                 {
                     "name": "parse_ethernet_or_ingress_cpu",
-                    "id": 7,
+                    "id": 8,
                     "parser_ops": [
                         {
                             "op": "set",
@@ -1069,30 +1100,6 @@
                             "next_state": "parse_cpu_header"
                         }
                     ]
-                },
-                {
-                    "name": "parse_udp",
-                    "id": 8,
-                    "parser_ops": [
-                        {
-                            "op": "extract",
-                            "parameters": [
-                                {
-                                    "type": "regular",
-                                    "value": "udp"
-                                }
-                            ]
-                        }
-                    ],
-                    "transition_key": [],
-                    "transitions": [
-                        {
-                            "type": "default",
-                            "value": null,
-                            "mask": null,
-                            "next_state": null
-                        }
-                    ]
                 }
             ]
         }
@@ -1115,13 +1122,57 @@
     "meter_arrays": [],
     "actions": [
         {
-            "name": "action_set_erif_set_nh_dstip",
+            "name": "action_set_nhop_id",
             "id": 0,
             "runtime_data": [
                 {
-                    "name": "next_hop_dst_ip",
-                    "bitwidth": 32
+                    "name": "next_hop_id",
+                    "bitwidth": 8
                 },
+                {
+                    "name": "pkt_action",
+                    "bitwidth": 2
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "router_metadata",
+                                "packet_action"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 1
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "router_metadata",
+                                "next_hop_id"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_set_erif_set_nh_dstip_from_pkt",
+            "id": 1,
+            "runtime_data": [
                 {
                     "name": "egress_rif",
                     "bitwidth": 3
@@ -1139,8 +1190,11 @@
                             ]
                         },
                         {
-                            "type": "runtime_data",
-                            "value": 0
+                            "type": "field",
+                            "value": [
+                                "ipv4",
+                                "dstAddr"
+                            ]
                         }
                     ]
                 },
@@ -1156,7 +1210,7 @@
                         },
                         {
                             "type": "runtime_data",
-                            "value": 1
+                            "value": 0
                         }
                     ]
                 }
@@ -1164,7 +1218,7 @@
         },
         {
             "name": "action_set_smac_vid",
-            "id": 1,
+            "id": 2,
             "runtime_data": [
                 {
                     "name": "smac",
@@ -1227,100 +1281,8 @@
             ]
         },
         {
-            "name": "action_set_packet_dmac",
-            "id": 2,
-            "runtime_data": [
-                {
-                    "name": "dmac",
-                    "bitwidth": 48
-                }
-            ],
-            "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "ethernet",
-                                "dstAddr"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "action_trap_to_cpu",
-            "id": 3,
-            "runtime_data": [],
-            "primitives": []
-        },
-        {
-            "name": "_drop",
-            "id": 4,
-            "runtime_data": [],
-            "primitives": [
-                {
-                    "op": "drop",
-                    "parameters": []
-                }
-            ]
-        },
-        {
-            "name": "action_set_erif_set_nh_dstip_from_pkt",
-            "id": 5,
-            "runtime_data": [
-                {
-                    "name": "egress_rif",
-                    "bitwidth": 3
-                }
-            ],
-            "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "router_metadata",
-                                "next_hop_dst_ip"
-                            ]
-                        },
-                        {
-                            "type": "field",
-                            "value": [
-                                "ipv4",
-                                "dstAddr"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "router_metadata",
-                                "egress_rif"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
-                }
-            ]
-        },
-        {
             "name": "action_set_vrf",
-            "id": 6,
+            "id": 3,
             "runtime_data": [
                 {
                     "name": "vrf",
@@ -1390,7 +1352,7 @@
         },
         {
             "name": "action_set_nhop_grp_id",
-            "id": 7,
+            "id": 4,
             "runtime_data": [
                 {
                     "name": "next_hop_group_id",
@@ -1417,16 +1379,16 @@
             ]
         },
         {
-            "name": "action_set_nhop_id",
-            "id": 8,
+            "name": "action_set_erif_set_nh_dstip",
+            "id": 5,
             "runtime_data": [
                 {
-                    "name": "next_hop_id",
-                    "bitwidth": 8
+                    "name": "next_hop_dst_ip",
+                    "bitwidth": 32
                 },
                 {
-                    "name": "pkt_action",
-                    "bitwidth": 2
+                    "name": "egress_rif",
+                    "bitwidth": 3
                 }
             ],
             "primitives": [
@@ -1437,12 +1399,12 @@
                             "type": "field",
                             "value": [
                                 "router_metadata",
-                                "packet_action"
+                                "next_hop_dst_ip"
                             ]
                         },
                         {
                             "type": "runtime_data",
-                            "value": 1
+                            "value": 0
                         }
                     ]
                 },
@@ -1453,7 +1415,35 @@
                             "type": "field",
                             "value": [
                                 "router_metadata",
-                                "next_hop_id"
+                                "egress_rif"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_set_packet_dmac",
+            "id": 6,
+            "runtime_data": [
+                {
+                    "name": "dmac",
+                    "bitwidth": 48
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ethernet",
+                                "dstAddr"
                             ]
                         },
                         {
@@ -1461,6 +1451,23 @@
                             "value": 0
                         }
                     ]
+                }
+            ]
+        },
+        {
+            "name": "action_trap_to_cpu",
+            "id": 7,
+            "runtime_data": [],
+            "primitives": []
+        },
+        {
+            "name": "_drop",
+            "id": 8,
+            "runtime_data": [],
+            "primitives": [
+                {
+                    "op": "drop",
+                    "parameters": []
                 }
             ]
         }
@@ -1658,6 +1665,7 @@
                     "base_default_next": null
                 }
             ],
+            "action_profiles": [],
             "conditionals": []
         },
         {
@@ -1665,6 +1673,7 @@
             "id": 1,
             "init_table": null,
             "tables": [],
+            "action_profiles": [],
             "conditionals": []
         }
     ],

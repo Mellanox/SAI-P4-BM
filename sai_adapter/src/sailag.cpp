@@ -23,11 +23,11 @@ sai_status_t sai_adapter::remove_lag(sai_object_id_t lag_id) {
   }
   try {
     if (lag->handle_port_configurations != NULL_HANDLE) {
-      bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_port_configurations",
+      bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_port_configurations",
                                         lag->handle_port_configurations);
     }
     if (lag->handle_lag_hash != NULL_HANDLE) {
-      bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_lag_hash",
+      bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_lag_hash",
                                         lag->handle_lag_hash);
     }
   } catch (...) {
@@ -71,12 +71,12 @@ sai_status_t sai_adapter::create_lag_member(sai_object_id_t *lag_member_id,
   lag->port_obj = port;
   uint32_t l2_if = lag->l2_if;
   if (port->handle_ingress_lag != NULL_HANDLE) {
-    bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_ingress_lag",
+    bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_ingress_lag",
                                       port->handle_ingress_lag);
     port->handle_ingress_lag = NULL_HANDLE;
   }
   if (lag->handle_lag_hash != NULL_HANDLE) {
-    bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_lag_hash",
+    bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_lag_hash",
                                       lag->handle_lag_hash);
     lag->handle_lag_hash = NULL_HANDLE;
   }
@@ -87,7 +87,7 @@ sai_status_t sai_adapter::create_lag_member(sai_object_id_t *lag_member_id,
   match_params.push_back(parse_exact_match_param(port->hw_port, 2));
   action_data.push_back(parse_param(1, 1));
   action_data.push_back(parse_param(lag->l2_if, 1));
-  port->handle_ingress_lag = bm_client_ptr->bm_mt_add_entry(
+  port->handle_ingress_lag = bm_bridge_client_ptr->bm_mt_add_entry(
       cxt_id, "table_ingress_lag", match_params, "action_set_lag_l2if",
       action_data, options);
   match_params.clear();
@@ -96,14 +96,14 @@ sai_status_t sai_adapter::create_lag_member(sai_object_id_t *lag_member_id,
       parse_exact_match_param(lag->lag_members.size() - 1, 1));
   action_data.clear();
   action_data.push_back(parse_param(port->hw_port, 1));
-  lag_member->handle_egress_lag = bm_client_ptr->bm_mt_add_entry(
+  lag_member->handle_egress_lag = bm_bridge_client_ptr->bm_mt_add_entry(
       cxt_id, "table_egress_lag", match_params, "action_set_out_port",
       action_data, options);
   action_data.clear();
   match_params.clear();
   match_params.push_back(parse_exact_match_param(l2_if, 1));
   action_data.push_back(parse_param(lag->lag_members.size(), 1));
-  lag->handle_lag_hash = bm_client_ptr->bm_mt_add_entry(
+  lag->handle_lag_hash = bm_bridge_client_ptr->bm_mt_add_entry(
       cxt_id, "table_lag_hash", match_params, "action_set_lag_hash_size",
       action_data, options);
   uint32_t port_l2if = port->l2_if;
@@ -127,19 +127,19 @@ sai_status_t sai_adapter::remove_lag_member(sai_object_id_t lag_member_id) {
   size_t hash_index = std::distance(lag->lag_members.begin(), iter);
   (*logger)->info("hash_index = {}", hash_index);
   lag->lag_members.erase(lag->lag_members.begin() + hash_index);
-  bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_lag_hash",
+  bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_lag_hash",
                                     lag->handle_lag_hash);
   action_data.clear();
   match_params.clear();
   match_params.push_back(parse_exact_match_param(lag->l2_if, 1));
   action_data.push_back(parse_param(lag->lag_members.size(), 1));
-  lag->handle_lag_hash = bm_client_ptr->bm_mt_add_entry(
+  lag->handle_lag_hash = bm_bridge_client_ptr->bm_mt_add_entry(
       cxt_id, "table_lag_hash", match_params, "action_set_lag_hash_size",
       action_data, options);
-  bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_ingress_lag",
+  bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_ingress_lag",
                                     lag_member->port->handle_ingress_lag);
   lag_member->port->handle_ingress_lag = NULL_HANDLE;
-  bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_egress_lag",
+  bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_egress_lag",
                                     lag_member->handle_egress_lag);
   lag_member->handle_egress_lag = NULL_HANDLE;
 
@@ -150,14 +150,14 @@ sai_status_t sai_adapter::remove_lag_member(sai_object_id_t lag_member_id) {
     lag->lag_members.pop_back();
     lag->lag_members.insert(lag->lag_members.begin() + hash_index,
                             last_lag_member_id);
-    bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_egress_lag",
+    bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_egress_lag",
                                       last_lag_member->handle_egress_lag);
     match_params.clear();
     match_params.push_back(parse_exact_match_param(lag->l2_if, 1));
     match_params.push_back(parse_exact_match_param(hash_index, 1));
     action_data.clear();
     action_data.push_back(parse_param(last_lag_member->port->hw_port, 1));
-    last_lag_member->handle_egress_lag = bm_client_ptr->bm_mt_add_entry(
+    last_lag_member->handle_egress_lag = bm_bridge_client_ptr->bm_mt_add_entry(
         cxt_id, "table_egress_lag", match_params, "action_set_out_port",
         action_data, options);
   }
