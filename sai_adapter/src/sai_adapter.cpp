@@ -47,6 +47,7 @@ sai_adapter::sai_adapter()
   // api set
   switch_api.create_switch = &sai_adapter::create_switch;
   switch_api.get_switch_attribute = &sai_adapter::get_switch_attribute;
+  switch_api.set_switch_attribute = &sai_adapter::set_switch_attribute;
 
   port_api.create_port = &sai_adapter::create_port;
   port_api.remove_port = &sai_adapter::remove_port;

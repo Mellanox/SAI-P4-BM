@@ -42,6 +42,13 @@ class L3IPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
         bridge_port0 = br_port_list[port0]
         bridge_port1 = br_port_list[port1]
 
+        attr_value = sai_thrift_attribute_value_t(u16=vlan_id0)
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value) 
+        self.client.sai_thrift_set_port_attribute(port0, attr)
+        attr_value = sai_thrift_attribute_value_t(u16=vlan_id1)
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value) 
+        self.client.sai_thrift_set_port_attribute(port1, attr)
+
         vlan_attr_value = sai_thrift_attribute_value_t(u16= vlan_id0)
         vlan_attr = sai_thrift_attribute_t(id=SAI_VLAN_ATTR_VLAN_ID, value=vlan_attr_value)
         vlan_oid0 = self.client.sai_thrift_create_vlan([vlan_attr])

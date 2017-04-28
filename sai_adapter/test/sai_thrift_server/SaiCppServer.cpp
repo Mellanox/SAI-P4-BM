@@ -664,17 +664,14 @@ public:
       std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
       sai_thrift_attribute_t attribute;
       for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
-          logger->info("i = {}", i);
           attribute = (sai_thrift_attribute_t)*it;
           attr_list[i].id = attribute.id;
           switch (attribute.id) {
               case SAI_VIRTUAL_ROUTER_ATTR_ADMIN_V4_STATE:
               case SAI_VIRTUAL_ROUTER_ATTR_ADMIN_V6_STATE:
-                  logger->info("parse vr bool. i = {}. bool = {}", i, attribute.value.booldata);
                   attr_list[i].value.booldata = attribute.value.booldata;
                   break;
               case SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS:
-                  logger->info("parse vr mac");
                   parse_mac_str(attribute.value.mac, attr_list[i].value.mac);
                   break;
           }
@@ -725,7 +722,7 @@ public:
           switch (attribute.id) {
               case SAI_ROUTER_INTERFACE_ATTR_VIRTUAL_ROUTER_ID:
               case SAI_ROUTER_INTERFACE_ATTR_PORT_ID:
-              case SAI_ROUTER_INTERFACE_ATTR_VLAN_ID:
+              case SAI_ROUTER_INTERFACE_ATTR_INGRESS_ACL:
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
               case SAI_ROUTER_INTERFACE_ATTR_TYPE:
@@ -738,8 +735,8 @@ public:
               case SAI_ROUTER_INTERFACE_ATTR_ADMIN_V6_STATE:
                   attr_list[i].value.booldata = attribute.value.booldata;
                   break;
-              case SAI_ROUTER_INTERFACE_ATTR_INGRESS_ACL:
-                  attr_list[i].value.oid = attribute.value.oid;
+              case SAI_ROUTER_INTERFACE_ATTR_VLAN_ID:
+                  attr_list[i].value.u16 = attribute.value.u16;
               default:
                   break;
           }
@@ -1137,10 +1134,37 @@ public:
     return port_id;
   }
 
-  sai_thrift_status_t
-  sai_thrift_set_switch_attribute(const sai_thrift_attribute_t &attribute) {
+  void sai_thrift_parse_switch_attribute(const sai_thrift_attribute_t &thrift_attr, sai_attribute_t *attr) {
+      attr->id = thrift_attr.id;
+
+      switch(thrift_attr.id) {
+          case SAI_SWITCH_ATTR_SRC_MAC_ADDRESS:
+              parse_mac_str(thrift_attr.value.mac, attr->value.mac);
+              break;
+
+          case SAI_SWITCH_ATTR_FDB_UNICAST_MISS_PACKET_ACTION:
+          case SAI_SWITCH_ATTR_FDB_BROADCAST_MISS_PACKET_ACTION:
+          case SAI_SWITCH_ATTR_FDB_MULTICAST_MISS_PACKET_ACTION:
+              attr->value.s32 = thrift_attr.value.s32;
+              break;
+      }
+  }
+
+  sai_thrift_status_t sai_thrift_set_switch_attribute(const sai_thrift_attribute_t& thrift_attr) {
     // Your implementation goes here
     logger->info("sai_thrift_set_switch_attribute");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_switch_api_t *switch_api;
+    sai_attribute_t attr;
+    status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        printf("sai_api_query failed!!!\n");
+        return status;
+    }
+    sai_thrift_parse_switch_attribute(thrift_attr, &attr);
+    sai_object_id_t switch_id = 0;
+    status = switch_api->set_switch_attribute(switch_id, &attr);
+    return status;
   }
 
   sai_thrift_object_id_t sai_thrift_create_hostif(

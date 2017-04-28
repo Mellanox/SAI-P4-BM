@@ -137,6 +137,10 @@ def switch_init2(client):
         port_id = client.sai_thirft_get_bridge_port_attribute(br_port,[attr]).attr_list[0].value.oid
         br_port_list[port_id] = br_port
 
+    attr_value = sai_thrift_attribute_value_t(mac=router_mac)
+    attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_SRC_MAC_ADDRESS, value=attr_value)
+    client.sai_thrift_set_switch_attribute(attr)
+    
     switch_inited = 1
     # attr_list = []
     # attr_value = sai_thrift_attribute_value_t(u32list=None)

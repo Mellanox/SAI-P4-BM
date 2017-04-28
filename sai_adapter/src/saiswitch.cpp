@@ -13,6 +13,7 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
     BmAddEntryOptions options;
     BmMatchParams match_params;
     BmMtEntry entry;
+    BmActionData action_data;
 
     // Create Default 1Q Bridge, and switch_obj (not sure if switch is needed).
     Bridge_obj *bridge = new Bridge_obj(sai_id_map_ptr);
@@ -59,6 +60,40 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
       bridge_port->handle_egress_br_port_to_if = entry.entry_handle;
     }
 
+    // Create Bridge Router port and bridge_port
+      Port_obj *port = new Port_obj(sai_id_map_ptr);
+      switch_metadata_ptr->ports[port->sai_object_id] = port;
+      port->hw_port = 9;
+      port->l2_if = 9;
+      (*logger)->info("Router port_id {}. hw_port = {}", port->sai_object_id,
+                      port->hw_port);
+      BridgePort_obj *bridge_port = new BridgePort_obj(sai_id_map_ptr);
+      switch_metadata_ptr->bridge_ports[bridge_port->sai_object_id] =
+          bridge_port;
+      switch_metadata_ptr->router_bridge_port = bridge_port;
+      bridge_port->bridge_port_type = SAI_BRIDGE_PORT_TYPE_1Q_ROUTER;
+      bridge_port->port_id = port->sai_object_id;
+      bridge_port->bridge_port = port->hw_port;
+      bridge_port->bridge_id = bridge->sai_object_id;
+      bridge->bridge_port_list.push_back(bridge_port->sai_object_id);
+      (*logger)->info("Router bridge_port_id {}. bridge_port = {}",
+                      bridge_port->sai_object_id, bridge_port->bridge_port);
+      // Store default table entries
+      // match_params.clear();
+      // match_params.push_back(parse_exact_match_param(port->l2_if, 1));
+      // bridge_port->handle_port_ingress_interface_type = bm_bridge_client_ptr->bm_mt_add_entr(
+          // entry, cxt_id, "table_port_ingress_interface_type", match_params,
+          // options);
+      match_params.clear();
+      match_params.push_back(parse_exact_match_param(bridge_port->bridge_port, 1));
+      action_data.clear();
+      action_data.push_back(parse_param(port->hw_port, 1));
+      action_data.push_back(parse_param(2,1)); // 2 - out_if_type == ROUTER
+      // table_add table_egress_br_port_to_if action_forward_set_outIfType 0 => 0 0
+
+      bridge_port->handle_egress_br_port_to_if = bm_bridge_client_ptr->bm_mt_add_entry(cxt_id, "table_egress_br_port_to_if", match_params, "action_forward_set_outIfType", action_data, options);
+
+
     // Create MAC learn hostif_table_entry
     HostIF_Table_Entry_obj *hostif_table_entry =
         new HostIF_Table_Entry_obj(sai_id_map_ptr);
@@ -100,6 +135,14 @@ sai_status_t sai_adapter::get_switch_attribute(sai_object_id_t switch_id,
   return SAI_STATUS_SUCCESS;
 }
 
-// sai_status_t sai_adapter::sai_get_switch_attribute(sai_object_id_t
-// switch_id,sai_uint32_t attr_count,sai_attribute_t *attr_list){
-// }
+sai_status_t sai_adapter::set_switch_attribute(sai_object_id_t switch_id, const sai_attribute_t *attr) {
+  (*logger)->info("set_switch_attribute");
+  switch (attr->id) {
+    case SAI_SWITCH_ATTR_SRC_MAC_ADDRESS:
+      memcpy(switch_metadata_ptr->default_switch_mac, attr->value.mac, 6);
+      (*logger)->info("default switch mac set to:");
+      print_mac_to_log(switch_metadata_ptr->default_switch_mac, *logger);
+      break;
+  }
+  return SAI_STATUS_SUCCESS;
+}

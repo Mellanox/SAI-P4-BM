@@ -42,7 +42,6 @@ control control_bridge {
 	} else{
 		control_1q_bridge_flow();
 	}
-
 	apply(table_learn_fdb); 
 	if((ethernet.dstAddr&0x010000000000)==0x0){   //unicast 
 		control_unicast_fdb();

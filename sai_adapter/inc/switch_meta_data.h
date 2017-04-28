@@ -273,6 +273,47 @@ public:
       : Sai_obj(sai_id_map_ptr) {}
 };
 
+class VirtualRouter_obj : public Sai_obj {
+public:
+  bool v4_state;
+  bool v6_state;
+  VirtualRouter_obj(sai_id_map_t *sai_id_map_ptr)
+      : Sai_obj(sai_id_map_ptr) {
+        this->v4_state = true;
+        this->v6_state = true;
+      }
+};
+
+class RouterInterface_obj : public Sai_obj {
+public:
+  sai_mac_t mac;
+  bool mac_valid;
+  uint16_t vid;
+  sai_router_interface_type_t type;
+  BmEntryHandle handle_l3_interface;
+  RouterInterface_obj(sai_id_map_t *sai_id_map_ptr)
+      : Sai_obj(sai_id_map_ptr) {
+        this->vid = 1;
+        this->mac_valid = false;
+        this->type = SAI_ROUTER_INTERFACE_TYPE_VLAN;
+        this->handle_l3_interface = NULL_HANDLE;
+      }
+};
+
+class Route_obj : public Sai_obj {
+public:
+  Route_obj(sai_id_map_t *sai_id_map_ptr)
+      : Sai_obj(sai_id_map_ptr) {}
+};
+
+class NextHop_obj : public Sai_obj {
+public:
+  NextHop_obj(sai_id_map_t *sai_id_map_ptr)
+      : Sai_obj(sai_id_map_ptr) {}
+};
+
+
+
 typedef std::map<sai_object_id_t, BridgePort_obj *> bridge_port_id_map_t;
 typedef std::map<sai_object_id_t, Port_obj *> port_id_map_t;
 typedef std::map<sai_object_id_t, Bridge_obj *> bridge_id_map_t;
@@ -287,9 +328,11 @@ typedef std::map<sai_object_id_t, HostIF_Table_Entry_obj *>
 typedef std::map<sai_object_id_t, HostIF_Trap_obj *> hostif_trap_id_map_t;
 typedef std::map<sai_object_id_t, HostIF_Trap_Group_obj *>
     hostif_trap_group_id_map_t;
-
-class Switch_metadata { // TODO:  add default.. // this object_id is the
-                        // switch_id
+typedef std::map<sai_object_id_t, VirtualRouter_obj *> vr_id_map_t;
+typedef std::map<sai_object_id_t, RouterInterface_obj *> rif_id_map_t;
+typedef std::map<sai_object_id_t, Route_obj *> router_id_map_t;
+typedef std::map<sai_object_id_t, NextHop_obj *> nhop_id_map_t;
+class Switch_metadata { 
 public:
   sai_u32_list_t hw_port_list;
   port_id_map_t ports;
@@ -303,7 +346,13 @@ public:
   hostif_table_entry_id_map_t hostif_table_entries;
   hostif_trap_id_map_t hostif_traps;
   hostif_trap_group_id_map_t hostif_trap_groups;
+  vr_id_map_t vrs;
+  rif_id_map_t rifs;
+  router_id_map_t routers;
+  nhop_id_map_t nhops;
   sai_object_id_t default_bridge_id;
+  BridgePort_obj *router_bridge_port;
+  sai_mac_t default_switch_mac;
   Switch_metadata() {
     ports.clear();
     bridge_ports.clear();
