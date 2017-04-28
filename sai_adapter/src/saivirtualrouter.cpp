@@ -5,6 +5,15 @@ sai_status_t sai_adapter::create_virtual_router (sai_object_id_t *vr_id,
                                             uint32_t attr_count,
                                             const sai_attribute_t *attr_list) {
   (*logger)->info("create_virtual_router");
+  
+  BmAddEntryOptions options;
+  BmMatchParams match_params;
+  BmActionData action_data;
+  match_params.push_back(parse_exact_match_param(1,1));
+  action_data.push_back(parse_param(2,1));
+  bm_router_client_ptr->bm_mt_add_entry(
+      cxt_id, "table_ingress_vrf", match_params,
+      "action_set_vrf", action_data, options);
   // Lag_member_obj *lag_member = new Lag_member_obj(sai_id_map_ptr);
   // switch_metadata_ptr->lag_members[lag_member->sai_object_id] = lag_member;
   // Port_obj *port;

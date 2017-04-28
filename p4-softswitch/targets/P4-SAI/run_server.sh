@@ -17,7 +17,7 @@ export BRIDGE_PID=$!
 sleep 2
 ./runtime_CLI --pre SimplePreLAG < p4src/bridge/DefaultConfig.txt
 ./sswitch_CLI < p4src/bridge/DefaultConfigMirror.txt
-./runtime_CLI --pre SimplePreLAG --thrift-port $ROUTER_THRIFT_PORT < p4src/router/DefaultConfig.txt
+# ./runtime_CLI --pre SimplePreLAG < p4src/router/DefaultConfig.txt
 
 echo "router and bridge are running send SIGINT to close"
 
