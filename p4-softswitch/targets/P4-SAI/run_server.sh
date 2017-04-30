@@ -1,3 +1,4 @@
+#!/bin/sh
 handler()
 {
     sudo kill -s INT $ROUTER_PID

@@ -1210,14 +1210,9 @@
             ]
         },
         {
-            "name": "action_set_egress_stp_state",
+            "name": "action_set_l2if",
             "id": 3,
-            "runtime_data": [
-                {
-                    "name": "stp_state",
-                    "bitwidth": 2
-                }
-            ],
+            "runtime_data": [],
             "primitives": [
                 {
                     "op": "modify_field",
@@ -1225,13 +1220,16 @@
                         {
                             "type": "field",
                             "value": [
-                                "egress_metadata",
-                                "stp_state"
+                                "ingress_metadata",
+                                "l2_if"
                             ]
                         },
                         {
-                            "type": "runtime_data",
-                            "value": 0
+                            "type": "field",
+                            "value": [
+                                "standard_metadata",
+                                "ingress_port"
+                            ]
                         }
                     ]
                 }
@@ -1934,9 +1932,14 @@
             ]
         },
         {
-            "name": "action_set_l2if",
+            "name": "action_set_egress_stp_state",
             "id": 21,
-            "runtime_data": [],
+            "runtime_data": [
+                {
+                    "name": "stp_state",
+                    "bitwidth": 2
+                }
+            ],
             "primitives": [
                 {
                     "op": "modify_field",
@@ -1944,29 +1947,43 @@
                         {
                             "type": "field",
                             "value": [
-                                "ingress_metadata",
-                                "l2_if"
+                                "egress_metadata",
+                                "stp_state"
                             ]
                         },
                         {
-                            "type": "field",
-                            "value": [
-                                "standard_metadata",
-                                "ingress_port"
-                            ]
+                            "type": "runtime_data",
+                            "value": 0
                         }
                     ]
                 }
             ]
         },
         {
-            "name": "_drop",
+            "name": "action_set_egress_br_port",
             "id": 22,
-            "runtime_data": [],
+            "runtime_data": [
+                {
+                    "name": "br_port",
+                    "bitwidth": 8
+                }
+            ],
             "primitives": [
                 {
-                    "op": "drop",
-                    "parameters": []
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "egress_metadata",
+                                "bridge_port"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
                 }
             ]
         },
@@ -2058,30 +2075,13 @@
             ]
         },
         {
-            "name": "action_set_egress_br_port",
+            "name": "_drop",
             "id": 26,
-            "runtime_data": [
-                {
-                    "name": "br_port",
-                    "bitwidth": 8
-                }
-            ],
+            "runtime_data": [],
             "primitives": [
                 {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "egress_metadata",
-                                "bridge_port"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
+                    "op": "drop",
+                    "parameters": []
                 }
             ]
         },

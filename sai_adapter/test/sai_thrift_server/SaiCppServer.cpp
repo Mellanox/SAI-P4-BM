@@ -704,6 +704,14 @@ public:
   sai_thrift_remove_virtual_router(const sai_thrift_object_id_t vr_id) {
     // Your implementation goes here
     logger->info("sai_thrift_remove_virtual_router");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_virtual_router_api_t *vr_api;
+    status = sai_api_query(SAI_API_VIRTUAL_ROUTER, (void **) &vr_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        return status;
+    }
+    status = vr_api->remove_virtual_router((sai_object_id_t)vr_id);
+    return status;
   }
 
   sai_thrift_status_t sai_thrift_create_route(
@@ -711,6 +719,37 @@ public:
       const std::vector<sai_thrift_attribute_t> &thrift_attr_list) {
     // Your implementation goes here
     logger->info("sai_thrift_create_route");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_route_api_t *route_api;
+    sai_route_entry_t route_entry;
+    status = sai_api_query(SAI_API_ROUTE, (void **) &route_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        return status;
+    }
+    sai_thrift_parse_route_entry(thrift_route_entry, &route_entry);
+    sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+    sai_thrift_parse_route_attributes(thrift_attr_list, attr_list);
+    uint32_t attr_count = thrift_attr_list.size();
+    status = route_api->create_route_entry(&route_entry, attr_count, attr_list);
+    free(attr_list);
+    SAI_THRIFT_LOG_DBG("Exit.");
+    return status;
+  }
+
+  sai_thrift_status_t
+  sai_thrift_remove_route(const sai_thrift_route_entry_t &thrift_route_entry) {
+    // Your implementation goes here
+    logger->info("sai_thrift_remove_route");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_route_api_t *route_api;
+    sai_route_entry_t route_entry;
+    status = sai_api_query(SAI_API_ROUTE, (void **) &route_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        return status;
+    }
+    sai_thrift_parse_route_entry(thrift_route_entry, &route_entry);
+    status = route_api->remove_route_entry(&route_entry);
+    return status;
   }
 
   void sai_thrift_parse_router_interface_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
@@ -743,11 +782,6 @@ public:
       }
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_route(const sai_thrift_route_entry_t &thrift_route_entry) {
-    // Your implementation goes here
-    logger->info("sai_thrift_remove_route");
-  }
 
   sai_thrift_object_id_t sai_thrift_create_router_interface(
       const std::vector<sai_thrift_attribute_t> &thrift_attr_list) {
@@ -793,12 +827,33 @@ public:
       const std::vector<sai_thrift_attribute_t> &thrift_attr_list) {
     // Your implementation goes here
     logger->info("sai_thrift_create_next_hop");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_next_hop_api_t *nhop_api;
+    sai_object_id_t nhop_id = 0;
+    status = sai_api_query(SAI_API_NEXT_HOP, (void **) &nhop_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        return status;
+    }
+    sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+    sai_thrift_parse_next_hop_attributes(thrift_attr_list, attr_list);
+    uint32_t attr_count = thrift_attr_list.size();
+    status = nhop_api->create_next_hop(&nhop_id, gSwitchId, attr_count, attr_list);
+    free(attr_list);
+    return nhop_id;
   }
 
   sai_thrift_status_t
   sai_thrift_remove_next_hop(const sai_thrift_object_id_t next_hop_id) {
     // Your implementation goes here
     logger->info("sai_thrift_remove_next_hop");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_next_hop_api_t *nhop_api;
+    status = sai_api_query(SAI_API_NEXT_HOP, (void **) &nhop_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        return status;
+    }
+    status = nhop_api->remove_next_hop((sai_object_id_t)next_hop_id);
+    return status;
   }
 
   sai_thrift_object_id_t sai_thrift_create_next_hop_group(
@@ -971,12 +1026,36 @@ public:
       const std::vector<sai_thrift_attribute_t> &thrift_attr_list) {
     // Your implementation goes here
     logger->info("sai_thrift_create_neighbor_entry");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_neighbor_api_t *neighbor_api;
+    status = sai_api_query(SAI_API_NEIGHBOR, (void **) &neighbor_api);
+    sai_neighbor_entry_t neighbor_entry;
+    if (status != SAI_STATUS_SUCCESS) {
+        return status;
+    }
+    sai_thrift_parse_neighbor_entry(thrift_neighbor_entry, &neighbor_entry);
+    sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+    sai_thrift_parse_neighbor_attributes(thrift_attr_list, attr_list);
+    uint32_t attr_count = thrift_attr_list.size();
+    status = neighbor_api->create_neighbor_entry(&neighbor_entry, attr_count, attr_list);
+    free(attr_list);
+    return status;
   }
 
   sai_thrift_status_t sai_thrift_remove_neighbor_entry(
       const sai_thrift_neighbor_entry_t &thrift_neighbor_entry) {
     // Your implementation goes here
     logger->info("sai_thrift_remove_neighbor_entry");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_neighbor_api_t *neighbor_api;
+    sai_neighbor_entry_t neighbor_entry;
+    status = sai_api_query(SAI_API_NEIGHBOR, (void **) &neighbor_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        return status;
+    }
+    sai_thrift_parse_neighbor_entry(thrift_neighbor_entry, &neighbor_entry);
+    status = neighbor_api->remove_neighbor_entry(&neighbor_entry);
+    return status;
   }
 
   sai_thrift_object_id_t sai_thrift_create_switch(
