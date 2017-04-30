@@ -232,6 +232,16 @@ BmMatchParam parse_exact_match_param(uint64_t param, uint32_t num_of_bytes) {
   return match_param;
 }
 
+BmMatchParam parse_lpm_param(uint64_t param, uint32_t num_of_bytes, uint32_t prefix_length) {
+  BmMatchParam match_param;
+  match_param.type = BmMatchParamType::type::LPM;
+  BmMatchParamLPM match_param_lpm;
+  match_param_lpm.key = parse_param(param, num_of_bytes);
+  match_param_lpm.__set_prefix_length(prefix_length);
+  match_param.__set_lpm(match_param_lpm);
+  return match_param;
+}
+
 BmMatchParam parse_valid_match_param(bool param) {
   BmMatchParam match_param;
   match_param.type = BmMatchParamType::type::VALID;

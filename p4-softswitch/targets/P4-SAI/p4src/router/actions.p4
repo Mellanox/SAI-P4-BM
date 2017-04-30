@@ -23,8 +23,7 @@ action action_set_nhop_grp_id(in bit<3> next_hop_group_id){
 	router_metadata.next_hop_group_id = next_hop_group_id;
 }
 
-action action_set_nhop_id(in bit<8> next_hop_id, in bit<2>pkt_action){
-	router_metadata.packet_action = pkt_action;
+action action_set_nhop_id(in bit<8> next_hop_id){
 	router_metadata.next_hop_id = next_hop_id;
 }
 

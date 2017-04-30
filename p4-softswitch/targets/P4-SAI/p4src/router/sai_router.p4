@@ -35,7 +35,7 @@ control control_1q_uni_router{
 	}
 	apply(table_next_hop);	
 	//apply(table_erif_check); TODO - mtu size, etc..
-	apply(table_Neigh);
+	apply(table_neighbor);
 	apply(table_egress_L3_if);
 	// apply(table_L3_egress_acl); TODO
 }

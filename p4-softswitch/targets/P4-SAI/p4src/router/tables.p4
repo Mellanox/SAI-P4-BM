@@ -43,7 +43,7 @@ table table_next_hop {
 // 	size: ;
 // }
 
-table table_Neigh {
+table table_neighbor {
 	reads{
 		router_metadata.egress_rif 		: exact;
 		router_metadata.next_hop_dst_ip 	: exact;

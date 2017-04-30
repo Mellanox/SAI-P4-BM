@@ -277,8 +277,10 @@ class VirtualRouter_obj : public Sai_obj {
 public:
   bool v4_state;
   bool v6_state;
+  uint32_t vrf;
   VirtualRouter_obj(sai_id_map_t *sai_id_map_ptr)
       : Sai_obj(sai_id_map_ptr) {
+        this->vrf = 0;
         this->v4_state = true;
         this->v6_state = true;
       }
@@ -289,12 +291,14 @@ public:
   sai_mac_t mac;
   bool mac_valid;
   uint16_t vid;
+  uint32_t rif_id;
   sai_router_interface_type_t type;
   BmEntryHandle handle_l3_interface;
   RouterInterface_obj(sai_id_map_t *sai_id_map_ptr)
       : Sai_obj(sai_id_map_ptr) {
         this->vid = 1;
         this->mac_valid = false;
+        this->rif_id = 0;
         this->type = SAI_ROUTER_INTERFACE_TYPE_VLAN;
         this->handle_l3_interface = NULL_HANDLE;
       }
@@ -308,8 +312,16 @@ public:
 
 class NextHop_obj : public Sai_obj {
 public:
+  uint32_t nhop_id;
+  sai_next_hop_type_t type;
+  sai_ip_address_t ip;
+  RouterInterface_obj *rif;
   NextHop_obj(sai_id_map_t *sai_id_map_ptr)
-      : Sai_obj(sai_id_map_ptr) {}
+      : Sai_obj(sai_id_map_ptr) {
+        this->nhop_id = 0;
+        this->rif_id = 0;
+        this->type = SAI_NEXT_HOP_TYPE_IP;
+      }
 };
 
 
@@ -330,7 +342,6 @@ typedef std::map<sai_object_id_t, HostIF_Trap_Group_obj *>
     hostif_trap_group_id_map_t;
 typedef std::map<sai_object_id_t, VirtualRouter_obj *> vr_id_map_t;
 typedef std::map<sai_object_id_t, RouterInterface_obj *> rif_id_map_t;
-typedef std::map<sai_object_id_t, Route_obj *> router_id_map_t;
 typedef std::map<sai_object_id_t, NextHop_obj *> nhop_id_map_t;
 class Switch_metadata { 
 public:
@@ -348,7 +359,6 @@ public:
   hostif_trap_group_id_map_t hostif_trap_groups;
   vr_id_map_t vrs;
   rif_id_map_t rifs;
-  router_id_map_t routers;
   nhop_id_map_t nhops;
   sai_object_id_t default_bridge_id;
   BridgePort_obj *router_bridge_port;
@@ -409,6 +419,46 @@ public:
     spdlog::get("logger")->error("hostif not found for physical port {} ",
                                  port_num);
     return nullptr;
+  }
+
+  uint32_t GetNewRifID() {
+    std::vector<uint32_t> rif_ids;
+    for (rif_id_map_t::iterator it = rifs.begin();
+         it != rifs.end(); ++it) {
+      rif_ids.push_back(it->second->rif_id);
+      spdlog::get("logger")->debug("{} ", it->second->rif_id);
+    }
+    for (int i = 0; i < rif_ids.size(); ++i) {
+      if (std::find(rif_ids.begin(), rif_ids.end(), i) ==
+          rif_ids.end()) {
+        spdlog::get("logger")->debug("-->GetNewNextHopID: rif_id is: {} ",
+                                     i);
+        return i;
+      }
+    }
+    spdlog::get("logger")->debug("--> GetNewNextHopID: rif_id is: {} ",
+                                 rif_ids.size());
+    return rif_ids.size();
+  }
+
+  uint32_t GetNewNextHopID() {
+    std::vector<uint32_t> nexthop_ids;
+    for (nhop_id_map_t::iterator it = nhops.begin();
+         it != nhops.end(); ++it) {
+      nexthop_ids.push_back(it->second->nhop_id);
+      spdlog::get("logger")->debug("{} ", it->second->nhop_id);
+    }
+    for (int i = 0; i < nexthop_ids.size(); ++i) {
+      if (std::find(nexthop_ids.begin(), nexthop_ids.end(), i) ==
+          nexthop_ids.end()) {
+        spdlog::get("logger")->debug("-->GetNewNextHopID: nhop_id is: {} ",
+                                     i);
+        return i;
+      }
+    }
+    spdlog::get("logger")->debug("--> GetNewNextHopID: nhop_id is: {} ",
+                                 nexthop_ids.size());
+    return nexthop_ids.size();
   }
 
   uint32_t GetNewBridgePort() {

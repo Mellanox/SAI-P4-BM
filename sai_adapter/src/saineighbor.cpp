@@ -26,6 +26,7 @@ sai_status_t sai_adapter::create_neighbor_entry (const sai_neighbor_entry_t *nei
   }
 
   // config tables
+}
 
 sai_status_t sai_adapter::remove_neighbor_entry(const sai_neighbor_entry_t *neighbor_entry) {
 	(*logger)->info("remove_neighbor_entry");
