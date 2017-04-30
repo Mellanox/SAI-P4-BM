@@ -32,12 +32,14 @@ sai_status_t sai_adapter::create_next_hop (sai_object_id_t *next_hop_id,
   }
 
   // config tables
+  BmAddEntryOptions options;
+  BmMatchParams match_params;
+  BmActionData action_data;
   match_params.push_back(parse_exact_match_param(nhop->nhop_id, 1));
   action_data.push_back(parse_param(nhop->rif->rif_id, 1));
   bm_router_client_ptr->bm_mt_add_entry(cxt_id, "table_next_hop",
         match_params, "action_set_erif_set_nh_dstip_from_pkt",
         action_data, options);
-  x
 
   *next_hop_id = nhop->sai_object_id;
   return SAI_STATUS_SUCCESS;

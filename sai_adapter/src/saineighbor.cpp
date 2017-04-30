@@ -15,7 +15,7 @@ sai_status_t sai_adapter::create_neighbor_entry (const sai_neighbor_entry_t *nei
     attribute = attr_list[i];
     switch (attribute.id) {
     case SAI_NEIGHBOR_ENTRY_ATTR_DST_MAC_ADDRESS:
-      memcpy(mac, attr.value.mac);
+      memcpy(mac, attribute.value.mac, 6);
       break;
     default:
       (*logger)->error(

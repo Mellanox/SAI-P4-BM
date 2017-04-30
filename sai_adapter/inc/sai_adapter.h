@@ -72,6 +72,7 @@ const int32_t cxt_id = 0;
 string parse_param(uint64_t param, uint32_t num_of_bytes);
 BmMatchParam parse_exact_match_param(uint64_t param, uint32_t num_of_bytes);
 BmMatchParam parse_valid_match_param(bool param);
+BmMatchParam parse_lpm_param(uint64_t param, uint32_t num_of_bytes, uint32_t prefix_length);
 uint64_t parse_mac_64(uint8_t const mac_8[6]);
 void print_mac_to_log(const uint8_t *, std::shared_ptr<spdlog::logger>);
 class sai_adapter {

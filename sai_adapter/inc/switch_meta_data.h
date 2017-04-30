@@ -319,8 +319,8 @@ public:
   NextHop_obj(sai_id_map_t *sai_id_map_ptr)
       : Sai_obj(sai_id_map_ptr) {
         this->nhop_id = 0;
-        this->rif_id = 0;
         this->type = SAI_NEXT_HOP_TYPE_IP;
+        this->rif = NULL;
       }
 };
 
@@ -421,7 +421,7 @@ public:
     return nullptr;
   }
 
-  uint32_t GetNewRifID() {
+  uint32_t GetNewRifId() {
     std::vector<uint32_t> rif_ids;
     for (rif_id_map_t::iterator it = rifs.begin();
          it != rifs.end(); ++it) {

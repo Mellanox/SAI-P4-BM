@@ -412,12 +412,12 @@
                     3
                 ],
                 [
-                    "packet_action",
-                    2
-                ],
-                [
                     "l3_lpm_key",
                     40
+                ],
+                [
+                    "_padding",
+                    2
                 ]
             ],
             "length_exp": null,
@@ -1114,24 +1114,31 @@
                 "ethernet",
                 "vlan",
                 "ipv4",
-                "udp",
-                "tcp"
+                "tcp",
+                "udp"
             ]
         }
     ],
     "meter_arrays": [],
     "actions": [
         {
-            "name": "action_set_nhop_id",
+            "name": "_drop",
             "id": 0,
+            "runtime_data": [],
+            "primitives": [
+                {
+                    "op": "drop",
+                    "parameters": []
+                }
+            ]
+        },
+        {
+            "name": "action_set_nhop_grp_id",
+            "id": 1,
             "runtime_data": [
                 {
-                    "name": "next_hop_id",
-                    "bitwidth": 8
-                },
-                {
-                    "name": "pkt_action",
-                    "bitwidth": 2
+                    "name": "next_hop_group_id",
+                    "bitwidth": 3
                 }
             ],
             "primitives": [
@@ -1142,15 +1149,27 @@
                             "type": "field",
                             "value": [
                                 "router_metadata",
-                                "packet_action"
+                                "next_hop_group_id"
                             ]
                         },
                         {
                             "type": "runtime_data",
-                            "value": 1
+                            "value": 0
                         }
                     ]
-                },
+                }
+            ]
+        },
+        {
+            "name": "action_set_nhop_id",
+            "id": 2,
+            "runtime_data": [
+                {
+                    "name": "next_hop_id",
+                    "bitwidth": 8
+                }
+            ],
+            "primitives": [
                 {
                     "op": "modify_field",
                     "parameters": [
@@ -1171,7 +1190,7 @@
         },
         {
             "name": "action_set_erif_set_nh_dstip_from_pkt",
-            "id": 1,
+            "id": 3,
             "runtime_data": [
                 {
                     "name": "egress_rif",
@@ -1217,8 +1236,56 @@
             ]
         },
         {
+            "name": "action_set_erif_set_nh_dstip",
+            "id": 4,
+            "runtime_data": [
+                {
+                    "name": "next_hop_dst_ip",
+                    "bitwidth": 32
+                },
+                {
+                    "name": "egress_rif",
+                    "bitwidth": 3
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "router_metadata",
+                                "next_hop_dst_ip"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "router_metadata",
+                                "egress_rif"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "name": "action_set_smac_vid",
-            "id": 2,
+            "id": 5,
             "runtime_data": [
                 {
                     "name": "smac",
@@ -1281,152 +1348,6 @@
             ]
         },
         {
-            "name": "action_set_vrf",
-            "id": 3,
-            "runtime_data": [
-                {
-                    "name": "vrf",
-                    "bitwidth": 8
-                }
-            ],
-            "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "router_metadata",
-                                "ingress_vrf"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
-                },
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "router_metadata",
-                                "l3_lpm_key"
-                            ]
-                        },
-                        {
-                            "type": "expression",
-                            "value": {
-                                "type": "expression",
-                                "value": {
-                                    "op": "+",
-                                    "left": {
-                                        "type": "expression",
-                                        "value": {
-                                            "op": "<<",
-                                            "left": {
-                                                "type": "local",
-                                                "value": 0
-                                            },
-                                            "right": {
-                                                "type": "hexstr",
-                                                "value": "0x20"
-                                            }
-                                        }
-                                    },
-                                    "right": {
-                                        "type": "field",
-                                        "value": [
-                                            "ipv4",
-                                            "dstAddr"
-                                        ]
-                                    }
-                                }
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "action_set_nhop_grp_id",
-            "id": 4,
-            "runtime_data": [
-                {
-                    "name": "next_hop_group_id",
-                    "bitwidth": 3
-                }
-            ],
-            "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "router_metadata",
-                                "next_hop_group_id"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "action_set_erif_set_nh_dstip",
-            "id": 5,
-            "runtime_data": [
-                {
-                    "name": "next_hop_dst_ip",
-                    "bitwidth": 32
-                },
-                {
-                    "name": "egress_rif",
-                    "bitwidth": 3
-                }
-            ],
-            "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "router_metadata",
-                                "next_hop_dst_ip"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
-                },
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "router_metadata",
-                                "egress_rif"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 1
-                        }
-                    ]
-                }
-            ]
-        },
-        {
             "name": "action_set_packet_dmac",
             "id": 6,
             "runtime_data": [
@@ -1459,57 +1380,17 @@
             "id": 7,
             "runtime_data": [],
             "primitives": []
-        },
-        {
-            "name": "_drop",
-            "id": 8,
-            "runtime_data": [],
-            "primitives": [
-                {
-                    "op": "drop",
-                    "parameters": []
-                }
-            ]
         }
     ],
     "pipelines": [
         {
             "name": "ingress",
             "id": 0,
-            "init_table": "table_ingress_vrf",
+            "init_table": "table_router",
             "tables": [
                 {
-                    "name": "table_ingress_vrf",
-                    "id": 0,
-                    "match_type": "exact",
-                    "type": "simple",
-                    "max_size": 12,
-                    "with_counters": false,
-                    "direct_meters": null,
-                    "support_timeout": false,
-                    "key": [
-                        {
-                            "match_type": "exact",
-                            "target": [
-                                "router_metadata",
-                                "ingress_rif"
-                            ],
-                            "mask": null
-                        }
-                    ],
-                    "actions": [
-                        "action_set_vrf",
-                        "_drop"
-                    ],
-                    "next_tables": {
-                        "action_set_vrf": "table_router",
-                        "_drop": "table_router"
-                    },
-                    "base_default_next": "table_router"
-                },
-                {
                     "name": "table_router",
-                    "id": 1,
+                    "id": 0,
                     "match_type": "lpm",
                     "type": "simple",
                     "max_size": 1024,
@@ -1540,7 +1421,7 @@
                 },
                 {
                     "name": "table_next_hop_group",
-                    "id": 2,
+                    "id": 1,
                     "match_type": "exact",
                     "type": "simple",
                     "max_size": 16,
@@ -1569,7 +1450,7 @@
                 },
                 {
                     "name": "table_next_hop",
-                    "id": 3,
+                    "id": 2,
                     "match_type": "exact",
                     "type": "simple",
                     "max_size": 128,
@@ -1592,15 +1473,15 @@
                         "_drop"
                     ],
                     "next_tables": {
-                        "action_set_erif_set_nh_dstip": "table_Neigh",
-                        "action_set_erif_set_nh_dstip_from_pkt": "table_Neigh",
-                        "_drop": "table_Neigh"
+                        "action_set_erif_set_nh_dstip": "table_neighbor",
+                        "action_set_erif_set_nh_dstip_from_pkt": "table_neighbor",
+                        "_drop": "table_neighbor"
                     },
-                    "base_default_next": "table_Neigh"
+                    "base_default_next": "table_neighbor"
                 },
                 {
-                    "name": "table_Neigh",
-                    "id": 4,
+                    "name": "table_neighbor",
+                    "id": 3,
                     "match_type": "exact",
                     "type": "simple",
                     "max_size": 1024,
@@ -1637,7 +1518,7 @@
                 },
                 {
                     "name": "table_egress_L3_if",
-                    "id": 5,
+                    "id": 4,
                     "match_type": "exact",
                     "type": "simple",
                     "max_size": 1,

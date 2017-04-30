@@ -7,9 +7,7 @@ sai_status_t sai_adapter::create_router_interface (sai_object_id_t *router_inter
   (*logger)->info("create_router_interface");
   RouterInterface_obj * rif = new RouterInterface_obj(sai_id_map_ptr);
   switch_metadata_ptr->rifs[rif->sai_object_id] = rif;
-  BmAddEntryOptions options;
-  BmMatchParams match_params;
-  BmActionData action_data;
+  rif->rif_id = switch_metadata_ptr->GetNewRifId();
 
   // parsing attributes
   sai_attribute_t attribute;
@@ -41,6 +39,9 @@ sai_status_t sai_adapter::create_router_interface (sai_object_id_t *router_inter
   }
 
   // config tables
+  BmAddEntryOptions options;
+  BmMatchParams match_params;
+  BmActionData action_data;
   uint32_t bridge_id;
   uint64_t mac_address_64;
   if (rif->mac_valid) {
