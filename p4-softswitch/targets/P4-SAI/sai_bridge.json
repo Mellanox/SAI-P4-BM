@@ -1960,30 +1960,13 @@
             ]
         },
         {
-            "name": "action_set_egress_br_port",
+            "name": "_drop",
             "id": 22,
-            "runtime_data": [
-                {
-                    "name": "br_port",
-                    "bitwidth": 8
-                }
-            ],
+            "runtime_data": [],
             "primitives": [
                 {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "egress_metadata",
-                                "bridge_port"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
+                    "op": "drop",
+                    "parameters": []
                 }
             ]
         },
@@ -2075,13 +2058,30 @@
             ]
         },
         {
-            "name": "_drop",
+            "name": "action_set_egress_br_port",
             "id": 26,
-            "runtime_data": [],
+            "runtime_data": [
+                {
+                    "name": "br_port",
+                    "bitwidth": 8
+                }
+            ],
             "primitives": [
                 {
-                    "op": "drop",
-                    "parameters": []
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "egress_metadata",
+                                "bridge_port"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
                 }
             ]
         },

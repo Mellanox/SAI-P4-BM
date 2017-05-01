@@ -5,11 +5,10 @@ sai_status_t sai_adapter::create_virtual_router (sai_object_id_t *vr_id,
                                             uint32_t attr_count,
                                             const sai_attribute_t *attr_list) {
   (*logger)->info("create_virtual_router");
+  uint32_t vrf = switch_metadata_ptr->GetNewVrf(); 
   VirtualRouter_obj * vr = new VirtualRouter_obj(sai_id_map_ptr);
   switch_metadata_ptr->vrs[vr->sai_object_id] = vr;
-  BmAddEntryOptions options;
-  BmMatchParams match_params;
-  BmActionData action_data;
+  vr->vrf = vrf;
 
   // Parse atrributes
   sai_attribute_t attribute;
@@ -29,15 +28,22 @@ sai_status_t sai_adapter::create_virtual_router (sai_object_id_t *vr_id,
         break;
       }
 
-    // Config Tables
+  // Config Tables
+  BmAddEntryOptions options;
+  BmMatchParams match_params;
+  BmActionData action_data;
   // match_params.push_back(parse_exact_match_param(1,1));
-  // action_data.push_back(parse_param(2,1));
+  action_data.push_back(parse_param(vr->vrf,1));
   // bm_router_client_ptr->bm_mt_add_entry(
-  //     cxt_id, "table_ingress_vrf", match_params,
-  //     "action_set_vrf", action_data, options);
+      // cxt_id, "table_ingress_vrf", match_params,
+      // "action_set_vrf", action_data, options); 
+  // TODO: currently in default becaufe ingress rif table is degenerated.
+  // Once more than 1 iRif is enabled, need to change this (and move to create rif)
+  bm_router_client_ptr->bm_mt_set_default_action(cxt_id, "table_ingress_vrf", "action_set_vrf", action_data);
 
 
     *vr_id = vr->sai_object_id;
+    (*logger)->info("object_id {}", vr->sai_object_id);
     return SAI_STATUS_SUCCESS;
   }
 }

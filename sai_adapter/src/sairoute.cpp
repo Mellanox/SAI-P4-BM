@@ -38,7 +38,7 @@ sai_status_t sai_adapter::create_route_entry(const sai_route_entry_t *route_entr
   if (dst_ip.addr_family == SAI_IP_ADDR_FAMILY_IPV4) {
     ipv4 = dst_ip.addr.ip4;
     prefix_length = get_prefix_length_from_mask(dst_ip.mask.ip4);
-    l3_key += ipv4;
+    l3_key += htonl(ipv4);
   }
   // uint32_t dst_ip = ;
   match_params.push_back(parse_lpm_param(l3_key, 5, prefix_length));

@@ -421,6 +421,26 @@ public:
     return nullptr;
   }
 
+  uint32_t GetNewVrf() {
+    std::vector<uint32_t> vrfs;
+    for (vr_id_map_t::iterator it = vrs.begin();
+         it != vrs.end(); ++it) {
+      vrfs.push_back(it->second->vrf);
+      spdlog::get("logger")->debug("{} ", it->second->vrf);
+    }
+    for (int i = 0; i < vrfs.size(); ++i) {
+      if (std::find(vrfs.begin(), vrfs.end(), i) ==
+          vrfs.end()) {
+        spdlog::get("logger")->debug("-->GetNewNextHopID: vrf is: {} ",
+                                     i);
+        return i;
+      }
+    }
+    spdlog::get("logger")->debug("--> GetNewNextHopID: vrf is: {} ",
+                                 vrfs.size());
+    return vrfs.size();
+  }
+
   uint32_t GetNewRifId() {
     std::vector<uint32_t> rif_ids;
     for (rif_id_map_t::iterator it = rifs.begin();

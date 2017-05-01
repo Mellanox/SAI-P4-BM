@@ -26,7 +26,7 @@ control ingress {
 }
 
 control control_1q_uni_router{
-	// apply(table_ingress_vrf);
+	apply(table_ingress_vrf);
 	// apply(table_L3_ingress_acl); TODO
 	apply(table_router){
 		action_set_nhop_grp_id{

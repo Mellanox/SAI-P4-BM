@@ -5,9 +5,10 @@ sai_status_t sai_adapter::create_router_interface (sai_object_id_t *router_inter
                                             uint32_t attr_count,
                                             const sai_attribute_t *attr_list) {
   (*logger)->info("create_router_interface");
+  uint32_t rif_id = switch_metadata_ptr->GetNewRifId();
   RouterInterface_obj * rif = new RouterInterface_obj(sai_id_map_ptr);
   switch_metadata_ptr->rifs[rif->sai_object_id] = rif;
-  rif->rif_id = switch_metadata_ptr->GetNewRifId();
+  rif->rif_id = rif_id;
 
   // parsing attributes
   sai_attribute_t attribute;
@@ -62,6 +63,7 @@ sai_status_t sai_adapter::create_router_interface (sai_object_id_t *router_inter
   }
 
   *router_interface_id = rif->sai_object_id;
+  (*logger)->info("object_id {}", rif->sai_object_id);
   return SAI_STATUS_SUCCESS;
 }
 

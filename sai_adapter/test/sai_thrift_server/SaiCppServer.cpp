@@ -4,6 +4,7 @@
 #include <spdlog/spdlog.h>
 #include <string>
 #include <switch_sai_rpc.h>
+#include <arpa/inet.h>
 #include <thrift/server/TSimpleServer.h>
 #include <thrift/transport/TBufferTransports.h>
 #include <thrift/transport/TServerSocket.h>
@@ -714,6 +715,66 @@ public:
     return status;
   }
 
+  void sai_thrift_parse_route_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+          attribute = (sai_thrift_attribute_t)*it;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+              case SAI_ROUTE_ENTRY_ATTR_NEXT_HOP_ID:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
+              case SAI_ROUTE_ENTRY_ATTR_PACKET_ACTION:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
+              default:
+                  break;
+          }
+      }
+  }
+
+  void sai_thrift_string_to_v4_ip(const std::string s, unsigned int *m) {
+      unsigned char r=0;
+      unsigned int i;
+      *m = 0;
+      for(i=0;i<s.size();i++) {
+          char let = s.c_str()[i];
+          if (let >= '0' && let <= '9') {
+              r = (r * 10) + (let - '0');
+          } else {
+              *m = (*m << 8) | r;
+              r=0;
+          }
+      }
+      *m = (*m << 8) | (r & 0xFF);
+      *m = htonl(*m);
+      return;
+  }
+
+  void sai_thrift_string_to_v6_ip(const std::string s, unsigned char *v6_ip) {
+      const char *v6_str = s.c_str();
+      inet_pton(AF_INET6, v6_str, v6_ip);
+      return;
+  }
+
+  void sai_thrift_parse_ip_prefix(const sai_thrift_ip_prefix_t &thrift_ip_prefix, sai_ip_prefix_t *ip_prefix) {
+      ip_prefix->addr_family = (sai_ip_addr_family_t) thrift_ip_prefix.addr_family;
+      if ((sai_ip_addr_family_t)thrift_ip_prefix.addr_family == SAI_IP_ADDR_FAMILY_IPV4) {
+          sai_thrift_string_to_v4_ip(thrift_ip_prefix.addr.ip4, &ip_prefix->addr.ip4);
+          sai_thrift_string_to_v4_ip(thrift_ip_prefix.mask.ip4, &ip_prefix->mask.ip4);
+      } else {
+          sai_thrift_string_to_v6_ip(thrift_ip_prefix.addr.ip6, ip_prefix->addr.ip6);
+          sai_thrift_string_to_v6_ip(thrift_ip_prefix.mask.ip6, ip_prefix->mask.ip6);
+      }
+  }
+
+  void sai_thrift_parse_route_entry(const sai_thrift_route_entry_t &thrift_route_entry, sai_route_entry_t *route_entry) {
+      route_entry->switch_id = 0;
+      route_entry->vr_id = (sai_object_id_t) thrift_route_entry.vr_id;
+      sai_thrift_parse_ip_prefix(thrift_route_entry.destination, &route_entry->destination);
+  }
+
   sai_thrift_status_t sai_thrift_create_route(
       const sai_thrift_route_entry_t &thrift_route_entry,
       const std::vector<sai_thrift_attribute_t> &thrift_attr_list) {
@@ -732,7 +793,6 @@ public:
     uint32_t attr_count = thrift_attr_list.size();
     status = route_api->create_route_entry(&route_entry, attr_count, attr_list);
     free(attr_list);
-    SAI_THRIFT_LOG_DBG("Exit.");
     return status;
   }
 
@@ -823,6 +883,36 @@ public:
     logger->info("sai_thrift_set_router_interface_attribute");
   }
 
+  void sai_thrift_parse_ip_address(const sai_thrift_ip_address_t &thrift_ip_address, sai_ip_address_t *ip_address) {
+      ip_address->addr_family = (sai_ip_addr_family_t) thrift_ip_address.addr_family;
+      if ((sai_ip_addr_family_t)thrift_ip_address.addr_family == SAI_IP_ADDR_FAMILY_IPV4) {
+          sai_thrift_string_to_v4_ip(thrift_ip_address.addr.ip4, &ip_address->addr.ip4);
+      } else {
+          sai_thrift_string_to_v6_ip(thrift_ip_address.addr.ip6, ip_address->addr.ip6);
+      }
+  }
+
+  void sai_thrift_parse_next_hop_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+          attribute = (sai_thrift_attribute_t)*it;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+              case SAI_NEXT_HOP_ATTR_TYPE:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
+              case SAI_NEXT_HOP_ATTR_IP:
+                  sai_thrift_parse_ip_address(attribute.value.ipaddr, &attr_list[i].value.ipaddr);
+                  break;
+              case SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
+          }
+      }
+  }
+
+
   sai_thrift_object_id_t sai_thrift_create_next_hop(
       const std::vector<sai_thrift_attribute_t> &thrift_attr_list) {
     // Your implementation goes here
@@ -837,7 +927,7 @@ public:
     sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
     sai_thrift_parse_next_hop_attributes(thrift_attr_list, attr_list);
     uint32_t attr_count = thrift_attr_list.size();
-    status = nhop_api->create_next_hop(&nhop_id, gSwitchId, attr_count, attr_list);
+    status = nhop_api->create_next_hop(&nhop_id, 0, attr_count, attr_list);
     free(attr_list);
     return nhop_id;
   }
@@ -1019,6 +1109,26 @@ public:
                                 const sai_thrift_object_id_t port_id) {
     // Your implementation goes here
     logger->info("sai_thrift_get_stp_port_state");
+  }
+
+  void sai_thrift_parse_neighbor_entry(const sai_thrift_neighbor_entry_t &thrift_neighbor_entry, sai_neighbor_entry_t *neighbor_entry) {
+      neighbor_entry->switch_id = 0;
+      neighbor_entry->rif_id = (sai_object_id_t) thrift_neighbor_entry.rif_id;
+      sai_thrift_parse_ip_address(thrift_neighbor_entry.ip_address, &neighbor_entry->ip_address);
+  }
+
+  void sai_thrift_parse_neighbor_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it1 = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it1++) {
+          attribute = (sai_thrift_attribute_t)*it1;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+              case SAI_NEIGHBOR_ENTRY_ATTR_DST_MAC_ADDRESS:
+                  parse_mac_str(attribute.value.mac, attr_list[i].value.mac);
+                  break;
+          }
+      }
   }
 
   sai_thrift_status_t sai_thrift_create_neighbor_entry(

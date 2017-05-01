@@ -4,9 +4,6 @@ sai_status_t sai_adapter::create_neighbor_entry (const sai_neighbor_entry_t *nei
                                             uint32_t attr_count,
                                             const sai_attribute_t *attr_list) {
   (*logger)->info("create_neighbor_entry");
-  BmAddEntryOptions options;
-  BmMatchParams match_params;
-  BmActionData action_data;
 
   // parsing attributes
   sai_attribute_t attribute;
@@ -25,7 +22,22 @@ sai_status_t sai_adapter::create_neighbor_entry (const sai_neighbor_entry_t *nei
     }  
   }
 
-  // config tables
+  // config tables 
+  BmAddEntryOptions options;
+  BmMatchParams match_params;
+  BmActionData action_data;
+  RouterInterface_obj *rif = switch_metadata_ptr->rifs[neighbor_entry->rif_id];
+  match_params.push_back(parse_exact_match_param(rif->rif_id, 1)); 
+  if (neighbor_entry->ip_address.addr_family == SAI_IP_ADDR_FAMILY_IPV4) {
+    match_params.push_back(parse_exact_match_param(htonl(neighbor_entry->ip_address.addr.ip4), 4)); 
+  } else {
+    // match_params.push_back(parse_exact_match_param(neighbor_entry->ip_address.addr.ip6)); 
+  }
+  action_data.push_back(parse_param(parse_mac_64(mac), 6)); //dmac
+  bm_router_client_ptr->bm_mt_add_entry(cxt_id, "table_neighbor",
+        match_params, "action_set_packet_dmac",
+        action_data, options);
+
 }
 
 sai_status_t sai_adapter::remove_neighbor_entry(const sai_neighbor_entry_t *neighbor_entry) {

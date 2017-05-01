@@ -5,9 +5,10 @@ sai_status_t sai_adapter::create_next_hop (sai_object_id_t *next_hop_id,
                                             uint32_t attr_count,
                                             const sai_attribute_t *attr_list) {
   (*logger)->info("create_next_hop");
+  uint32_t nhop_id = switch_metadata_ptr->GetNewNextHopID();
   NextHop_obj *nhop = new NextHop_obj(sai_id_map_ptr);
   switch_metadata_ptr->nhops[nhop->sai_object_id] = nhop;
-  nhop->nhop_id = switch_metadata_ptr->GetNewNextHopID();
+  nhop->nhop_id = nhop_id;
   
   // parsing attributes
   sai_attribute_t attribute;
@@ -36,12 +37,16 @@ sai_status_t sai_adapter::create_next_hop (sai_object_id_t *next_hop_id,
   BmMatchParams match_params;
   BmActionData action_data;
   match_params.push_back(parse_exact_match_param(nhop->nhop_id, 1));
+  if (nhop->ip.addr_family == SAI_IP_ADDR_FAMILY_IPV4) {
+    action_data.push_back(parse_param(htonl(nhop->ip.addr.ip4), 4));
+  }
   action_data.push_back(parse_param(nhop->rif->rif_id, 1));
   bm_router_client_ptr->bm_mt_add_entry(cxt_id, "table_next_hop",
-        match_params, "action_set_erif_set_nh_dstip_from_pkt",
+        match_params, "action_set_erif_set_nh_dstip",
         action_data, options);
 
   *next_hop_id = nhop->sai_object_id;
+  (*logger)->info("object_id {}", nhop->sai_object_id);
   return SAI_STATUS_SUCCESS;
 }
 

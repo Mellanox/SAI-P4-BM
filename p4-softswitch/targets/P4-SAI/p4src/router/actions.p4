@@ -12,7 +12,7 @@ action _nop() {
 
 action action_set_vrf(in bit<8> vrf) {
 	router_metadata.ingress_vrf = vrf;
-	router_metadata.l3_lpm_key = (bit<40>)(vrf<<32)+(bit<40>)(ipv4.dstAddr);// + ipv4.dstAddr;
+	router_metadata.l3_lpm_key = (bit<40>)(vrf<<32)+(bit<40>)(ipv4.dstAddr);
 }
 
 // action action_set_acl_id(){
