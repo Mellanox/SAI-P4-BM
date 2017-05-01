@@ -80,7 +80,6 @@ header_type ingress_metadata_t {
         bit<1>  mc_fdb_miss;
         bit     ipmc;
         bit     isip;
-        bit     go_to_router;
         bit<32> mtu;
         bit     drop_tagged;
         bit     drop_untagged;

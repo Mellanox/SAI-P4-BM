@@ -1,5 +1,13 @@
 #include "../inc/defines.p4"
 
+table table_ingress_l3_if {
+	reads{
+		standard_metadata.ingress_port : exact;
+		vlan.vid : exact;
+	}
+	actions{action_set_irif; _drop;}
+	size: L3_EGRESS_IF_TABLE_SIZE;
+}
 
 table table_ingress_vrf {
 	reads{

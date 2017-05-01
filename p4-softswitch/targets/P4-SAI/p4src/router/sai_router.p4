@@ -26,6 +26,7 @@ control ingress {
 }
 
 control control_1q_uni_router{
+	apply(table_ingress_l3_if);
 	apply(table_ingress_vrf);
 	// apply(table_L3_ingress_acl); TODO
 	apply(table_router){

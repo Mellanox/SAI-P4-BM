@@ -29,7 +29,7 @@ control ingress {
     		control_bridge();  //bridging
 		}
 		// router
-		if ((ingress_metadata.l2_if_type == L2_ROUTER_TYPE) or (ingress_metadata.go_to_router == 1)) { 
+		if ((ingress_metadata.l2_if_type == L2_ROUTER_TYPE)) { 
 			control_router_flow();
 		}
 		//todo: bridge after router

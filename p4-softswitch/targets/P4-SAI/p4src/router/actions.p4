@@ -9,6 +9,9 @@ action _nop() {
 	no_op();
 }
 
+action action_set_irif(in bit<3> ingress_rif) {
+	router_metadata.ingress_rif = ingress_rif;
+}
 
 action action_set_vrf(in bit<8> vrf) {
 	router_metadata.ingress_vrf = vrf;
@@ -53,9 +56,9 @@ action action_trap_to_cpu(){
 
 action action_set_smac_vid(in bit<48> smac, in bit<12> vid){
 	ethernet.srcAddr = smac;
-	add_header(vlan);
-	vlan.etherType = IPV4_TYPE;
-	ethernet.etherType = VLAN_TYPE;
+	// add_header(vlan);
+	// vlan.etherType = IPV4_TYPE;
+	// ethernet.etherType = VLAN_TYPE;
 	vlan.vid = vid;
 	standard_metadata.egress_spec = VLAN_IF;
 }
