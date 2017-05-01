@@ -41,7 +41,7 @@ sai_status_t sai_adapter::create_next_hop (sai_object_id_t *next_hop_id,
     action_data.push_back(parse_param(htonl(nhop->ip.addr.ip4), 4));
   }
   action_data.push_back(parse_param(nhop->rif->rif_id, 1));
-  bm_router_client_ptr->bm_mt_add_entry(cxt_id, "table_next_hop",
+  nhop->hanlde_table_nhop = bm_router_client_ptr->bm_mt_add_entry(cxt_id, "table_next_hop",
         match_params, "action_set_erif_set_nh_dstip",
         action_data, options);
 
@@ -52,6 +52,10 @@ sai_status_t sai_adapter::create_next_hop (sai_object_id_t *next_hop_id,
 
 sai_status_t sai_adapter::remove_next_hop(sai_object_id_t next_hop_id) {
 	(*logger)->info("remove_next_hop");
+  NextHop_obj *nhop = switch_metadata_ptr->nhops[next_hop_id];
+  if (nhop->hanlde_table_nhop != NULL_HANDLE) {
+    bm_router_client_ptr->bm_mt_delete_entry(cxt_id, "table_next_hop", nhop->hanlde_table_nhop);
+  }
   switch_metadata_ptr->nhops.erase(next_hop_id);
   sai_id_map_ptr->free_id(next_hop_id);
   return SAI_STATUS_SUCCESS;

@@ -113,10 +113,12 @@ void sai_adapter::learn_mac(u_char *packet, cpu_hdr_t *cpu, int pkt_len) {
   BridgePort_obj *bridge_port;
   Bridge_obj *bridge;
   sai_object_id_t port_id;
+  uint16_t vlan_id;
   for (port_id_map_t::iterator it = switch_metadata_ptr->ports.begin();
        it != switch_metadata_ptr->ports.end(); ++it) {
     if (it->second->hw_port == ingress_port) {
       port_id = it->first;
+      vlan_id = it->second->pvid;
       (*logger)->info("MAC learning from ingress port {} (sai_object_id)",
                       port_id);
       break;
@@ -154,7 +156,11 @@ void sai_adapter::learn_mac(u_char *packet, cpu_hdr_t *cpu, int pkt_len) {
     bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1Q;
   } else {
     bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1D;
+    vlan_id = bridge_port->vlan_id;
   }
+  // if (ether->ether_type == 0x8100) {
+    //TODO: get vlan from packet
+  // }
   adapter_create_fdb_entry(bridge_port->sai_object_id, src_mac, bridge_type,
-                           bridge_port->vlan_id, bridge->sai_object_id);
+                           vlan_id, bridge->sai_object_id);
 }

@@ -7,6 +7,7 @@ sai_status_t sai_adapter::create_vlan(sai_object_id_t *vlan_id,
   (*logger)->info("create_vlan ");
   Vlan_obj *vlan = new Vlan_obj(sai_id_map_ptr);
   switch_metadata_ptr->vlans[vlan->sai_object_id] = vlan;
+
   // parsing attributes
   sai_attribute_t attribute;
   for (uint32_t i = 0; i < attr_count; i++) {
@@ -18,18 +19,28 @@ sai_status_t sai_adapter::create_vlan(sai_object_id_t *vlan_id,
     }
   }
 
+  // config tables
+  BmMatchParams match_params;
+  BmActionData action_data;
+  BmAddEntryOptions options;
   uint32_t bridge_id = switch_metadata_ptr->GetNewBridgeID(vlan->vid);
   vlan->bridge_id = bridge_id;
   if (vlan->vid != bridge_id) {
-    BmMatchParams match_params;
-    BmActionData action_data;
-    BmAddEntryOptions options;
     match_params.push_back(parse_exact_match_param(vlan->vid, 2));
     action_data.push_back(parse_param(bridge_id, 2));
     vlan->handle_id_1q = bm_bridge_client_ptr->bm_mt_add_entry(
         cxt_id, "table_bridge_id_1q", match_params, "action_set_bridge_id",
         action_data, options);
   }
+
+  match_params.clear();
+  match_params.push_back(parse_exact_match_param(switch_metadata_ptr->router_bridge_port->bridge_port, 1));
+  match_params.push_back(parse_exact_match_param(vlan->vid, 2));
+  action_data.clear();
+  vlan->handle_router_ingress_vlan_filtering = bm_bridge_client_ptr->bm_mt_add_entry(
+      cxt_id, "table_ingress_vlan_filtering", match_params, "_nop", action_data,
+      options);
+
   *vlan_id = vlan->sai_object_id;
   return SAI_STATUS_SUCCESS;
 }
@@ -40,6 +51,10 @@ sai_status_t sai_adapter::remove_vlan(sai_object_id_t vlan_id) {
   if (vlan->handle_id_1q != NULL_HANDLE) {
     bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_bridge_id_1q",
                                       vlan->handle_id_1q);
+  }
+  if (vlan->handle_router_ingress_vlan_filtering != NULL_HANDLE) { 
+    bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_ingress_vlan_filtering",
+                                      vlan->handle_router_ingress_vlan_filtering);
   }
   switch_metadata_ptr->vlans.erase(vlan->sai_object_id);
   sai_id_map_ptr->free_id(vlan->sai_object_id);

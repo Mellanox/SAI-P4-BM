@@ -27,6 +27,7 @@ table_add table_port_ingress_interface_type action_set_l2_if_type 4 => 3 4
 table_add table_port_ingress_interface_type action_set_l2_if_type 5 => 3 5
 table_add table_port_ingress_interface_type action_set_l2_if_type 6 => 3 6
 table_add table_port_ingress_interface_type action_set_l2_if_type 7 => 3 7
+table_add table_port_ingress_interface_type action_set_l2_if_type 9 => 3 9
 
 table_add table_egress_br_port_to_if action_forward_set_outIfType 0 => 0 0
 table_add table_egress_br_port_to_if action_forward_set_outIfType 1 => 1 0 

@@ -175,10 +175,12 @@ public:
   uint32_t bridge_id; // Valid for .1Q bridge
   std::vector<sai_object_id_t> vlan_members;
   BmEntryHandle handle_id_1q;
+  BmEntryHandle handle_router_ingress_vlan_filtering;
   Vlan_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->vlan_members.clear();
     this->vid = 0;
     this->handle_id_1q = NULL_HANDLE;
+    this->handle_router_ingress_vlan_filtering = NULL_HANDLE;
   }
 };
 
@@ -294,6 +296,7 @@ public:
   uint32_t rif_id;
   sai_router_interface_type_t type;
   BmEntryHandle handle_l3_interface;
+  BmEntryHandle handle_egress_l3;
   RouterInterface_obj(sai_id_map_t *sai_id_map_ptr)
       : Sai_obj(sai_id_map_ptr) {
         this->vid = 1;
@@ -301,13 +304,8 @@ public:
         this->rif_id = 0;
         this->type = SAI_ROUTER_INTERFACE_TYPE_VLAN;
         this->handle_l3_interface = NULL_HANDLE;
+        this->handle_egress_l3 = NULL_HANDLE;
       }
-};
-
-class Route_obj : public Sai_obj {
-public:
-  Route_obj(sai_id_map_t *sai_id_map_ptr)
-      : Sai_obj(sai_id_map_ptr) {}
 };
 
 class NextHop_obj : public Sai_obj {
@@ -316,11 +314,13 @@ public:
   sai_next_hop_type_t type;
   sai_ip_address_t ip;
   RouterInterface_obj *rif;
+  BmEntryHandle hanlde_table_nhop;
   NextHop_obj(sai_id_map_t *sai_id_map_ptr)
       : Sai_obj(sai_id_map_ptr) {
         this->nhop_id = 0;
         this->type = SAI_NEXT_HOP_TYPE_IP;
         this->rif = NULL;
+        this->hanlde_table_nhop = NULL_HANDLE;
       }
 };
 

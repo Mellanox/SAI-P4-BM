@@ -51,15 +51,25 @@ sai_status_t sai_adapter::create_router_interface (sai_object_id_t *router_inter
     mac_address_64 = parse_mac_64(switch_metadata_ptr->default_switch_mac);
   }
 
-  if (rif->type == SAI_ROUTER_INTERFACE_TYPE_VLAN) {  //Vlan interface
-    Vlan_obj *vlan = switch_metadata_ptr->vlans[switch_metadata_ptr->GetVlanObjIdFromVid(rif->vid)];
-    bridge_id = vlan->bridge_id;
-    match_params.push_back(parse_exact_match_param(mac_address_64, 6));
-    match_params.push_back(parse_exact_match_param(bridge_id, 2));
-    action_data.push_back(parse_param(switch_metadata_ptr->router_bridge_port->bridge_port, 1));
-    rif->handle_l3_interface = bm_bridge_client_ptr->bm_mt_add_entry(
-              cxt_id, "table_l3_interface", match_params, "action_set_egress_br_port",
-              action_data, options);
+  switch(rif->type) {
+    case SAI_ROUTER_INTERFACE_TYPE_VLAN:  //Vlan interface
+      Vlan_obj *vlan = switch_metadata_ptr->vlans[switch_metadata_ptr->GetVlanObjIdFromVid(rif->vid)];
+      bridge_id = vlan->bridge_id;
+      match_params.push_back(parse_exact_match_param(mac_address_64, 6));
+      match_params.push_back(parse_exact_match_param(bridge_id, 2));
+      action_data.push_back(parse_param(switch_metadata_ptr->router_bridge_port->bridge_port, 1));
+      rif->handle_l3_interface = bm_bridge_client_ptr->bm_mt_add_entry(
+                cxt_id, "table_l3_interface", match_params, "action_set_egress_br_port",
+                action_data, options);
+      match_params.clear();
+      match_params.push_back(parse_exact_match_param(rif->rif_id, 1));
+      action_data.clear();
+      action_data.push_back(parse_param(mac_address_64, 6));
+      action_data.push_back(parse_param(vlan->vid, 2));
+      rif->handle_egress_l3 = bm_router_client_ptr->bm_mt_add_entry(
+                cxt_id, "table_egress_L3_if", match_params, "action_set_smac_vid",
+                action_data, options);
+      break;
   }
 
   *router_interface_id = rif->sai_object_id;
@@ -72,6 +82,9 @@ sai_status_t sai_adapter::remove_router_interface (sai_object_id_t router_interf
   RouterInterface_obj *rif = switch_metadata_ptr->rifs[router_interface_id];
   if (rif->handle_l3_interface != NULL_HANDLE) {
     bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_l3_interface", rif->handle_l3_interface);
+  }
+  if (rif->handle_egress_l3 != NULL_HANDLE) {
+    bm_router_client_ptr->bm_mt_delete_entry(cxt_id, "table_egress_L3_if", rif->handle_egress_l3);
   }
   switch_metadata_ptr->rifs.erase(router_interface_id);
   sai_id_map_ptr->free_id(router_interface_id);

@@ -19,7 +19,7 @@ parser start {
 }
 
 parser parse_ethernet_or_ingress_cpu {
-    set_metadata(ingress_metadata.cpu_port, (standard_metadata.ingress_port >> 3));
+    set_metadata(ingress_metadata.cpu_port, ((standard_metadata.ingress_port >> 3) & ~(standard_metadata.ingress_port)));
     return select(ingress_metadata.cpu_port) {
         0: parse_ethernet;
         1: parse_cpu_header;

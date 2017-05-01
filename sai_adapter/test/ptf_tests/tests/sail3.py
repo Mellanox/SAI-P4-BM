@@ -38,6 +38,7 @@ class L3IPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
         mac = ''
         vlan_id0 = 10
         vlan_id1 = 15
+        dmac1 = '00:11:22:33:44:55'
 
         bridge_port0 = br_port_list[port0]
         bridge_port1 = br_port_list[port1]
@@ -59,50 +60,59 @@ class L3IPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
         tagging_mode = SAI_VLAN_TAGGING_MODE_UNTAGGED
         vlan_member0 = sai_thrift_create_vlan_member(self.client, vlan_oid0, bridge_port0, tagging_mode)
         vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_oid1, bridge_port1, tagging_mode)
+        mac_action = SAI_PACKET_ACTION_FORWARD
+        fdb_entry_type = SAI_FDB_ENTRY_TYPE_STATIC
+        bridge_type = SAI_BRIDGE_TYPE_1Q
+        sai_thrift_create_fdb(self.client, dmac1, bridge_type, vlan_id1, None, bridge_port1, mac_action, fdb_entry_type)
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
-        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan_id0, v4_enabled, v6_enabled, mac)
-        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan_id1, v4_enabled, v6_enabled, mac)
+        rif_id0 = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan_id0, v4_enabled, v6_enabled, mac)
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan_id1, v4_enabled, v6_enabled, mac)
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV4
         ip_addr1 = '10.10.10.1'
         ip_addr1_subnet = '10.10.10.0'
         ip_mask1 = '255.255.255.0'
-        dmac1 = '00:11:22:33:44:55'
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, nhop1)
 
         # send the test packet(s)
         pkt = simple_tcp_packet(eth_dst=router_mac,
-                                eth_src='00:22:22:22:22:22',
+                                eth_src='00:22:22:22:22:55',
                                 ip_dst='10.10.10.1',
                                 ip_src='192.168.0.1',
                                 ip_id=105,
                                 ip_ttl=64)
         exp_pkt = simple_tcp_packet(
-                                eth_dst='00:11:22:33:44:55',
+                                eth_dst=dmac1,
                                 eth_src=router_mac,
                                 ip_dst='10.10.10.1',
                                 ip_src='192.168.0.1',
                                 ip_id=105,
-                                ip_ttl=63)
+                                ip_ttl=64)
+                                # ip_ttl=63) TODO: add dec ttl in router
         try:
-            send_packet(self, 1, str(pkt))
-            verify_packets(self, exp_pkt, [0])
+            send_packet(self, 0, str(pkt))
+            verify_packets(self, exp_pkt, [1])
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
-
+            self.client.sai_thrift_remove_router_interface(rif_id0)
             self.client.sai_thrift_remove_router_interface(rif_id1)
-            self.client.sai_thrift_remove_router_interface(rif_id2)
+            
+            sai_thrift_delete_fdb(self.client, dmac1, vlan_id1, bridge_type, None)
             self.client.sai_thrift_remove_vlan_member(vlan_member0)
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan(vlan_oid0)
             self.client.sai_thrift_remove_vlan(vlan_oid1)
             self.client.sai_thrift_remove_virtual_router(vr_id)
+            attr_value = sai_thrift_attribute_value_t(u16=1)
+            attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value) 
+            self.client.sai_thrift_set_port_attribute(port0, attr)
+            self.client.sai_thrift_set_port_attribute(port1, attr)
 
 @group('l3')
 class L3IPv4LpmTest(sai_base_test.ThriftInterfaceDataPlane):

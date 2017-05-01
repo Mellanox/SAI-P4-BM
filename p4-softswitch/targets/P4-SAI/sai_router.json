@@ -1059,17 +1059,37 @@
                                     "value": {
                                         "type": "expression",
                                         "value": {
-                                            "op": ">>",
+                                            "op": "&",
                                             "left": {
-                                                "type": "field",
-                                                "value": [
-                                                    "standard_metadata",
-                                                    "ingress_port"
-                                                ]
+                                                "type": "expression",
+                                                "value": {
+                                                    "op": ">>",
+                                                    "left": {
+                                                        "type": "field",
+                                                        "value": [
+                                                            "standard_metadata",
+                                                            "ingress_port"
+                                                        ]
+                                                    },
+                                                    "right": {
+                                                        "type": "hexstr",
+                                                        "value": "0x3"
+                                                    }
+                                                }
                                             },
                                             "right": {
-                                                "type": "hexstr",
-                                                "value": "0x3"
+                                                "type": "expression",
+                                                "value": {
+                                                    "op": "~",
+                                                    "left": null,
+                                                    "right": {
+                                                        "type": "field",
+                                                        "value": [
+                                                            "standard_metadata",
+                                                            "ingress_port"
+                                                        ]
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -1114,8 +1134,8 @@
                 "ethernet",
                 "vlan",
                 "ipv4",
-                "udp",
-                "tcp"
+                "tcp",
+                "udp"
             ]
         }
     ],
@@ -1150,134 +1170,8 @@
             ]
         },
         {
-            "name": "action_set_smac_vid",
-            "id": 1,
-            "runtime_data": [
-                {
-                    "name": "smac",
-                    "bitwidth": 48
-                },
-                {
-                    "name": "vid",
-                    "bitwidth": 12
-                }
-            ],
-            "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "ethernet",
-                                "srcAddr"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
-                },
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "vlan",
-                                "vid"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 1
-                        }
-                    ]
-                },
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "standard_metadata",
-                                "egress_spec"
-                            ]
-                        },
-                        {
-                            "type": "hexstr",
-                            "value": "0x0"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "action_trap_to_cpu",
-            "id": 2,
-            "runtime_data": [],
-            "primitives": []
-        },
-        {
-            "name": "action_set_nhop_grp_id",
-            "id": 3,
-            "runtime_data": [
-                {
-                    "name": "next_hop_group_id",
-                    "bitwidth": 3
-                }
-            ],
-            "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "router_metadata",
-                                "next_hop_group_id"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "action_set_nhop_id",
-            "id": 4,
-            "runtime_data": [
-                {
-                    "name": "next_hop_id",
-                    "bitwidth": 8
-                }
-            ],
-            "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "router_metadata",
-                                "next_hop_id"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
-                }
-            ]
-        },
-        {
             "name": "action_set_erif_set_nh_dstip_from_pkt",
-            "id": 5,
+            "id": 1,
             "runtime_data": [
                 {
                     "name": "egress_rif",
@@ -1319,6 +1213,156 @@
                             "value": 0
                         }
                     ]
+                }
+            ]
+        },
+        {
+            "name": "action_trap_to_cpu",
+            "id": 2,
+            "runtime_data": [],
+            "primitives": []
+        },
+        {
+            "name": "action_set_nhop_id",
+            "id": 3,
+            "runtime_data": [
+                {
+                    "name": "next_hop_id",
+                    "bitwidth": 8
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "router_metadata",
+                                "next_hop_id"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_set_smac_vid",
+            "id": 4,
+            "runtime_data": [
+                {
+                    "name": "smac",
+                    "bitwidth": 48
+                },
+                {
+                    "name": "vid",
+                    "bitwidth": 12
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ethernet",
+                                "srcAddr"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                },
+                {
+                    "op": "add_header",
+                    "parameters": [
+                        {
+                            "type": "header",
+                            "value": "vlan"
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "vlan",
+                                "etherType"
+                            ]
+                        },
+                        {
+                            "type": "hexstr",
+                            "value": "0x800"
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ethernet",
+                                "etherType"
+                            ]
+                        },
+                        {
+                            "type": "hexstr",
+                            "value": "0x8100"
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "vlan",
+                                "vid"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 1
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "standard_metadata",
+                                "egress_spec"
+                            ]
+                        },
+                        {
+                            "type": "hexstr",
+                            "value": "0x0"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "_drop",
+            "id": 5,
+            "runtime_data": [],
+            "primitives": [
+                {
+                    "op": "drop",
+                    "parameters": []
                 }
             ]
         },
@@ -1441,13 +1485,30 @@
             ]
         },
         {
-            "name": "_drop",
+            "name": "action_set_nhop_grp_id",
             "id": 8,
-            "runtime_data": [],
+            "runtime_data": [
+                {
+                    "name": "next_hop_group_id",
+                    "bitwidth": 3
+                }
+            ],
             "primitives": [
                 {
-                    "op": "drop",
-                    "parameters": []
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "router_metadata",
+                                "next_hop_group_id"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
                 }
             ]
         }
@@ -1620,7 +1681,7 @@
                     "id": 5,
                     "match_type": "exact",
                     "type": "simple",
-                    "max_size": 1,
+                    "max_size": 10,
                     "with_counters": false,
                     "direct_meters": null,
                     "support_timeout": false,

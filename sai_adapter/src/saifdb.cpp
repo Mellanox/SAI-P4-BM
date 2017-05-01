@@ -56,7 +56,8 @@ sai_status_t sai_adapter::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
         uint64_t mac_address = parse_mac_64(fdb_entry->mac_address);
         match_params.push_back(parse_exact_match_param(mac_address, 6));
         match_params.push_back(parse_exact_match_param(bridge_id, 2));
-        (*logger)->info("--> mac: {}, b_id: {}", mac_address, bridge_id);
+        (*logger)->info("--> b_id: {}. mac: ", bridge_id);
+        print_mac_to_log(fdb_entry->mac_address, *logger);
         action_data.push_back(parse_param(bridge_port, 1));
         try {
           handle_fdb = bm_bridge_client_ptr->bm_mt_add_entry(

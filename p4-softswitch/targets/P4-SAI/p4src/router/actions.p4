@@ -53,6 +53,9 @@ action action_trap_to_cpu(){
 
 action action_set_smac_vid(in bit<48> smac, in bit<12> vid){
 	ethernet.srcAddr = smac;
+	add_header(vlan);
+	vlan.etherType = IPV4_TYPE;
+	ethernet.etherType = VLAN_TYPE;
 	vlan.vid = vid;
 	standard_metadata.egress_spec = VLAN_IF;
 }
