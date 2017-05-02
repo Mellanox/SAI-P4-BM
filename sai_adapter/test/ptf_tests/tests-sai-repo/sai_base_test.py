@@ -21,8 +21,8 @@ import ptf.testutils as testutils
 # Thrift interface base tests
 #
 ################################################################
-sys.path.append('../src/gen-py')
-import switch_sai.switch_sai_rpc as switch_sai_rpc
+
+import switch_sai_thrift.switch_sai_rpc as switch_sai_rpc
 from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
