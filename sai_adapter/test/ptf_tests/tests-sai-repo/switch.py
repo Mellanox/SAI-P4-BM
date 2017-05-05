@@ -16,10 +16,12 @@
 Thrift SAI interface basic tests
 """
 
-import switch_sai_thrift
+# import switch_sai_thrift
 from sai_base_test import *
 import time
 import sys
+sys.path.append('../sai_thrift_src/gen-py')
+from switch_sai.ttypes import *
 import logging
 
 import unittest
@@ -33,9 +35,9 @@ from ptf.thriftutils import *
 
 import os
 
-from switch_sai_thrift.ttypes import  *
+# from switch_sai_thrift.ttypes import  *
 
-from switch_sai_thrift.sai_headers import  *
+# from switch_sai_thrift.sai_headers import  *
 
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1139,7 +1141,8 @@ def sai_thrift_vlan_remove_all_ports(client, vlan_oid):
             if attribute.id == SAI_VLAN_ATTR_MEMBER_LIST:
                 for vlan_member in attribute.value.objlist.object_id_list:
                     vlan_members_list.append(vlan_member)
-
+        print "vlan_oid %d members:" % vlan_oid
+        print vlan_members_list
         for vlan_member in vlan_members_list:
             client.sai_thrift_remove_vlan_member(vlan_member)
 

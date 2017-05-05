@@ -15,13 +15,21 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
     BmMtEntry entry;
     BmActionData action_data;
 
-    // Create Default 1Q Bridge, and switch_obj (not sure if switch is needed).
+    // Create Default 1Q Bridge, Vlan and switch_obj (not sure if switch is needed).
     Bridge_obj *bridge = new Bridge_obj(sai_id_map_ptr);
     (*logger)->info("Default 1Q bridge. sai_object_id {} bridge_id {}",
                     bridge->sai_object_id, bridge->bridge_id);
     Sai_obj *switch_obj = new Sai_obj(sai_id_map_ptr);
     switch_metadata_ptr->bridges[bridge->sai_object_id] = bridge;
     switch_metadata_ptr->default_bridge_id = bridge->sai_object_id;
+
+    Vlan_obj *vlan = new Vlan_obj(sai_id_map_ptr);
+    switch_metadata_ptr->vlans[vlan->sai_object_id] = vlan;
+    vlan->vid = 1;
+    vlan->bridge_id = switch_metadata_ptr->GetNewBridgeID(vlan->vid);
+    switch_metadata_ptr->default_vlan_oid = vlan->sai_object_id;
+
+
 
     for (int i = 0; i < switch_metadata_ptr->hw_port_list.count; i++) {
       int hw_port = switch_metadata_ptr->hw_port_list.list[i];
@@ -45,6 +53,15 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
       (*logger)->info("Default bridge_port_id {}. bridge_port = {}",
                       bridge_port->sai_object_id, bridge_port->bridge_port);
 
+      // add default bridge ports to default vlan
+      Vlan_member_obj *vlan_member = new Vlan_member_obj(sai_id_map_ptr);
+      switch_metadata_ptr->vlan_members[vlan_member->sai_object_id] = vlan_member;
+      vlan_member->vlan_oid = switch_metadata_ptr->default_vlan_oid;
+      vlan_member->vid = vlan->vid;
+      vlan_member->bridge_port_id = bridge_port->sai_object_id;
+      vlan_member->tagging_mode = SAI_VLAN_TAGGING_MODE_UNTAGGED;
+      vlan->vlan_members.push_back(vlan_member->sai_object_id);
+
       // Store default table entries
       match_params.clear();
       match_params.push_back(parse_exact_match_param(port->l2_if, 1));
@@ -58,6 +75,24 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
       bm_bridge_client_ptr->bm_mt_get_entry_from_key(
           entry, cxt_id, "table_egress_br_port_to_if", match_params, options);
       bridge_port->handle_egress_br_port_to_if = entry.entry_handle;
+
+      match_params.clear();
+      match_params.push_back(parse_exact_match_param(port->l2_if, 1));
+      match_params.push_back(parse_exact_match_param(vlan_member->vid, 2));
+      match_params.push_back(parse_valid_match_param(true));
+      bm_bridge_client_ptr->bm_mt_get_entry_from_key(
+          entry, cxt_id, "table_egress_vlan_tag", match_params, options);
+      vlan_member->handle_egress_vlan_tag = entry.entry_handle;
+      match_params.clear();
+      match_params.push_back(parse_exact_match_param(bridge_port->bridge_port, 1));
+      match_params.push_back(parse_exact_match_param(vlan_member->vid, 2));
+      bm_bridge_client_ptr->bm_mt_get_entry_from_key(
+          entry, cxt_id, "table_egress_vlan_filtering", match_params, options);
+      vlan_member->handle_egress_vlan_filtering = entry.entry_handle;
+      bm_bridge_client_ptr->bm_mt_get_entry_from_key(
+          entry, cxt_id, "table_ingress_vlan_filtering", match_params, options);
+      vlan_member->handle_ingress_vlan_filtering = entry.entry_handle;
+
     }
 
     // Create Bridge Router port and bridge_port
@@ -129,6 +164,9 @@ sai_status_t sai_adapter::get_switch_attribute(sai_object_id_t switch_id,
       break;
     case SAI_SWITCH_ATTR_PORT_NUMBER:
       (attr_list + i)->value.u32 = switch_metadata_ptr->hw_port_list.count;
+      break;
+    case SAI_SWITCH_ATTR_DEFAULT_VLAN_ID:
+      (attr_list + i)->value.oid = switch_metadata_ptr->default_vlan_oid;
       break;
     }
   }

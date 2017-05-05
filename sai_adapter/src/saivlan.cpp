@@ -207,8 +207,20 @@ sai_status_t sai_adapter::set_vlan_attribute(sai_object_id_t vlan_id,
 sai_status_t sai_adapter::get_vlan_attribute(sai_object_id_t vlan_id,
                                              const uint32_t attr_count,
                                              sai_attribute_t *attr_list) {
-  (*logger)->info("TODO : get_vlan_attribute not implemened");
-  return SAI_STATUS_NOT_IMPLEMENTED;
+  (*logger)->info("get_vlan_attribute");
+  Vlan_obj *vlan = switch_metadata_ptr->vlans[vlan_id];
+  for (int i=0; i<attr_count; ++i) {
+    switch(attr_list[i].id) {
+      case SAI_VLAN_ATTR_VLAN_ID:
+        attr_list[i].value.u16  = vlan->vid;
+        break;
+      case SAI_VLAN_ATTR_MEMBER_LIST:
+        std::copy(vlan->vlan_members.begin(), vlan->vlan_members.end(), attr_list[i].value.objlist.list);
+        attr_list[i].value.objlist.count = vlan->vlan_members.size();
+        break;
+    }
+  }
+  return SAI_STATUS_SUCCESS;
   // implementation
 }
 sai_status_t

@@ -106,10 +106,8 @@ sai_status_t sai_adapter::create_lag_member(sai_object_id_t *lag_member_id,
   lag->handle_lag_hash = bm_bridge_client_ptr->bm_mt_add_entry(
       cxt_id, "table_lag_hash", match_params, "action_set_lag_hash_size",
       action_data, options);
-  uint32_t port_l2if = port->l2_if;
   port->l2_if = l2_if;
   config_port(port);
-  port->l2_if = port_l2if;
   *lag_member_id = lag_member->sai_object_id;
   return SAI_STATUS_SUCCESS;
 }
@@ -121,6 +119,7 @@ sai_status_t sai_adapter::remove_lag_member(sai_object_id_t lag_member_id) {
   BmActionData action_data;
   Lag_member_obj *lag_member = switch_metadata_ptr->lag_members[lag_member_id];
   Lag_obj *lag = lag_member->lag;
+  lag_member->port->l2_if = lag_member->port->hw_port;
   sai_status_t status = SAI_STATUS_SUCCESS;
   std::vector<sai_object_id_t>::iterator iter = std::find(
       lag->lag_members.begin(), lag->lag_members.end(), lag_member_id);
@@ -164,4 +163,27 @@ sai_status_t sai_adapter::remove_lag_member(sai_object_id_t lag_member_id) {
   switch_metadata_ptr->lag_members.erase(lag_member->sai_object_id);
   sai_id_map_ptr->free_id(lag_member->sai_object_id);
   return status;
+}
+void sai_adapter::get_parsed_lag_attribute(Lag_member_obj *lag_member, sai_attribute_t *attribute) {
+  switch (attribute->id) {
+    case SAI_LAG_MEMBER_ATTR_PORT_ID:
+      attribute->value.oid = lag_member->port->sai_object_id;
+      break;
+    case SAI_LAG_MEMBER_ATTR_LAG_ID:
+      attribute->value.oid = lag_member->lag->sai_object_id;
+      break;
+    default:
+      (*logger)->error(
+          "while parsing lag member (get attr), attribute.id = was dumped in sai_obj",
+          attribute->id);
+      break;
+    }
+}
+
+sai_status_t sai_adapter::get_lag_member_attribute(sai_object_id_t lag_member_id, uint32_t attr_count, sai_attribute_t *attr_list) {
+  Lag_member_obj *lag_member = switch_metadata_ptr->lag_members[lag_member_id];
+  for (int i = 0; i < attr_count; i++) {
+    get_parsed_lag_attribute(lag_member, attr_list + i);
+  }
+  return SAI_STATUS_SUCCESS;
 }

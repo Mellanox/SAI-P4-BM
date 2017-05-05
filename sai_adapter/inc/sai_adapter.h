@@ -191,6 +191,8 @@ public:
                                         uint32_t attr_count,
                                         const sai_attribute_t *attr_list);
   static sai_status_t remove_lag_member(sai_object_id_t lag_member_id);
+  static sai_status_t get_lag_member_attribute(sai_object_id_t lag_member_id, uint32_t attr_count, sai_attribute_t *attr_list);
+  static void get_parsed_lag_attribute(Lag_member_obj *lag_member, sai_attribute_t *attribute);
 
   // hostif
   static sai_status_t create_hostif(sai_object_id_t *hif_id,

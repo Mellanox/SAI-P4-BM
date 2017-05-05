@@ -1,0 +1,37 @@
+../../src/saibridge.cpp:    bind_mode = lag->port_obj->bind_mode;
+../../src/saibridge.cpp:    l2_if = lag->l2_if;
+../../src/sailag.cpp:  lag->l2_if = switch_metadata_ptr->GetNewL2IF();
+../../src/sailag.cpp:  (*logger)->info("create_lag. l2_if = {}. sai_object_id = {}", lag->l2_if,
+../../src/sailag.cpp:                  lag->sai_object_id);
+../../src/sailag.cpp:  switch_metadata_ptr->lags[lag->sai_object_id] = lag;
+../../src/sailag.cpp:  *lag_id = lag->sai_object_id;
+../../src/sailag.cpp:  int members_size = lag->lag_members.size();
+../../src/sailag.cpp:    remove_lag_member(lag->lag_members.back());
+../../src/sailag.cpp:    if (lag->handle_port_configurations != NULL_HANDLE) {
+../../src/sailag.cpp:                                        lag->handle_port_configurations);
+../../src/sailag.cpp:    if (lag->handle_lag_hash != NULL_HANDLE) {
+../../src/sailag.cpp:                                        lag->handle_lag_hash);
+../../src/sailag.cpp:  switch_metadata_ptr->lags.erase(lag->sai_object_id);
+../../src/sailag.cpp:  sai_id_map_ptr->free_id(lag->sai_object_id);
+../../src/sailag.cpp:      lag->lag_members.push_back(lag_member->sai_object_id);
+../../src/sailag.cpp:  lag->port_obj = port;
+../../src/sailag.cpp:  uint32_t l2_if = lag->l2_if;
+../../src/sailag.cpp:  if (lag->handle_lag_hash != NULL_HANDLE) {
+../../src/sailag.cpp:                                      lag->handle_lag_hash);
+../../src/sailag.cpp:    lag->handle_lag_hash = NULL_HANDLE;
+../../src/sailag.cpp:  action_data.push_back(parse_param(lag->l2_if, 1));
+../../src/sailag.cpp:      parse_exact_match_param(lag->lag_members.size() - 1, 1));
+../../src/sailag.cpp:  action_data.push_back(parse_param(lag->lag_members.size(), 1));
+../../src/sailag.cpp:  lag->handle_lag_hash = bm_bridge_client_ptr->bm_mt_add_entry(
+../../src/sailag.cpp:      lag->lag_members.begin(), lag->lag_members.end(), lag_member_id);
+../../src/sailag.cpp:  size_t hash_index = std::distance(lag->lag_members.begin(), iter);
+../../src/sailag.cpp:  lag->lag_members.erase(lag->lag_members.begin() + hash_index);
+../../src/sailag.cpp:                                    lag->handle_lag_hash);
+../../src/sailag.cpp:  match_params.push_back(parse_exact_match_param(lag->l2_if, 1));
+../../src/sailag.cpp:  action_data.push_back(parse_param(lag->lag_members.size(), 1));
+../../src/sailag.cpp:  lag->handle_lag_hash = bm_bridge_client_ptr->bm_mt_add_entry(
+../../src/sailag.cpp:  if (hash_index != lag->lag_members.size()) {
+../../src/sailag.cpp:    sai_object_id_t last_lag_member_id = lag->lag_members.back();
+../../src/sailag.cpp:    lag->lag_members.pop_back();
+../../src/sailag.cpp:    lag->lag_members.insert(lag->lag_members.begin() + hash_index,
+../../src/sailag.cpp:    match_params.push_back(parse_exact_match_param(lag->l2_if, 1));

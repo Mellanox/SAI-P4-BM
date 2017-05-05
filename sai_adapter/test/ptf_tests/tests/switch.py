@@ -117,25 +117,20 @@ def switch_init2(client):
     # attr_value2 = sai_thrift_attribute_value_t(objlist=0)
     # attr2 = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_PORT_LIST, value=attr_value)
     # attr_list = client.sai_thrift_get_switch_attribute(thrift_attr_list=[attr, attr2])
-    attr_list = client.sai_thrift_get_switch_attribute(thrift_attr_list=[attr])
-    default_bridge = attr_list.attr_list[0].value.oid
+    default_bridge = client.sai_thrift_get_default_1q_bridge_id()
     for interface,front in interface_to_front_mapping.iteritems():
         sai_port_id = client.sai_thrift_get_port_id_by_front_port(front)
         port_list[int(interface)]=sai_port_id
 
-
-    attr_list = []
-    attr_value = sai_thrift_attribute_value_t(objlist=None)
-    attr_list.append(sai_thrift_attribute_t(id= SAI_BRIDGE_ATTR_PORT_LIST, value=attr_value))
-    attr_value = sai_thrift_attribute_value_t(s32=None)
-    attr_list.append(sai_thrift_attribute_t(id= SAI_BRIDGE_ATTR_TYPE, value=attr_value))
-    attr_list = client.sai_thirft_get_bridge_attribute(default_bridge, attr_list)
-    default_bridge_type = attr_list.attr_list[1].value.s32
-    for br_port in attr_list.attr_list[0].value.objlist.object_id_list:
-        attr_value = sai_thrift_attribute_value_t(oid=None)
-        attr = sai_thrift_attribute_t(id= SAI_BRIDGE_PORT_ATTR_PORT_ID, value=attr_value)
-        port_id = client.sai_thirft_get_bridge_port_attribute(br_port,[attr]).attr_list[0].value.oid
-        br_port_list[port_id] = br_port
+    ret = client.sai_thrift_get_bridge_port_list(default_bridge)
+    default_bridge_type = SAI_BRIDGE_TYPE_1Q
+    for br_port in ret.data.objlist.object_id_list:
+        attr_list = client.sai_thrift_get_bridge_port_attribute(br_port)
+        for attr in attr_list.attr_list:
+            if attr.id == SAI_BRIDGE_PORT_ATTR_PORT_ID:
+                port_id = attr.value.oid
+                br_port_list[port_id] = br_port
+                break
 
     attr_value = sai_thrift_attribute_value_t(mac=router_mac)
     attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_SRC_MAC_ADDRESS, value=attr_value)

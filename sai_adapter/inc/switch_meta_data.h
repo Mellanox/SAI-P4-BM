@@ -40,7 +40,7 @@ public:
       id = unused_id.back();
       unused_id.pop_back();
     } else {
-      id = id_map.size();
+      id = id_map.size() + 1;
     }
     id_map[id] = obj_ptr;
     return id;
@@ -204,16 +204,16 @@ public:
 class Lag_obj : public Sai_obj {
 public:
   uint32_t l2_if;
+  Port_obj *port_obj;
   std::vector<sai_object_id_t> lag_members;
   BmEntryHandle handle_lag_hash;
   BmEntryHandle handle_port_configurations;
-  Port_obj *port_obj;
   Lag_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->lag_members.clear();
     this->l2_if = 0;
-    this->port_obj = NULL;
     this->handle_lag_hash = NULL_HANDLE;
     this->handle_port_configurations = NULL_HANDLE;
+    this->port_obj = nullptr;
   }
 };
 
@@ -365,6 +365,7 @@ public:
   rif_id_map_t rifs;
   nhop_id_map_t nhops;
   sai_object_id_t default_bridge_id;
+  sai_object_id_t default_vlan_oid;
   BridgePort_obj *router_bridge_port;
   sai_mac_t default_switch_mac;
   Switch_metadata() {
@@ -408,7 +409,7 @@ public:
       }
     }
     spdlog::get("logger")->error("vlan object not found for vid {} ", vid);
-    return 0;
+    return SAI_NULL_OBJECT_ID;
   }
 
   HostIF_obj *GetHostIFFromPhysicalPort(int port_num) {

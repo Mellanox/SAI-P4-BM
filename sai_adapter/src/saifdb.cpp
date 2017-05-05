@@ -22,6 +22,7 @@ sai_status_t sai_adapter::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
       // <<endl;
       break;
     case SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID:
+      (*logger)->info("bridge port_id {}", attribute.value.oid);
       bridge_port_obj = switch_metadata_ptr->bridge_ports[attribute.value.oid];
       break;
     case SAI_FDB_ENTRY_ATTR_PACKET_ACTION:
@@ -40,6 +41,7 @@ sai_status_t sai_adapter::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
     }
   }
   uint32_t bridge_port = bridge_port_obj->bridge_port;
+  (*logger)->info("bridge port {}", bridge_port);
   // out_if_type = 0 # port_type (not lag or router). TODO: check how to do it
   // with SAI
 

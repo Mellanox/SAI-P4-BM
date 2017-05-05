@@ -107,12 +107,97 @@ public:
     return SAI_STATUS_SUCCESS;
   }
 
-  void sai_thrift_get_port_attribute(
-      sai_thrift_attribute_list_t &_return,
-      const sai_thrift_object_id_t port_id,
-      const std::vector<sai_thrift_attribute_t> &thrift_attr_list) {
+void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list, const sai_thrift_object_id_t port_id) {
     // Your implementation goes here
     logger->info("sai_thrift_get_port_attribute");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_port_api_t *port_api;
+      sai_attribute_t max_queue_attribute;
+      sai_attribute_t queue_list_object_attribute;
+      sai_thrift_attribute_t thrift_queue_list_attribute;
+      sai_object_list_t *queue_list_object;
+      int max_queues = 0;
+      status = sai_api_query(SAI_API_PORT, (void **) &port_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return;
+      }
+
+      std::vector<sai_thrift_attribute_t>& attr_list = thrift_attr_list.attr_list;
+      // TODO = currently no support in PG
+      
+      // max_queue_attribute.id = SAI_PORT_ATTR_QOS_NUMBER_OF_QUEUES;
+      // port_api->get_port_attribute(port_id, 1, &max_queue_attribute);
+      // max_queues = max_queue_attribute.value.u32;
+      // queue_list_object_attribute.id = SAI_PORT_ATTR_QOS_QUEUE_LIST;
+      // queue_list_object_attribute.value.objlist.list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * max_queues);
+      // queue_list_object_attribute.value.objlist.count = max_queues;
+      // port_api->get_port_attribute(port_id, 1, &queue_list_object_attribute);
+
+      // thrift_attr_list.attr_count = 2;
+      // thrift_queue_list_attribute.id = SAI_PORT_ATTR_QOS_QUEUE_LIST;
+      // thrift_queue_list_attribute.value.objlist.count = max_queues;
+      // std::vector<sai_thrift_object_id_t>& queue_list = thrift_queue_list_attribute.value.objlist.object_id_list;
+      // queue_list_object = &queue_list_object_attribute.value.objlist;
+      // for (int index = 0; index < max_queues; index++) {
+      //     queue_list.push_back((sai_thrift_object_id_t) queue_list_object->list[index]);
+      // }
+      // attr_list.push_back(thrift_queue_list_attribute);
+      // free(queue_list_object_attribute.value.objlist.list);
+
+      // sai_attribute_t max_pg_attribute;
+      // sai_attribute_t pg_list_object_attribute;
+      // sai_thrift_attribute_t thrift_pg_list_attribute;
+      // sai_object_list_t *pg_list_object;
+      // int max_pg = 0;
+
+      // max_pg_attribute.id = SAI_PORT_ATTR_NUMBER_OF_INGRESS_PRIORITY_GROUPS;
+      // port_api->get_port_attribute(port_id, 1, &max_pg_attribute);
+      // max_pg = max_pg_attribute.value.u32;
+      // pg_list_object_attribute.id = SAI_PORT_ATTR_INGRESS_PRIORITY_GROUP_LIST;
+      // pg_list_object_attribute.value.objlist.list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * max_pg);
+      // pg_list_object_attribute.value.objlist.count = max_pg;
+      // port_api->get_port_attribute(port_id, 1, &pg_list_object_attribute);
+
+      // thrift_attr_list.attr_count = 3;
+      // thrift_pg_list_attribute.id = SAI_PORT_ATTR_INGRESS_PRIORITY_GROUP_LIST;
+      // thrift_pg_list_attribute.value.objlist.count = max_pg;
+      // std::vector<sai_thrift_object_id_t>& pg_list = thrift_pg_list_attribute.value.objlist.object_id_list;
+      // pg_list_object = &pg_list_object_attribute.value.objlist;
+      // for (int index = 0; index < max_pg; index++) {
+      //     pg_list.push_back((sai_thrift_object_id_t) pg_list_object->list[index]);
+      // }
+      // attr_list.push_back(thrift_pg_list_attribute);
+      // free(pg_list_object_attribute.value.objlist.list);
+ 
+      sai_attribute_t port_hw_lane;
+      sai_thrift_attribute_t thrift_port_hw_lane;
+      sai_u32_list_t *lane_list_num;
+
+      port_hw_lane.id = SAI_PORT_ATTR_HW_LANE_LIST;
+      port_hw_lane.value.u32list.list = (uint32_t *) malloc(sizeof(uint32_t) * 4);
+      port_hw_lane.value.u32list.count = 4;
+      port_api->get_port_attribute(port_id, 1, &port_hw_lane);
+
+      thrift_attr_list.attr_count = 1;
+      thrift_port_hw_lane.id = SAI_PORT_ATTR_HW_LANE_LIST;
+      thrift_port_hw_lane.value.u32list.count = port_hw_lane.value.u32list.count;
+      std::vector<int32_t>& lane_list = thrift_port_hw_lane.value.u32list.u32list;
+      lane_list_num = &port_hw_lane.value.u32list;
+      for (int index = 0; index < port_hw_lane.value.u32list.count ; index++) {
+          lane_list.push_back((uint32_t) lane_list_num->list[index]);
+      }
+      attr_list.push_back(thrift_port_hw_lane);
+      free(port_hw_lane.value.u32list.list); 
+
+      sai_attribute_t port_oper_status_attribute;
+      sai_thrift_attribute_t thrift_port_status;
+      port_oper_status_attribute.id = SAI_PORT_ATTR_OPER_STATUS;
+      port_api->get_port_attribute(port_id, 1, &port_oper_status_attribute);
+
+      thrift_attr_list.attr_count = 2;
+      thrift_port_status.id = SAI_PORT_ATTR_OPER_STATUS;
+      thrift_port_status.value.s32 =  port_oper_status_attribute.value.s32;
+      attr_list.push_back(thrift_port_status);
   }
 
   void sai_thrift_get_port_stats(
@@ -313,6 +398,38 @@ public:
     }
   }
 
+    sai_attribute_t *sai_thrift_attribute_list_to_sai(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+      sai_attribute_t *sai_attrs;
+
+      sai_attrs = (sai_attribute_t *) calloc(thrift_attr_list.size(), sizeof(sai_attribute_t));
+      if (!sai_attrs) {
+          // SAI_THRIFT_LOG_ERR("failed to allocate sai attibutes list");
+        logger->error("failed to allocate sai attibutes list");
+          return NULL;
+      }
+
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+          sai_thrift_attribute_t & thrift_attr = (sai_thrift_attribute_t &) *it;
+          sai_attrs[i].id = thrift_attr.id;
+          sai_attrs[i].value.oid = thrift_attr.value.oid;
+      }
+
+      return sai_attrs;
+  }
+
+  void sai_attributes_to_sai_thrift_list(sai_attribute_t *sai_attrs, uint32_t count, std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+
+      for (uint32_t i = 0; i < count; i++) {
+          sai_thrift_attribute_t thrift_attr;
+
+          thrift_attr.id        = sai_attrs[i].id;
+          thrift_attr.value.oid = sai_attrs[i].value.oid;
+
+          thrift_attr_list.push_back(thrift_attr);
+      }
+  }
+
   sai_thrift_object_id_t sai_thrift_create_bridge(
       const std::vector<sai_thrift_attribute_t> &thrift_attr_list) {
     logger->info("sai_thrift_create_bridge");
@@ -393,64 +510,148 @@ public:
     return;
   }
 
-  sai_thrift_object_id_t sai_thrift_create_bridge_port(
-      const std::vector<sai_thrift_attribute_t> &thrift_attr_list) {
-    logger->info("sai_thrift_create_bridge_port");
-    sai_status_t status = SAI_STATUS_SUCCESS;
-    sai_bridge_api_t *bridge_api;
-    sai_attribute_t *attr = (sai_attribute_t *)malloc(sizeof(sai_attribute_t) *
-                                                      thrift_attr_list.size());
-    status = sai_api_query(SAI_API_BRIDGE, (void **)&bridge_api);
-    if (status != SAI_STATUS_SUCCESS) {
-      logger->error("sai_api_query failed!!!");
-      // return SAI_STATUS_NOT_IMPLEMENTED;
-    }
-    uint32_t count = thrift_attr_list.size();
-    sai_thrift_parse_bridge_port_attributes(thrift_attr_list, attr);
-    sai_object_id_t s_id = 0;
-    sai_object_id_t bridge_port_id = 1;
-    bridge_api->create_bridge_port(&bridge_port_id, s_id, count, attr);
-    free(attr);
-    return (sai_thrift_object_id_t)bridge_port_id;
+  void sai_thrift_create_bridge_port(sai_thrift_result_t &ret, const std::vector<sai_thrift_attribute_t> & thrift_attr_list)
+  {
+      sai_bridge_api_t *bridge_api;
+      sai_attribute_t *sai_attrs;
+
+      // SAI_THRIFT_FUNC_LOG();
+
+      ret.status = sai_api_query(SAI_API_BRIDGE, (void **) &bridge_api);
+      if (ret.status != SAI_STATUS_SUCCESS) {
+          // SAI_THRIFT_LOG_ERR("failed to obtain bridge_api, status:%d", ret.status);
+        logger->error("failed to obtain bridge_api, status:{}", ret.status);
+          return;
+      }
+
+      sai_attrs = sai_thrift_attribute_list_to_sai(thrift_attr_list);
+      if (!sai_attrs) {
+          ret.status = SAI_STATUS_NO_MEMORY;
+          return;
+      }
+
+      ret.status = bridge_api->create_bridge_port((sai_object_id_t *) &ret.data.oid, 0, thrift_attr_list.size(), sai_attrs);
+      if (ret.status != SAI_STATUS_SUCCESS) {
+          // SAI_THRIFT_LOG_ERR("failed to create bridge port, status:%d", ret.status);
+        logger->error("failed to create bridge port, status:{}", ret.status);
+      }
+      free(sai_attrs);
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_bridge_port(const sai_thrift_object_id_t bridge_port_id) {
-    // Your implementation goes here
-    logger->info("sai_thrift_remove_bridge_port");
-    sai_status_t status = SAI_STATUS_SUCCESS;
-    sai_bridge_api_t *bridge_api;
-    status = sai_api_query(SAI_API_BRIDGE, (void **)&bridge_api);
-    if (status != SAI_STATUS_SUCCESS) {
-      logger->error("sai_api_query failed!!!");
-      return SAI_STATUS_NOT_IMPLEMENTED;
-    }
-    return bridge_api->remove_bridge_port(bridge_port_id);
+  sai_thrift_status_t sai_thrift_remove_bridge_port(const sai_thrift_object_id_t bridge_port_id)
+  {
+      sai_bridge_api_t *bridge_api;
+      sai_status_t status;
+
+      // SAI_THRIFT_FUNC_LOG();
+
+      status = sai_api_query(SAI_API_BRIDGE, (void **) &bridge_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          // SAI_THRIFT_LOG_ERR("failed to obtain bridge_api, status:%d", status);
+        logger->error("failed to obtain bridge_api, status:{}", status);
+          return status;
+      }
+
+      return bridge_api->remove_bridge_port((sai_object_id_t) bridge_port_id);
   }
 
-  void sai_thirft_get_bridge_port_attribute(
-      sai_thrift_attribute_list_t &_return,
-      const sai_thrift_object_id_t bridge_port_id,
-      const std::vector<sai_thrift_attribute_t> &thrift_attr_list) {
-    logger->info("sai_thirft_get_bridge_port_attribute");
-    sai_bridge_api_t *bridge_api;
-    sai_status_t status = sai_api_query(SAI_API_BRIDGE, (void **)&bridge_api);
-    if (status != SAI_STATUS_SUCCESS) {
-      logger->error("sai_api_query failed!!!");
-      // return SAI_STATUS_NOT_IMPLEMENTED;
-    }
-    uint32_t count = thrift_attr_list.size();
-    sai_attribute_t *attr =
-        (sai_attribute_t *)malloc(sizeof(sai_attribute_t) * count);
-    sai_thrift_parse_bridge_port_attributes(thrift_attr_list, attr);
 
-    status = bridge_api->get_bridge_port_attribute(bridge_port_id, count, attr);
-    _return.attr_count = count;
-    for (int i = 0; i < count; i++) {
-      _return.attr_list.push_back(parse_bridge_port_thrift_attribute(attr + i));
-    }
-    free(attr);
-    return;
+  void sai_thrift_get_bridge_port_list(sai_thrift_result_t &ret, sai_thrift_object_id_t bridge_id)
+  {
+      logger->info("sai_thrift_get_bridge_port_list");
+      std::vector<sai_thrift_object_id_t>& port_list = ret.data.objlist.object_id_list;
+      sai_bridge_api_t *bridge_api;
+      uint32_t max_ports = 128;
+      sai_attribute_t attr;
+
+      // SAI_THRIFT_FUNC_LOG();
+
+      ret.status = sai_api_query(SAI_API_BRIDGE, (void **) &bridge_api);
+      if (ret.status != SAI_STATUS_SUCCESS) {
+          logger->error("failed to obtain bridge_api, status:{}", ret.status);
+          return;
+      }
+
+      attr.id = SAI_BRIDGE_ATTR_PORT_LIST;
+      attr.value.objlist.list = (sai_object_id_t *) calloc(max_ports, sizeof(sai_object_id_t));
+      attr.value.objlist.count = max_ports;
+
+      ret.status = bridge_api->get_bridge_attribute(bridge_id, 1, &attr);
+      if (ret.status != SAI_STATUS_SUCCESS && attr.value.objlist.count > max_ports) {
+          /* retry one more time with a bigger list */
+          max_ports = attr.value.objlist.count;
+          attr.value.objlist.list = (sai_object_id_t *) realloc(attr.value.objlist.list, max_ports * sizeof(sai_object_id_t));
+
+          ret.status = bridge_api->get_bridge_attribute(bridge_id, 1, &attr);
+      }
+
+      if (ret.status != SAI_STATUS_SUCCESS) {
+          logger->error("Failed to obtain bridge ports list, status:{}", ret.status);
+          free(attr.value.objlist.list);
+          return;
+      }
+
+      for (int index = 0; index < attr.value.objlist.count; index++) {
+          port_list.push_back((sai_thrift_object_id_t) attr.value.objlist.list[index]);
+      }
+      free(attr.value.objlist.list);
+  }
+
+   void sai_thrift_get_bridge_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list, const sai_thrift_object_id_t bridge_port_id) {
+      logger->info("sai_thrift_get_bridge_port_attribute");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_bridge_api_t *bridge_api;
+      uint32_t attr_count = 0;
+      sai_attribute_t attr[3];
+
+      // SAI_THRIFT_FUNC_LOG();
+
+      thrift_attr_list.attr_count = 0;
+
+      status = sai_api_query(SAI_API_BRIDGE, (void **) &bridge_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          // SAI_THRIFT_LOG_ERR("failed to obtain bridge_api, status:%d", status);
+          logger->error("failed to obtain bridge_api, status:{}", status);
+          return;
+      }
+
+      attr[0].id = SAI_BRIDGE_PORT_ATTR_TYPE;
+      attr[1].id = SAI_BRIDGE_PORT_ATTR_BRIDGE_ID;
+      attr_count = 2;
+
+      status = bridge_api->get_bridge_port_attribute(bridge_port_id, attr_count, attr);
+      if (status != SAI_STATUS_SUCCESS) {
+          // SAI_THRIFT_LOG_ERR("failed to obtain bridge port type, status:%d", status);
+          logger->error("failed to obtain bridge port type, status:{}", status);
+          return;
+      }
+
+      sai_attributes_to_sai_thrift_list(attr, attr_count, thrift_attr_list.attr_list);
+
+      switch (attr[0].value.s32) {
+      case SAI_BRIDGE_PORT_TYPE_PORT:
+          attr[0].id = SAI_BRIDGE_PORT_ATTR_FDB_LEARNING_MODE;
+          attr[1].id = SAI_BRIDGE_PORT_ATTR_PORT_ID;
+          attr_count = 2;
+          break;
+
+      case SAI_BRIDGE_PORT_TYPE_TUNNEL:
+          attr[0].id = SAI_BRIDGE_PORT_ATTR_TUNNEL_ID;
+          attr_count = 1;
+          break;
+
+      default:
+          return;
+      }
+
+      status = bridge_api->get_bridge_port_attribute(bridge_port_id, attr_count, attr);
+      if (status != SAI_STATUS_SUCCESS) {
+          // SAI_THRIFT_LOG_ERR("failed to obtain bridge port attributes, status:%d", status);
+        logger->error("failed to obtain bridge port attributes, status:{}", status);
+          return;
+      }
+
+      sai_attributes_to_sai_thrift_list(attr, attr_count, thrift_attr_list.attr_list);
   }
 
   sai_thrift_status_t sai_thrift_set_bridge_port_attribute(
@@ -649,16 +850,60 @@ public:
     return (sai_thrift_object_id_t)vlan_member_id;
   }
 
-  void sai_thrift_get_vlan_attribute(sai_thrift_attribute_list_t &_return,
-                                     const sai_thrift_object_id_t vlan_id) {
+  void sai_thrift_get_vlan_member_attribute(sai_thrift_attribute_list_t& _return, const sai_thrift_object_id_t vlan_member_id) {
     // Your implementation goes here
-    logger->info("sai_thrift_get_vlan_attribute");
+    printf("sai_thrift_get_vlan_member_attribute\n");
   }
 
-  void sai_thrift_get_vlan_id(sai_thrift_result_t &_return,
-                              const sai_thrift_object_id_t vlan_id) {
-    // Your implementation goes here
+   void sai_thrift_get_vlan_attribute(sai_thrift_attribute_list_t& thrift_attr_list, const sai_thrift_object_id_t vlan_id) {
+      logger->info("sai_thrift_get_vlan_attribute");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_vlan_api_t *vlan_api;
+      sai_attribute_t vlan_member_list_object_attribute;
+      sai_thrift_attribute_t thrift_vlan_member_list_attribute;
+      sai_object_list_t *vlan_member_list_object;
+      status = sai_api_query(SAI_API_VLAN, (void **) &vlan_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return;
+      }
+
+      vlan_member_list_object_attribute.id = SAI_VLAN_ATTR_MEMBER_LIST;
+      vlan_member_list_object_attribute.value.objlist.list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * 128);
+      vlan_member_list_object_attribute.value.objlist.count = 128;
+      vlan_api->get_vlan_attribute(vlan_id, 1, &vlan_member_list_object_attribute);
+
+      thrift_attr_list.attr_count = 1;
+      std::vector<sai_thrift_attribute_t>& attr_list = thrift_attr_list.attr_list;
+      thrift_vlan_member_list_attribute.id = SAI_VLAN_ATTR_MEMBER_LIST;
+      thrift_vlan_member_list_attribute.value.objlist.count = vlan_member_list_object_attribute.value.objlist.count;
+      std::vector<sai_thrift_object_id_t>& vlan_member_list = thrift_vlan_member_list_attribute.value.objlist.object_id_list;
+      vlan_member_list_object = &vlan_member_list_object_attribute.value.objlist;
+      for (int index = 0; index < vlan_member_list_object_attribute.value.objlist.count; index++) {
+          vlan_member_list.push_back((sai_thrift_object_id_t) vlan_member_list_object->list[index]);
+      }
+      attr_list.push_back(thrift_vlan_member_list_attribute);
+      free(vlan_member_list_object_attribute.value.objlist.list);
+  }
+
+  void sai_thrift_get_vlan_id(sai_thrift_result_t &ret, sai_thrift_object_id_t vlan_id) {
     logger->info("sai_thrift_get_vlan_id");
+    sai_attribute_t vlan_attr;
+    sai_vlan_api_t *vlan_api;
+
+    // SAI_THRIFT_FUNC_LOG();
+
+    ret.status = sai_api_query(SAI_API_VLAN, (void **) &vlan_api);
+    if (ret.status != SAI_STATUS_SUCCESS) {
+        // SAI_THRIFT_LOG_ERR("failed to obtain vlan_api, status:%d", ret.status);
+        return;
+    }
+    vlan_attr.id = SAI_VLAN_ATTR_VLAN_ID;
+    ret.status = vlan_api->get_vlan_attribute((sai_object_id_t)vlan_id, 1, &vlan_attr);
+    if (ret.status != SAI_STATUS_SUCCESS) {
+        // SAI_THRIFT_LOG_ERR("failed to get vlan ID, status:%d", ret.status);
+        return;
+    }
+    ret.data.u16 = vlan_attr.value.u16;
   }
 
   void sai_thrift_parse_vr_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
@@ -1085,6 +1330,32 @@ public:
     return status;
   }
 
+  void sai_thrift_get_lag_member_attribute(sai_thrift_attribute_list_t& thrift_attr_list, const sai_thrift_object_id_t lag_member_id) {
+    // Your implementation goes here
+    logger->info("sai_thrift_get_lag_member_attribute\n");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_attribute_t sai_attrs[2];
+    sai_lag_api_t *lag_api;
+    status = sai_api_query(SAI_API_LAG, (void **) &lag_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        logger->error("failed to obtain lag_api, status:{}", status);
+        // SAI_THRIFT_LOG_ERR("failed to obtain lag_api, status:%d", status);
+        return;
+    }
+    // SAI_THRIFT_FUNC_LOG();
+    sai_attrs[0].id = SAI_LAG_MEMBER_ATTR_LAG_ID;
+    sai_attrs[1].id = SAI_LAG_MEMBER_ATTR_PORT_ID;
+
+    status = lag_api->get_lag_member_attribute(lag_member_id, 2, sai_attrs);
+    if (status != SAI_STATUS_SUCCESS) {
+        logger->error("failed to obtain lag member attributes, status:{}", status);
+        // SAI_THRIFT_LOG_ERR("failed to obtain lag member attributes, status:%d", status);
+        return;
+    }
+
+    sai_attributes_to_sai_thrift_list(sai_attrs, 2, thrift_attr_list.attr_list);
+  }
+
   sai_thrift_object_id_t sai_thrift_create_stp_entry(
       const std::vector<sai_thrift_attribute_t> &thrift_attr_list) {
     // Your implementation goes here
@@ -1208,32 +1479,40 @@ public:
     return thrift_attr;
   }
 
-  void sai_thrift_get_switch_attribute(
-      sai_thrift_attribute_list_t &_return,
-      const std::vector<sai_thrift_attribute_t> &thrift_attr_list) {
-    logger->info("sai_thrift_get_switch_attribute");
-    sai_status_t status = SAI_STATUS_SUCCESS;
-    sai_switch_api_t *switch_api;
-    status = sai_api_query(SAI_API_SWITCH, (void **)&switch_api);
-    if (status != SAI_STATUS_SUCCESS) {
-      logger->error("sai_api_query failed!!!");
-      return;
-    }
-    uint32_t count = thrift_attr_list.size();
-    sai_attribute_t *attr =
-        (sai_attribute_t *)malloc(sizeof(sai_attribute_t) * count);
-    int i;
-    for (i = 0; i < count; i++) {
-      *(attr + i) = parse_switch_attribute(thrift_attr_list[i]);
-    }
-    sai_object_id_t s_id = 1;
-    status = switch_api->get_switch_attribute(s_id, count, attr);
-    _return.attr_count = count;
-    for (i = 0; i < count; i++) {
-      _return.attr_list.push_back(parse_switch_thrift_attribute(attr + i));
-    }
-    free(attr);
-    return;
+ void sai_thrift_get_switch_attribute(sai_thrift_attribute_list_t& thrift_attr_list) {
+      logger->info("sai_thrift_get_switch_attribute");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_switch_api_t *switch_api;
+      sai_attribute_t max_port_attribute;
+      sai_attribute_t port_list_object_attribute;
+      sai_thrift_attribute_t thrift_port_list_attribute;
+      sai_object_list_t *port_list_object;
+      int max_ports = 0;
+      status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          logger->error("sai_api_query failed!!!");
+          return;
+      }
+
+      max_port_attribute.id = SAI_SWITCH_ATTR_PORT_NUMBER;
+      switch_api->get_switch_attribute(0, 1, &max_port_attribute);
+      max_ports = max_port_attribute.value.u32;
+      port_list_object_attribute.id = SAI_SWITCH_ATTR_PORT_LIST;
+      port_list_object_attribute.value.objlist.list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * max_ports);
+      port_list_object_attribute.value.objlist.count = max_ports;
+      switch_api->get_switch_attribute(0, 1, &port_list_object_attribute);
+
+      thrift_attr_list.attr_count = 1;
+      std::vector<sai_thrift_attribute_t>& attr_list = thrift_attr_list.attr_list;
+      thrift_port_list_attribute.id = SAI_SWITCH_ATTR_PORT_LIST;
+      thrift_port_list_attribute.value.objlist.count = max_ports;
+      std::vector<sai_thrift_object_id_t>& port_list = thrift_port_list_attribute.value.objlist.object_id_list;
+      port_list_object = &port_list_object_attribute.value.objlist;
+      for (int index = 0; index < max_ports; index++) {
+          port_list.push_back((sai_thrift_object_id_t) port_list_object->list[index]);
+      }
+      attr_list.push_back(thrift_port_list_attribute);
+      free(port_list_object_attribute.value.objlist.list);
   }
 
   void sai_thrift_get_port_list_by_front_port(sai_thrift_attribute_t &_return) {
@@ -1256,9 +1535,53 @@ public:
     logger->info("sai_thrift_get_default_router_id");
   }
 
-  void sai_thrift_get_default_vlan_id(sai_thrift_result_t &_return) {
-    // Your implementation goes here
+  sai_thrift_object_id_t sai_thrift_get_default_1q_bridge_id()
+  {
+      logger->info("sai_thrift_get_default_1q_bridge_id");
+      sai_switch_api_t *switch_api;
+      sai_attribute_t attr;
+      sai_status_t status;
+
+      // SAI_THRIFT_FUNC_LOG();
+      status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          logger->error("failed to obtain switch_api, status:%d\n", status);
+          return SAI_NULL_OBJECT_ID;
+      }
+
+      attr.id = SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID;
+      status = switch_api->get_switch_attribute(0, 1, &attr);
+      if (status != SAI_STATUS_SUCCESS)
+      {
+          logger->error("Failed to get switch virtual router ID, status %d", status);
+          return SAI_NULL_OBJECT_ID;
+      }
+      logger->info("default_1q_bride_id {}", attr.value.oid);
+      return (sai_thrift_object_id_t)attr.value.oid;
+  }
+
+  void sai_thrift_get_default_vlan_id(sai_thrift_result_t &ret) {
     logger->info("sai_thrift_get_default_vlan_id");
+      sai_switch_api_t *switch_api;
+      sai_attribute_t attr;
+
+      // SAI_THRIFT_FUNC_LOG();
+
+      ret.status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
+      if (ret.status != SAI_STATUS_SUCCESS) {
+          // SAI_THRIFT_LOG_ERR("failed to obtain switch_api, status:%d", ret.status);
+          return;
+      }
+
+      attr.id = SAI_SWITCH_ATTR_DEFAULT_VLAN_ID;
+      ret.status = switch_api->get_switch_attribute(0, 1, &attr);
+      if (ret.status != SAI_STATUS_SUCCESS)
+      {
+          // SAI_THRIFT_LOG_ERR("failed to get switch default vlan ID, status:%d", ret.status);
+          return;
+      }
+
+      ret.data.oid = (sai_thrift_object_id_t)attr.value.oid;
   }
 
   sai_thrift_object_id_t

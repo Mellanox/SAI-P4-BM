@@ -81,6 +81,7 @@ sai_adapter::sai_adapter()
   lag_api.remove_lag = &sai_adapter::remove_lag;
   lag_api.create_lag_member = &sai_adapter::create_lag_member;
   lag_api.remove_lag_member = &sai_adapter::remove_lag_member;
+  lag_api.get_lag_member_attribute = &sai_adapter::get_lag_member_attribute;
 
   hostif_api.create_hostif = &sai_adapter::create_hostif;
   hostif_api.remove_hostif = &sai_adapter::remove_hostif;

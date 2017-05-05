@@ -64,10 +64,10 @@ sai_status_t sai_adapter::set_port_attribute(sai_object_id_t port_id,
   port_id_map_t::iterator it = switch_metadata_ptr->ports.find(port_id);
   if (it != switch_metadata_ptr->ports.end()) {
     (*logger)->info("set port {} attribute (port).", port_id);
-    port = (Port_obj *)it->second;
+    port = it->second;
   } else {
     (*logger)->info("set port {} attribute (lag).", port_id);
-    port = ((Lag_obj *)sai_id_map_ptr->get_object(port_id))->port_obj;
+    port = switch_metadata_ptr->lags[port_id]->port_obj;
   }
   set_parsed_port_attribute(port, *attr);
   config_port(port);
@@ -129,6 +129,9 @@ void sai_adapter::get_parsed_port_attribute(Port_obj *port,
     break;
   case SAI_PORT_ATTR_DROP_TAGGED:
     attribute->value.booldata = port->drop_tagged;
+    break;
+  case SAI_PORT_ATTR_OPER_STATUS:
+    attribute->value.s32 = SAI_PORT_OPER_STATUS_UP; //TODO: add linux port status?
     break;
   }
 }

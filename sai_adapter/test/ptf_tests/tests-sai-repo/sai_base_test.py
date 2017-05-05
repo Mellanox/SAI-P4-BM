@@ -22,10 +22,18 @@ import ptf.testutils as testutils
 #
 ################################################################
 
-import switch_sai_thrift.switch_sai_rpc as switch_sai_rpc
+# import switch_sai_thrift.switch_sai_rpc as switch_sai_rpc
+import sys
+sys.path.append('../sai_thrift_src/gen-py')
+import switch_sai.switch_sai_rpc as switch_sai_rpc
 from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
+
+sys.path.append('../sai_thrift_src/gen-py/')
+from switch_sai.ttypes import *
+sys.path.append('../')
+from sai_types import *
 
 interface_to_front_mapping = {}
 port_map_loaded=0
