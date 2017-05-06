@@ -8,9 +8,11 @@
 #include <map>
 #include <sai.h>
 #include <standard_types.h>
+#include <simple_pre_lag_types.h>
 #include <vector>
 
 using namespace bm_runtime::standard;
+using namespace bm_runtime::simple_pre_lag;
 
 class sai_id_map_t { // object pointer and it's id
 protected:
@@ -40,7 +42,7 @@ public:
       id = unused_id.back();
       unused_id.pop_back();
     } else {
-      id = id_map.size();
+      id = id_map.size() + 1;
     }
     id_map[id] = obj_ptr;
     return id;
@@ -162,23 +164,37 @@ public:
   sai_bridge_type_t bridge_type;
   std::vector<sai_object_id_t> bridge_port_list;
   uint32_t bridge_id; // Valid for .1D bridges.
+  BmMcMgrpHandle handle_mc_mgrp; // Valid for .1D bridge
+  BmMcL1Handle handle_mc_l1;     // Valid for .1D bridge
   Bridge_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->bridge_type = SAI_BRIDGE_TYPE_1Q;
     this->bridge_port_list.clear();
-    this->bridge_id = 1;
+    this->bridge_id = 0;
+    this->handle_mc_mgrp = NULL_HANDLE;
+    this->handle_mc_l1 = NULL_HANDLE;
   }
 };
 
 class Vlan_obj : public Sai_obj {
 public:
   uint16_t vid;
-  uint32_t bridge_id; // Valid for .1Q bridge
   std::vector<sai_object_id_t> vlan_members;
   BmEntryHandle handle_id_1q;
+  BmEntryHandle handle_router_ingress_vlan_filtering;
+  uint32_t bridge_id;             // Valid for .1Q bridge
+  BmEntryHandle handle_broadcast; // Valid for .1Q bridge
+  BmEntryHandle handle_flood;     // Valid for .1Q bridge
+  BmMcMgrpHandle handle_mc_mgrp;  // Valid for .1Q bridge
+  BmMcL1Handle handle_mc_l1;      // Valid for .1Q bridge
   Vlan_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->vlan_members.clear();
     this->vid = 0;
     this->handle_id_1q = NULL_HANDLE;
+    this->handle_router_ingress_vlan_filtering = NULL_HANDLE;
+    this->handle_mc_mgrp = NULL_HANDLE;
+    this->handle_mc_l1 = NULL_HANDLE;
+    this->handle_flood = NULL_HANDLE;
+    this->handle_broadcast = NULL_HANDLE;
   }
 };
 
@@ -202,16 +218,16 @@ public:
 class Lag_obj : public Sai_obj {
 public:
   uint32_t l2_if;
+  Port_obj *port_obj;
   std::vector<sai_object_id_t> lag_members;
   BmEntryHandle handle_lag_hash;
   BmEntryHandle handle_port_configurations;
-  Port_obj *port_obj;
   Lag_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->lag_members.clear();
     this->l2_if = 0;
-    this->port_obj = NULL;
     this->handle_lag_hash = NULL_HANDLE;
     this->handle_port_configurations = NULL_HANDLE;
+    this->port_obj = nullptr;
   }
 };
 
@@ -273,6 +289,61 @@ public:
       : Sai_obj(sai_id_map_ptr) {}
 };
 
+class VirtualRouter_obj : public Sai_obj {
+public:
+  bool v4_state;
+  bool v6_state;
+  uint32_t vrf;
+  VirtualRouter_obj(sai_id_map_t *sai_id_map_ptr)
+      : Sai_obj(sai_id_map_ptr) {
+        this->vrf = 0;
+        this->v4_state = true;
+        this->v6_state = true;
+      }
+};
+
+class RouterInterface_obj : public Sai_obj {
+public:
+  sai_mac_t mac;
+  bool mac_valid;
+  uint16_t vid;
+  uint32_t rif_id;
+  sai_router_interface_type_t type;
+  BmEntryHandle handle_l3_interface;
+  BmEntryHandle handle_egress_vlan_tag;
+  BmEntryHandle handle_egress_l3;
+  BmEntryHandle handle_ingress_l3;
+  RouterInterface_obj(sai_id_map_t *sai_id_map_ptr)
+      : Sai_obj(sai_id_map_ptr) {
+        this->vid = 1;
+        this->mac_valid = false;
+        this->rif_id = 0;
+        this->type = SAI_ROUTER_INTERFACE_TYPE_VLAN;
+        this->handle_l3_interface = NULL_HANDLE;
+        this->handle_egress_vlan_tag = NULL_HANDLE;
+        this->handle_egress_l3 = NULL_HANDLE;
+        this->handle_ingress_l3 = NULL_HANDLE;
+      }
+};
+
+class NextHop_obj : public Sai_obj {
+public:
+  uint32_t nhop_id;
+  sai_next_hop_type_t type;
+  sai_ip_address_t ip;
+  RouterInterface_obj *rif;
+  BmEntryHandle hanlde_table_nhop;
+  NextHop_obj(sai_id_map_t *sai_id_map_ptr)
+      : Sai_obj(sai_id_map_ptr) {
+        this->nhop_id = 0;
+        this->type = SAI_NEXT_HOP_TYPE_IP;
+        this->rif = NULL;
+        this->hanlde_table_nhop = NULL_HANDLE;
+      }
+};
+
+
+
 typedef std::map<sai_object_id_t, BridgePort_obj *> bridge_port_id_map_t;
 typedef std::map<sai_object_id_t, Port_obj *> port_id_map_t;
 typedef std::map<sai_object_id_t, Bridge_obj *> bridge_id_map_t;
@@ -287,9 +358,10 @@ typedef std::map<sai_object_id_t, HostIF_Table_Entry_obj *>
 typedef std::map<sai_object_id_t, HostIF_Trap_obj *> hostif_trap_id_map_t;
 typedef std::map<sai_object_id_t, HostIF_Trap_Group_obj *>
     hostif_trap_group_id_map_t;
-
-class Switch_metadata { // TODO:  add default.. // this object_id is the
-                        // switch_id
+typedef std::map<sai_object_id_t, VirtualRouter_obj *> vr_id_map_t;
+typedef std::map<sai_object_id_t, RouterInterface_obj *> rif_id_map_t;
+typedef std::map<sai_object_id_t, NextHop_obj *> nhop_id_map_t;
+class Switch_metadata { 
 public:
   sai_u32_list_t hw_port_list;
   port_id_map_t ports;
@@ -303,7 +375,13 @@ public:
   hostif_table_entry_id_map_t hostif_table_entries;
   hostif_trap_id_map_t hostif_traps;
   hostif_trap_group_id_map_t hostif_trap_groups;
+  vr_id_map_t vrs;
+  rif_id_map_t rifs;
+  nhop_id_map_t nhops;
   sai_object_id_t default_bridge_id;
+  sai_object_id_t default_vlan_oid;
+  BridgePort_obj *router_bridge_port;
+  sai_mac_t default_switch_mac;
   Switch_metadata() {
     ports.clear();
     bridge_ports.clear();
@@ -345,7 +423,7 @@ public:
       }
     }
     spdlog::get("logger")->error("vlan object not found for vid {} ", vid);
-    return 0;
+    return SAI_NULL_OBJECT_ID;
   }
 
   HostIF_obj *GetHostIFFromPhysicalPort(int port_num) {
@@ -360,6 +438,66 @@ public:
     spdlog::get("logger")->error("hostif not found for physical port {} ",
                                  port_num);
     return nullptr;
+  }
+
+  uint32_t GetNewVrf() {
+    std::vector<uint32_t> vrfs;
+    for (vr_id_map_t::iterator it = vrs.begin();
+         it != vrs.end(); ++it) {
+      vrfs.push_back(it->second->vrf);
+      spdlog::get("logger")->debug("{} ", it->second->vrf);
+    }
+    for (int i = 0; i < vrfs.size(); ++i) {
+      if (std::find(vrfs.begin(), vrfs.end(), i) ==
+          vrfs.end()) {
+        spdlog::get("logger")->debug("-->GetNewNextHopID: vrf is: {} ",
+                                     i);
+        return i;
+      }
+    }
+    spdlog::get("logger")->debug("--> GetNewNextHopID: vrf is: {} ",
+                                 vrfs.size());
+    return vrfs.size();
+  }
+
+  uint32_t GetNewRifId() {
+    std::vector<uint32_t> rif_ids;
+    for (rif_id_map_t::iterator it = rifs.begin();
+         it != rifs.end(); ++it) {
+      rif_ids.push_back(it->second->rif_id);
+      spdlog::get("logger")->debug("{} ", it->second->rif_id);
+    }
+    for (int i = 0; i < rif_ids.size(); ++i) {
+      if (std::find(rif_ids.begin(), rif_ids.end(), i) ==
+          rif_ids.end()) {
+        spdlog::get("logger")->debug("-->GetNewNextHopID: rif_id is: {} ",
+                                     i);
+        return i;
+      }
+    }
+    spdlog::get("logger")->debug("--> GetNewNextHopID: rif_id is: {} ",
+                                 rif_ids.size());
+    return rif_ids.size();
+  }
+
+  uint32_t GetNewNextHopID() {
+    std::vector<uint32_t> nexthop_ids;
+    for (nhop_id_map_t::iterator it = nhops.begin();
+         it != nhops.end(); ++it) {
+      nexthop_ids.push_back(it->second->nhop_id);
+      spdlog::get("logger")->debug("{} ", it->second->nhop_id);
+    }
+    for (int i = 0; i < nexthop_ids.size(); ++i) {
+      if (std::find(nexthop_ids.begin(), nexthop_ids.end(), i) ==
+          nexthop_ids.end()) {
+        spdlog::get("logger")->debug("-->GetNewNextHopID: nhop_id is: {} ",
+                                     i);
+        return i;
+      }
+    }
+    spdlog::get("logger")->debug("--> GetNewNextHopID: nhop_id is: {} ",
+                                 nexthop_ids.size());
+    return nexthop_ids.size();
   }
 
   uint32_t GetNewBridgePort() {

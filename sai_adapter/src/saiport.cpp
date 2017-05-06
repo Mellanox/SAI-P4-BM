@@ -22,7 +22,7 @@ sai_status_t sai_adapter::create_port(sai_object_id_t *port_id,
   match_params.push_back(parse_exact_match_param(port->hw_port, 2));
   action_data.push_back(parse_param(0, 1));
   action_data.push_back(parse_param(port->sai_object_id, 1));
-  port->handle_lag_if = bm_client_ptr->bm_mt_add_entry(
+  port->handle_lag_if = bm_bridge_client_ptr->bm_mt_add_entry(
       cxt_id, "table_ingress_lag", match_params, "action_set_lag_l2if",
       action_data, options);
   action_data.clear();
@@ -33,7 +33,7 @@ sai_status_t sai_adapter::create_port(sai_object_id_t *port_id,
   action_data.push_back(parse_param(port->mtu, 4));
   action_data.push_back(parse_param(port->drop_tagged, 1));
   action_data.push_back(parse_param(port->drop_untagged, 1));
-  port->handle_port_cfg = bm_client_ptr->bm_mt_add_entry(
+  port->handle_port_cfg = bm_bridge_client_ptr->bm_mt_add_entry(
       cxt_id, "table_port_configurations", match_params,
       "action_set_port_configurations", action_data, options);
   *port_id = port->sai_object_id;
@@ -44,9 +44,9 @@ sai_status_t sai_adapter::remove_port(sai_object_id_t port_id) {
   (*logger)->info("sai_remove_port: {} ", port_id);
   Port_obj *port = switch_metadata_ptr->ports[port_id];
   try {
-    bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_ingress_lag",
+    bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_ingress_lag",
                                       port->handle_lag_if);
-    bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_port_configurations",
+    bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_port_configurations",
                                       port->handle_port_cfg);
   } catch (...) {
     (*logger)->info("--> unable to remove port tables entries");
@@ -64,10 +64,10 @@ sai_status_t sai_adapter::set_port_attribute(sai_object_id_t port_id,
   port_id_map_t::iterator it = switch_metadata_ptr->ports.find(port_id);
   if (it != switch_metadata_ptr->ports.end()) {
     (*logger)->info("set port {} attribute (port).", port_id);
-    port = (Port_obj *)it->second;
+    port = it->second;
   } else {
     (*logger)->info("set port {} attribute (lag).", port_id);
-    port = ((Lag_obj *)sai_id_map_ptr->get_object(port_id))->port_obj;
+    port = switch_metadata_ptr->lags[port_id]->port_obj;
   }
   set_parsed_port_attribute(port, *attr);
   config_port(port);
@@ -130,6 +130,9 @@ void sai_adapter::get_parsed_port_attribute(Port_obj *port,
   case SAI_PORT_ATTR_DROP_TAGGED:
     attribute->value.booldata = port->drop_tagged;
     break;
+  case SAI_PORT_ATTR_OPER_STATUS:
+    attribute->value.s32 = SAI_PORT_OPER_STATUS_UP; //TODO: add linux port status?
+    break;
   }
 }
 
@@ -147,16 +150,16 @@ void sai_adapter::config_port(Port_obj *port) {
   action_data.push_back(parse_param(port->drop_untagged, 1));
   try {
     BmMtEntry entry;
-    bm_client_ptr->bm_mt_get_entry_from_key(
+    bm_bridge_client_ptr->bm_mt_get_entry_from_key(
         entry, cxt_id, "table_port_configurations", match_params, options);
-    bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_port_configurations",
+    bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_port_configurations",
                                       entry.entry_handle);
   } catch (...) {
     (*logger)->warn("--> InvalidTableOperation while removing "
                     "table_port_configurations entry");
   }
   try {
-    port->handle_port_cfg = bm_client_ptr->bm_mt_add_entry(
+    port->handle_port_cfg = bm_bridge_client_ptr->bm_mt_add_entry(
         cxt_id, "table_port_configurations", match_params,
         "action_set_port_configurations", action_data, options);
   } catch (...) {

@@ -1,6 +1,8 @@
 #include "../inc/sai_adapter.h"
 
-StandardClient *sai_adapter::bm_client_ptr;
+StandardClient *sai_adapter::bm_bridge_client_ptr;
+SimplePreLAGClient *sai_adapter::bm_bridge_client_mc_ptr;
+StandardClient *sai_adapter::bm_router_client_ptr;
 sai_id_map_t *sai_adapter::sai_id_map_ptr;
 Switch_metadata *sai_adapter::switch_metadata_ptr;
 std::vector<sai_object_id_t> *sai_adapter::switch_list_ptr;
@@ -12,11 +14,19 @@ pcap_t *sai_adapter::adapter_pcap;
 
 sai_adapter::sai_adapter()
     : //  constructor pre initializations
-      socket(new TSocket("localhost", bm_port)),
+      socket(new TSocket("localhost", bm_port_bridge)),
       transport(new TBufferedTransport(socket)),
       bprotocol(new TBinaryProtocol(transport)),
       protocol(new TMultiplexedProtocol(bprotocol, "standard")),
-      bm_client(protocol) {
+      bm_bridge_client(protocol),
+      mc_protocol(new TMultiplexedProtocol(bprotocol, "simple_pre_lag")),
+      bm_bridge_client_mc(mc_protocol),
+      router_socket(new TSocket("localhost", bm_port_router)),
+      router_transport(new TBufferedTransport(router_socket)),
+      router_bprotocol(new TBinaryProtocol(router_transport)),
+      router_protocol(new TMultiplexedProtocol(router_bprotocol, "standard")),
+      bm_router_client(router_protocol)
+       {
   // logger
   logger_o = spdlog::get("logger");
   if (logger_o == 0) {
@@ -31,13 +41,17 @@ sai_adapter::sai_adapter()
   switch_metadata_ptr = &switch_metadata;
   switch_metadata.hw_port_list.list = list;
   switch_metadata.hw_port_list.count = 8;
-  bm_client_ptr = &bm_client;
+  bm_bridge_client_ptr = &bm_bridge_client;
+  bm_bridge_client_mc_ptr = &bm_bridge_client_mc;
+  bm_router_client_ptr = &bm_router_client;
   sai_id_map_ptr = &sai_id_map;
   transport->open();
+  router_transport->open();
 
   // api set
   switch_api.create_switch = &sai_adapter::create_switch;
   switch_api.get_switch_attribute = &sai_adapter::get_switch_attribute;
+  switch_api.set_switch_attribute = &sai_adapter::set_switch_attribute;
 
   port_api.create_port = &sai_adapter::create_port;
   port_api.remove_port = &sai_adapter::remove_port;
@@ -71,6 +85,7 @@ sai_adapter::sai_adapter()
   lag_api.remove_lag = &sai_adapter::remove_lag;
   lag_api.create_lag_member = &sai_adapter::create_lag_member;
   lag_api.remove_lag_member = &sai_adapter::remove_lag_member;
+  lag_api.get_lag_member_attribute = &sai_adapter::get_lag_member_attribute;
 
   hostif_api.create_hostif = &sai_adapter::create_hostif;
   hostif_api.remove_hostif = &sai_adapter::remove_hostif;
@@ -83,13 +98,29 @@ sai_adapter::sai_adapter()
   hostif_api.create_hostif_trap = &sai_adapter::create_hostif_trap;
   hostif_api.remove_hostif_trap = &sai_adapter::remove_hostif_trap;
 
+  router_interface_api.create_router_interface = &sai_adapter::create_router_interface;
+  router_interface_api.remove_router_interface = &sai_adapter::remove_router_interface;
+
+  virtual_router_api.create_virtual_router = &sai_adapter::create_virtual_router;
+  virtual_router_api.remove_virtual_router = &sai_adapter::remove_virtual_router;
+
+  neighbor_api.create_neighbor_entry = &sai_adapter::create_neighbor_entry;
+  neighbor_api.remove_neighbor_entry = &sai_adapter::remove_neighbor_entry;
+
+  next_hop_api.create_next_hop = &sai_adapter::create_next_hop;
+  next_hop_api.remove_next_hop = &sai_adapter::remove_next_hop;
+
+  route_api.create_route_entry = &sai_adapter::create_route_entry;
+  route_api.remove_route_entry = &sai_adapter::remove_route_entry;
+
   startSaiAdapterMain();
-  (*logger)->info("BM connection started on port {}", bm_port);
+  (*logger)->info("BM connection started on port {}", bm_port_bridge);
 }
 
 sai_adapter::~sai_adapter() {
   endSaiAdapterMain();
   transport->close();
+  router_transport->close();
   (*logger)->info("BM clients closed\n");
 }
 
@@ -116,6 +147,24 @@ sai_status_t sai_adapter::sai_api_query(sai_api_t sai_api_id,
     break;
   case SAI_API_HOSTIF:
     *api_method_table = &hostif_api;
+    break;
+  case SAI_API_VIRTUAL_ROUTER:
+    *api_method_table = &virtual_router_api;
+    break;
+  case SAI_API_ROUTE:
+    *api_method_table = &route_api;
+    break;
+  case SAI_API_NEXT_HOP:
+    *api_method_table = &next_hop_api;
+    break;
+  case SAI_API_NEXT_HOP_GROUP:
+    *api_method_table = &next_hop_group_api;
+    break;
+  case SAI_API_ROUTER_INTERFACE:
+    *api_method_table = &router_interface_api;
+    break;
+  case SAI_API_NEIGHBOR:
+    *api_method_table = &neighbor_api;
     break;
   default:
     (*logger)->info("api requested was %d, while sai_api_port is %d\n",
@@ -185,6 +234,16 @@ BmMatchParam parse_exact_match_param(uint64_t param, uint32_t num_of_bytes) {
   BmMatchParamExact match_param_exact;
   match_param_exact.key = parse_param(param, num_of_bytes);
   match_param.__set_exact(match_param_exact);
+  return match_param;
+}
+
+BmMatchParam parse_lpm_param(uint64_t param, uint32_t num_of_bytes, uint32_t prefix_length) {
+  BmMatchParam match_param;
+  match_param.type = BmMatchParamType::type::LPM;
+  BmMatchParamLPM match_param_lpm;
+  match_param_lpm.key = parse_param(param, num_of_bytes);
+  match_param_lpm.__set_prefix_length(prefix_length);
+  match_param.__set_lpm(match_param_lpm);
   return match_param;
 }
 
