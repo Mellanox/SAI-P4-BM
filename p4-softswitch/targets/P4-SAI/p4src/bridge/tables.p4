@@ -158,7 +158,7 @@ table table_fdb { // TODO ask if can be melded into l3 interface table...
     	ethernet.dstAddr		   : exact;
         ingress_metadata.bridge_id : exact;
     }
-    actions {action_set_egress_br_port;action_set_unknown_unicast;}
+    actions {action_set_egress_br_port;}
     size : FDB_TABLE_SIZE;
 }
 
@@ -211,7 +211,7 @@ table table_unknown_multicast_ipv4{
 //    actions{action_forward_mc_set_if_list;}
 //}
 
-table table_broadcast{
+table table_broadcast {
     reads{
       ingress_metadata.bridge_id : exact;
     }

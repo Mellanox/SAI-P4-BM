@@ -1141,8 +1141,6 @@ def sai_thrift_vlan_remove_all_ports(client, vlan_oid):
             if attribute.id == SAI_VLAN_ATTR_MEMBER_LIST:
                 for vlan_member in attribute.value.objlist.object_id_list:
                     vlan_members_list.append(vlan_member)
-        print "vlan_oid %d members:" % vlan_oid
-        print vlan_members_list
         for vlan_member in vlan_members_list:
             client.sai_thrift_remove_vlan_member(vlan_member)
 

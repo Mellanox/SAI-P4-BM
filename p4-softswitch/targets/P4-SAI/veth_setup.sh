@@ -48,3 +48,10 @@ sudo ip link set dev $intf0 netns $sw_net
 sudo ip netns exec $sw_net ip link set dev $intf0 up
 sudo ip link set dev $intf1 up
 
+intf0="router_port0"
+intf1="router_port1"
+sudo ip link add name $intf0 type veth peer name $intf1
+sudo ip link set dev $intf0 netns $sw_net
+sudo ip link set dev $intf1 netns $sw_net
+sudo ip netns exec $sw_net ip link set dev $intf0 up
+sudo ip netns exec $sw_net ip link set dev $intf1 up

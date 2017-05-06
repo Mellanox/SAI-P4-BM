@@ -27,9 +27,14 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
     switch_metadata_ptr->vlans[vlan->sai_object_id] = vlan;
     vlan->vid = 1;
     vlan->bridge_id = switch_metadata_ptr->GetNewBridgeID(vlan->vid);
+    vlan->handle_mc_mgrp = 0;
+    vlan->handle_mc_l1 = 0;
+    match_params.push_back(parse_exact_match_param(vlan->bridge_id, 2));
+    // bm_bridge_client_ptr->bm_mt_get_entry_from_key(entry, cxt_id, "table_broadcast", match_params, options);
+    // vlan->handle_broadcast = entry.entry_handle;
+    // bm_bridge_client_ptr->bm_mt_get_entry_from_key(entry, cxt_id, "table_flood", match_params, options);
+    // vlan->handle_flood = entry.entry_handle;
     switch_metadata_ptr->default_vlan_oid = vlan->sai_object_id;
-
-
 
     for (int i = 0; i < switch_metadata_ptr->hw_port_list.count; i++) {
       int hw_port = switch_metadata_ptr->hw_port_list.list[i];

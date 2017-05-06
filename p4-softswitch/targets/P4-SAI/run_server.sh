@@ -6,8 +6,7 @@ handler()
 }
 
 set -m
-rm -rf logs/bridge_log.txt
-rm -rf logs/router_log.txt
+rm -rf logs/*.txt
 sudo -v
 sudo ip netns exec sw_net ./simple_switch -i 0@router_port1 --thrift-port 9091 --log-file logs/router_log --log-flush --notifications-addr ipc:///tmp/bmv2-router-notifications.ipc sai_router.json &
 export ROUTER_PID=$!
@@ -16,7 +15,7 @@ export BRIDGE_PID=$!
 sleep 2
 ./runtime_CLI --pre SimplePreLAG < p4src/bridge/DefaultConfig.txt
 ./sswitch_CLI < p4src/bridge/DefaultConfigMirror.txt
-# ./runtime_CLI --pre SimplePreLAG < p4src/router/DefaultConfig.txt
+./runtime_CLI --pre SimplePreLAG --thrift-port 9091 < p4src/router/DefaultConfig.txt
 
 echo "router and bridge are running send SIGINT to close"
 

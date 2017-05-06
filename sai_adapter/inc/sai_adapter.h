@@ -19,6 +19,8 @@ extern "C" {
 // thrift bm clinet
 #include <Standard.h>
 #include <standard_types.h>
+#include <SimplePreLAG.h>
+#include <simple_pre_lag_types.h>
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/protocol/TMultiplexedProtocol.h>
 #include <thrift/transport/TSocket.h>
@@ -46,6 +48,7 @@ using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
 
 using namespace bm_runtime::standard;
+using namespace bm_runtime::simple_pre_lag;
 
 #define ETHER_ADDR_LEN 6
 #define CPU_HDR_LEN 3
@@ -82,12 +85,14 @@ public:
   boost::shared_ptr<TTransport> transport;
   boost::shared_ptr<TProtocol> bprotocol;
   boost::shared_ptr<TProtocol> protocol;
+  boost::shared_ptr<TProtocol> mc_protocol;
   boost::shared_ptr<TTransport> router_socket;
   boost::shared_ptr<TTransport> router_transport;
   boost::shared_ptr<TProtocol> router_bprotocol;
   boost::shared_ptr<TProtocol> router_protocol;
   StandardClient bm_bridge_client;
   StandardClient bm_router_client;
+  SimplePreLAGClient bm_bridge_client_mc;
   // generals
   sai_id_map_t sai_id_map;
   Switch_metadata switch_metadata;
@@ -99,6 +104,7 @@ public:
   static sai_id_map_t *sai_id_map_ptr;
   static StandardClient *bm_bridge_client_ptr;
   static StandardClient *bm_router_client_ptr;
+  static SimplePreLAGClient *bm_bridge_client_mc_ptr;
   static Switch_metadata *switch_metadata_ptr;
   static std::shared_ptr<spdlog::logger> *logger;
   // switch
@@ -295,6 +301,8 @@ private:
                                              adapter_packet_handler_fn);
   static void phys_netdev_packet_handler(int, int, const u_char *);
   static int phys_netdev_sniffer(int, int);
+  static void update_mc_node_vlan(Vlan_obj *vlan);
+  // static void update_mc_node_bridge(Bridge_obj *bridge);
   // hostif_table_t hostif_table;
   // static hostif_table_t* hostif_table_p;
 };

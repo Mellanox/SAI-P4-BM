@@ -254,11 +254,11 @@ class L2FloodTest(sai_base_test.ThriftInterfaceDataPlane):
 
         try:
             send_packet(self, 0, str(pkt))
-            verify_packets(self, exp_pkt, [1, 2])
+            verify_packets(self, exp_pkt, [0, 1, 2])
             send_packet(self, 1, str(pkt))
-            verify_packets(self, exp_pkt, [0, 2])
+            verify_packets(self, exp_pkt, [0, 1, 2])
             send_packet(self, 2, str(pkt))
-            verify_packets(self, exp_pkt, [0, 1])
+            verify_packets(self, exp_pkt, [0, 1, 2])
         finally:
             sai_thrift_flush_fdb_by_vlan(self.client, vlan_id)
 
@@ -425,7 +425,7 @@ class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
 
         try:
             expected_ports = []
-            for i in range (1, len(port_list)-1):
+            for i in range (0, len(port_list)-1):
                 expected_ports.append(i)
 
             send_packet(self, ingress_port, str(bcast_pkt))

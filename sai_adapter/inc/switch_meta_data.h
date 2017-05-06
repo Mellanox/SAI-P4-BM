@@ -8,9 +8,11 @@
 #include <map>
 #include <sai.h>
 #include <standard_types.h>
+#include <simple_pre_lag_types.h>
 #include <vector>
 
 using namespace bm_runtime::standard;
+using namespace bm_runtime::simple_pre_lag;
 
 class sai_id_map_t { // object pointer and it's id
 protected:
@@ -162,25 +164,37 @@ public:
   sai_bridge_type_t bridge_type;
   std::vector<sai_object_id_t> bridge_port_list;
   uint32_t bridge_id; // Valid for .1D bridges.
+  BmMcMgrpHandle handle_mc_mgrp; // Valid for .1D bridge
+  BmMcL1Handle handle_mc_l1;     // Valid for .1D bridge
   Bridge_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->bridge_type = SAI_BRIDGE_TYPE_1Q;
     this->bridge_port_list.clear();
-    this->bridge_id = 1;
+    this->bridge_id = 0;
+    this->handle_mc_mgrp = NULL_HANDLE;
+    this->handle_mc_l1 = NULL_HANDLE;
   }
 };
 
 class Vlan_obj : public Sai_obj {
 public:
   uint16_t vid;
-  uint32_t bridge_id; // Valid for .1Q bridge
   std::vector<sai_object_id_t> vlan_members;
   BmEntryHandle handle_id_1q;
   BmEntryHandle handle_router_ingress_vlan_filtering;
+  uint32_t bridge_id;             // Valid for .1Q bridge
+  BmEntryHandle handle_broadcast; // Valid for .1Q bridge
+  BmEntryHandle handle_flood;     // Valid for .1Q bridge
+  BmMcMgrpHandle handle_mc_mgrp;  // Valid for .1Q bridge
+  BmMcL1Handle handle_mc_l1;      // Valid for .1Q bridge
   Vlan_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->vlan_members.clear();
     this->vid = 0;
     this->handle_id_1q = NULL_HANDLE;
     this->handle_router_ingress_vlan_filtering = NULL_HANDLE;
+    this->handle_mc_mgrp = NULL_HANDLE;
+    this->handle_mc_l1 = NULL_HANDLE;
+    this->handle_flood = NULL_HANDLE;
+    this->handle_broadcast = NULL_HANDLE;
   }
 };
 

@@ -38,6 +38,7 @@ class L2AcceptedFrameType(sai_base_test.ThriftInterfaceDataPlane):
         port2 = port_list[hw_port2]
         bridge_port1 = br_port_list[port1]
         bridge_port2 = br_port_list[port2]
+
         
         # port2 drops tagged. port1 drops untagged
         attr_value = sai_thrift_attribute_value_t(booldata=True)
@@ -82,10 +83,10 @@ class L2AcceptedFrameType(sai_base_test.ThriftInterfaceDataPlane):
         try:
             print "Sending tagged packet port 0 -> port 1"
             send_packet(self, hw_port1, str(tagged_pkt1))
-            verify_packets(self, tagged_pkt1, [hw_port2])
+            verify_packets(self, untagged_pkt1, [hw_port2])
             print "Sending tagged packet port 1 -> port 0"
             send_packet(self, hw_port2, str(tagged_pkt2))
-            verify_no_packet_any(self, tagged_pkt2, port_list.keys())
+            verify_no_packet_any(self, untagged_pkt2, port_list.keys())
             print "Sending untagged packet port 0 -> port 1"
             send_packet(self, hw_port1, str(untagged_pkt1))
             verify_no_packet_any(self, untagged_pkt1, port_list.keys())
@@ -626,9 +627,6 @@ class L21QLagTest(sai_base_test.ThriftInterfaceDataPlane):
 
         # Create LAG
         lag = self.client.sai_thrift_create_lag([])
-        lag_member1 = sai_thrift_create_lag_member(self.client, port3, lag)
-        lag_member2 = sai_thrift_create_lag_member(self.client, port1, lag)
-        lag_member3 = sai_thrift_create_lag_member(self.client, port2, lag)
 
         # Set LAG Vlan attr
         attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
@@ -637,10 +635,13 @@ class L21QLagTest(sai_base_test.ThriftInterfaceDataPlane):
 
         # Create Lag Bridge port
         bridge_port_type = SAI_BRIDGE_PORT_TYPE_PORT
+        lag_bridge_port = sai_thrift_create_bridge_port(self.client, bridge_port_type, lag, None, default_bridge)
         self.client.sai_thrift_remove_bridge_port(bridge_port1)
         self.client.sai_thrift_remove_bridge_port(bridge_port2)
         self.client.sai_thrift_remove_bridge_port(bridge_port3)
-        lag_bridge_port = sai_thrift_create_bridge_port(self.client, bridge_port_type, lag, None, default_bridge)
+        lag_member2 = sai_thrift_create_lag_member(self.client, port1, lag)
+        lag_member3 = sai_thrift_create_lag_member(self.client, port2, lag)
+        lag_member1 = sai_thrift_create_lag_member(self.client, port3, lag)
         
         # Create VLAN
         vlan_attr_value = sai_thrift_attribute_value_t(u16= vlan_id)

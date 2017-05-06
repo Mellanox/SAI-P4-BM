@@ -75,7 +75,6 @@ header_type ingress_metadata_t {
 		bit<2> 	stp_state;
 		bit<3>	stp_id; // TODO size?
 		bit<12> vid;
-		bit<1> 	unknown_unicast;
         bit<2>  mcast_mode;
         bit<1>  mc_fdb_miss;
         bit     ipmc;

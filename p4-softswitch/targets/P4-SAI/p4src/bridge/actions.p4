@@ -105,10 +105,6 @@ action action_forward_set_outIfType(in bit<6> out_if,in bit<1> out_if_type){
 	standard_metadata.egress_spec = out_if; 
 }
 
-action action_set_unknown_unicast(in bit<1> unknown_unicast) {
-	ingress_metadata.unknown_unicast = unknown_unicast;
-}
-
 //action action_ste_fdb_miss(in bit mc_fdb_miss){
 //	ingress_metadata.mc_fdb_miss = mc_fdb_miss;
 //}

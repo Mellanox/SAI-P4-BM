@@ -1,6 +1,7 @@
 #include "../inc/sai_adapter.h"
 
 StandardClient *sai_adapter::bm_bridge_client_ptr;
+SimplePreLAGClient *sai_adapter::bm_bridge_client_mc_ptr;
 StandardClient *sai_adapter::bm_router_client_ptr;
 sai_id_map_t *sai_adapter::sai_id_map_ptr;
 Switch_metadata *sai_adapter::switch_metadata_ptr;
@@ -18,6 +19,8 @@ sai_adapter::sai_adapter()
       bprotocol(new TBinaryProtocol(transport)),
       protocol(new TMultiplexedProtocol(bprotocol, "standard")),
       bm_bridge_client(protocol),
+      mc_protocol(new TMultiplexedProtocol(bprotocol, "simple_pre_lag")),
+      bm_bridge_client_mc(mc_protocol),
       router_socket(new TSocket("localhost", bm_port_router)),
       router_transport(new TBufferedTransport(router_socket)),
       router_bprotocol(new TBinaryProtocol(router_transport)),
@@ -39,6 +42,7 @@ sai_adapter::sai_adapter()
   switch_metadata.hw_port_list.list = list;
   switch_metadata.hw_port_list.count = 8;
   bm_bridge_client_ptr = &bm_bridge_client;
+  bm_bridge_client_mc_ptr = &bm_bridge_client_mc;
   bm_router_client_ptr = &bm_router_client;
   sai_id_map_ptr = &sai_id_map;
   transport->open();

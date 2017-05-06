@@ -1,4 +1,5 @@
 #include "../inc/sai_adapter.h"
+#include <bitset>
 
 sai_status_t sai_adapter::create_vlan(sai_object_id_t *vlan_id,
                                       sai_object_id_t switch_id,
@@ -25,6 +26,22 @@ sai_status_t sai_adapter::create_vlan(sai_object_id_t *vlan_id,
   BmAddEntryOptions options;
   uint32_t bridge_id = switch_metadata_ptr->GetNewBridgeID(vlan->vid);
   vlan->bridge_id = bridge_id;
+  vlan->handle_mc_mgrp = bm_bridge_client_mc_ptr->bm_mc_mgrp_create(cxt_id, bridge_id);
+  vlan->handle_mc_l1 = bm_bridge_client_mc_ptr->bm_mc_node_create(cxt_id, bridge_id, "", "");
+  bm_bridge_client_mc_ptr->bm_mc_node_associate(cxt_id, vlan->handle_mc_mgrp, vlan->handle_mc_l1);
+  match_params.push_back(parse_exact_match_param(bridge_id, 2));
+  action_data.push_back(parse_param(bridge_id, 4));
+  vlan->handle_broadcast = bm_bridge_client_ptr->bm_mt_add_entry(
+        cxt_id, "table_broadcast", match_params, "action_forward_mc_set_if_list",
+        action_data, options);
+  vlan->handle_flood = bm_bridge_client_ptr->bm_mt_add_entry(
+        cxt_id, "table_flood", match_params, "action_forward_mc_set_if_list",
+        action_data, options);
+  match_params.clear();
+  action_data.clear();
+
+  // vlan->handle_mc_mgrp = 0;
+  // vlan->handle_mc_l1 = 0;
   if (vlan->vid != bridge_id) {
     match_params.push_back(parse_exact_match_param(vlan->vid, 2));
     action_data.push_back(parse_param(bridge_id, 2));
@@ -55,6 +72,20 @@ sai_status_t sai_adapter::remove_vlan(sai_object_id_t vlan_id) {
   if (vlan->handle_router_ingress_vlan_filtering != NULL_HANDLE) { 
     bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_ingress_vlan_filtering",
                                       vlan->handle_router_ingress_vlan_filtering);
+  }
+  if (vlan->handle_broadcast != NULL_HANDLE) { 
+    bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_broadcast",
+                                      vlan->handle_broadcast);
+  }
+  if (vlan->handle_flood != NULL_HANDLE) { 
+    bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_flood",
+                                      vlan->handle_flood);
+  }
+  if (vlan->handle_mc_mgrp != NULL_HANDLE) { 
+    bm_bridge_client_mc_ptr->bm_mc_mgrp_destroy(cxt_id, vlan->handle_mc_mgrp);
+  }
+  if (vlan->handle_mc_l1 != NULL_HANDLE) { 
+    bm_bridge_client_mc_ptr->bm_mc_node_destroy(cxt_id, vlan->handle_mc_l1);
   }
   switch_metadata_ptr->vlans.erase(vlan->sai_object_id);
   sai_id_map_ptr->free_id(vlan->sai_object_id);
@@ -94,6 +125,7 @@ sai_status_t sai_adapter::create_vlan_member(sai_object_id_t *vlan_member_id,
   Vlan_obj *vlan = switch_metadata_ptr->vlans[vlan_member->vlan_oid];
   vlan_member->vid = vlan->vid;
   vlan->vlan_members.push_back(vlan_member->sai_object_id);
+  update_mc_node_vlan(vlan);
   uint32_t port_id =
       switch_metadata_ptr->bridge_ports[vlan_member->bridge_port_id]->port_id;
   uint32_t bridge_port =
@@ -193,6 +225,7 @@ sai_status_t sai_adapter::remove_vlan_member(sai_object_id_t vlan_member_id) {
   vlan_members->erase(std::remove(vlan_members->begin(), vlan_members->end(),
                                   vlan_member->sai_object_id),
                       vlan_members->end());
+  update_mc_node_vlan(switch_metadata_ptr->vlans[vlan_member->vlan_oid]);
   switch_metadata_ptr->vlan_members.erase(vlan_member->sai_object_id);
   sai_id_map_ptr->free_id(vlan_member->sai_object_id);
   return status;
@@ -253,4 +286,18 @@ sai_status_t sai_adapter::clear_vlan_stats(sai_object_id_t vlan_id,
                                            uint32_t number_of_counters) {
   (*logger)->info("TODO : clear_vlan_stats not implemened");
   // implementation
+}
+
+void sai_adapter::update_mc_node_vlan(Vlan_obj *vlan) {
+  std::string port_map;
+  uint32_t bridge_port;
+  uint32_t ports_int = 0;
+  for (std::vector<sai_object_id_t>::iterator it = vlan->vlan_members.begin(); it != vlan->vlan_members.end(); ++it) {
+    bridge_port = switch_metadata_ptr->bridge_ports[switch_metadata_ptr->vlan_members[*it]->bridge_port_id]->bridge_port;
+    ports_int += 1 << bridge_port;
+  }
+  port_map = std::bitset<32>(ports_int).to_string();
+  port_map.erase(0, std::min(port_map.find_first_not_of('0'), port_map.size()-1));
+  (*logger)->info("updating mc_node {} with port_map {}", vlan->handle_mc_l1, port_map);
+  bm_bridge_client_mc_ptr->bm_mc_node_update(cxt_id, vlan->handle_mc_l1, port_map, "");
 }

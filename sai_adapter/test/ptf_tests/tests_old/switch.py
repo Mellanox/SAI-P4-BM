@@ -53,7 +53,7 @@ router_mac='00:77:66:55:44:00'
 rewrite_mac1='00:77:66:55:44:01'
 rewrite_mac2='00:77:66:55:44:02'
 default_bridge = 0
-default_bridge_type = None
+default_bridge_type = SAI_BRIDGE_TYPE_1Q
 
 
 is_bmv2 = ('BMV2_TEST' in os.environ) and (int(os.environ['BMV2_TEST']) == 1)
@@ -111,19 +111,14 @@ def switch_init2(client):
     global switch_inited
     if switch_inited:
         return
-    # client.sai_thrift_create_switch([])
     attr_value = sai_thrift_attribute_value_t(oid=0)
     attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID, value=attr_value)
-    # attr_value2 = sai_thrift_attribute_value_t(objlist=0)
-    # attr2 = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_PORT_LIST, value=attr_value)
-    # attr_list = client.sai_thrift_get_switch_attribute(thrift_attr_list=[attr, attr2])
     default_bridge = client.sai_thrift_get_default_1q_bridge_id()
     for interface,front in interface_to_front_mapping.iteritems():
         sai_port_id = client.sai_thrift_get_port_id_by_front_port(front)
         port_list[int(interface)]=sai_port_id
 
     ret = client.sai_thrift_get_bridge_port_list(default_bridge)
-    default_bridge_type = SAI_BRIDGE_TYPE_1Q
     for br_port in ret.data.objlist.object_id_list:
         attr_list = client.sai_thrift_get_bridge_port_attribute(br_port)
         for attr in attr_list.attr_list:
@@ -137,18 +132,6 @@ def switch_init2(client):
     client.sai_thrift_set_switch_attribute(attr)
     
     switch_inited = 1
-    # attr_list = []
-    # attr_value = sai_thrift_attribute_value_t(u32list=None)
-    # attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_HW_LANE_LIST, value=attr_value)
-    # attr_list.append(attr)
-    # attr_list = client.sai_thrift_get_port_attribute(port1, attr_list)
-    # hw_port1 = attr_list.attr_list[0].value.u32list.u32list[0]
-    # attr_list = []
-    # attr_value = sai_thrift_attribute_value_t(u32list=None)
-    # attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_HW_LANE_LIST, value=attr_value)
-    # attr_list.append(attr)
-    # attr_list = client.sai_thrift_get_port_attribute(port2, attr_list)
-    # hw_port2 = attr_list.attr_list[0].value.u32list.u32list[0]
 
 def sai_thrift_get_cpu_port_id(client):
     cpu_port = client.sai_thrift_get_cpu_port_id()

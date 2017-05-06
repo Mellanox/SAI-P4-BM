@@ -718,10 +718,40 @@ void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list
     return fdb_api->remove_fdb_entry(&sai_fdb_entry);
   }
 
-  sai_thrift_status_t sai_thrift_flush_fdb_entries(
-      const std::vector<sai_thrift_attribute_t> &thrift_attr_list) {
-    // Your implementation goes here
-    logger->info("sai_thrift_flush_fdb_entries");
+  void sai_thrift_parse_fdb_flush_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+          attribute = (sai_thrift_attribute_t)*it;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+              case SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID:
+                  attr_list[i].value.oid = (sai_object_id_t) attribute.value.oid;
+                  break;
+              case SAI_FDB_FLUSH_ATTR_VLAN_ID:
+                  attr_list[i].value.u16 = attribute.value.u16;
+                  break;
+              case SAI_FDB_FLUSH_ATTR_ENTRY_TYPE:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
+          }
+      }
+  }
+
+  sai_thrift_status_t sai_thrift_flush_fdb_entries(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+      logger->info("sai_thrift_flush_fdb_entries");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_fdb_api_t *fdb_api;
+      status = sai_api_query(SAI_API_FDB, (void **) &fdb_api);
+      if (status != SAI_STATUS_SUCCESS) {
+         return status;
+      }
+      sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+      sai_thrift_parse_fdb_flush_attributes(thrift_attr_list, attr_list);
+      uint32_t attr_count = thrift_attr_list.size();
+      status = fdb_api->flush_fdb_entries(0, attr_count, attr_list);
+      free(attr_list);
+      return status;
   }
 
   void sai_thrift_parse_vlan_attributes(

@@ -16,6 +16,9 @@ SAI_THRIFT_SRC_DIR    = ${SAI_ADAPTER_DIR}/test/sai_thrift_src/gen-cpp
 STAND_OBJS = ${BM_DIR}/Standard.o  \
              ${BM_DIR}/standard_types.o \
              ${BM_DIR}/standard_constants.o
+SIMPLE_PRE_LAG_OBJS = ${BM_DIR}/SimplePreLAG.o  \
+             ${BM_DIR}/simple_pre_lag_types.o \
+             ${BM_DIR}/simple_pre_lag_constants.o
 
 INC_DIRS  =-I${USR_DIR}/include -I${THRIFT_DIR}/include/thrift -I${INC_DIR} -I${SAI_INC_DIR} -I${BM_DIR} -I${SAI_THRIFT_SRC_DIR}
 
@@ -27,7 +30,7 @@ SAI_SRC_HEADERS = $(wildcard ${INC_DIR}/*.h)
 SAI_OBJS = $(patsubst %.c,${SAI_SRC_DIR}/${OBJ_DIR}/%.o, $(notdir $(SAI_SRC)))
 SAI_OBJ_IF_SRC    = $(wildcard ${SAI_SRC_DIR}/*.cpp)
 SAI_OBJ_IF_OBJ    = $(patsubst %.cpp,${SAI_SRC_DIR}/${OBJ_DIR}/%.o, $(notdir $(SAI_OBJ_IF_SRC)))
-OBJECTS = ${SAI_THRIFT_OBJ} ${SAI_OBJS} ${SAI_OBJ_IF_OBJ} ${STAND_OBJS}
+OBJECTS = ${SAI_THRIFT_OBJ} ${SAI_OBJS} ${SAI_OBJ_IF_OBJ} ${STAND_OBJS} ${SIMPLE_PRE_LAG_OBJS}
 			
 default: server
 
