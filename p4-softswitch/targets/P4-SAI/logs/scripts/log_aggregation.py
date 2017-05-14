@@ -63,8 +63,8 @@ def main():
 	add_initials_bool = True
 
 	log_initials =[]
-	log_initials.append('B')
-	log_initials.append('R')
+	log_initials.append('Bridge')
+	log_initials.append('Router')
 	#log_initials.append('c')
 	#log_initials.append('d')
 
