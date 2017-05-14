@@ -49,6 +49,9 @@
 		.st35 {fill:#5b9bd5;fill-opacity:1;stroke:#5b9bd5;stroke-opacity:1;stroke-width:0.26315789473684}
 		.st36 {fill:#000000;font-family:Calibri;font-size:1.24999em;font-weight:bold}
 		.st37 {fill:none;fill-rule:evenodd;font-size:12px;overflow:visible;stroke-linecap:square;stroke-miterlimit:3}
+		.st300 {fill:#a0a0a0;stroke:#c8c8c8;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.45}
+		.st301 {fill:#00b050;stroke:#c8c8c8;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.45}		
+		.st302 {fill:#ff0000;stroke:#c8c8c8;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.45}
 	]]>
 	</style>
 

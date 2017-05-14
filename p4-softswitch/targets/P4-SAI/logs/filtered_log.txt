@@ -1,0 +1,99 @@
+[B] [13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Processing packet received on port 0
+[B] [13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_ingress_lag': miss
+[B] [13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is action_set_l2if - 
+[B] [13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_port_configurations': hit with handle 0
+[B] [13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is action_set_port_configurations - a,0,5e8,0,0,
+[B] [13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_drop_untagged_internal': miss
+[B] [13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is _nop - 
+[B] [13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_l2_trap': miss
+[B] [13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is action_set_trap_id - ff,
+[B] [13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_trap_id': miss
+[B] [13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is _nop - 
+[B] [13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_port_ingress_interface_type': hit with handle 0
+[B] [13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is action_set_l2_if_type - 3,0,
+[B] [13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_bridge_id_1q': miss
+[B] [13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is action_set_bridge_id_vid - 
+[B] [13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_ingress_vlan_filtering': hit with handle 10
+[B] [13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is _nop - 
+[B] [13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_xSTP_instance': miss
+[B] [13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is action_set_stp_id - 1,
+[B] [13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_xSTP': miss
+[R] [13:50:43.356] [bmv2] [D] [thread 1052] [0.0] [cxt 0] Processing packet received on port 0
+[B] [13:50:43.356] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is NULL
+[B] [13:50:43.356] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_learn_fdb': miss
+[B] [13:50:43.356] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is action_learn_mac - 
+[B] [13:50:43.356] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_l3_interface': hit with handle 0
+[B] [13:50:43.356] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is action_set_egress_br_port - 9,
+[B] [13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Table 'table_egress_br_port_to_if': hit with handle 0
+[B] [13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Action entry is action_forward_set_outIfType - 0,0,
+[B] [13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Table 'table_egress_vlan_tag': miss
+[B] [13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Action entry is NULL
+[B] [13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Table 'table_egress_clone_internal': hit with handle 0
+[B] [13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Action entry is action_cpu_encap - 
+[B] [13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Table 'table_egress_xSTP': miss
+[B] [13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Action entry is NULL
+[B] [13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Table 'table_egress_vlan_filtering': miss
+[B] [13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Action entry is _drop - 
+[B] [13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Table 'table_egress_br_port_to_if': hit with handle 8
+[B] [13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Action entry is action_forward_set_outIfType - 9,2,
+[B] [13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Table 'table_egress_vlan_tag': hit with handle 2
+[B] [13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Action entry is action_forward_vlan_tag - 0,0,a,
+[B] [13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Table 'table_egress_clone_internal': miss
+[B] [13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Action entry is _nop - 
+[R] [13:50:43.357] [bmv2] [D] [thread 1052] [0.0] [cxt 0] Table 'table_ingress_l3_if': hit with handle 0
+[R] [13:50:43.357] [bmv2] [D] [thread 1052] [0.0] [cxt 0] Action entry is action_set_irif - 0,
+[R] [13:50:43.357] [bmv2] [D] [thread 1052] [0.0] [cxt 0] Table 'table_ingress_vrf': miss
+[R] [13:50:43.357] [bmv2] [D] [thread 1052] [0.0] [cxt 0] Action entry is action_set_vrf - 0,
+[R] [13:50:43.357] [bmv2] [D] [thread 1052] [0.0] [cxt 0] Table 'table_router': hit with handle 0
+[R] [13:50:43.357] [bmv2] [D] [thread 1052] [0.0] [cxt 0] Action entry is action_set_nhop_id - 0,
+[R] [13:50:43.357] [bmv2] [D] [thread 1052] [0.0] [cxt 0] Table 'table_next_hop': hit with handle 0
+[R] [13:50:43.357] [bmv2] [D] [thread 1052] [0.0] [cxt 0] Action entry is action_set_erif_set_nh_dstip - a0a0a01,1,
+[R] [13:50:43.357] [bmv2] [D] [thread 1052] [0.0] [cxt 0] Table 'table_neighbor': hit with handle 0
+[R] [13:50:43.357] [bmv2] [D] [thread 1052] [0.0] [cxt 0] Action entry is action_set_packet_dmac - 1122334455,
+[R] [13:50:43.357] [bmv2] [D] [thread 1052] [0.0] [cxt 0] Table 'table_egress_L3_if': hit with handle 1
+[R] [13:50:43.357] [bmv2] [D] [thread 1052] [0.0] [cxt 0] Action entry is action_set_smac_vid - 7766554400,f,
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Processing packet received on port 9
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_ingress_lag': miss
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is action_set_l2if - 
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_port_configurations': miss
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is action_set_port_configurations - 1,0,5ea,0,0,
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_port_set_packet_vid_internal': hit with handle 0
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is action_set_packet_vid - 
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_drop_tagged_internal': miss
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is _nop - 
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_l2_trap': miss
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is action_set_trap_id - ff,
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_trap_id': miss
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is _nop - 
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_port_ingress_interface_type': hit with handle 8
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is action_set_l2_if_type - 3,9,
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_bridge_id_1q': miss
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is action_set_bridge_id_vid - 
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_ingress_vlan_filtering': hit with handle 9
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is _nop - 
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_xSTP_instance': miss
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is action_set_stp_id - 1,
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_xSTP': miss
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is NULL
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_learn_fdb': miss
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is action_learn_mac - 
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_l3_interface': miss
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is NULL
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_fdb': hit with handle 0
+[B] [13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is action_set_egress_br_port - 1,
+[B] [13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Table 'table_egress_br_port_to_if': hit with handle 0
+[B] [13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Action entry is action_forward_set_outIfType - 0,0,
+[B] [13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Table 'table_egress_vlan_tag': miss
+[B] [13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Action entry is NULL
+[B] [13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Table 'table_egress_clone_internal': hit with handle 0
+[B] [13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Action entry is action_cpu_encap - 
+[B] [13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Table 'table_egress_xSTP': miss
+[B] [13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Action entry is NULL
+[B] [13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Table 'table_egress_vlan_filtering': hit with handle 2
+[B] [13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Action entry is _nop - 
+[B] [13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Table 'table_egress_br_port_to_if': hit with handle 1
+[B] [13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Action entry is action_forward_set_outIfType - 1,0,
+[B] [13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Table 'table_egress_vlan_tag': hit with handle 1
+[B] [13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Action entry is action_forward_vlan_untag - 
+[B] [13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Table 'table_egress_clone_internal': miss
+[B] [13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Action entry is _nop - 

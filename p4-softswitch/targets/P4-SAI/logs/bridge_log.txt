@@ -1,0 +1,1041 @@
+[13:50:20.071] [bmv2] [D] [thread 1017] Adding interface sw_port0 as port 0
+[13:50:20.074] [bmv2] [D] [thread 1017] Adding interface sw_port1 as port 1
+[13:50:20.075] [bmv2] [D] [thread 1017] Adding interface sw_port2 as port 2
+[13:50:20.079] [bmv2] [D] [thread 1017] Adding interface sw_port3 as port 3
+[13:50:20.083] [bmv2] [D] [thread 1017] Adding interface sw_port4 as port 4
+[13:50:20.084] [bmv2] [D] [thread 1017] Adding interface sw_port5 as port 5
+[13:50:20.084] [bmv2] [D] [thread 1017] Adding interface sw_port6 as port 6
+[13:50:20.099] [bmv2] [D] [thread 1017] Adding interface sw_port7 as port 7
+[13:50:20.103] [bmv2] [D] [thread 1017] Adding interface cpu_port as port 8
+[13:50:20.108] [bmv2] [D] [thread 1017] Adding interface router_port0 as port 9
+[13:50:21.988] [bmv2] [T] [thread 1075] bm_get_config
+[13:50:22.005] [bmv2] [T] [thread 1075] bm_set_default_action
+[13:50:22.005] [bmv2] [D] [thread 1075] Set default entry for table 'table_ingress_lag': action_set_l2if - 
+[13:50:22.005] [bmv2] [T] [thread 1075] bm_set_default_action
+[13:50:22.005] [bmv2] [D] [thread 1075] Set default entry for table 'table_port_configurations': action_set_port_configurations - 1,0,5ea,0,0,
+[13:50:22.006] [bmv2] [T] [thread 1075] bm_set_default_action
+[13:50:22.006] [bmv2] [D] [thread 1075] Set default entry for table 'table_bridge_id_1q': action_set_bridge_id_vid - 
+[13:50:22.006] [bmv2] [T] [thread 1075] bm_set_default_action
+[13:50:22.006] [bmv2] [D] [thread 1075] Set default entry for table 'table_ingress_vlan_filtering': _drop - 
+[13:50:22.006] [bmv2] [T] [thread 1075] bm_set_default_action
+[13:50:22.006] [bmv2] [D] [thread 1075] Set default entry for table 'table_port_set_packet_vid_internal': action_set_packet_vid - 
+[13:50:22.007] [bmv2] [T] [thread 1075] bm_set_default_action
+[13:50:22.007] [bmv2] [D] [thread 1075] Set default entry for table 'table_learn_fdb': action_learn_mac - 
+[13:50:22.007] [bmv2] [T] [thread 1075] bm_set_default_action
+[13:50:22.007] [bmv2] [D] [thread 1075] Set default entry for table 'table_learn_fdb': action_learn_mac - 
+[13:50:22.008] [bmv2] [T] [thread 1075] bm_set_default_action
+[13:50:22.008] [bmv2] [D] [thread 1075] Set default entry for table 'table_drop_tagged_internal': _nop - 
+[13:50:22.008] [bmv2] [T] [thread 1075] bm_set_default_action
+[13:50:22.008] [bmv2] [D] [thread 1075] Set default entry for table 'table_drop_untagged_internal': _nop - 
+[13:50:22.009] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.009] [bmv2] [D] [thread 1075] Entry 0 added to table 'table_drop_tagged_internal'
+[13:50:22.009] [bmv2] [D] [thread 1075] Dumping entry 0
+Match key:
+* ingress_metadata.drop_tagged: EXACT     01
+Action entry: _drop - 
+
+[13:50:22.010] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.010] [bmv2] [D] [thread 1075] Entry 0 added to table 'table_drop_untagged_internal'
+[13:50:22.010] [bmv2] [D] [thread 1075] Dumping entry 0
+Match key:
+* ingress_metadata.drop_untagged: EXACT     01
+Action entry: _drop - 
+
+[13:50:22.015] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.015] [bmv2] [E] [thread 1075] Error when trying to add entry to table 'table_drop_untagged_internal'
+[13:50:22.018] [bmv2] [T] [thread 1075] bm_set_default_action
+[13:50:22.018] [bmv2] [D] [thread 1075] Set default entry for table 'table_l2_trap': action_set_trap_id - ff,
+[13:50:22.019] [bmv2] [T] [thread 1075] bm_set_default_action
+[13:50:22.019] [bmv2] [D] [thread 1075] Set default entry for table 'table_trap_id': _nop - 
+[13:50:22.019] [bmv2] [T] [thread 1075] bm_set_default_action
+[13:50:22.019] [bmv2] [D] [thread 1075] Set default entry for table 'table_egress_clone_internal': _nop - 
+[13:50:22.025] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.025] [bmv2] [D] [thread 1075] Entry 0 added to table 'table_egress_clone_internal'
+[13:50:22.025] [bmv2] [D] [thread 1075] Dumping entry 0
+Match key:
+* standard_metadata.instance_type: EXACT     00000001
+Action entry: action_cpu_encap - 
+
+[13:50:22.027] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.027] [bmv2] [E] [thread 1075] Error when trying to add entry to table 'table_egress_clone_internal'
+[13:50:22.028] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.028] [bmv2] [D] [thread 1075] Entry 0 added to table 'table_port_ingress_interface_type'
+[13:50:22.028] [bmv2] [D] [thread 1075] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+Action entry: action_set_l2_if_type - 3,0,
+
+[13:50:22.030] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.030] [bmv2] [D] [thread 1075] Entry 1 added to table 'table_port_ingress_interface_type'
+[13:50:22.030] [bmv2] [D] [thread 1075] Dumping entry 1
+Match key:
+* ingress_metadata.l2_if: EXACT     01
+Action entry: action_set_l2_if_type - 3,1,
+
+[13:50:22.036] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.036] [bmv2] [D] [thread 1075] Entry 2 added to table 'table_port_ingress_interface_type'
+[13:50:22.036] [bmv2] [D] [thread 1075] Dumping entry 2
+Match key:
+* ingress_metadata.l2_if: EXACT     02
+Action entry: action_set_l2_if_type - 3,2,
+
+[13:50:22.038] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.038] [bmv2] [D] [thread 1075] Entry 3 added to table 'table_port_ingress_interface_type'
+[13:50:22.038] [bmv2] [D] [thread 1075] Dumping entry 3
+Match key:
+* ingress_metadata.l2_if: EXACT     03
+Action entry: action_set_l2_if_type - 3,3,
+
+[13:50:22.039] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.039] [bmv2] [D] [thread 1075] Entry 4 added to table 'table_port_ingress_interface_type'
+[13:50:22.039] [bmv2] [D] [thread 1075] Dumping entry 4
+Match key:
+* ingress_metadata.l2_if: EXACT     04
+Action entry: action_set_l2_if_type - 3,4,
+
+[13:50:22.040] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.041] [bmv2] [D] [thread 1075] Entry 5 added to table 'table_port_ingress_interface_type'
+[13:50:22.041] [bmv2] [D] [thread 1075] Dumping entry 5
+Match key:
+* ingress_metadata.l2_if: EXACT     05
+Action entry: action_set_l2_if_type - 3,5,
+
+[13:50:22.042] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.042] [bmv2] [D] [thread 1075] Entry 6 added to table 'table_port_ingress_interface_type'
+[13:50:22.042] [bmv2] [D] [thread 1075] Dumping entry 6
+Match key:
+* ingress_metadata.l2_if: EXACT     06
+Action entry: action_set_l2_if_type - 3,6,
+
+[13:50:22.049] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.049] [bmv2] [D] [thread 1075] Entry 7 added to table 'table_port_ingress_interface_type'
+[13:50:22.049] [bmv2] [D] [thread 1075] Dumping entry 7
+Match key:
+* ingress_metadata.l2_if: EXACT     07
+Action entry: action_set_l2_if_type - 3,7,
+
+[13:50:22.050] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.050] [bmv2] [D] [thread 1075] Entry 8 added to table 'table_port_ingress_interface_type'
+[13:50:22.050] [bmv2] [D] [thread 1075] Dumping entry 8
+Match key:
+* ingress_metadata.l2_if: EXACT     09
+Action entry: action_set_l2_if_type - 3,9,
+
+[13:50:22.051] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.051] [bmv2] [E] [thread 1075] Error when trying to add entry to table 'table_port_ingress_interface_type'
+[13:50:22.051] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.051] [bmv2] [D] [thread 1075] Entry 0 added to table 'table_egress_br_port_to_if'
+[13:50:22.051] [bmv2] [D] [thread 1075] Dumping entry 0
+Match key:
+* egress_metadata.bridge_port: EXACT     00
+Action entry: action_forward_set_outIfType - 0,0,
+
+[13:50:22.052] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.052] [bmv2] [D] [thread 1075] Entry 1 added to table 'table_egress_br_port_to_if'
+[13:50:22.052] [bmv2] [D] [thread 1075] Dumping entry 1
+Match key:
+* egress_metadata.bridge_port: EXACT     01
+Action entry: action_forward_set_outIfType - 1,0,
+
+[13:50:22.057] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.057] [bmv2] [D] [thread 1075] Entry 2 added to table 'table_egress_br_port_to_if'
+[13:50:22.057] [bmv2] [D] [thread 1075] Dumping entry 2
+Match key:
+* egress_metadata.bridge_port: EXACT     02
+Action entry: action_forward_set_outIfType - 2,0,
+
+[13:50:22.058] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.058] [bmv2] [D] [thread 1075] Entry 3 added to table 'table_egress_br_port_to_if'
+[13:50:22.058] [bmv2] [D] [thread 1075] Dumping entry 3
+Match key:
+* egress_metadata.bridge_port: EXACT     03
+Action entry: action_forward_set_outIfType - 3,0,
+
+[13:50:22.059] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.059] [bmv2] [D] [thread 1075] Entry 4 added to table 'table_egress_br_port_to_if'
+[13:50:22.059] [bmv2] [D] [thread 1075] Dumping entry 4
+Match key:
+* egress_metadata.bridge_port: EXACT     04
+Action entry: action_forward_set_outIfType - 4,0,
+
+[13:50:22.059] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.059] [bmv2] [D] [thread 1075] Entry 5 added to table 'table_egress_br_port_to_if'
+[13:50:22.060] [bmv2] [D] [thread 1075] Dumping entry 5
+Match key:
+* egress_metadata.bridge_port: EXACT     05
+Action entry: action_forward_set_outIfType - 5,0,
+
+[13:50:22.060] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.060] [bmv2] [D] [thread 1075] Entry 6 added to table 'table_egress_br_port_to_if'
+[13:50:22.060] [bmv2] [D] [thread 1075] Dumping entry 6
+Match key:
+* egress_metadata.bridge_port: EXACT     06
+Action entry: action_forward_set_outIfType - 6,0,
+
+[13:50:22.061] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.061] [bmv2] [D] [thread 1075] Entry 7 added to table 'table_egress_br_port_to_if'
+[13:50:22.061] [bmv2] [D] [thread 1075] Dumping entry 7
+Match key:
+* egress_metadata.bridge_port: EXACT     07
+Action entry: action_forward_set_outIfType - 7,0,
+
+[13:50:22.062] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.062] [bmv2] [E] [thread 1075] Error when trying to add entry to table 'table_egress_br_port_to_if'
+[13:50:22.062] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.062] [bmv2] [D] [thread 1075] Entry 0 added to table 'table_port_set_packet_vid_internal'
+[13:50:22.062] [bmv2] [D] [thread 1075] Dumping entry 0
+Match key:
+* ingress_metadata.is_tagged: EXACT     01
+Action entry: action_set_packet_vid - 
+
+[13:50:22.064] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.064] [bmv2] [D] [thread 1075] Entry 0 added to table 'table_ingress_vlan_filtering'
+[13:50:22.064] [bmv2] [D] [thread 1075] Dumping entry 0
+Match key:
+* ingress_metadata.bridge_port: EXACT     00
+* ingress_metadata.vid        : EXACT     0001
+Action entry: _nop - 
+
+[13:50:22.068] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.068] [bmv2] [D] [thread 1075] Entry 1 added to table 'table_ingress_vlan_filtering'
+[13:50:22.068] [bmv2] [D] [thread 1075] Dumping entry 1
+Match key:
+* ingress_metadata.bridge_port: EXACT     01
+* ingress_metadata.vid        : EXACT     0001
+Action entry: _nop - 
+
+[13:50:22.073] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.073] [bmv2] [D] [thread 1075] Entry 2 added to table 'table_ingress_vlan_filtering'
+[13:50:22.073] [bmv2] [D] [thread 1075] Dumping entry 2
+Match key:
+* ingress_metadata.bridge_port: EXACT     02
+* ingress_metadata.vid        : EXACT     0001
+Action entry: _nop - 
+
+[13:50:22.080] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.080] [bmv2] [D] [thread 1075] Entry 3 added to table 'table_ingress_vlan_filtering'
+[13:50:22.080] [bmv2] [D] [thread 1075] Dumping entry 3
+Match key:
+* ingress_metadata.bridge_port: EXACT     03
+* ingress_metadata.vid        : EXACT     0001
+Action entry: _nop - 
+
+[13:50:22.080] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.080] [bmv2] [D] [thread 1075] Entry 4 added to table 'table_ingress_vlan_filtering'
+[13:50:22.080] [bmv2] [D] [thread 1075] Dumping entry 4
+Match key:
+* ingress_metadata.bridge_port: EXACT     04
+* ingress_metadata.vid        : EXACT     0001
+Action entry: _nop - 
+
+[13:50:22.081] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.081] [bmv2] [D] [thread 1075] Entry 5 added to table 'table_ingress_vlan_filtering'
+[13:50:22.081] [bmv2] [D] [thread 1075] Dumping entry 5
+Match key:
+* ingress_metadata.bridge_port: EXACT     05
+* ingress_metadata.vid        : EXACT     0001
+Action entry: _nop - 
+
+[13:50:22.081] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.081] [bmv2] [D] [thread 1075] Entry 6 added to table 'table_ingress_vlan_filtering'
+[13:50:22.081] [bmv2] [D] [thread 1075] Dumping entry 6
+Match key:
+* ingress_metadata.bridge_port: EXACT     06
+* ingress_metadata.vid        : EXACT     0001
+Action entry: _nop - 
+
+[13:50:22.083] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.083] [bmv2] [D] [thread 1075] Entry 7 added to table 'table_ingress_vlan_filtering'
+[13:50:22.083] [bmv2] [D] [thread 1075] Dumping entry 7
+Match key:
+* ingress_metadata.bridge_port: EXACT     07
+* ingress_metadata.vid        : EXACT     0001
+Action entry: _nop - 
+
+[13:50:22.085] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.085] [bmv2] [E] [thread 1075] Error when trying to add entry to table 'table_ingress_vlan_filtering'
+[13:50:22.087] [bmv2] [T] [thread 1075] bm_set_default_action
+[13:50:22.087] [bmv2] [D] [thread 1075] Set default entry for table 'table_egress_vlan_filtering': _drop - 
+[13:50:22.095] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.095] [bmv2] [D] [thread 1075] Entry 0 added to table 'table_egress_vlan_filtering'
+[13:50:22.095] [bmv2] [D] [thread 1075] Dumping entry 0
+Match key:
+* egress_metadata.bridge_port: EXACT     00
+* ingress_metadata.vid       : EXACT     0001
+Action entry: _nop - 
+
+[13:50:22.096] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.096] [bmv2] [E] [thread 1075] Error when trying to add entry to table 'table_egress_vlan_filtering'
+[13:50:22.099] [bmv2] [T] [thread 1075] bm_set_default_action
+[13:50:22.099] [bmv2] [D] [thread 1075] Set default entry for table 'table_xSTP_instance': action_set_stp_id - 1,
+[13:50:22.099] [bmv2] [T] [thread 1075] bm_set_default_action
+[13:50:22.099] [bmv2] [D] [thread 1075] Set default entry for table 'table_xSTP_instance': action_set_stp_id - 1,
+[13:50:22.100] [bmv2] [T] [thread 1075] bm_set_default_action
+[13:50:22.100] [bmv2] [D] [thread 1075] Set default entry for table 'table_mc_lookup_mode': action_set_mcast_lookup_mode - 0,
+[13:50:22.100] [bmv2] [T] [thread 1075] bm_set_default_action
+[13:50:22.100] [bmv2] [D] [thread 1075] Set default entry for table 'table_mc_fdb': action_set_mc_fdb_miss - 
+[13:50:22.101] [bmv2] [T] [thread 1075] bm_set_default_action
+[13:50:22.101] [bmv2] [D] [thread 1075] Set default entry for table 'table_mc_l2_sg_g': action_set_mc_fdb_miss - 
+[13:50:22.101] [bmv2] [T] [thread 1075] bm_set_default_action
+[13:50:22.101] [bmv2] [D] [thread 1075] Set default entry for table 'table_mc_l2_sg_g': action_set_mc_fdb_miss - 
+[13:50:22.101] [bmv2] [T] [thread 1075] bm_set_default_action
+[13:50:22.101] [bmv2] [D] [thread 1075] Set default entry for table 'table_mc_l2_sg_g': action_set_mc_fdb_miss - 
+[13:50:22.102] [bmv2] [T] [thread 1075] bm_set_default_action
+[13:50:22.102] [bmv2] [D] [thread 1075] Set default entry for table 'table_fdb': action_set_unknown_unicast - 1,
+[13:50:22.108] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.108] [bmv2] [D] [thread 1075] Entry 0 added to table 'table_cpu_forward'
+[13:50:22.108] [bmv2] [D] [thread 1075] Dumping entry 0
+Match key:
+* cpu_header          : VALID     01
+Action entry: action_forward_cpu - 
+
+[13:50:22.109] [bmv2] [T] [thread 1075] bm_table_add_entry
+[13:50:22.109] [bmv2] [E] [thread 1075] Error when trying to add entry to table 'table_cpu_forward'
+[13:50:22.110] [bmv2] [T] [thread 1075] bm_mc_node_create
+[13:50:22.110] [bmv2] [D] [thread 1075] node created for rid 0
+[13:50:22.110] [bmv2] [T] [thread 1075] bm_mc_mgrp_create
+[13:50:22.110] [bmv2] [D] [thread 1075] mgrp node created for mgid 1
+[13:50:22.110] [bmv2] [T] [thread 1075] bm_mc_node_associate
+[13:50:22.110] [bmv2] [D] [thread 1075] node associated with mgid 1
+[13:50:22.241] [bmv2] [T] [thread 1092] bm_get_config
+[13:50:22.255] [bmv2] [T] [thread 1092] mirroring_mapping_add
+[13:50:28.741] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:28.742] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:28.742] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:28.742] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:28.742] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:28.742] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:28.742] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:28.742] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:28.743] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:28.743] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:28.743] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:28.743] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:28.743] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:28.743] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:28.743] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:28.743] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:28.743] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:28.743] [bmv2] [D] [thread 1098] Entry 8 added to table 'table_egress_br_port_to_if'
+[13:50:28.743] [bmv2] [D] [thread 1098] Dumping entry 8
+Match key:
+* egress_metadata.bridge_port: EXACT     09
+Action entry: action_forward_set_outIfType - 9,2,
+
+[13:50:43.314] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:43.319] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:43.319] [bmv2] [D] [thread 1098] Entry 0 added to table 'table_port_configurations'
+[13:50:43.319] [bmv2] [D] [thread 1098] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+Action entry: action_set_port_configurations - a,0,5e8,0,0,
+
+[13:50:43.321] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:43.322] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:43.322] [bmv2] [D] [thread 1098] Entry 1 added to table 'table_port_configurations'
+[13:50:43.322] [bmv2] [D] [thread 1098] Dumping entry 1
+Match key:
+* ingress_metadata.l2_if: EXACT     01
+Action entry: action_set_port_configurations - f,0,5e8,0,0,
+
+[13:50:43.323] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:43.323] [bmv2] [D] [thread 1098] Entry 8 added to table 'table_ingress_vlan_filtering'
+[13:50:43.323] [bmv2] [D] [thread 1098] Dumping entry 8
+Match key:
+* ingress_metadata.bridge_port: EXACT     09
+* ingress_metadata.vid        : EXACT     000a
+Action entry: _nop - 
+
+[13:50:43.324] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:43.324] [bmv2] [D] [thread 1098] Entry 9 added to table 'table_ingress_vlan_filtering'
+[13:50:43.324] [bmv2] [D] [thread 1098] Dumping entry 9
+Match key:
+* ingress_metadata.bridge_port: EXACT     09
+* ingress_metadata.vid        : EXACT     000f
+Action entry: _nop - 
+
+[13:50:43.326] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:43.326] [bmv2] [D] [thread 1098] Entry 0 added to table 'table_egress_vlan_tag'
+[13:50:43.326] [bmv2] [D] [thread 1098] Dumping entry 0
+Match key:
+* egress_metadata.out_if: EXACT     00
+* ingress_metadata.vid  : EXACT     000a
+* vlan                  : VALID     01
+Action entry: action_forward_vlan_untag - 
+
+[13:50:43.326] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:43.326] [bmv2] [D] [thread 1098] Entry 1 added to table 'table_egress_vlan_filtering'
+[13:50:43.326] [bmv2] [D] [thread 1098] Dumping entry 1
+Match key:
+* egress_metadata.bridge_port: EXACT     00
+* ingress_metadata.vid       : EXACT     000a
+Action entry: _nop - 
+
+[13:50:43.326] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:43.326] [bmv2] [D] [thread 1098] Entry 10 added to table 'table_ingress_vlan_filtering'
+[13:50:43.326] [bmv2] [D] [thread 1098] Dumping entry 10
+Match key:
+* ingress_metadata.bridge_port: EXACT     00
+* ingress_metadata.vid        : EXACT     000a
+Action entry: _nop - 
+
+[13:50:43.327] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:43.327] [bmv2] [D] [thread 1098] Entry 1 added to table 'table_egress_vlan_tag'
+[13:50:43.327] [bmv2] [D] [thread 1098] Dumping entry 1
+Match key:
+* egress_metadata.out_if: EXACT     01
+* ingress_metadata.vid  : EXACT     000f
+* vlan                  : VALID     01
+Action entry: action_forward_vlan_untag - 
+
+[13:50:43.327] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:43.327] [bmv2] [D] [thread 1098] Entry 2 added to table 'table_egress_vlan_filtering'
+[13:50:43.327] [bmv2] [D] [thread 1098] Dumping entry 2
+Match key:
+* egress_metadata.bridge_port: EXACT     01
+* ingress_metadata.vid       : EXACT     000f
+Action entry: _nop - 
+
+[13:50:43.328] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:43.328] [bmv2] [D] [thread 1098] Entry 11 added to table 'table_ingress_vlan_filtering'
+[13:50:43.328] [bmv2] [D] [thread 1098] Dumping entry 11
+Match key:
+* ingress_metadata.bridge_port: EXACT     01
+* ingress_metadata.vid        : EXACT     000f
+Action entry: _nop - 
+
+[13:50:43.328] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:43.328] [bmv2] [D] [thread 1098] Entry 0 added to table 'table_fdb'
+[13:50:43.328] [bmv2] [D] [thread 1098] Dumping entry 0
+Match key:
+* ethernet.dstAddr          : EXACT     001122334455
+* ingress_metadata.bridge_id: EXACT     000f
+Action entry: action_set_egress_br_port - 1,
+
+[13:50:43.328] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:43.328] [bmv2] [D] [thread 1098] Entry 0 added to table 'table_learn_fdb'
+[13:50:43.328] [bmv2] [D] [thread 1098] Dumping entry 0
+Match key:
+* ethernet.srcAddr          : EXACT     001122334455
+* ingress_metadata.bridge_id: EXACT     000f
+Action entry: _nop - 
+
+[13:50:43.339] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:43.339] [bmv2] [D] [thread 1098] Entry 0 added to table 'table_l3_interface'
+[13:50:43.339] [bmv2] [D] [thread 1098] Dumping entry 0
+Match key:
+* ethernet.dstAddr          : EXACT     007766554400
+* ingress_metadata.bridge_id: EXACT     000a
+Action entry: action_set_egress_br_port - 9,
+
+[13:50:43.339] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:43.339] [bmv2] [D] [thread 1098] Entry 2 added to table 'table_egress_vlan_tag'
+[13:50:43.339] [bmv2] [D] [thread 1098] Dumping entry 2
+Match key:
+* egress_metadata.out_if: EXACT     09
+* ingress_metadata.vid  : EXACT     000a
+* vlan                  : VALID     00
+Action entry: action_forward_vlan_tag - 0,0,a,
+
+[13:50:43.339] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:43.339] [bmv2] [D] [thread 1098] Entry 1 added to table 'table_l3_interface'
+[13:50:43.339] [bmv2] [D] [thread 1098] Dumping entry 1
+Match key:
+* ethernet.dstAddr          : EXACT     007766554400
+* ingress_metadata.bridge_id: EXACT     000f
+Action entry: action_set_egress_br_port - 9,
+
+[13:50:43.340] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:43.340] [bmv2] [D] [thread 1098] Entry 3 added to table 'table_egress_vlan_tag'
+[13:50:43.340] [bmv2] [D] [thread 1098] Dumping entry 3
+Match key:
+* egress_metadata.out_if: EXACT     09
+* ingress_metadata.vid  : EXACT     000f
+* vlan                  : VALID     00
+Action entry: action_forward_vlan_tag - 0,0,f,
+
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Processing packet received on port 0
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Parser 'parser': start
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Parser state 'start': key is 0077665544000022
+[13:50:43.355] [bmv2] [T] [thread 1065] [0.0] [cxt 0] Bytes parsed: 0
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Parser set: setting field (8, 21) from expression, new value is 0
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Parser state 'parse_ethernet_or_ingress_cpu': key is 00
+[13:50:43.355] [bmv2] [T] [thread 1065] [0.0] [cxt 0] Bytes parsed: 0
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Extracting header 'ethernet'
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Parser set: setting field (8, 2) to 0
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Parser state 'parse_ethernet': key is 0800
+[13:50:43.355] [bmv2] [T] [thread 1065] [0.0] [cxt 0] Bytes parsed: 14
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Extracting header 'ipv4'
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Parser set: setting field (8, 16) to 1
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Parser state 'parse_ipv4' has no switch, going to default next state
+[13:50:43.355] [bmv2] [T] [thread 1065] [0.0] [cxt 0] Bytes parsed: 34
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Parser state 'post_parse_ipv4': key is 06
+[13:50:43.355] [bmv2] [T] [thread 1065] [0.0] [cxt 0] Bytes parsed: 34
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Extracting header 'tcp'
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Parser state 'parse_tcp' has no switch, going to default next state
+[13:50:43.355] [bmv2] [T] [thread 1065] [0.0] [cxt 0] Bytes parsed: 54
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Parser 'parser': end
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Pipeline 'ingress': start
+[13:50:43.355] [bmv2] [T] [thread 1065] [0.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0000
+
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_ingress_lag': miss
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is action_set_l2if - 
+[13:50:43.355] [bmv2] [T] [thread 1065] [0.0] [cxt 0] Applying table 'table_port_configurations'
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_port_configurations': hit with handle 0
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+Action entry: action_set_port_configurations - a,0,5e8,0,0,
+
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is action_set_port_configurations - a,0,5e8,0,0,
+[13:50:43.355] [bmv2] [T] [thread 1065] [0.0] [cxt 0] Applying table 'table_drop_untagged_internal'
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Looking up key:
+* ingress_metadata.drop_untagged: 00
+
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_drop_untagged_internal': miss
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is _nop - 
+[13:50:43.355] [bmv2] [T] [thread 1065] [0.0] [cxt 0] Applying table 'table_l2_trap'
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Looking up key:
+* ethernet.dstAddr    : 007766554400
+
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_l2_trap': miss
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is action_set_trap_id - ff,
+[13:50:43.355] [bmv2] [T] [thread 1065] [0.0] [cxt 0] Applying table 'table_trap_id'
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Looking up key:
+* ingress_metadata.trap_id: 00ff
+
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_trap_id': miss
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is _nop - 
+[13:50:43.355] [bmv2] [T] [thread 1065] [0.0] [cxt 0] Applying table 'table_port_ingress_interface_type'
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 00
+
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_port_ingress_interface_type': hit with handle 0
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+Action entry: action_set_l2_if_type - 3,0,
+
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is action_set_l2_if_type - 3,0,
+[13:50:43.355] [bmv2] [T] [thread 1065] [0.0] [cxt 0] Applying table 'table_bridge_id_1q'
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_bridge_id_1q': miss
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is action_set_bridge_id_vid - 
+[13:50:43.355] [bmv2] [T] [thread 1065] [0.0] [cxt 0] Applying table 'table_ingress_vlan_filtering'
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+* ingress_metadata.vid        : 000a
+
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_ingress_vlan_filtering': hit with handle 10
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Dumping entry 10
+Match key:
+* ingress_metadata.bridge_port: EXACT     00
+* ingress_metadata.vid        : EXACT     000a
+Action entry: _nop - 
+
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is _nop - 
+[13:50:43.355] [bmv2] [T] [thread 1065] [0.0] [cxt 0] Applying table 'table_xSTP_instance'
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000a
+
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_xSTP_instance': miss
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is action_set_stp_id - 1,
+[13:50:43.355] [bmv2] [T] [thread 1065] [0.0] [cxt 0] Applying table 'table_xSTP'
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 00
+* ingress_metadata.stp_id     : 01
+
+[13:50:43.355] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_xSTP': miss
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is NULL
+[13:50:43.356] [bmv2] [T] [thread 1065] [0.0] [cxt 0] Applying table 'table_learn_fdb'
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Looking up key:
+* ethernet.srcAddr          : 002222222255
+* ingress_metadata.bridge_id: 000a
+
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_learn_fdb': miss
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is action_learn_mac - 
+[13:50:43.356] [bmv2] [T] [thread 1065] [0.0] [cxt 0] Applying table 'table_l3_interface'
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 007766554400
+* ingress_metadata.bridge_id: 000a
+
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Table 'table_l3_interface': hit with handle 0
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Dumping entry 0
+Match key:
+* ethernet.dstAddr          : EXACT     007766554400
+* ingress_metadata.bridge_id: EXACT     000a
+Action entry: action_set_egress_br_port - 9,
+
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Action entry is action_set_egress_br_port - 9,
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Pipeline 'ingress': end
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Cloning packet at ingress
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.1] [cxt 0] Parser 'parser': start
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.1] [cxt 0] Parser state 'start': key is 0077665544000022
+[13:50:43.356] [bmv2] [T] [thread 1065] [0.1] [cxt 0] Bytes parsed: 0
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.1] [cxt 0] Parser set: setting field (8, 21) from expression, new value is 0
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.1] [cxt 0] Parser state 'parse_ethernet_or_ingress_cpu': key is 00
+[13:50:43.356] [bmv2] [T] [thread 1065] [0.1] [cxt 0] Bytes parsed: 0
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.1] [cxt 0] Extracting header 'ethernet'
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.1] [cxt 0] Parser set: setting field (8, 2) to 0
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.1] [cxt 0] Parser state 'parse_ethernet': key is 0800
+[13:50:43.356] [bmv2] [T] [thread 1065] [0.1] [cxt 0] Bytes parsed: 14
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.1] [cxt 0] Extracting header 'ipv4'
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.1] [cxt 0] Parser set: setting field (8, 16) to 1
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.1] [cxt 0] Parser state 'parse_ipv4' has no switch, going to default next state
+[13:50:43.356] [bmv2] [T] [thread 1065] [0.1] [cxt 0] Bytes parsed: 34
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.1] [cxt 0] Parser state 'post_parse_ipv4': key is 06
+[13:50:43.356] [bmv2] [T] [thread 1065] [0.1] [cxt 0] Bytes parsed: 34
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.1] [cxt 0] Extracting header 'tcp'
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.1] [cxt 0] Parser state 'parse_tcp' has no switch, going to default next state
+[13:50:43.356] [bmv2] [T] [thread 1065] [0.1] [cxt 0] Bytes parsed: 54
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.1] [cxt 0] Parser 'parser': end
+[13:50:43.356] [bmv2] [D] [thread 1065] [0.0] [cxt 0] Egress port is 0
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Pipeline 'egress': start
+[13:50:43.356] [bmv2] [T] [thread 1066] [0.1] [cxt 0] Applying table 'table_egress_br_port_to_if'
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Looking up key:
+* egress_metadata.bridge_port: 00
+
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Table 'table_egress_br_port_to_if': hit with handle 0
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Dumping entry 0
+Match key:
+* egress_metadata.bridge_port: EXACT     00
+Action entry: action_forward_set_outIfType - 0,0,
+
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Action entry is action_forward_set_outIfType - 0,0,
+[13:50:43.356] [bmv2] [T] [thread 1066] [0.1] [cxt 0] Applying table 'table_egress_vlan_tag'
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Looking up key:
+* egress_metadata.out_if: 00
+* ingress_metadata.vid  : 0000
+* vlan                  : 00
+
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Table 'table_egress_vlan_tag': miss
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Action entry is NULL
+[13:50:43.356] [bmv2] [T] [thread 1066] [0.1] [cxt 0] Applying table 'table_egress_clone_internal'
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Looking up key:
+* standard_metadata.instance_type: 00000001
+
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Table 'table_egress_clone_internal': hit with handle 0
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Dumping entry 0
+Match key:
+* standard_metadata.instance_type: EXACT     00000001
+Action entry: action_cpu_encap - 
+
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Action entry is action_cpu_encap - 
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Pipeline 'egress': end
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Deparser 'deparser': start
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Deparsing header 'cpu_header'
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Deparsing header 'ethernet'
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Deparsing header 'ipv4'
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Deparsing header 'tcp'
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.1] [cxt 0] Deparser 'deparser': end
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Pipeline 'egress': start
+[13:50:43.356] [bmv2] [T] [thread 1066] [0.0] [cxt 0] Applying table 'table_egress_xSTP'
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Looking up key:
+* egress_metadata.bridge_port: 09
+* ingress_metadata.stp_id    : 01
+
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Table 'table_egress_xSTP': miss
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Action entry is NULL
+[13:50:43.356] [bmv2] [T] [thread 1066] [0.0] [cxt 0] Applying table 'table_egress_vlan_filtering'
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Looking up key:
+* egress_metadata.bridge_port: 09
+* ingress_metadata.vid       : 000a
+
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Table 'table_egress_vlan_filtering': miss
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Action entry is _drop - 
+[13:50:43.356] [bmv2] [T] [thread 1066] [0.0] [cxt 0] Applying table 'table_egress_br_port_to_if'
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Looking up key:
+* egress_metadata.bridge_port: 09
+
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Table 'table_egress_br_port_to_if': hit with handle 8
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Dumping entry 8
+Match key:
+* egress_metadata.bridge_port: EXACT     09
+Action entry: action_forward_set_outIfType - 9,2,
+
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Action entry is action_forward_set_outIfType - 9,2,
+[13:50:43.356] [bmv2] [T] [thread 1066] [0.0] [cxt 0] Applying table 'table_egress_vlan_tag'
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Looking up key:
+* egress_metadata.out_if: 09
+* ingress_metadata.vid  : 000a
+* vlan                  : 00
+
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Table 'table_egress_vlan_tag': hit with handle 2
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Dumping entry 2
+Match key:
+* egress_metadata.out_if: EXACT     09
+* ingress_metadata.vid  : EXACT     000a
+* vlan                  : VALID     00
+Action entry: action_forward_vlan_tag - 0,0,a,
+
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Action entry is action_forward_vlan_tag - 0,0,a,
+[13:50:43.356] [bmv2] [T] [thread 1066] [0.0] [cxt 0] Applying table 'table_egress_clone_internal'
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Looking up key:
+* standard_metadata.instance_type: 00000000
+
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Table 'table_egress_clone_internal': miss
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Action entry is _nop - 
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Pipeline 'egress': end
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Changed egress port at egress pipeline to 9
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Deparser 'deparser': start
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Deparsing header 'ethernet'
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Deparsing header 'vlan'
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Deparsing header 'ipv4'
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Deparsing header 'tcp'
+[13:50:43.356] [bmv2] [D] [thread 1066] [0.0] [cxt 0] Deparser 'deparser': end
+[13:50:43.356] [bmv2] [D] [thread 1073] [0.1] [cxt 0] Transmitting packet of size 103 out of port 8
+[13:50:43.356] [bmv2] [D] [thread 1073] [0.0] [cxt 0] Transmitting packet of size 104 out of port 9
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Processing packet received on port 9
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Parser 'parser': start
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Parser state 'start': key is 0011223344550077
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.0] [cxt 0] Bytes parsed: 0
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Parser set: setting field (8, 21) from expression, new value is 0
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Parser state 'parse_ethernet_or_ingress_cpu': key is 00
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.0] [cxt 0] Bytes parsed: 0
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Extracting header 'ethernet'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Parser set: setting field (8, 2) to 0
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Parser state 'parse_ethernet': key is 8100
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.0] [cxt 0] Bytes parsed: 14
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Extracting header 'vlan'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Parser set: setting field (8, 2) from expression, new value is 1
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Parser state 'parse_vlan': key is 0800
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.0] [cxt 0] Bytes parsed: 18
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Extracting header 'ipv4'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Parser set: setting field (8, 16) to 1
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Parser state 'parse_ipv4' has no switch, going to default next state
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.0] [cxt 0] Bytes parsed: 38
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Parser state 'post_parse_ipv4': key is 06
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.0] [cxt 0] Bytes parsed: 38
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Extracting header 'tcp'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Parser state 'parse_tcp' has no switch, going to default next state
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.0] [cxt 0] Bytes parsed: 58
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Parser 'parser': end
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Pipeline 'ingress': start
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.0] [cxt 0] Applying table 'table_ingress_lag'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0009
+
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_ingress_lag': miss
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is action_set_l2if - 
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.0] [cxt 0] Applying table 'table_port_configurations'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 09
+
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_port_configurations': miss
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is action_set_port_configurations - 1,0,5ea,0,0,
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.0] [cxt 0] Applying table 'table_port_set_packet_vid_internal'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Looking up key:
+* ingress_metadata.is_tagged: 01
+
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_port_set_packet_vid_internal': hit with handle 0
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Dumping entry 0
+Match key:
+* ingress_metadata.is_tagged: EXACT     01
+Action entry: action_set_packet_vid - 
+
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is action_set_packet_vid - 
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.0] [cxt 0] Applying table 'table_drop_tagged_internal'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Looking up key:
+* ingress_metadata.drop_tagged: 00
+
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_drop_tagged_internal': miss
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is _nop - 
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.0] [cxt 0] Applying table 'table_l2_trap'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Looking up key:
+* ethernet.dstAddr    : 001122334455
+
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_l2_trap': miss
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is action_set_trap_id - ff,
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.0] [cxt 0] Applying table 'table_trap_id'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Looking up key:
+* ingress_metadata.trap_id: 00ff
+
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_trap_id': miss
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is _nop - 
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.0] [cxt 0] Applying table 'table_port_ingress_interface_type'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Looking up key:
+* ingress_metadata.l2_if: 09
+
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_port_ingress_interface_type': hit with handle 8
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Dumping entry 8
+Match key:
+* ingress_metadata.l2_if: EXACT     09
+Action entry: action_set_l2_if_type - 3,9,
+
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is action_set_l2_if_type - 3,9,
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.0] [cxt 0] Applying table 'table_bridge_id_1q'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000f
+
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_bridge_id_1q': miss
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is action_set_bridge_id_vid - 
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.0] [cxt 0] Applying table 'table_ingress_vlan_filtering'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 09
+* ingress_metadata.vid        : 000f
+
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_ingress_vlan_filtering': hit with handle 9
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Dumping entry 9
+Match key:
+* ingress_metadata.bridge_port: EXACT     09
+* ingress_metadata.vid        : EXACT     000f
+Action entry: _nop - 
+
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is _nop - 
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.0] [cxt 0] Applying table 'table_xSTP_instance'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Looking up key:
+* ingress_metadata.vid: 000f
+
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_xSTP_instance': miss
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is action_set_stp_id - 1,
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.0] [cxt 0] Applying table 'table_xSTP'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Looking up key:
+* ingress_metadata.bridge_port: 09
+* ingress_metadata.stp_id     : 01
+
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_xSTP': miss
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is NULL
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.0] [cxt 0] Applying table 'table_learn_fdb'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Looking up key:
+* ethernet.srcAddr          : 007766554400
+* ingress_metadata.bridge_id: 000f
+
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_learn_fdb': miss
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is action_learn_mac - 
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.0] [cxt 0] Applying table 'table_l3_interface'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 001122334455
+* ingress_metadata.bridge_id: 000f
+
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_l3_interface': miss
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is NULL
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.0] [cxt 0] Applying table 'table_fdb'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Looking up key:
+* ethernet.dstAddr          : 001122334455
+* ingress_metadata.bridge_id: 000f
+
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Table 'table_fdb': hit with handle 0
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Dumping entry 0
+Match key:
+* ethernet.dstAddr          : EXACT     001122334455
+* ingress_metadata.bridge_id: EXACT     000f
+Action entry: action_set_egress_br_port - 1,
+
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Action entry is action_set_egress_br_port - 1,
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Pipeline 'ingress': end
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Cloning packet at ingress
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.1] [cxt 0] Parser 'parser': start
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.1] [cxt 0] Parser state 'start': key is 0011223344550077
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.1] [cxt 0] Bytes parsed: 0
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.1] [cxt 0] Parser set: setting field (8, 21) from expression, new value is 0
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.1] [cxt 0] Parser state 'parse_ethernet_or_ingress_cpu': key is 00
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.1] [cxt 0] Bytes parsed: 0
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.1] [cxt 0] Extracting header 'ethernet'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.1] [cxt 0] Parser set: setting field (8, 2) to 0
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.1] [cxt 0] Parser state 'parse_ethernet': key is 8100
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.1] [cxt 0] Bytes parsed: 14
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.1] [cxt 0] Extracting header 'vlan'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.1] [cxt 0] Parser set: setting field (8, 2) from expression, new value is 1
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.1] [cxt 0] Parser state 'parse_vlan': key is 0800
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.1] [cxt 0] Bytes parsed: 18
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.1] [cxt 0] Extracting header 'ipv4'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.1] [cxt 0] Parser set: setting field (8, 16) to 1
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.1] [cxt 0] Parser state 'parse_ipv4' has no switch, going to default next state
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.1] [cxt 0] Bytes parsed: 38
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.1] [cxt 0] Parser state 'post_parse_ipv4': key is 06
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.1] [cxt 0] Bytes parsed: 38
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.1] [cxt 0] Extracting header 'tcp'
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.1] [cxt 0] Parser state 'parse_tcp' has no switch, going to default next state
+[13:50:43.357] [bmv2] [T] [thread 1065] [1.1] [cxt 0] Bytes parsed: 58
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.1] [cxt 0] Parser 'parser': end
+[13:50:43.357] [bmv2] [D] [thread 1065] [1.0] [cxt 0] Egress port is 0
+[13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Pipeline 'egress': start
+[13:50:43.357] [bmv2] [T] [thread 1066] [1.1] [cxt 0] Applying table 'table_egress_br_port_to_if'
+[13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Looking up key:
+* egress_metadata.bridge_port: 00
+
+[13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Table 'table_egress_br_port_to_if': hit with handle 0
+[13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Dumping entry 0
+Match key:
+* egress_metadata.bridge_port: EXACT     00
+Action entry: action_forward_set_outIfType - 0,0,
+
+[13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Action entry is action_forward_set_outIfType - 0,0,
+[13:50:43.357] [bmv2] [T] [thread 1066] [1.1] [cxt 0] Applying table 'table_egress_vlan_tag'
+[13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Looking up key:
+* egress_metadata.out_if: 00
+* ingress_metadata.vid  : 0000
+* vlan                  : 01
+
+[13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Table 'table_egress_vlan_tag': miss
+[13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Action entry is NULL
+[13:50:43.357] [bmv2] [T] [thread 1066] [1.1] [cxt 0] Applying table 'table_egress_clone_internal'
+[13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Looking up key:
+* standard_metadata.instance_type: 00000001
+
+[13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Table 'table_egress_clone_internal': hit with handle 0
+[13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Dumping entry 0
+Match key:
+* standard_metadata.instance_type: EXACT     00000001
+Action entry: action_cpu_encap - 
+
+[13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Action entry is action_cpu_encap - 
+[13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Pipeline 'egress': end
+[13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Deparser 'deparser': start
+[13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Deparsing header 'cpu_header'
+[13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Deparsing header 'ethernet'
+[13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Deparsing header 'vlan'
+[13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Deparsing header 'ipv4'
+[13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Deparsing header 'tcp'
+[13:50:43.357] [bmv2] [D] [thread 1066] [1.1] [cxt 0] Deparser 'deparser': end
+[13:50:43.357] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Pipeline 'egress': start
+[13:50:43.357] [bmv2] [T] [thread 1066] [1.0] [cxt 0] Applying table 'table_egress_xSTP'
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Looking up key:
+* egress_metadata.bridge_port: 01
+* ingress_metadata.stp_id    : 01
+
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Table 'table_egress_xSTP': miss
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Action entry is NULL
+[13:50:43.358] [bmv2] [T] [thread 1066] [1.0] [cxt 0] Applying table 'table_egress_vlan_filtering'
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Looking up key:
+* egress_metadata.bridge_port: 01
+* ingress_metadata.vid       : 000f
+
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Table 'table_egress_vlan_filtering': hit with handle 2
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Dumping entry 2
+Match key:
+* egress_metadata.bridge_port: EXACT     01
+* ingress_metadata.vid       : EXACT     000f
+Action entry: _nop - 
+
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Action entry is _nop - 
+[13:50:43.358] [bmv2] [T] [thread 1066] [1.0] [cxt 0] Applying table 'table_egress_br_port_to_if'
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Looking up key:
+* egress_metadata.bridge_port: 01
+
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Table 'table_egress_br_port_to_if': hit with handle 1
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Dumping entry 1
+Match key:
+* egress_metadata.bridge_port: EXACT     01
+Action entry: action_forward_set_outIfType - 1,0,
+
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Action entry is action_forward_set_outIfType - 1,0,
+[13:50:43.358] [bmv2] [T] [thread 1066] [1.0] [cxt 0] Applying table 'table_egress_vlan_tag'
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Looking up key:
+* egress_metadata.out_if: 01
+* ingress_metadata.vid  : 000f
+* vlan                  : 01
+
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Table 'table_egress_vlan_tag': hit with handle 1
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Dumping entry 1
+Match key:
+* egress_metadata.out_if: EXACT     01
+* ingress_metadata.vid  : EXACT     000f
+* vlan                  : VALID     01
+Action entry: action_forward_vlan_untag - 
+
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Action entry is action_forward_vlan_untag - 
+[13:50:43.358] [bmv2] [T] [thread 1066] [1.0] [cxt 0] Applying table 'table_egress_clone_internal'
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Looking up key:
+* standard_metadata.instance_type: 00000000
+
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Table 'table_egress_clone_internal': miss
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Action entry is _nop - 
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Pipeline 'egress': end
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Changed egress port at egress pipeline to 1
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Deparser 'deparser': start
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Deparsing header 'ethernet'
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Deparsing header 'ipv4'
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Deparsing header 'tcp'
+[13:50:43.358] [bmv2] [D] [thread 1066] [1.0] [cxt 0] Deparser 'deparser': end
+[13:50:43.358] [bmv2] [D] [thread 1073] [1.1] [cxt 0] Transmitting packet of size 107 out of port 8
+[13:50:43.358] [bmv2] [D] [thread 1073] [1.0] [cxt 0] Transmitting packet of size 100 out of port 1
+[13:50:43.359] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:43.359] [bmv2] [D] [thread 1098] Entry 1 added to table 'table_fdb'
+[13:50:43.359] [bmv2] [D] [thread 1098] Dumping entry 1
+Match key:
+* ethernet.dstAddr          : EXACT     002222222255
+* ingress_metadata.bridge_id: EXACT     000a
+Action entry: action_set_egress_br_port - 0,
+
+[13:50:43.359] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:43.359] [bmv2] [D] [thread 1098] Entry 1 added to table 'table_learn_fdb'
+[13:50:43.359] [bmv2] [D] [thread 1098] Dumping entry 1
+Match key:
+* ethernet.srcAddr          : EXACT     002222222255
+* ingress_metadata.bridge_id: EXACT     000a
+Action entry: _nop - 
+
+[13:50:43.359] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:43.359] [bmv2] [D] [thread 1098] Entry 2 added to table 'table_fdb'
+[13:50:43.359] [bmv2] [D] [thread 1098] Dumping entry 2
+Match key:
+* ethernet.dstAddr          : EXACT     007766554400
+* ingress_metadata.bridge_id: EXACT     0001
+Action entry: action_set_egress_br_port - 9,
+
+[13:50:43.359] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:43.359] [bmv2] [D] [thread 1098] Entry 2 added to table 'table_learn_fdb'
+[13:50:43.359] [bmv2] [D] [thread 1098] Dumping entry 2
+Match key:
+* ethernet.srcAddr          : EXACT     007766554400
+* ingress_metadata.bridge_id: EXACT     0001
+Action entry: _nop - 
+
+[13:50:44.165] [bmv2] [T] [thread 1098] bm_table_delete_entry
+[13:50:44.165] [bmv2] [D] [thread 1098] Removed entry 0 from table 'table_l3_interface'
+[13:50:44.165] [bmv2] [T] [thread 1098] bm_table_delete_entry
+[13:50:44.165] [bmv2] [D] [thread 1098] Removed entry 2 from table 'table_egress_vlan_tag'
+[13:50:44.166] [bmv2] [T] [thread 1098] bm_table_delete_entry
+[13:50:44.166] [bmv2] [D] [thread 1098] Removed entry 1 from table 'table_l3_interface'
+[13:50:44.166] [bmv2] [T] [thread 1098] bm_table_delete_entry
+[13:50:44.166] [bmv2] [D] [thread 1098] Removed entry 3 from table 'table_egress_vlan_tag'
+[13:50:44.166] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:44.166] [bmv2] [T] [thread 1098] bm_table_delete_entry
+[13:50:44.166] [bmv2] [D] [thread 1098] Removed entry 0 from table 'table_fdb'
+[13:50:44.166] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:44.166] [bmv2] [T] [thread 1098] bm_table_delete_entry
+[13:50:44.166] [bmv2] [D] [thread 1098] Removed entry 0 from table 'table_learn_fdb'
+[13:50:44.166] [bmv2] [T] [thread 1098] bm_table_delete_entry
+[13:50:44.166] [bmv2] [D] [thread 1098] Removed entry 1 from table 'table_egress_vlan_filtering'
+[13:50:44.166] [bmv2] [T] [thread 1098] bm_table_delete_entry
+[13:50:44.166] [bmv2] [D] [thread 1098] Removed entry 10 from table 'table_ingress_vlan_filtering'
+[13:50:44.166] [bmv2] [T] [thread 1098] bm_table_delete_entry
+[13:50:44.166] [bmv2] [D] [thread 1098] Removed entry 0 from table 'table_egress_vlan_tag'
+[13:50:44.166] [bmv2] [T] [thread 1098] bm_table_delete_entry
+[13:50:44.166] [bmv2] [D] [thread 1098] Removed entry 2 from table 'table_egress_vlan_filtering'
+[13:50:44.166] [bmv2] [T] [thread 1098] bm_table_delete_entry
+[13:50:44.166] [bmv2] [D] [thread 1098] Removed entry 11 from table 'table_ingress_vlan_filtering'
+[13:50:44.166] [bmv2] [T] [thread 1098] bm_table_delete_entry
+[13:50:44.166] [bmv2] [D] [thread 1098] Removed entry 1 from table 'table_egress_vlan_tag'
+[13:50:44.167] [bmv2] [T] [thread 1098] bm_table_delete_entry
+[13:50:44.167] [bmv2] [D] [thread 1098] Removed entry 8 from table 'table_ingress_vlan_filtering'
+[13:50:44.167] [bmv2] [T] [thread 1098] bm_table_delete_entry
+[13:50:44.167] [bmv2] [D] [thread 1098] Removed entry 9 from table 'table_ingress_vlan_filtering'
+[13:50:44.167] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:44.167] [bmv2] [T] [thread 1098] bm_table_delete_entry
+[13:50:44.167] [bmv2] [D] [thread 1098] Removed entry 0 from table 'table_port_configurations'
+[13:50:44.167] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:44.167] [bmv2] [D] [thread 1098] Entry 16777216 added to table 'table_port_configurations'
+[13:50:44.167] [bmv2] [D] [thread 1098] Dumping entry 16777216
+Match key:
+* ingress_metadata.l2_if: EXACT     00
+Action entry: action_set_port_configurations - 1,0,5e8,0,0,
+
+[13:50:44.167] [bmv2] [T] [thread 1098] bm_mt_get_entry_from_key
+[13:50:44.167] [bmv2] [T] [thread 1098] bm_table_delete_entry
+[13:50:44.167] [bmv2] [D] [thread 1098] Removed entry 1 from table 'table_port_configurations'
+[13:50:44.167] [bmv2] [T] [thread 1098] bm_table_add_entry
+[13:50:44.167] [bmv2] [D] [thread 1098] Entry 16777217 added to table 'table_port_configurations'
+[13:50:44.167] [bmv2] [D] [thread 1098] Dumping entry 16777217
+Match key:
+* ingress_metadata.l2_if: EXACT     01
+Action entry: action_set_port_configurations - 1,0,5e8,0,0,
+
