@@ -39,13 +39,13 @@ tables = {	'table_ingress_lag':'Ingress LAG table',
 			'table_lag_hash':'',
 			'table_egress_lag':'Egress LAG',
 			'table_cpu_forward':'',
-			'table_ingress_l3_if':'',
-			'table_ingress_vrf':'',
-			'table_router':'',
-			'table_next_hop_group':'',
-			'table_next_hop':'',
-			'table_neighbor':'',
-			'table_egress_L3_if':'',
+			'table_ingress_l3_if':'Ingress L3 interface',
+			'table_ingress_vrf':'Ingress VRF',
+			'table_router':'Router table',
+			'table_next_hop_group':'Next hop group table',
+			'table_next_hop':'Next hop table',
+			'table_neighbor':'Neigh table',
+			'table_egress_L3_if':'Egress_L3_interface'
 		}
 
 
@@ -81,25 +81,36 @@ def get_table_activity(line):
 
 ######## change svg #########################
 # write outputs
-packet_num = 0
-output = "flow_1q_packet_"+str(packet_num)+".svg"
-template = "visio/flow_1q.svg"
+def create_svg(template,output):
+	color_dict = {"hit":"class=\"st301\"","miss":"class=\"st302\"","default":"class=\"st300\""}
+	replace = False
+	activity = "default"
+	with open(template,'r') as t, open (output,'w') as o:
+		t_lines = t.readlines()
+		for line in t_lines:
+			if (re.search("<desc>.*?</desc>",line) > 0) and (not "Metadata" in line):		
+	#			if True: # TODO decide which color by table name 
+				replace = True
+				activity = get_table_activity(line)
+			elif re.search("class=\"st.*?\"",line) > 0 and replace:		
+				line = re.sub("class=\"st.*?\"",color_dict.get(activity,"class=\"st300\""),line)
+				replace = False
+				activity = "default"
+			o.write(line)
 
-color_dict = {"hit":"class=\"st301\"","miss":"class=\"st302\"","default":"class=\"st300\""}
-replace = False
-activity = "default"
-with open(template,'r') as t, open (output,'w') as o:
-	t_lines = t.readlines()
-	for line in t_lines:
-		if (re.search("<desc>.*?</desc>",line) > 0) and (not "Metadata" in line):		
-#			if True: # TODO decide which color by table name 
-			replace = True
-			activity = get_table_activity(line)
-		elif re.search("class=\"st.*?\"",line) > 0 and replace:		
-			line = re.sub("class=\"st.*?\"",color_dict.get(activity,"class=\"st300\""),line)
-			replace = False
-			activity = "default"
-		o.write(line)
+
+def main():
+	packet_num = 0
+	output = 	["flow_1q_packet_"+str(packet_num)+".svg",
+				 "flow_router_uni_packet_"+str(packet_num)+".svg",]
+	template = ["visio/flow_1q.svg","visio/flow_router_uni.svg"]
+
+	for i in xrange(len(output)):
+		create_svg(template[i],output[i])
+
+
+if __name__ == "__main__":
+	main()
 
 
 
