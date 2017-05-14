@@ -270,6 +270,13 @@ table table_egress_vlan_filtering {
 // --------------
 // egress bridge
 // --------------
+table table_bridge_loopback_filter {
+    reads {
+        egress_metadata.bridge_port : exact;
+    }
+    actions {_nop;_drop;}
+}
+
 table table_egress_br_port_to_if {
     reads {
         egress_metadata.bridge_port : exact;
