@@ -1953,7 +1953,7 @@ int main(int argc, char **argv) {
   // logging
   auto logger = spdlog::basic_logger_mt("logger", "logs/log.txt");
   logger->flush_on(spdlog::level::info);     // make err
-  spdlog::set_pattern("[thread %t] %l %v "); // add %T for time
+  spdlog::set_pattern("[thread %t %T] %l %v "); // add %T for time
   auto inline_log = spdlog::stdout_color_mt("inline_log");
   inline_log->info("creating server for SAI on port {}", sai_port);
   logger->info("creating server for SAI on port {}", sai_port);

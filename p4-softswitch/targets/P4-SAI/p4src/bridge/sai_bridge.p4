@@ -136,6 +136,11 @@ control egress{
 	if (ingress_metadata.cpu_port == 1) {
 		control_cpu();
 	} else {
+		apply(table_egress_br_port_to_if);
+
+		if ((ingress_metadata.bridge_port == egress_metadata.bridge_port) and (standard_metadata.instance_type != 1)) { // not cpu, TODO: better?
+			apply(table_bridge_loopback_filter);
+		}
 		if(ingress_metadata.l2_if_type == L2_1D_BRIDGE){
 			apply(table_egress_vbridge_STP);
 		}
@@ -143,8 +148,6 @@ control egress{
 			apply(table_egress_xSTP);
 			apply(table_egress_vlan_filtering);
 		}
-
-		apply(table_egress_br_port_to_if);
 		if(ingress_metadata.l2_if_type == L2_1D_BRIDGE){
 			apply(table_egress_set_vlan);
 		}
