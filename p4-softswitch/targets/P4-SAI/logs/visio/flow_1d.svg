@@ -63,6 +63,9 @@
 		.st49 {fill:#feffff;font-family:Calibri;font-size:1.00001em}
 		.st50 {font-size:1.16665em;font-weight:bold}
 		.st51 {fill:none;fill-rule:evenodd;font-size:12px;overflow:visible;stroke-linecap:square;stroke-miterlimit:3}
+		.st300 {fill:#a0a0a0;stroke:#c8c8c8;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.45}
+		.st301 {fill:#00b050;stroke:#c8c8c8;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.45}		
+		.st302 {fill:#ff0000;stroke:#c8c8c8;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.45}
 	]]>
 	</style>
 
