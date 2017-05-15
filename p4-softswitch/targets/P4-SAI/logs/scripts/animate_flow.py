@@ -15,7 +15,7 @@ tables = {	'table_ingress_lag':'Ingress LAG table',
 			'table_port_ingress_interface_type':'Ingress l2 interface type table',
 			'table_subport_ingress_interface_type':'',
 			'table_bridge_id_1d':'Bridge_id',
-			'table_vbridge_STP':'',
+			'table_vbridge_STP':'vBrid',
 			'table_bridge_id_1q':'Bridge_id',
 			'table_ingress_vlan_filtering':'Ingress vlan filtering',
 			'table_mc_lookup_mode':'',
@@ -24,13 +24,13 @@ tables = {	'table_ingress_lag':'Ingress LAG table',
 			'table_learn_fdb':'Learning FDB',
 			'table_l3_interface':'L3 interface',
 			'table_fdb':'FDB',
-			'table_mc_fdb':'',
+			'table_mc_fdb':'MC FDB',
 			'table_mc_l2_sg_g':'',
-			'table_unknown_multicast_nonip':'',
-			'table_unknown_multicast_ipv4':'',
+			'table_unknown_multicast_nonip':'Unknown multicast',
+			'table_unknown_multicast_ipv4':'Unknown multicast',
 			'table_broadcast':'',
 			'table_flood':'',
-			'table_egress_vbridge_STP':'',
+			'table_egress_vbridge_STP':'Egress vBridge',
 			'table_egress_vlan_tag':'',
 			'table_egress_xSTP':'Egress xSTP',
 			'table_egress_vlan_filtering':'egress vlan filtering',
@@ -99,11 +99,10 @@ def create_svg(template,output):
 			o.write(line)
 
 
-def main():
+def main(): # TODO handle more than 1 packet
 	packet_num = 0
-	output = 	["flow_1q_packet_"+str(packet_num)+".svg",
-				 "flow_router_uni_packet_"+str(packet_num)+".svg",]
-	template = ["visio/flow_1q.svg","visio/flow_router_uni.svg"]
+	template = ["visio/flow_1q.svg","visio/flow_router_uni.svg","visio/flow_1d.svg"]
+	output = [i[6:-4]+"_packet_"+str(packet_num)+i[-4:] for i in template]
 
 	for i in xrange(len(output)):
 		create_svg(template[i],output[i])
