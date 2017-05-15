@@ -18,7 +18,6 @@ Thrift SAI interface L2 tests
 import socket
 from switch import *
 import sai_base_test
-from time import sleep
 
 @group('l2')
 class L2AccessToAccessVlanTest(sai_base_test.ThriftInterfaceDataPlane):
