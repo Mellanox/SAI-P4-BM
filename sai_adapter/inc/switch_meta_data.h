@@ -181,6 +181,7 @@ public:
   std::vector<sai_object_id_t> vlan_members;
   BmEntryHandle handle_id_1q;
   BmEntryHandle handle_router_ingress_vlan_filtering;
+  BmEntryHandle handle_router_egress_vlan_filtering;
   uint32_t bridge_id;             // Valid for .1Q bridge
   BmEntryHandle handle_broadcast; // Valid for .1Q bridge
   BmEntryHandle handle_flood;     // Valid for .1Q bridge
@@ -191,6 +192,7 @@ public:
     this->vid = 0;
     this->handle_id_1q = NULL_HANDLE;
     this->handle_router_ingress_vlan_filtering = NULL_HANDLE;
+    this->handle_router_egress_vlan_filtering = NULL_HANDLE;
     this->handle_mc_mgrp = NULL_HANDLE;
     this->handle_mc_l1 = NULL_HANDLE;
     this->handle_flood = NULL_HANDLE;
