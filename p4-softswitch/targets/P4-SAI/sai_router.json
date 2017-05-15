@@ -1173,72 +1173,8 @@
             ]
         },
         {
-            "name": "action_set_smac_vid",
-            "id": 2,
-            "runtime_data": [
-                {
-                    "name": "smac",
-                    "bitwidth": 48
-                },
-                {
-                    "name": "vid",
-                    "bitwidth": 12
-                }
-            ],
-            "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "ethernet",
-                                "srcAddr"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
-                },
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "vlan",
-                                "vid"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 1
-                        }
-                    ]
-                },
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "standard_metadata",
-                                "egress_spec"
-                            ]
-                        },
-                        {
-                            "type": "hexstr",
-                            "value": "0x0"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
             "name": "action_set_nhop_id",
-            "id": 3,
+            "id": 2,
             "runtime_data": [
                 {
                     "name": "next_hop_id",
@@ -1266,7 +1202,7 @@
         },
         {
             "name": "action_set_erif_set_nh_dstip_from_pkt",
-            "id": 4,
+            "id": 3,
             "runtime_data": [
                 {
                     "name": "egress_rif",
@@ -1313,7 +1249,7 @@
         },
         {
             "name": "action_set_nhop_grp_id",
-            "id": 5,
+            "id": 4,
             "runtime_data": [
                 {
                     "name": "next_hop_group_id",
@@ -1341,7 +1277,7 @@
         },
         {
             "name": "action_set_erif_set_nh_dstip",
-            "id": 6,
+            "id": 5,
             "runtime_data": [
                 {
                     "name": "next_hop_dst_ip",
@@ -1389,7 +1325,7 @@
         },
         {
             "name": "action_set_vrf",
-            "id": 7,
+            "id": 6,
             "runtime_data": [
                 {
                     "name": "vrf",
@@ -1452,6 +1388,70 @@
                                     }
                                 }
                             }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_set_smac_vid",
+            "id": 7,
+            "runtime_data": [
+                {
+                    "name": "smac",
+                    "bitwidth": 48
+                },
+                {
+                    "name": "vid",
+                    "bitwidth": 12
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ethernet",
+                                "srcAddr"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "vlan",
+                                "vid"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 1
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "standard_metadata",
+                                "egress_spec"
+                            ]
+                        },
+                        {
+                            "type": "hexstr",
+                            "value": "0x0"
                         }
                     ]
                 }

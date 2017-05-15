@@ -184,7 +184,7 @@ sai_status_t sai_adapter::flush_fdb_entries(sai_object_id_t switch_id,
     case 2: // flush by vlan_id
       (*logger)->info("flushing entries by vlan id {} (bridge_id {})", vid, bridge_id);
       for (bridge_port_id_map_t::iterator it = switch_metadata_ptr->bridge_ports.begin(); it!=switch_metadata_ptr->bridge_ports.end(); ++it) {
-        if (it->second->handle_fdb_port[bridge_id]) {
+        if (it->second->does_fdb_exist(bridge_id)) {
           (*logger)->info("removing bridge_port {}", it->first);
           bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb",
                                             it->second->handle_fdb_port[bridge_id]);

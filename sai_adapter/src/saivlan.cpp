@@ -57,7 +57,9 @@ sai_status_t sai_adapter::create_vlan(sai_object_id_t *vlan_id,
   vlan->handle_router_ingress_vlan_filtering = bm_bridge_client_ptr->bm_mt_add_entry(
       cxt_id, "table_ingress_vlan_filtering", match_params, "_nop", action_data,
       options);
-
+  vlan->handle_router_egress_vlan_filtering = bm_bridge_client_ptr->bm_mt_add_entry(
+      cxt_id, "table_egress_vlan_filtering", match_params, "_nop", action_data,
+      options);
   *vlan_id = vlan->sai_object_id;
   return SAI_STATUS_SUCCESS;
 }
@@ -72,6 +74,10 @@ sai_status_t sai_adapter::remove_vlan(sai_object_id_t vlan_id) {
   if (vlan->handle_router_ingress_vlan_filtering != NULL_HANDLE) { 
     bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_ingress_vlan_filtering",
                                       vlan->handle_router_ingress_vlan_filtering);
+  }
+  if (vlan->handle_router_egress_vlan_filtering != NULL_HANDLE) { 
+    bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_egress_vlan_filtering",
+                                      vlan->handle_router_egress_vlan_filtering);
   }
   if (vlan->handle_broadcast != NULL_HANDLE) { 
     bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_broadcast",
