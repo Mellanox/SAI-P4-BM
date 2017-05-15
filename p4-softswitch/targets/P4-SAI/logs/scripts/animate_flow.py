@@ -45,7 +45,7 @@ tables = {	'table_ingress_lag':'Ingress LAG table',
 			'table_next_hop_group':'Next hop group table',
 			'table_next_hop':'Next hop table',
 			'table_neighbor':'Neigh table',
-			'table_egress_L3_if':'Egress_L3_interface'
+			'table_egress_L3_if':'Egress_L3_interface',
 		}
 
 
