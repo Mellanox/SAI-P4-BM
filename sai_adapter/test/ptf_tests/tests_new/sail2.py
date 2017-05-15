@@ -18,6 +18,7 @@ Thrift SAI interface L2 tests
 import socket
 from switch import *
 import sai_base_test
+from time import sleep
 
 @group('l2')
 class L2AccessToAccessVlanTest(sai_base_test.ThriftInterfaceDataPlane):
@@ -260,6 +261,7 @@ class L2FloodTest(sai_base_test.ThriftInterfaceDataPlane):
             send_packet(self, 2, str(pkt))
             verify_packets(self, exp_pkt, [0, 1])
         finally:
+            # sleep(3)
             sai_thrift_flush_fdb_by_vlan(self.client, vlan_id)
 
             attr_value = sai_thrift_attribute_value_t(u16=1)
@@ -425,7 +427,7 @@ class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
 
         try:
             expected_ports = []
-            for i in range (0, len(port_list)-1):
+            for i in range (1, len(port_list)-1):
                 expected_ports.append(i)
 
             send_packet(self, ingress_port, str(bcast_pkt))
