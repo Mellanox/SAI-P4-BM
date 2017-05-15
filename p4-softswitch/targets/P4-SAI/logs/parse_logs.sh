@@ -11,4 +11,4 @@ echo Creating svg files
 python scripts/animate_flow.py #-i filterd_log.txt -o visio_log -vis 
 
 echo Presenting svg with firefox
-firefox flow_1q_packet_0.svg flow_router_uni_packet_0.svg &
+# firefox flow_1q_packet_0.svg flow_router_uni_packet_0.svg &
