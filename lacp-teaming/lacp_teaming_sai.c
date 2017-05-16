@@ -111,7 +111,11 @@ lacp_port_t* get_lacp_port_by_name(char *port_name) {
 }
 
 sai_object_id_t sai_get_bridge_port_id_by_port_id(sai_object_id_t port_id) {
+  sai_bridge_api_t *bridge_api;
+  sai_api_query(SAI_API_BRIDGE, (void **)&bridge_api);
   sai_attribute_t attr, bridge_attr;
+  int max_ports = 10;
+  attr.value.objlist.list = (sai_object_id_t*) malloc(sizeof(sai_object_id_t) * max_ports);
   sai_object_id_t bridge_port_id;
   attr.id = SAI_BRIDGE_ATTR_PORT_LIST;
   bridge_api->get_bridge_attribute(default_bridge_id, 1, &attr);
@@ -121,10 +125,12 @@ sai_object_id_t sai_get_bridge_port_id_by_port_id(sai_object_id_t port_id) {
     bridge_port_id = attr.value.objlist.list[i];
     bridge_api->get_bridge_port_attribute(bridge_port_id, 1, &bridge_attr);
     if (port_id == bridge_attr.value.oid) {
+      free(attr.value.objlist.list);
       return bridge_port_id;
     }
   }
   printf("No bridge_port found for port id %d\n", port_id);
+  free(attr.value.objlist.list);
   return -1;
 }
 

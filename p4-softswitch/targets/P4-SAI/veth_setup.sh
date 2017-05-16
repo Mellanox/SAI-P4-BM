@@ -2,7 +2,6 @@
 sudo -v
 sw_net="sw_net"
 sudo ip netns add $sw_net
-sudo ip netns exec $sw_net ip link set dev lo up
 for idx in 0 1 2 3 4; do
     intf0="sw_port$(($idx))"
     intf1="host_port0"
@@ -17,13 +16,13 @@ for idx in 0 1 2 3 4; do
         sudo ip link set dev $intf1 netns $net
     	sudo ip netns exec $net ip link set dev $intf1 up
     	sudo ip netns exec $net ip address add $ip dev $intf1
+        # sudo ip netns exec $net ip route add default via 10.0.0.100 dev $intf1
     fi
 done
 
 # Last host will have 3 ports, to enable LACP and lag test
 net="host5"
 sudo ip netns add $net
-sudo ip netns exec $net ip link set dev lo up
 for port_idx in 0 1 2; do
 	idx=port_idx+5
     intf0="sw_port$(($idx))"
@@ -36,6 +35,7 @@ for port_idx in 0 1 2; do
     	sudo ip netns exec $net ip link set dev $intf1 up
     fi
 done
+# sudo ip netns exec $net ip route add default via 10.0.0.100 dev $intf1
 
 # ip="10.0.0.5/24"
 # intf1="host_port0"
