@@ -53,7 +53,6 @@ sai_status_t sai_adapter::get_bridge_attribute(sai_object_id_t bridge_id,
       (attr_list + i)->value.s32 = bridge->bridge_type;
       break;
     case SAI_BRIDGE_ATTR_PORT_LIST:
-      printf("bridge_port_list size %d\n", bridge->bridge_port_list.size());
       (attr_list + i)->value.objlist.count = bridge->bridge_port_list.size();
       std::copy(bridge->bridge_port_list.begin(), bridge->bridge_port_list.end(), (attr_list + i)->value.objlist.list);
       break;
