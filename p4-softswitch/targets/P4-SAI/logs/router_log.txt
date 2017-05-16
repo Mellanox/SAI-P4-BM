@@ -1,4 +1,0 @@
-[18:30:23.726] [bmv2] [D] [thread 39493] Adding interface router_port1 as port 0
-[18:30:26.003] [bmv2] [T] [thread 39552] bm_get_config
-[18:30:26.005] [bmv2] [T] [thread 39552] bm_set_default_action
-[18:30:26.005] [bmv2] [D] [thread 39552] Set default entry for table 'table_ingress_l3_if': _drop - 

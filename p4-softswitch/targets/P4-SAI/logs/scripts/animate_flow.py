@@ -31,10 +31,10 @@ tables = {	'table_ingress_lag':'Ingress LAG table',
 			'table_broadcast':'',
 			'table_flood':'',
 			'table_egress_vbridge_STP':'Egress vBridge',
-			'table_egress_vlan_tag':'',
+			'table_egress_vlan_tag':'Egress TAG',
 			'table_egress_xSTP':'Egress xSTP',
 			'table_egress_vlan_filtering':'egress vlan filtering',
-			'table_egress_br_port_to_if':'Egress  bridge port to  interface type',
+			'table_egress_br_port_to_if':'Egress bridge port to interface type table',
 			'table_egress_set_vlan':'',
 			'table_lag_hash':'',
 			'table_egress_lag':'Egress LAG',
@@ -45,7 +45,7 @@ tables = {	'table_ingress_lag':'Ingress LAG table',
 			'table_next_hop_group':'Next hop group table',
 			'table_next_hop':'Next hop table',
 			'table_neighbor':'Neigh table',
-			'table_egress_L3_if':'Egress_L3_interface'
+			'table_egress_L3_if':'Egress_L3_interface',
 		}
 
 
@@ -114,9 +114,10 @@ def main(): # TODO handle router packets (packet num stays the same for router->
 	log_end = False
 	packet_num = 0
 	#template = ["visio/flow_1q.svg","visio/flow_router_uni.svg","visio/flow_1d.svg"]
+	#template = ["visio/flow_1q.svg","visio/flow_router_uni.svg"]
 	template = ["visio/flow_1q.svg"]
 	while not log_end:
-		print packet_num
+		# print packet_num
 		hit_miss_list, hit_dict, log_end = parse_filtered_log(packet_num)
 		output = [i[6:-4]+"_packet_"+str(packet_num)+i[-4:] for i in template]
 		for i in xrange(len(template)):
