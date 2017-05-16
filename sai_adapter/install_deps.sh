@@ -1,0 +1,3 @@
+sudo apt-get install libteam-dev
+sudo pip install thrift
+sudo pip install scapy
