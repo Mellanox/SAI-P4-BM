@@ -46,7 +46,7 @@ sai_status_t sai_adapter::get_bridge_attribute(sai_object_id_t bridge_id,
                                                sai_attribute_t *attr_list) {
   (*logger)->info("get_bridge_attribute");
   int i;
-  Bridge_obj *bridge = (Bridge_obj *)sai_id_map_ptr->get_object(bridge_id);
+  Bridge_obj *bridge = switch_metadata_ptr->bridges[bridge_id];
   for (i = 0; i < attr_count; i++) {
     switch ((attr_list + i)->id) {
     case SAI_BRIDGE_ATTR_TYPE:

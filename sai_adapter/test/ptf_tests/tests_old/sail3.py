@@ -60,10 +60,10 @@ class L3IPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
         tagging_mode = SAI_VLAN_TAGGING_MODE_UNTAGGED
         vlan_member0 = sai_thrift_create_vlan_member(self.client, vlan_oid0, bridge_port0, tagging_mode)
         vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_oid1, bridge_port1, tagging_mode)
-        mac_action = SAI_PACKET_ACTION_FORWARD
-        fdb_entry_type = SAI_FDB_ENTRY_TYPE_STATIC
-        bridge_type = SAI_BRIDGE_TYPE_1Q
-        sai_thrift_create_fdb(self.client, dmac1, bridge_type, vlan_id1, None, bridge_port1, mac_action, fdb_entry_type)
+        # mac_action = SAI_PACKET_ACTION_FORWARD
+        # fdb_entry_type = SAI_FDB_ENTRY_TYPE_STATIC
+        # bridge_type = SAI_BRIDGE_TYPE_1Q
+        # sai_thrift_create_fdb(self.client, dmac1, bridge_type, vlan_id1, None, bridge_port1, mac_action, fdb_entry_type)
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
@@ -103,7 +103,9 @@ class L3IPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_router_interface(rif_id0)
             self.client.sai_thrift_remove_router_interface(rif_id1)
             
-            sai_thrift_delete_fdb(self.client, dmac1, vlan_id1, bridge_type, None)
+            # sai_thrift_delete_fdb(self.client, dmac1, vlan_id1, bridge_type, None)
+            sai_thrift_flush_fdb_by_vlan(self.client, vlan_id0)
+            sai_thrift_flush_fdb_by_vlan(self.client, 1)
             self.client.sai_thrift_remove_vlan_member(vlan_member0)
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan(vlan_oid0)
