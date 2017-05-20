@@ -62,6 +62,8 @@
 		.st300 {fill:#a0a0a0;stroke:#c8c8c8;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.45}
 		.st301 {fill:#00b050;stroke:#c8c8c8;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.45}		
 		.st302 {fill:#ff5050;stroke:#c8c8c8;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.45}
+		.st500 {font-size:1em;font-weight:normal}
+		.st501 {fill:#000000;font-family:Calibri;font-size:1.08334em;font-weight:bold}
 	]]>
 	</style>
 
@@ -1110,10 +1112,6 @@
 			<title>com.lucidchart.Line.66</title>
 			<path d="M6.73 1188 L7.44 1313.24" class="st18"/>
 		</g>
-		<g id="shape67-657" v:mID="67" v:groupContext="shape" transform="translate(1113.08,-645.674)">
-			<title>com.lucidchart.Line.67</title>
-			<path d="M-6.37 1188 L-7.8 1284.66" class="st22"/>
-		</g>
 		<g id="shape68-660" v:mID="68" v:groupContext="shape" transform="translate(1452.32,-723.6)">
 			<title>Sheet.68</title>
 			<path d="M6.88 1188 L7.29 1323.27" class="st18"/>
@@ -1236,7 +1234,7 @@
 			<v:textBlock v:margins="rect(0,0,0,0)"/>
 			<v:textRect cx="79.182" cy="1187.35" width="20.24" height="12.0037"/>
 			<path d="M0 1194.9 L79.37 1195.23" class="st4"/>
-			<text x="70.42" y="1190.35" class="st14" v:langID="1033"><v:paragraph v:spLine="-1" v:horizAlign="1"/><v:tabList/>.1Q</text>		</g>
+			<text x="36.67" y="1190.35" class="st14" v:langID="1033"><v:paragraph v:spLine="-1" v:horizAlign="1"/><v:tabList/>.1Q</text>		</g>
 		<g id="group82-712" transform="translate(2146.43,-560.131)" v:mID="82" v:groupContext="group">
 			<v:custProps>
 				<v:cp v:nameU="Row_1" v:lbl="Cost" v:prompt="" v:type="0" v:format="" v:sortKey="" v:invis="false" v:ask="false"
