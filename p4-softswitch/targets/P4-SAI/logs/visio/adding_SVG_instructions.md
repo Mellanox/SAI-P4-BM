@@ -12,3 +12,4 @@
 * rename port  
 ## scripts/animate_flow.py modifications
 * in the output list, append the new svg file
+* in the y list, add a y-shift to match the text to the tables (TODO - automate this)
