@@ -16,10 +16,6 @@ SAI lib
 Tests frameworks: PTF, unittests.
 
 ## Insatlling Instructions
-```
-cd p4-softswitch/  
-make  
-cd ../sai_adapter/
-sudo ./install_deps.sh
-make
-```
+The installation should be in the following order:
+1) Enter `p4-softswitch/` dir, and follow the readme instructions.  
+2) Enter `sai_adapter/` dir, and follow the readme instructions. 
