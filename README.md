@@ -14,3 +14,12 @@ Can be independently configured via the CLI interface.
 C source files implementation for the SAI API build for P4 soft switch model.
 SAI lib
 Tests frameworks: PTF, unittests.
+
+## Insatlling Instructions
+```
+cd p4-softswitch/  
+make  
+cd ../sai_adapter/
+sudo ./install_deps.sh
+make
+```
