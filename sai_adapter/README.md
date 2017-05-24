@@ -5,7 +5,11 @@ The sai lib (C lib) uses P4 thrift to configure the soft switch as described bel
 ## Including the SAI lib
 The sai_api lib is currently under development.
 In the meantime, please include sai.h, check the [unit test](test/unittest) folder for example.
-Please build it from the src folder using "make".
+In the sai_adapter dir run:  
+```
+./install_deps.sh  
+make
+```
 ## Depenedcies:
 * libteam: (sudo apt-get install libteam-dev)
 * libjansson-dev: (sudo apt-get install libjansson-dev)
