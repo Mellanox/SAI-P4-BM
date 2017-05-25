@@ -10,9 +10,6 @@ In the sai_adapter dir run:
 ./install_deps.sh  
 make
 ```
-## Depenedcies:
-* libteam: (sudo apt-get install libteam-dev)
-* libjansson-dev: (sudo apt-get install libjansson-dev)
 
 ## PTF tests
 SAI Tests were written using the [ptf](https://github.com/p4lang/ptf) framework. 
