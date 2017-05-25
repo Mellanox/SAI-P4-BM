@@ -17,21 +17,16 @@ The directory is divided to tests (ready and passing tests), wip_tests for work 
 
 ### Runing the tests
 First, run make from this location. This will build the sai library, generate the needed thrift and ctypesgen files, and will build the C thrift server, needed to run the tests. \\
-ctypesgen will be needed  for this (python wrapper for the C header files used by ptf), and can be easily installed with pip:  
-```shell
-pip install ctypesgen
-```  
-or from source: [ctypesgen](https://github.com/davidjamesca/ctypesgen).
 
 Now, follow these steps to run the PTF tests:  
 1. In SAI-P4-BM/tree/master/p4-softswitch/targets/P4-SAI/ run:  
-    1. veth_setup.sh  - to configure virtual ports. 
+    1. veth_setup_ptf.sh  - to configure virtual ports. 
     2. run_server.sh  - to start the P4 BM server.  
 
 2. Start new terminal and run the sai thrift server:  
     SAI-P4-BM/sai_adapter/test/sai_thrift_server/run_server.sh
 
-3. Start another new terminal and run the [PTF tests](test/ptf_tests/) directly, or by one the test shell scripts found in the ptf test folder:  tests/ptf_tests/run_ptf.sh
+3. Start another new terminal and run the [PTF tests](test/ptf_tests/) directly, or by one the test shell scripts found in the ptf test folder:  tests/ptf_tests/run_ptf_l2.sh
 
 ### LOGS
 During the tests, the following logs are outputted:
