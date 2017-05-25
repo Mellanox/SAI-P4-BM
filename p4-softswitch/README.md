@@ -13,7 +13,9 @@ For list of dependencies and build instructions:
 P4 target is found inside [targets/P4-SAI](targets/P4-SAI).
 
 ### Create virtual interfaces
-Use the ```veth_setup.sh``` script to create the virtual interfaces and hosts.
+Use the ```veth_setup.sh``` script to create the virtual interfaces and hosts, with hosts in different namespaces.  
+Use the ```veth_setup_ptf.sh``` script to create the virtual interfaces and hosts in default namespace, which is needed to run ptf tests.
+
 ### Running P4 program
 running the switch can be done with the following command: ```run_server.sh``` found in P4-SAI target directory.
 This script olso implements some default configurations found in: p4src/DefaultConfig.txt
