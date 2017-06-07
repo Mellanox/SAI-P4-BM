@@ -42,9 +42,14 @@ field_list_calculation lag_hash {
     output_width : 1; //TODO: LOG2(NUM_OF_PORTS)
 }
 
-field_list redirect_FL {
+field_list redirect_bridge_FL {
     standard_metadata;
     ingress_metadata.trap_id;
     ingress_metadata.bridge_id;
     ingress_metadata.bridge_port;
+}
+
+field_list redirect_router_FL {
+    standard_metadata;
+    ingress_metadata.trap_id;
 }

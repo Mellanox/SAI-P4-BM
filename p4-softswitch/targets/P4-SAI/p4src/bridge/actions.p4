@@ -20,11 +20,11 @@ action action_set_trap_id(in bit<11> trap_id) {
 }
 
 action action_copy_to_cpu() {
-	clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_FL);
+	clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_bridge_FL);
 }
 
 action action_trap_to_cpu() {
-	clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_FL);
+	clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_bridge_FL);
 	drop();
 }
 
@@ -88,7 +88,7 @@ action action_go_to_in_l3_if_table(){
 // L2
 action action_learn_mac() {
 	ingress_metadata.trap_id = MAC_LEARN_RECEIVER;	 //TODO, should this be configurable to support hostif interface(?)
-	clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_FL);
+	clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_bridge_FL);
 }
 
 action action_set_egress_br_port(in bit<8> br_port){

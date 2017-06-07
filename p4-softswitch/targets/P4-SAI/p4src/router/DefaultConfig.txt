@@ -1,1 +1,11 @@
 table_set_default table_ingress_l3_if _drop
+table_add table_ingress_vrf action_set_vrf 0 => 0
+table_add table_ingress_l3_if action_set_irif 0 1 => 0
+table_set_default table_ttl action_dec_ttl
+table_add table_ttl 0 => _drop
+table_set_default table_router _drop
+table_set_default table_next_hop _drop
+table_set_default table_l3_trap action_set_trap_id 0xff
+table_set_default table_l3_trap_id _nop
+table_set_default table_egress_clone_internal _nop
+table_add table_egress_clone_internal action_cpu_encap 1 =>

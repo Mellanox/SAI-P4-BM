@@ -17,6 +17,20 @@ table table_ingress_vrf {
 	size: ROUTER_IF_TABLE_SIZE;
 }
 
+table table_l3_trap {
+	reads {
+		ethernet.etherType : exact;
+		ipv4.dstAddr       : exact;
+	}
+	actions { action_set_trap_id;}
+}
+
+table table_l3_trap_id {
+	reads {
+		ingress_metadata.trap_id : exact;
+	}
+	actions {action_copy_to_cpu; action_trap_to_cpu; _nop; _drop; }
+}
 table table_router {
 	reads{
 		router_metadata.l3_lpm_key : lpm;
@@ -51,6 +65,13 @@ table table_next_hop {
 // 	size: ;
 // }
 
+table table_ttl {
+	reads {
+		ipv4.ttl : exact;
+	}
+	actions {action_dec_ttl; _drop;}
+}
+
 table table_neighbor {
 	reads{
 		router_metadata.egress_rif 		: exact;
@@ -67,4 +88,22 @@ table table_egress_L3_if {
 	}
 	actions{action_set_smac_vid; _drop; } // TODO check if type is ok here - not mentioned in visio
 	size: L3_EGRESS_IF_TABLE_SIZE;
+}
+
+table table_egress_clone_internal {
+    reads {
+        standard_metadata.instance_type : exact;
+    }
+    actions {_nop; action_cpu_encap;} 
+    // size: 16;
+}
+
+//-----------
+// cpu forwarding
+//-----------
+table table_cpu_forward {
+    reads {
+        cpu_header : valid;
+    }
+    actions {action_forward_cpu;}
 }
