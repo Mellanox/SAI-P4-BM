@@ -24,9 +24,10 @@ SAI_OBJ = $(patsubst %.c,${OBJ_DIR}/%.o, $(SAI_SRC))
 HEADERS = $(wildcard *.h)
 INC_DIRS =-I${USR_DIR}/include -I${THRIFT_DIR}/include/thrift -I${INC_DIR} -I${SAI_DIR} -I${BM_DIR}
 SAI_INC = -I${SAI_DIR} -I$(INC_DIR)
-default = all
+OBJECTS = $(SAI_OBJ) $(SAI_OBJ_IF_OBJ)
+default = libp4sai
 
-.PHONY: all clean
+.PHONY: libp4sai clean
 
 # default: sai_adapter
 
@@ -36,10 +37,10 @@ ${OBJ_DIR}/%.o: %.cpp ${HEADERS}
 ${OBJ_DIR}/%.o: %.c
 	gcc ${SAI_INC} -c $< -o $@
 
-all: $(SAI_OBJ) $(SAI_OBJ_IF_OBJ)
+# all: $(SAI_OBJ) $(SAI_OBJ_IF_OBJ)
 
-# sai_adapter: $(SAI_OBJ) $(SAI_OBJ_IF_OBJ)
-	# g++ ${CPP_OPTS} ${CPP_DEFS} ${INC_DIRS} ${SAI_OBJ} ${SAI_OBJ_IF_OBJ} ${STAND_OBJS} -o sai_adapter ${LIBS}
+libp4sai: ${OBJECTS}
+	ar rvs ../lib/libp4sai.a ${OBJECTS}
 
 clean:
 	rm -f $(SAI_OBJ) $(SAI_OBJ_IF_OBJ)

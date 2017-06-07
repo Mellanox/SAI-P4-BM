@@ -1,4 +1,4 @@
-SUBDIRS = test/ src/ test/sai_thrift_src test/sai_thrift_server
+SUBDIRS = test/ src/ test/sai_thrift_src test/sai_thrift_server lib/
 .PHONY : all $(SUBDIRS)
 all : $(SUBDIRS)
 
