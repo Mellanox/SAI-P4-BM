@@ -13,6 +13,9 @@ STAND_SRC  = ${BM_DIR}/Standard.cpp  \
 STAND_OBJS = ${BM_DIR}/Standard.o  \
              ${BM_DIR}/standard_types.o \
              ${BM_DIR}/standard_constants.o
+SIMPLE_PRE_LAG_OBJS = ${BM_DIR}/SimplePreLAG.o  \
+             ${BM_DIR}/simple_pre_lag_types.o \
+             ${BM_DIR}/simple_pre_lag_constants.o
 
 OBJ_DIR    = obj
 SAI_OBJ_IF_SRC    = $(wildcard *.cpp)
@@ -24,7 +27,7 @@ SAI_OBJ = $(patsubst %.c,${OBJ_DIR}/%.o, $(SAI_SRC))
 HEADERS = $(wildcard *.h)
 INC_DIRS =-I${USR_DIR}/include -I${THRIFT_DIR}/include/thrift -I${INC_DIR} -I${SAI_DIR} -I${BM_DIR}
 SAI_INC = -I${SAI_DIR} -I$(INC_DIR)
-OBJECTS = $(SAI_OBJ) $(SAI_OBJ_IF_OBJ)
+OBJECTS = $(SAI_OBJ) $(SAI_OBJ_IF_OBJ) $(STAND_OBJS) $(SIMPLE_PRE_LAG_OBJS)
 default = libp4sai
 
 .PHONY: libp4sai clean
