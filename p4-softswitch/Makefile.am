@@ -8,7 +8,7 @@ if COND_PDFIXED
     MAYBE_PDFIXED = pdfixed
 endif
 
-SUBDIRS = thrift_src third_party src include tests $(MAYBE_TARGETS) tools \
+SUBDIRS = thrift_src third_party src include $(MAYBE_TARGETS) tools \
 $(MAYBE_PDFIXED) libp4bm
 
 # I am leaving all style-related files (cpplint) out of dist on purpose, maybe
