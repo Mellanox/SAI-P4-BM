@@ -138,6 +138,6 @@ header_type router_metadata_t{
         bit<3> next_hop_group_id;
         bit<3> next_hop_hash;
         // bit<2> packet_action;
-        bit<40> l3_lpm_key;
+        // bit<40> l3_lpm_key;
     }    
 }

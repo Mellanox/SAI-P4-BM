@@ -33,7 +33,9 @@ table table_l3_trap_id {
 }
 table table_router {
 	reads{
-		router_metadata.l3_lpm_key : lpm;
+		router_metadata.ingress_vrf : exact;
+		ipv4.dstAddr : lpm;
+		// router_metadata.l3_lpm_key : lpm;
 	}
 	actions{action_set_nhop_id; action_set_nhop_grp_id; _drop;}
 	size: ROUTER_LPM_TABLE_SIZE;

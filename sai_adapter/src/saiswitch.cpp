@@ -8,7 +8,8 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
     (*logger)->debug(
         "currently one switch is supportred, returning operating switch_id: {}",
         (*switch_list_ptr)[0]);
-    return (*switch_list_ptr)[0];
+    *switch_id = (*switch_list_ptr)[0];
+    return SAI_STATUS_ITEM_ALREADY_EXISTS;
   } else {
     BmAddEntryOptions options;
     BmMatchParams match_params;
@@ -156,7 +157,8 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
     add_hostif_trap_id_table_entry(MAC_LEARN_TRAP_ID, learn_mac);
 
     switch_list_ptr->push_back(switch_obj->sai_object_id);
-    return switch_obj->sai_object_id;
+    *switch_id = switch_obj->sai_object_id;
+    return SAI_STATUS_SUCCESS;
   }
 }
 

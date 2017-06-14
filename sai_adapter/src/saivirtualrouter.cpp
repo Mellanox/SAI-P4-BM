@@ -43,7 +43,7 @@ sai_status_t sai_adapter::create_virtual_router (sai_object_id_t *vr_id,
 
 
     *vr_id = vr->sai_object_id;
-    (*logger)->info("object_id {}", vr->sai_object_id);
+    (*logger)->info("object_id {}. vrf {}", vr->sai_object_id, vrf);
     return SAI_STATUS_SUCCESS;
   }
 }
