@@ -32,5 +32,7 @@ libp4bm: ${OBJECTS}
 	# g++ -shared -o libp4bm.so ${OBJECTS}
 	ar rvs libp4bm.a ${OBJECTS}
 
+all: libp4bm 
+
 clean: 
-	rm -rf ${OBJECTS}
+	rm -rf ${OBJECTS} libp4bm.a
