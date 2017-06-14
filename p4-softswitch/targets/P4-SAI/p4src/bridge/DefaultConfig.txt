@@ -1,6 +1,4 @@
 table_set_default table_ingress_lag  action_set_l2if 
-// table_set_default table_port_PVID action_set_pvid 1
-// table_set_default table_port_mode table action_set_port_mode 0
 table_set_default table_port_configurations action_set_port_configurations 1 0 1514 0 0
 table_set_default table_port_ingress_l2_interface_type _drop
 table_set_default table_subport_ingress_l2_interface_type _drop

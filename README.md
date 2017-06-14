@@ -14,3 +14,8 @@ Can be independently configured via the CLI interface.
 C source files implementation for the SAI API build for P4 soft switch model.
 SAI lib
 Tests frameworks: PTF, unittests.
+
+## Insatlling Instructions
+The installation should be in the following order:
+1) Enter `p4-softswitch/` dir, and follow the readme instructions.  
+2) Enter `sai_adapter/` dir, and follow the readme instructions. 

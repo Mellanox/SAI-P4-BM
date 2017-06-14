@@ -129,7 +129,7 @@ def fix_lines(text,line_len = 12,style ='st500',x=0):
 		return text_out +close_last_line
 	else: return text
 
-def replace_table_text(text,activity,action,table_hash):	
+def replace_table_text(text,activity,action,table_hash,y):	
 	pre_text = text.split('<text')[0]
 	post_text=text.split('</text>')[-1]
 	# if "NULL" in action: print action - TODO 
@@ -141,7 +141,7 @@ def replace_table_text(text,activity,action,table_hash):
 	if len(action[-1])>0 and len(action)>1:
 		main_text += new_line() + "Params :" + new_line(end=True) + new_line(x=12) + action[1] + new_line(end=True)
 	
-	final_text = pre_text+ "<text x=\"0\" y=\"1056.38\" class=\"st501\" v:langID=\"1033\">"
+	final_text = pre_text+ "<text x=\"0\" y=\""+y+"\" class=\"st501\" v:langID=\"1033\">"
 	final_text +=  main_text + '</text>' + post_text
 	return final_text
 
@@ -150,7 +150,7 @@ def replace_table_text(text,activity,action,table_hash):
 
 ################### change svg #########################
 # write outputs
-def create_svg(template,output,hit_miss_list,hit_dict):
+def create_svg(template,output,hit_miss_list,hit_dict,y):
 	color_dict = {"Hit":"class=\"st301\"","Miss":"class=\"st302\"","default":"class=\"st300\""}
 	replace_style = False
 	replace_text = False
@@ -187,7 +187,7 @@ def create_svg(template,output,hit_miss_list,hit_dict):
 			if re.search("</text>",line) > 0 and in_text:
 					replace_text = False
 					in_text = False
-					o.write(replace_table_text(text,activity,action,table_hash))
+					o.write(replace_table_text(text,activity,action,table_hash,y))
 					text = ""
 					activity = "default"
 			elif not in_text:
@@ -197,14 +197,16 @@ def main(): # TODO handle router packets (packet num stays the same for router->
 	log_end = False
 	packet_num = 0
 	#template = ["visio/flow_1q.svg","visio/flow_router_uni.svg","visio/flow_1d.svg"]
-	#template = ["visio/flow_1q.svg","visio/flow_router_uni.svg"]
-	template = ["visio/flow_1q.svg"]
+	template = ["visio/flow_1q.svg","visio/flow_router_uni.svg"]
+	y_map = ['1045.37','1616.37']
+	#template = ["visio/flow_1q.svg"]
 	while not log_end:
 		# print packet_num
 		hit_miss_list, hit_dict, log_end = parse_filtered_log(packet_num)
 		output = [i[6:-4]+"_packet_"+str(packet_num)+i[-4:] for i in template]
 		for i in xrange(len(template)):
-			create_svg(template[i],output[i],hit_miss_list,hit_dict)
+			y = y_map[i]
+			create_svg(template[i],output[i],hit_miss_list,hit_dict,y)
 		packet_num+=1
 
 
