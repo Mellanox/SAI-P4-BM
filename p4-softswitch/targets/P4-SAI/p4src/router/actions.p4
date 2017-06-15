@@ -32,7 +32,7 @@ action action_set_trap_id(bit<11> trap_id) {
 }
 
 action action_dec_ttl() {
-	// ipv4.ttl = ipv4.ttl - 1; // todo - fix ttl ptf problem (chksum?)
+	ipv4.ttl = ipv4.ttl - 1;
 }
 // action action_set_acl_id(){
 	

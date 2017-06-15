@@ -26,6 +26,11 @@ field_list ipv4_checksum_list {
         ipv4.dstAddr;
 }
 
+calculated_field ipv4.checksum  {
+    verify ipv4_checksum;
+    update ipv4_checksum;
+}
+
 field_list lag_hash_fieldlist { 
     ethernet.srcAddr;
     // ipv4.srcAddr;

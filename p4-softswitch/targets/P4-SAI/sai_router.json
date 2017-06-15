@@ -1122,21 +1122,72 @@
                 "ethernet",
                 "vlan",
                 "ipv4",
-                "udp",
-                "tcp"
+                "tcp",
+                "udp"
             ]
         }
     ],
     "meter_arrays": [],
     "actions": [
         {
-            "name": "action_set_erif_set_nh_dstip",
+            "name": "action_copy_to_cpu",
             "id": 0,
-            "runtime_data": [
+            "runtime_data": [],
+            "primitives": [
                 {
-                    "name": "next_hop_dst_ip",
-                    "bitwidth": 32
+                    "op": "clone_ingress_pkt_to_egress",
+                    "parameters": [
+                        {
+                            "type": "hexstr",
+                            "value": "0x8"
+                        },
+                        {
+                            "type": "hexstr",
+                            "value": "0x1"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_forward_cpu",
+            "id": 1,
+            "runtime_data": [],
+            "primitives": [
+                {
+                    "op": "remove_header",
+                    "parameters": [
+                        {
+                            "type": "header",
+                            "value": "cpu_header"
+                        }
+                    ]
                 },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "standard_metadata",
+                                "egress_spec"
+                            ]
+                        },
+                        {
+                            "type": "field",
+                            "value": [
+                                "cpu_header",
+                                "port"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_set_erif_set_nh_dstip_from_pkt",
+            "id": 2,
+            "runtime_data": [
                 {
                     "name": "egress_rif",
                     "bitwidth": 3
@@ -1154,8 +1205,11 @@
                             ]
                         },
                         {
-                            "type": "runtime_data",
-                            "value": 0
+                            "type": "field",
+                            "value": [
+                                "ipv4",
+                                "dstAddr"
+                            ]
                         }
                     ]
                 },
@@ -1171,25 +1225,19 @@
                         },
                         {
                             "type": "runtime_data",
-                            "value": 1
+                            "value": 0
                         }
                     ]
                 }
             ]
         },
         {
-            "name": "action_dec_ttl",
-            "id": 1,
-            "runtime_data": [],
-            "primitives": []
-        },
-        {
-            "name": "action_set_irif",
-            "id": 2,
+            "name": "action_set_nhop_id",
+            "id": 3,
             "runtime_data": [
                 {
-                    "name": "ingress_rif",
-                    "bitwidth": 3
+                    "name": "next_hop_id",
+                    "bitwidth": 8
                 }
             ],
             "primitives": [
@@ -1200,7 +1248,7 @@
                             "type": "field",
                             "value": [
                                 "router_metadata",
-                                "ingress_rif"
+                                "next_hop_id"
                             ]
                         },
                         {
@@ -1212,8 +1260,32 @@
             ]
         },
         {
+            "name": "action_trap_to_cpu",
+            "id": 4,
+            "runtime_data": [],
+            "primitives": [
+                {
+                    "op": "clone_ingress_pkt_to_egress",
+                    "parameters": [
+                        {
+                            "type": "hexstr",
+                            "value": "0x8"
+                        },
+                        {
+                            "type": "hexstr",
+                            "value": "0x1"
+                        }
+                    ]
+                },
+                {
+                    "op": "drop",
+                    "parameters": []
+                }
+            ]
+        },
+        {
             "name": "action_cpu_encap",
-            "id": 3,
+            "id": 5,
             "runtime_data": [],
             "primitives": [
                 {
@@ -1266,9 +1338,52 @@
             ]
         },
         {
-            "name": "action_set_erif_set_nh_dstip_from_pkt",
-            "id": 4,
+            "name": "action_set_trap_id",
+            "id": 6,
             "runtime_data": [
+                {
+                    "name": "trap_id",
+                    "bitwidth": 11
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ingress_metadata",
+                                "trap_id"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "_drop",
+            "id": 7,
+            "runtime_data": [],
+            "primitives": [
+                {
+                    "op": "drop",
+                    "parameters": []
+                }
+            ]
+        },
+        {
+            "name": "action_set_erif_set_nh_dstip",
+            "id": 8,
+            "runtime_data": [
+                {
+                    "name": "next_hop_dst_ip",
+                    "bitwidth": 32
+                },
                 {
                     "name": "egress_rif",
                     "bitwidth": 3
@@ -1286,11 +1401,8 @@
                             ]
                         },
                         {
-                            "type": "field",
-                            "value": [
-                                "ipv4",
-                                "dstAddr"
-                            ]
+                            "type": "runtime_data",
+                            "value": 0
                         }
                     ]
                 },
@@ -1306,6 +1418,112 @@
                         },
                         {
                             "type": "runtime_data",
+                            "value": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "_nop",
+            "id": 9,
+            "runtime_data": [],
+            "primitives": [
+                {
+                    "op": "no_op",
+                    "parameters": []
+                }
+            ]
+        },
+        {
+            "name": "action_dec_ttl",
+            "id": 10,
+            "runtime_data": [],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ipv4",
+                                "ttl"
+                            ]
+                        },
+                        {
+                            "type": "expression",
+                            "value": {
+                                "type": "expression",
+                                "value": {
+                                    "op": "-",
+                                    "left": {
+                                        "type": "field",
+                                        "value": [
+                                            "ipv4",
+                                            "ttl"
+                                        ]
+                                    },
+                                    "right": {
+                                        "type": "hexstr",
+                                        "value": "0x1"
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_set_irif",
+            "id": 11,
+            "runtime_data": [
+                {
+                    "name": "ingress_rif",
+                    "bitwidth": 3
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "router_metadata",
+                                "ingress_rif"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "action_set_nhop_grp_id",
+            "id": 12,
+            "runtime_data": [
+                {
+                    "name": "next_hop_group_id",
+                    "bitwidth": 3
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "router_metadata",
+                                "next_hop_group_id"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
                             "value": 0
                         }
                     ]
@@ -1314,7 +1532,7 @@
         },
         {
             "name": "action_set_vrf",
-            "id": 5,
+            "id": 13,
             "runtime_data": [
                 {
                     "name": "vrf",
@@ -1341,71 +1559,8 @@
             ]
         },
         {
-            "name": "action_forward_cpu",
-            "id": 6,
-            "runtime_data": [],
-            "primitives": [
-                {
-                    "op": "remove_header",
-                    "parameters": [
-                        {
-                            "type": "header",
-                            "value": "cpu_header"
-                        }
-                    ]
-                },
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "standard_metadata",
-                                "egress_spec"
-                            ]
-                        },
-                        {
-                            "type": "field",
-                            "value": [
-                                "cpu_header",
-                                "port"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "action_set_nhop_id",
-            "id": 7,
-            "runtime_data": [
-                {
-                    "name": "next_hop_id",
-                    "bitwidth": 8
-                }
-            ],
-            "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "router_metadata",
-                                "next_hop_id"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
-                }
-            ]
-        },
-        {
             "name": "action_set_smac_vid",
-            "id": 8,
+            "id": 14,
             "runtime_data": [
                 {
                     "name": "smac",
@@ -1462,128 +1617,6 @@
                         {
                             "type": "hexstr",
                             "value": "0x0"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "_nop",
-            "id": 9,
-            "runtime_data": [],
-            "primitives": [
-                {
-                    "op": "no_op",
-                    "parameters": []
-                }
-            ]
-        },
-        {
-            "name": "action_copy_to_cpu",
-            "id": 10,
-            "runtime_data": [],
-            "primitives": [
-                {
-                    "op": "clone_ingress_pkt_to_egress",
-                    "parameters": [
-                        {
-                            "type": "hexstr",
-                            "value": "0x8"
-                        },
-                        {
-                            "type": "hexstr",
-                            "value": "0x1"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "action_trap_to_cpu",
-            "id": 11,
-            "runtime_data": [],
-            "primitives": [
-                {
-                    "op": "clone_ingress_pkt_to_egress",
-                    "parameters": [
-                        {
-                            "type": "hexstr",
-                            "value": "0x8"
-                        },
-                        {
-                            "type": "hexstr",
-                            "value": "0x1"
-                        }
-                    ]
-                },
-                {
-                    "op": "drop",
-                    "parameters": []
-                }
-            ]
-        },
-        {
-            "name": "_drop",
-            "id": 12,
-            "runtime_data": [],
-            "primitives": [
-                {
-                    "op": "drop",
-                    "parameters": []
-                }
-            ]
-        },
-        {
-            "name": "action_set_nhop_grp_id",
-            "id": 13,
-            "runtime_data": [
-                {
-                    "name": "next_hop_group_id",
-                    "bitwidth": 3
-                }
-            ],
-            "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "router_metadata",
-                                "next_hop_group_id"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "action_set_trap_id",
-            "id": 14,
-            "runtime_data": [
-                {
-                    "name": "trap_id",
-                    "bitwidth": 11
-                }
-            ],
-            "primitives": [
-                {
-                    "op": "modify_field",
-                    "parameters": [
-                        {
-                            "type": "field",
-                            "value": [
-                                "ingress_metadata",
-                                "trap_id"
-                            ]
-                        },
-                        {
-                            "type": "runtime_data",
-                            "value": 0
                         }
                     ]
                 }
@@ -2067,8 +2100,105 @@
             ]
         }
     ],
-    "calculations": [],
-    "checksums": [],
+    "calculations": [
+        {
+            "name": "ipv4_checksum",
+            "id": 0,
+            "input": [
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "version"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "ihl"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "diffserv"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "ipv4_length"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "id"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "flags"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "offset"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "ttl"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "protocol"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "srcAddr"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "dstAddr"
+                    ]
+                }
+            ],
+            "algo": "csum16"
+        }
+    ],
+    "checksums": [
+        {
+            "name": "ipv4.checksum|ipv4_checksum",
+            "id": 0,
+            "target": [
+                "ipv4",
+                "checksum"
+            ],
+            "type": "generic",
+            "calculation": "ipv4_checksum",
+            "if_cond": null
+        }
+    ],
     "learn_lists": [],
     "field_lists": [
         {
