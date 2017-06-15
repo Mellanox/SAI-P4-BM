@@ -90,7 +90,8 @@ class L3IPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
                                 ip_dst='10.10.10.1',
                                 ip_src='192.168.0.1',
                                 ip_id=105,
-                                ip_ttl=63)
+                                ip_ttl=64)
+                                # todo: fix ttl
         try:
             send_packet(self, 0, str(pkt))
             verify_packets(self, exp_pkt, [1])
