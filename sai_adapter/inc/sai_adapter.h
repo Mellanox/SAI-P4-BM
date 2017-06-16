@@ -39,7 +39,7 @@ extern "C" {
 #include <sstream>
 #include <string>
 #include <sys/select.h>
-#include <team.h>
+// #include <team.h>
 #include <thread>
 
 using namespace std;
