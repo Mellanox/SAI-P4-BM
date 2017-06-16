@@ -1,0 +1,22 @@
+Format: 1.8
+Date: Wed, 23 Mar 2016 12:00:00 -0800
+Source: p4-bmv2
+Binary: p4-bmv2
+Architecture: amd64
+Version: 1.0.0
+Distribution: stable
+Urgency: medium
+Maintainer: Guohan Lu <gulv@microsoft.com>
+Changed-By: Guohan Lu <gulv@microsoft.com>
+Description:
+ p4-bmv2    - This package contains p4 bmv2 behavior model.
+Changes:
+ p4-bmv2 (1.0.0) stable; urgency=medium
+ .
+   * Initial release.
+Checksums-Sha1:
+ bb8c202aea4c2722299a6fc096d0e08e2e23ec8f 1020 p4-bmv2_1.0.0_amd64.deb
+Checksums-Sha256:
+ 07f5eb48867a34e816dd635660a4dadb1121c051476796b21212711c70e5ef40 1020 p4-bmv2_1.0.0_amd64.deb
+Files:
+ ab3d2f0b564ab278b69dfe8b50c67f7e 1020 net optional p4-bmv2_1.0.0_amd64.deb

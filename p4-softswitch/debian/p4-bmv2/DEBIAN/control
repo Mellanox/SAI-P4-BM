@@ -1,0 +1,8 @@
+Package: p4-bmv2
+Version: 1.0.0
+Architecture: amd64
+Maintainer: Guohan Lu <gulv@microsoft.com>
+Installed-Size: 25
+Section: net
+Priority: optional
+Description: This package contains p4 bmv2 behavior model.
