@@ -17,10 +17,10 @@ table table_ingress_vrf {
 	size: ROUTER_IF_TABLE_SIZE;
 }
 
-table table_l3_trap {
+table table_pre_l3_trap {
 	reads {
-		ethernet.etherType : exact;
-		ipv4.dstAddr       : exact;
+		ethernet.etherType : ternary;
+		ipv4.dstAddr       : ternary;
 	}
 	actions { action_set_trap_id;}
 }

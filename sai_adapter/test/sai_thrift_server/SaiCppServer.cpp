@@ -1959,16 +1959,18 @@ int main(int argc, char **argv) {
   logger->info("creating server for SAI on port {}", sai_port);
 
   // open server to sai functions
+  boost::shared_ptr<switch_sai_rpcHandler> handler(new switch_sai_rpcHandler());
   int fd = open("/proc/1/ns/net", O_RDONLY);
   if (setns(fd, 0) == -1) {
     return -1;
   }
-  boost::shared_ptr<switch_sai_rpcHandler> handler(new switch_sai_rpcHandler());
+  inline_log->info("debug1");
   // fd = open("/var/run/netns/sw_net",
   //               O_RDONLY);
   // if (setns(fd, 0) == -1) {
   //   return -1;
   // }
+  inline_log->info("debug2");
   boost::shared_ptr<TProcessor> processor(new switch_sai_rpcProcessor(handler));
   boost::shared_ptr<TServerTransport> serverTransport(
       new TServerSocket(sai_port));
@@ -1976,9 +1978,10 @@ int main(int argc, char **argv) {
       new TBufferedTransportFactory());
   boost::shared_ptr<TProtocolFactory> protocolFactory(
       new TBinaryProtocolFactory());
-
+  inline_log->info("debug3");
   TSimpleServer server(processor, serverTransport, transportFactory,
                        protocolFactory);
+  inline_log->info("debug4");
   server_ptr = &server;
   signal(SIGINT, close_rpc_server);
   logger->info("SAI rpc server started on port {}", sai_port);

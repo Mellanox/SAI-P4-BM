@@ -135,7 +135,7 @@ action action_forward_vlan_tag(in bit<3> pcp, in bit cfi, in bit<12> vid){
 	vlan.cfi = cfi;
 	vlan.vid = vid;
 	vlan.etherType = ethernet.etherType;
-	ethernet.etherType = VLAN_TYPE;
+	ethernet.etherType = ETHERTYPE_VLAN;
 	// egress_metadata.tag_mode = tag_mode;
 }
 

@@ -141,3 +141,26 @@ header_type router_metadata_t{
         // bit<40> l3_lpm_key;
     }    
 }
+
+header_type l4_metadata_t {
+    fields {
+        bit<16> srcPort;
+        bit<16> dstPort;
+    }
+}
+
+// headers
+header   ethernet_t       ethernet;
+header   vlan_t           vlan;
+header   ipv4_t           ipv4;
+header   tcp_t            tcp;
+header   udp_t            udp;
+header   cpu_header_t     cpu_header;  
+
+// metadata
+// TODO - seperate ingress/egress metadata to bridge, router, and common.
+// common should stay here, but bridge and router should be defined inside
+// main file, to prevernt unnecessary memory usage
+metadata    ingress_metadata_t   ingress_metadata;
+metadata    egress_metadata_t    egress_metadata;
+metadata    l4_metadata_t        l4_metadata;

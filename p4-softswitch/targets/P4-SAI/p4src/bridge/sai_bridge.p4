@@ -1,6 +1,4 @@
 // This is P4 source for sai bridge
-
-
 // includes
 #include "../inc/headers.p4"
 #include "../inc/parser.p4"
@@ -8,18 +6,6 @@
 #include "../inc/field_lists.p4"
 #include "tables.p4"
 #include "actions.p4"
-
-// headers
-header   ethernet_t 	  ethernet;
-header   vlan_t 		  vlan;
-header   ipv4_t 		  ipv4;
-header   tcp_t 			  tcp;
-header   udp_t			  udp;
-header   cpu_header_t     cpu_header;  
-
-// metadata
-metadata 	ingress_metadata_t 	 ingress_metadata;
-metadata 	egress_metadata_t 	 egress_metadata;
 
 control ingress {
 	if (ingress_metadata.cpu_port == 0) {
