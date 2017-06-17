@@ -4,6 +4,9 @@
 #include <linux/if_tun.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 
 int tun_alloc(char *dev, int make_presistent) { //, int flags) {
 
