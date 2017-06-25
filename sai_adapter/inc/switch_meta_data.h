@@ -365,6 +365,7 @@ typedef std::map<sai_object_id_t, RouterInterface_obj *> rif_id_map_t;
 typedef std::map<sai_object_id_t, NextHop_obj *> nhop_id_map_t;
 class Switch_metadata { 
 public:
+  sai_object_id_t switch_id;
   sai_u32_list_t hw_port_list;
   port_id_map_t ports;
   bridge_port_id_map_t bridge_ports;
