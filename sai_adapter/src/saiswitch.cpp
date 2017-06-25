@@ -8,7 +8,8 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
     (*logger)->debug(
         "currently one switch is supportred, returning operating switch_id: {}",
         (*switch_list_ptr)[0]);
-    return (*switch_list_ptr)[0];
+    *switch_id = (*switch_list_ptr)[0];
+    return SAI_STATUS_ITEM_ALREADY_EXISTS;
   } else {
     BmAddEntryOptions options;
     BmMatchParams match_params;
@@ -126,12 +127,23 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
           // options);
       match_params.clear();
       match_params.push_back(parse_exact_match_param(bridge_port->bridge_port, 1));
-      action_data.clear();
-      action_data.push_back(parse_param(port->hw_port, 1));
-      action_data.push_back(parse_param(2,1)); // 2 - out_if_type == ROUTER
+      // action_data.clear();
+      // action_data.push_back(parse_param(port->hw_port, 1));
+      // action_data.push_back(parse_param(2,1)); // 2 - out_if_type == ROUTER
       // table_add table_egress_br_port_to_if action_forward_set_outIfType 0 => 0 0
 
-      bridge_port->handle_egress_br_port_to_if = bm_bridge_client_ptr->bm_mt_add_entry(cxt_id, "table_egress_br_port_to_if", match_params, "action_forward_set_outIfType", action_data, options);
+      // bridge_port->handle_egress_br_port_to_if = bm_bridge_client_ptr->bm_mt_add_entry(cxt_id, "table_egress_br_port_to_if", match_params, "action_forward_set_outIfType", action_data, options);
+      bm_bridge_client_ptr->bm_mt_get_entry_from_key(
+          entry, cxt_id, "table_egress_br_port_to_if", match_params, options);
+      bridge_port->handle_egress_br_port_to_if = entry.entry_handle;
+
+    // Default virtual router and default vlan rif
+    VirtualRouter_obj * vr = new VirtualRouter_obj(sai_id_map_ptr);
+    switch_metadata_ptr->vrs[vr->sai_object_id] = vr;
+    
+    RouterInterface_obj * rif = new RouterInterface_obj(sai_id_map_ptr);
+    switch_metadata_ptr->rifs[rif->sai_object_id] = rif;
+    // TODO: add table enrties
 
 
     // Create MAC learn hostif_table_entry
@@ -145,7 +157,8 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
     add_hostif_trap_id_table_entry(MAC_LEARN_TRAP_ID, learn_mac);
 
     switch_list_ptr->push_back(switch_obj->sai_object_id);
-    return switch_obj->sai_object_id;
+    *switch_id = switch_obj->sai_object_id;
+    return SAI_STATUS_SUCCESS;
   }
 }
 

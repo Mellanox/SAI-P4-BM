@@ -26,6 +26,11 @@ field_list ipv4_checksum_list {
         ipv4.dstAddr;
 }
 
+calculated_field ipv4.checksum  {
+    verify ipv4_checksum;
+    update ipv4_checksum;
+}
+
 field_list lag_hash_fieldlist { 
     ethernet.srcAddr;
     // ipv4.srcAddr;
@@ -42,9 +47,14 @@ field_list_calculation lag_hash {
     output_width : 1; //TODO: LOG2(NUM_OF_PORTS)
 }
 
-field_list redirect_FL {
+field_list redirect_bridge_FL {
     standard_metadata;
     ingress_metadata.trap_id;
     ingress_metadata.bridge_id;
     ingress_metadata.bridge_port;
+}
+
+field_list redirect_router_FL {
+    standard_metadata;
+    ingress_metadata.trap_id;
 }

@@ -452,12 +452,12 @@ public:
     for (int i = 0; i < vrfs.size(); ++i) {
       if (std::find(vrfs.begin(), vrfs.end(), i) ==
           vrfs.end()) {
-        spdlog::get("logger")->debug("-->GetNewNextHopID: vrf is: {} ",
+        spdlog::get("logger")->debug("-->GetNewVrf: vrf is: {} ",
                                      i);
         return i;
       }
     }
-    spdlog::get("logger")->debug("--> GetNewNextHopID: vrf is: {} ",
+    spdlog::get("logger")->debug("--> GetNewVrf: vrf is: {} ",
                                  vrfs.size());
     return vrfs.size();
   }

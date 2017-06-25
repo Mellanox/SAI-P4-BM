@@ -28,7 +28,7 @@ from ptf.mask import Mask
 class L3IPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         print
-        print "Sending packet port 1 -> port 2 (192.168.0.1 -> 10.10.10.1 [id = 101])"
+        print "Sending packet port 1 -> port 2 (192.168.0.1 -> 10.10.10.1 [id = 105])"
         switch_init2(self.client)
         port0 = port_list[0]
         port1 = port_list[1]
@@ -85,14 +85,12 @@ class L3IPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
                                 ip_src='192.168.0.1',
                                 ip_id=105,
                                 ip_ttl=64)
-        exp_pkt = simple_tcp_packet(
-                                eth_dst=dmac1,
+        exp_pkt = simple_tcp_packet(eth_dst=dmac1,
                                 eth_src=router_mac,
                                 ip_dst='10.10.10.1',
                                 ip_src='192.168.0.1',
                                 ip_id=105,
-                                ip_ttl=64)
-                                # ip_ttl=63) TODO: add dec ttl in router
+                                ip_ttl=63)
         try:
             send_packet(self, 0, str(pkt))
             verify_packets(self, exp_pkt, [1])

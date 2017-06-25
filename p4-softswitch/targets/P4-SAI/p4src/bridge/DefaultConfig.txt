@@ -36,6 +36,7 @@ table_add table_egress_br_port_to_if action_forward_set_outIfType 4 => 4 0
 table_add table_egress_br_port_to_if action_forward_set_outIfType 5 => 5 0
 table_add table_egress_br_port_to_if action_forward_set_outIfType 6 => 6 0
 table_add table_egress_br_port_to_if action_forward_set_outIfType 7 => 7 0
+table_add table_egress_br_port_to_if action_forward_set_outIfType 9 => 9 2
 
 table_add table_port_set_packet_vid_internal action_set_packet_vid 1 =>
 table_add table_ingress_vlan_filtering _nop 0 1 =>
@@ -46,6 +47,7 @@ table_add table_ingress_vlan_filtering _nop 4 1 =>
 table_add table_ingress_vlan_filtering _nop 5 1 =>
 table_add table_ingress_vlan_filtering _nop 6 1 =>
 table_add table_ingress_vlan_filtering _nop 7 1 =>
+table_add table_ingress_vlan_filtering _nop 9 1 =>
 
 table_set_default table_egress_vlan_filtering _drop
 table_add table_egress_vlan_filtering _nop 0 1 =>
@@ -56,6 +58,7 @@ table_add table_egress_vlan_filtering _nop 4 1 =>
 table_add table_egress_vlan_filtering _nop 5 1 =>
 table_add table_egress_vlan_filtering _nop 6 1 =>
 table_add table_egress_vlan_filtering _nop 7 1 =>
+table_add table_egress_vlan_filtering _nop 9 1 =>
 
 table_add table_egress_vlan_tag action_forward_vlan_untag 0 1 1 =>
 table_add table_egress_vlan_tag action_forward_vlan_untag 1 1 1 =>
@@ -65,6 +68,7 @@ table_add table_egress_vlan_tag action_forward_vlan_untag 4 1 1 =>
 table_add table_egress_vlan_tag action_forward_vlan_untag 5 1 1 =>
 table_add table_egress_vlan_tag action_forward_vlan_untag 6 1 1 =>
 table_add table_egress_vlan_tag action_forward_vlan_untag 7 1 1 =>
+table_add table_egress_vlan_tag action_forward_vlan_tag 9 1 0 => 0 0 1
 table_set_default table_xSTP_instance action_set_stp_id 1
 
 table_set_default table_mc_lookup_mode action_set_mcast_lookup_mode 0 
