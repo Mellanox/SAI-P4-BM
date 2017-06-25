@@ -20,7 +20,19 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
       hostif->hostif_type = (sai_hostif_type_t)attribute.value.s32;
       break;
     case SAI_HOSTIF_ATTR_OBJ_ID:
-      hostif->port = switch_metadata_ptr->ports[attribute.value.oid];
+      hostif->netdev_obj_type = _sai_object_type_query(attribute.value.oid);
+      if (hostif->netdev_obj_type == SAI_OBJECT_TYPE_PORT) {
+        (*logger)->info("port object");
+        hostif->netdev_obj.port = switch_metadata_ptr->ports[attribute.value.oid];
+      }
+      if (hostif->netdev_obj_type == SAI_OBJECT_TYPE_LAG) {
+        (*logger)->info("lag object");
+        hostif->netdev_obj.lag = switch_metadata_ptr->lags[attribute.value.oid];
+      }
+      if (hostif->netdev_obj_type == SAI_OBJECT_TYPE_VLAN) {
+        (*logger)->info("vlan object");
+        hostif->netdev_obj.vlan = switch_metadata_ptr->vlans[attribute.value.oid];
+      }
       break;
     case SAI_HOSTIF_ATTR_NAME:
       hostif->netdev_name = string(attribute.value.chardata);
@@ -34,7 +46,7 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
     }
     (*logger)->info("creating netdev {}", hostif->netdev_name);
     hostif->netdev_fd = tun_alloc(netdev_name, 1);
-    int hw_port = hostif->port->hw_port;
+    int hw_port = hostif->netdev_obj.port->hw_port;
     hostif->netdev_thread =
         std::thread(phys_netdev_sniffer, hostif->netdev_fd, hw_port);
     hostif->netdev_thread.detach();

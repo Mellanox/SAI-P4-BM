@@ -54,6 +54,7 @@ rewrite_mac1='00:77:66:55:44:01'
 rewrite_mac2='00:77:66:55:44:02'
 default_bridge = 0
 default_bridge_type = SAI_BRIDGE_TYPE_1Q
+default_vlan_oid = 0
 
 
 is_bmv2 = ('BMV2_TEST' in os.environ) and (int(os.environ['BMV2_TEST']) == 1)
@@ -114,6 +115,8 @@ def switch_init2(client):
     attr_value = sai_thrift_attribute_value_t(oid=0)
     attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID, value=attr_value)
     default_bridge = client.sai_thrift_get_default_1q_bridge_id()
+    ret = client.sai_thrift_get_default_vlan_id()
+    default_vlan_oid = ret.data.oid
     for interface,front in interface_to_front_mapping.iteritems():
         sai_port_id = client.sai_thrift_get_port_id_by_front_port(front)
         port_list[int(interface)]=sai_port_id
@@ -404,6 +407,49 @@ def sai_thrift_create_hostif_trap_group(client, queue_id, policer_id=None):
     trap_group_id = client.sai_thrift_create_hostif_trap_group(thrift_attr_list=attr_list)
     return trap_group_id
 
+def sai_thrift_create_hostif_trap(client,
+                                  trap_type,
+                                  packet_action,
+                                  trap_priority=None,
+                                  exclude_port_list=None,
+                                  trap_group=None):
+    attr_list=[]
+
+    atr_value=sai_thrift_attribute_value_t(s32=trap_type)
+    atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE,
+                               value=atr_value)
+    attr_list.append(atr)
+
+    atr_value=sai_thrift_attribute_value_t(s32=packet_action)
+    atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION,
+                               value=atr_value)
+    attr_list.append(atr)
+
+    if trap_priority != None:
+        atr_value=sai_thrift_attribute_value_t(u32=trap_priority)
+        atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_PRIORITY,
+                                   value=atr_value)
+        attr_list.append(atr)
+
+    if trap_priority != None:
+        atr_value=sai_thrift_attribute_value_t(objlist=exclude_port_list)
+        atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_EXCLUDE_PORT_LIST,
+                                   value=atr_value)
+        attr_list.append(atr)
+
+    if trap_group != None:
+        atr_value=sai_thrift_attribute_value_t(oid=trap_group)
+        atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP,
+                                   value=atr_value)
+        attr_list.append(atr)
+
+    trap_id = client.sai_thrift_create_hostif_trap(attr_list)
+    return trap_id
+
+def sai_thrift_remove_hostif_trap(client,
+                                  trap_id):
+    client.sai_thrift_remove_hostif_trap(trap_id)
+
 def sai_thrift_create_port(client, bind_mode, hw_port, vlan_id=None):
     attr_list = []
     bind_attr_value = sai_thrift_attribute_value_t(s32=bind_mode)
@@ -473,12 +519,12 @@ def sai_thrift_set_hostif_trap(client, trap_id, action, priority=None, channel=N
         attribute2 = sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_PRIORITY, value=attribute2_value)
         client.sai_thrift_set_hostif_trap(trap_id, attribute2)
 
-def sai_thrift_create_hostif(client, rif_or_port_id, intf_name):
+def sai_thrift_create_hostif(client, obj_id, intf_name):
     attribute1_value = sai_thrift_attribute_value_t(s32=SAI_HOSTIF_TYPE_NETDEV)
     attribute1 = sai_thrift_attribute_t(id=SAI_HOSTIF_ATTR_TYPE,
                                         value=attribute1_value)
-    attribute2_value = sai_thrift_attribute_value_t(oid=rif_or_port_id)
-    attribute2 = sai_thrift_attribute_t(id=SAI_HOSTIF_ATTR_RIF_OR_PORT_ID,
+    attribute2_value = sai_thrift_attribute_value_t(oid=obj_id)
+    attribute2 = sai_thrift_attribute_t(id=SAI_HOSTIF_ATTR_OBJ_ID,
                                         value=attribute2_value)
     attribute3_value = sai_thrift_attribute_value_t(chardata=intf_name)
     attribute3 = sai_thrift_attribute_t(id=SAI_HOSTIF_ATTR_NAME,
@@ -486,6 +532,19 @@ def sai_thrift_create_hostif(client, rif_or_port_id, intf_name):
     attr_list = [attribute1, attribute2, attribute3]
     hif_id = client.sai_thrift_create_hostif(attr_list)
     return hif_id
+
+def sai_thrift_create_hostif_table_entry(client, trap_id, channel_type):
+    attribute1_value = sai_thrift_attribute_value_t(s32=SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID)
+    attribute1 = sai_thrift_attribute_t(id=SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE,
+                                        value=attribute1_value)
+    attribute2_value = sai_thrift_attribute_value_t(oid=trap_id)
+    attribute2 = sai_thrift_attribute_t(id=SAI_HOSTIF_TABLE_ENTRY_ATTR_TRAP_ID,
+                                        value=attribute2_value)
+    attribute3_value = sai_thrift_attribute_value_t(s32=channel_type)
+    attribute3 = sai_thrift_attribute_t(id=SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE,
+                                        value=attribute3_value)
+    attr_list = [attribute1, attribute2, attribute3]
+    client.sai_thrift_create_hostif_table_entry(attr_list)
 
 def sai_thrift_create_acl_table(client, addr_family,
                                 ip_src, ip_dst,

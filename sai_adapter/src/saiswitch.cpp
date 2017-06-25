@@ -21,6 +21,7 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
     (*logger)->info("Default 1Q bridge. sai_object_id {} bridge_id {}",
                     bridge->sai_object_id, bridge->bridge_id);
     Sai_obj *switch_obj = new Sai_obj(sai_id_map_ptr);
+    switch_metadata_ptr->switch_id = switch_obj->sai_object_id;
     switch_metadata_ptr->bridges[bridge->sai_object_id] = bridge;
     switch_metadata_ptr->default_bridge_id = bridge->sai_object_id;
 

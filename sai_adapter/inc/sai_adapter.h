@@ -270,6 +270,7 @@ public:
   sai_adapter();
   ~sai_adapter();
   sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table);
+  static sai_object_type_t _sai_object_type_query(sai_object_id_t);
 
 private:
   // sai_object_id_t switch_id;

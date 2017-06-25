@@ -247,13 +247,18 @@ public:
 
 class HostIF_obj : public Sai_obj {
 public:
-  Port_obj *port;
+  union netdev_obj {
+    Port_obj *port;
+    Lag_obj  *lag;
+    Vlan_obj *vlan;
+  } netdev_obj;
+  sai_object_type_t netdev_obj_type;
   sai_hostif_type_t hostif_type;
   std::string netdev_name;
   int netdev_fd;
   std::thread netdev_thread;
   HostIF_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
-    this->port = nullptr;
+    this->netdev_obj.port = nullptr;
     this->hostif_type = SAI_HOSTIF_TYPE_NETDEV;
     this->netdev_name = "";
   }
@@ -365,6 +370,7 @@ typedef std::map<sai_object_id_t, RouterInterface_obj *> rif_id_map_t;
 typedef std::map<sai_object_id_t, NextHop_obj *> nhop_id_map_t;
 class Switch_metadata { 
 public:
+  sai_object_id_t switch_id;
   sai_u32_list_t hw_port_list;
   port_id_map_t ports;
   bridge_port_id_map_t bridge_ports;
@@ -432,8 +438,8 @@ public:
     for (hostif_id_map_t::iterator it = hostifs.begin(); it != hostifs.end();
          ++it) {
       spdlog::get("logger")->debug("hostif hw_port {} ",
-                                   it->second->port->hw_port);
-      if (it->second->port->hw_port == port_num) {
+                                   it->second->netdev_obj.port->hw_port);
+      if (it->second->netdev_obj.port->hw_port == port_num) {
         return it->second;
       }
     }
