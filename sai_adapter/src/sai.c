@@ -44,12 +44,8 @@ static const char *module[] = {
 
 sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table) {
   sai_status_t status = SAI_STATUS_SUCCESS;
-
-  // SAI_LOG_ENTER();
-
   if (!api_method_table) {
     status = SAI_STATUS_INVALID_PARAMETER;
-    // SAI_LOG_ERROR("null api method table: %s", sai_status_to_string(status));
     return status;
   }
 
@@ -60,9 +56,21 @@ sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table) {
 sai_status_t sai_api_initialize(uint64_t flags,
                                 const service_method_table_t *services) {
   sai_adapter = create_sai_adapter();
+  return SAI_STATUS_SUCCESS;
 }
 
-sai_status_t sai_api_uninitialize(void) { free_sai_adapter(sai_adapter); }
+sai_status_t sai_api_uninitialize(void) { 
+    free_sai_adapter(sai_adapter);
+    return SAI_STATUS_SUCCESS;
+}
+
+sai_object_type_t sai_object_type_query(sai_object_id_t sai_object_id) {
+    return sai_adapter_object_type_query(sai_adapter, sai_object_id);
+}
+
+sai_status_t sai_log_set(sai_api_t sai_api_id, sai_log_level_t log_level) { 
+    return SAI_STATUS_NOT_IMPLEMENTED;
+}
 
 #ifdef __cplusplus
 }

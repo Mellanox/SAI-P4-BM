@@ -174,6 +174,55 @@ sai_status_t sai_adapter::sai_api_query(sai_api_t sai_api_id,
   return SAI_STATUS_SUCCESS;
 }
 
+sai_object_type_t sai_adapter::_sai_object_type_query(sai_object_id_t sai_object_id) {
+  if (switch_metadata_ptr->switch_id == sai_object_id) {
+    return SAI_OBJECT_TYPE_SWITCH;
+  }
+  if (switch_metadata_ptr->ports.find(sai_object_id) != switch_metadata_ptr->ports.end()) {
+    return SAI_OBJECT_TYPE_PORT;
+  }
+  if (switch_metadata_ptr->bridge_ports.find(sai_object_id) != switch_metadata_ptr->bridge_ports.end()) {
+    return SAI_OBJECT_TYPE_BRIDGE_PORT;
+  }
+  if (switch_metadata_ptr->bridges.find(sai_object_id) != switch_metadata_ptr->bridges.end()) {
+    return SAI_OBJECT_TYPE_BRIDGE;
+  }
+  if (switch_metadata_ptr->vlans.find(sai_object_id) != switch_metadata_ptr->vlans.end()) {
+    return SAI_OBJECT_TYPE_VLAN;
+  }
+  if (switch_metadata_ptr->vlan_members.find(sai_object_id) != switch_metadata_ptr->vlan_members.end()) {
+    return SAI_OBJECT_TYPE_VLAN_MEMBER;
+  }
+  if (switch_metadata_ptr->lags.find(sai_object_id) != switch_metadata_ptr->lags.end()) {
+    return SAI_OBJECT_TYPE_LAG;
+  }
+  if (switch_metadata_ptr->lag_members.find(sai_object_id) != switch_metadata_ptr->lag_members.end()) {
+    return SAI_OBJECT_TYPE_LAG_MEMBER;
+  }
+  if (switch_metadata_ptr->hostifs.find(sai_object_id) != switch_metadata_ptr->hostifs.end()) {
+    return SAI_OBJECT_TYPE_HOSTIF;
+  }
+  if (switch_metadata_ptr->hostif_table_entries.find(sai_object_id) != switch_metadata_ptr->hostif_table_entries.end()) {
+    return SAI_OBJECT_TYPE_HOSTIF_TABLE_ENTRY;
+  }
+  if (switch_metadata_ptr->hostif_traps.find(sai_object_id) != switch_metadata_ptr->hostif_traps.end()) {
+    return SAI_OBJECT_TYPE_HOSTIF_TRAP;
+  }
+  if (switch_metadata_ptr->hostif_trap_groups.find(sai_object_id) != switch_metadata_ptr->hostif_trap_groups.end()) {
+    return SAI_OBJECT_TYPE_HOSTIF_TRAP_GROUP;
+  }
+  if (switch_metadata_ptr->vrs.find(sai_object_id) != switch_metadata_ptr->vrs.end()) {
+    return SAI_OBJECT_TYPE_VIRTUAL_ROUTER;
+  }
+  if (switch_metadata_ptr->rifs.find(sai_object_id) != switch_metadata_ptr->rifs.end()) {
+    return SAI_OBJECT_TYPE_ROUTER_INTERFACE;
+  }
+  if (switch_metadata_ptr->nhops.find(sai_object_id) != switch_metadata_ptr->nhops.end()) {
+    return SAI_OBJECT_TYPE_NEXT_HOP;
+  }
+  return SAI_OBJECT_TYPE_NULL;
+}
+
 void sai_adapter::internal_init_switch() {
   sai_object_id_t switch_id2;
   (*logger)->info("Switch init with default configurations");
