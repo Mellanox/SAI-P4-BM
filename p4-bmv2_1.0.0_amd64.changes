@@ -15,8 +15,8 @@ Changes:
  .
    * Initial release.
 Checksums-Sha1:
- bb8c202aea4c2722299a6fc096d0e08e2e23ec8f 1020 p4-bmv2_1.0.0_amd64.deb
+ a11e880d7c32147bd8d89fb19b3bd679bb5d7020 1016 p4-bmv2_1.0.0_amd64.deb
 Checksums-Sha256:
- 07f5eb48867a34e816dd635660a4dadb1121c051476796b21212711c70e5ef40 1020 p4-bmv2_1.0.0_amd64.deb
+ d6e1253d25d6cf466bd939b3550808010bd2704371adc671af529e7e6afbe898 1016 p4-bmv2_1.0.0_amd64.deb
 Files:
- ab3d2f0b564ab278b69dfe8b50c67f7e 1020 net optional p4-bmv2_1.0.0_amd64.deb
+ cf21f340864bc0d891161845f14598cd 1016 net optional p4-bmv2_1.0.0_amd64.deb
