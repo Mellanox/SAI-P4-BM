@@ -72,6 +72,15 @@ sai_status_t sai_log_set(sai_api_t sai_api_id, sai_log_level_t log_level) {
     return SAI_STATUS_NOT_IMPLEMENTED;
 }
 
+sai_object_id_t sai_switch_id_query(sai_object_id_t sai_object_id) {
+        return 0; //TODO add switch id
+}
+
+sai_status_t sai_dbg_generate_dump(const char *dump_file_name) {
+    return SAI_STATUS_NOT_IMPLEMENTED;
+}
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
