@@ -1,5 +1,5 @@
 CPP_DEFS   =-D=HAVE_CONFIG_H
-CPP_OPTS   =-Wall -O3 -std=c++11 -pthread -w
+CPP_OPTS   =-Wall -O3 -std=c++11 -pthread -w -fPIC
 
 BM_DIR     = ../thrift_src/gen-cpp/bm
 HEADERS = ${BM_DIR}/standard_constants.h \
