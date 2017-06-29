@@ -1,5 +1,5 @@
 SAI_ADAPTER_DIR = ../..
-BM_DIR      = ${SAI_ADAPTER_DIR}/../p4-softswitch/
+BM_DIR      = ${SAI_ADAPTER_DIR}/../p4-softswitch
 INC_DIR     = ../../inc
 SAI_INC_DIR = ${INC_DIR}/SAI 
 SAI_SRC_DIR = ${SAI_ADAPTER_DIR}/src
