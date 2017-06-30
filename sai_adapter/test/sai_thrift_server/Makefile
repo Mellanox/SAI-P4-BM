@@ -3,10 +3,10 @@ BM_DIR      = ${SAI_ADAPTER_DIR}/../p4-softswitch
 INC_DIR     = ../../inc
 SAI_INC_DIR = ${INC_DIR}/SAI 
 SAI_SRC_DIR = ${SAI_ADAPTER_DIR}/src
-LIBS_DIRS = -L${SAI_ADAPTER_DIR}/lib -L${BM_DIR}/libp4bm
+LIBS_DIRS = -L${SAI_ADAPTER_DIR}/lib
 CPP_DEFS   =-D=HAVE_CONFIG_H
 CPP_OPTS   =-Wall -O3 -std=c++11 -pthread -w
-LIBS       = ${LIBS_DIRS} -lp4sai -lthrift -lpcap -lp4bm
+LIBS       = ${LIBS_DIRS} -lp4sai -lthrift -lpcap -lruntimestubs
 SAI_THRIFT_SRC_DIR    = ${SAI_ADAPTER_DIR}/test/sai_thrift_src/gen-cpp
 INC_DIRS = -I${INC_DIR} -I${SAI_INC_DIR} -I${SAI_THRIFT_SRC_DIR} 
 OBJ_DIR    = obj

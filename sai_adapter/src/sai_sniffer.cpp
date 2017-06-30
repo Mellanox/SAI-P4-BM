@@ -17,11 +17,11 @@ void print_mac_to_log(const uint8_t *mac,
 }
 
 void sai_adapter::release_pcap_lock() {
-  (*logger)->info("release pcap lock");
   std::unique_lock<std::mutex> lk(m);
   pcap_loop_started = true;
   lk.unlock();
   cv.notify_one();
+  (*logger)->info("pcap lock released");
 }
 
 void sai_adapter::PacketSniffer() {
