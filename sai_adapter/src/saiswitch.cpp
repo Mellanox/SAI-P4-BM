@@ -37,7 +37,7 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
     // bm_bridge_client_ptr->bm_mt_get_entry_from_key(entry, cxt_id, "table_flood", match_params, options);
     // vlan->handle_flood = entry.entry_handle;
     switch_metadata_ptr->default_vlan_oid = vlan->sai_object_id;
-
+    (*logger)->info("Default vlan id 1 (oid = {})", vlan->sai_object_id);
     for (int i = 0; i < switch_metadata_ptr->hw_port_list.count; i++) {
       int hw_port = switch_metadata_ptr->hw_port_list.list[i];
 

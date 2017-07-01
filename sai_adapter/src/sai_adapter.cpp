@@ -281,7 +281,7 @@ BmMatchParam parse_exact_match_param(uint64_t param, uint32_t num_of_bytes) {
   BmMatchParam match_param;
   match_param.type = BmMatchParamType::type::EXACT;
   BmMatchParamExact match_param_exact;
-  match_param_exact.key = parse_param(param, num_of_bytes);
+  match_param_exact.__set_key(parse_param(param, num_of_bytes));
   match_param.__set_exact(match_param_exact);
   return match_param;
 }
@@ -290,9 +290,19 @@ BmMatchParam parse_lpm_param(uint64_t param, uint32_t num_of_bytes, uint32_t pre
   BmMatchParam match_param;
   match_param.type = BmMatchParamType::type::LPM;
   BmMatchParamLPM match_param_lpm;
-  match_param_lpm.key = parse_param(param, num_of_bytes);
+  match_param_lpm.__set_key(parse_param(param, num_of_bytes));
   match_param_lpm.__set_prefix_length(prefix_length);
   match_param.__set_lpm(match_param_lpm);
+  return match_param;
+}
+
+BmMatchParam parse_ternary_param(uint64_t param, uint32_t num_of_bytes, uint64_t mask) {
+  BmMatchParam match_param;
+  match_param.type = BmMatchParamType::type::TERNARY;
+  BmMatchParamTernary match_param_ternary;
+  match_param_ternary.__set_key(parse_param(param, num_of_bytes));
+  match_param_ternary.__set_mask(parse_param(mask, num_of_bytes));
+  match_param.__set_ternary(match_param_ternary);
   return match_param;
 }
 

@@ -16,6 +16,7 @@ sleep 2
 ./runtime_CLI --pre SimplePreLAG < p4src/bridge/DefaultConfig.txt
 ./sswitch_CLI < p4src/bridge/DefaultConfigMirror.txt
 ./runtime_CLI --pre SimplePreLAG --thrift-port 9091 < p4src/router/DefaultConfig.txt
+./sswitch_CLI --thrift-port 9091 < p4src/router/DefaultConfigMirror.txt
 
 echo "router and bridge are running send SIGINT to close"
 

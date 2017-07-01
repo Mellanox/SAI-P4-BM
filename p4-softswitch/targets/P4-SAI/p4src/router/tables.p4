@@ -19,8 +19,8 @@ table table_ingress_vrf {
 
 table table_pre_l3_trap {
 	reads {
-		ethernet.etherType : ternary;
-		ipv4.dstAddr       : ternary;
+		vlan.etherType : ternary;
+		ipv4.dstAddr   : lpm;
 	}
 	actions { action_set_trap_id;}
 }

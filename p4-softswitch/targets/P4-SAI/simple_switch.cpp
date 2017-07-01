@@ -357,8 +357,8 @@ SimpleSwitch::ingress_thread() {
 
     // INGRESS CLONING
     if (clone_spec) {
-      BMLOG_DEBUG_PKT(*packet, "Cloning packet at ingress");
       egress_port = get_mirroring_mapping(clone_spec & 0xFFFF);
+      BMLOG_DEBUG_PKT(*packet, "Cloning packet at ingress to port {}", egress_port);
       f_clone_spec.set(0);
       if (egress_port >= 0) {
         const Packet::buffer_state_t packet_out_state =

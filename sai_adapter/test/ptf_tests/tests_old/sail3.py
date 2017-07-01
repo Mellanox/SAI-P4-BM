@@ -119,12 +119,11 @@ class ArpTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         print
         print "Sending arp packet to port 1"
-        switch_init2(self.client)
+        default_bridge, default_vlan_oid = switch_init2(self.client)
         # port1 = port_list[1]
         src_mac = '00:11:22:33:44:55'
         src_ip = '192.168.50.50'
         dst_ip = '192.168.45.45'
-
         hostif = sai_thrift_create_hostif(client=self.client,
                                           obj_id=default_vlan_oid,
                                           intf_name="vlan1")

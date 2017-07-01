@@ -1777,7 +1777,7 @@ void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list
   }
 
   sai_thrift_object_id_t sai_thrift_create_hostif_trap_group(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
-      logger->info("sai_thrift_create_hostif_trap_group\n");
+      logger->info("sai_thrift_create_hostif_trap_group");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_hostif_api_t *hostif_api;
       sai_object_id_t hif_trap_group_id;

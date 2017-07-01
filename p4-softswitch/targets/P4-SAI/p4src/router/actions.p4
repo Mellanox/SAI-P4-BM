@@ -23,7 +23,7 @@ action action_copy_to_cpu() {
 }
 
 action action_trap_to_cpu() {
-	clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_router_FL);
+	clone_ingress_pkt_to_egress(8, redirect_router_FL);
 	drop();
 }
 
@@ -77,6 +77,7 @@ action action_cpu_encap() {
 	add_header(cpu_header);
 	cpu_header.port = standard_metadata.ingress_port;
 	cpu_header.trap_id = ingress_metadata.trap_id;
+	standard_metadata.egress_spec = COPY_TO_CPU_MIRROR_ID;
 }
 
 action action_forward_cpu() {

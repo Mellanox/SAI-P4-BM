@@ -132,9 +132,9 @@ def switch_init2(client):
 
     attr_value = sai_thrift_attribute_value_t(mac=router_mac)
     attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_SRC_MAC_ADDRESS, value=attr_value)
-    client.sai_thrift_set_switch_attribute(attr)
-    
+    client.sai_thrift_set_switch_attribute(attr)  
     switch_inited = 1
+    return default_bridge, default_vlan_oid
 
 def sai_thrift_get_cpu_port_id(client):
     cpu_port = client.sai_thrift_get_cpu_port_id()

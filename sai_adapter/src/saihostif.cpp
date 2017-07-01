@@ -33,6 +33,9 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
         (*logger)->info("vlan object");
         hostif->netdev_obj.vlan = switch_metadata_ptr->vlans[attribute.value.oid];
       }
+      if (hostif->netdev_obj_type == SAI_OBJECT_TYPE_NULL) {
+        (*logger)->error("object id {} given to create hostif is invalid", attribute.value.oid);
+      }
       break;
     case SAI_HOSTIF_ATTR_NAME:
       hostif->netdev_name = string(attribute.value.chardata);
@@ -173,35 +176,81 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
   }
   *hostif_trap_id = hostif_trap->sai_object_id;
 
-  if (hostif_trap->trap_type == SAI_HOSTIF_TRAP_TYPE_LACP &&
-      hostif_trap->trap_action == SAI_PACKET_ACTION_TRAP) {
-    BmAddEntryOptions options;
-    BmMatchParams match_params;
-    BmActionData action_data;
-    action_data.clear();
-    match_params.clear();
-    match_params.push_back(
-        parse_exact_match_param(1652522221570, 6)); // dmac : 01-80-c2-00-00-02
-    action_data.push_back(parse_param(hostif_trap->trap_id, 2));
-    hostif_trap->handle_l2_trap = bm_bridge_client_ptr->bm_mt_add_entry(
-        cxt_id, "table_l2_trap", match_params, "action_set_trap_id",
-        action_data, options);
-    (*logger)->info("added l2 trap - lacp , trap_id: {}.", hostif_trap->trap_id,
-                    hostif_trap->sai_object_id);
+  BmAddEntryOptions options;
+  BmMatchParams match_params;
+  BmActionData action_data;
+  action_data.clear();
+  match_params.clear();
+  switch (hostif_trap->trap_type) {
+    // l2 trap
+    case SAI_HOSTIF_TRAP_TYPE_LACP:    
+      match_params.push_back(
+          parse_exact_match_param(1652522221570, 6)); // dmac : 01-80-c2-00-00-02
+      action_data.push_back(parse_param(hostif_trap->trap_id, 2));
+      hostif_trap->handle_l2_trap = bm_bridge_client_ptr->bm_mt_add_entry(
+          cxt_id, "table_l2_trap", match_params, "action_set_trap_id",
+          action_data, options);
+      (*logger)->info("added l2 trap - lacp , trap_id: {}.", hostif_trap->trap_id,
+                      hostif_trap->sai_object_id);
 
-    action_data.clear();
-    match_params.clear();
-    match_params.push_back(parse_exact_match_param(hostif_trap->trap_id, 2));
-    hostif_trap->handle_trap_id = bm_bridge_client_ptr->bm_mt_add_entry(
-        cxt_id, "table_trap_id", match_params, "action_trap_to_cpu",
-        action_data, options);
-    (*logger)->info("added LACP trap to cpu, trap_id: {}. sai_object_id: {}",
-                    hostif_trap->trap_id, hostif_trap->sai_object_id);
-  } else {
-    (*logger)->warn(
-        "unsupported trap requested, trap type is: {}, trap_action is: {} \n ",
+      action_data.clear();
+      match_params.clear();
+      match_params.push_back(parse_exact_match_param(hostif_trap->trap_id, 2));
+      switch (hostif_trap->trap_action) {
+        case SAI_PACKET_ACTION_TRAP:
+          hostif_trap->handle_trap_id = bm_bridge_client_ptr->bm_mt_add_entry(
+              cxt_id, "table_trap_id", match_params, "action_trap_to_cpu",
+              action_data, options);
+          break;
+        case SAI_PACKET_ACTION_LOG:
+        case SAI_PACKET_ACTION_COPY:
+          hostif_trap->handle_trap_id = bm_bridge_client_ptr->bm_mt_add_entry(
+              cxt_id, "table_trap_id", match_params, "action_copy_to_cpu",
+              action_data, options);
+          break;
+      }
+
+      (*logger)->info("added LACP trap to cpu, trap_id: {}. sai_object_id: {}",
+                      hostif_trap->trap_id, hostif_trap->sai_object_id);
+      break;
+
+    // Router pre-l3 traps
+    case SAI_HOSTIF_TRAP_TYPE_ARP_REQUEST:    
+      match_params.push_back(parse_ternary_param(0x806, 2, 0xffff));
+      match_params.push_back(parse_lpm_param(0, 4, 0));
+      action_data.push_back(parse_param(hostif_trap->trap_id, 2));
+      hostif_trap->handle_l2_trap = bm_router_client_ptr->bm_mt_add_entry(
+          cxt_id, "table_pre_l3_trap", match_params, "action_set_trap_id",
+          action_data, options);
+      (*logger)->info("added ARP trap. trap_id: {}.", hostif_trap->trap_id,
+                      hostif_trap->sai_object_id);
+
+      action_data.clear();
+      match_params.clear();
+      match_params.push_back(parse_exact_match_param(hostif_trap->trap_id, 2));
+      switch (hostif_trap->trap_action) {
+        case SAI_PACKET_ACTION_TRAP:
+          hostif_trap->handle_trap_id = bm_router_client_ptr->bm_mt_add_entry(
+              cxt_id, "table_l3_trap_id", match_params, "action_trap_to_cpu",
+              action_data, options);
+          break;
+        case SAI_PACKET_ACTION_LOG:
+        case SAI_PACKET_ACTION_COPY:
+          hostif_trap->handle_trap_id = bm_router_client_ptr->bm_mt_add_entry(
+              cxt_id, "table_l3_trap_id", match_params, "action_copy_to_cpu",
+              action_data, options);
+          break;
+      }
+
+      (*logger)->info("added ARP trap to cpu, trap_id: {}. sai_object_id: {}",
+                      hostif_trap->trap_id, hostif_trap->sai_object_id);
+      break;
+    default:
+      (*logger)->warn(
+        "unsupported trap requested, trap type is: {}, trap_action is: {}",
         hostif_trap->trap_type, hostif_trap->trap_action);
-  }
+      break;
+  } 
 }
 
 sai_status_t sai_adapter::remove_hostif_trap(sai_object_id_t hostif_trap_id) {
@@ -281,6 +330,48 @@ int sai_adapter::phys_netdev_sniffer(int in_dev_fd, int hw_port) {
     (*logger)->info("ethertype: {0:02X}. DMAC:", ntohs(ether->ether_type));
     print_mac_to_log(ether->dst_addr, *logger);
     phys_netdev_packet_handler(hw_port, length, buffer);
+  }
+  return 0;
+}
+
+void sai_adapter::netdev_vlan_fn(u_char *packet, cpu_hdr_t *cpu,
+                                      int pkt_len) {
+  // (*logger)->info(
+      // "trap arrived to physical netdev cahnnel @ ingress_port {}. len = {}",
+      // cpu->ingress_port, pkt_len);
+  // HostIF_obj *hostif =
+      // switch_metadata_ptr->GetHostIFFromPhysicalPort(cpu->ingress_port);
+  // write(hostif->netdev_fd, packet, pkt_len);
+  return;
+}
+
+void sai_adapter::vlan_netdev_packet_handler(uint16_t vlan_id, int length,
+                                             const u_char *packet) {
+  (*logger)->info("recieved packet on vlan netdev {}", vlan_id);
+  vlan_hdr_t *vlan_hdr = (vlan_hdr_t *) (packet + ETHER_ADDR_LEN);
+  vlan_hdr->tci = (0xf000 & vlan_hdr->tci) + vlan_id;
+  u_char *encaped_packet =
+      (u_char *)malloc(sizeof(u_char) * (CPU_HDR_LEN + length));
+  cpu_hdr_t *cpu_hdr = (cpu_hdr_t *)encaped_packet;
+  cpu_hdr->ingress_port = 0;
+  memcpy(encaped_packet + CPU_HDR_LEN, packet, length);
+  // sai_adapter *adapter = (sai_adapter*) arg_array[1];
+  if (pcap_inject(adapter_pcap, encaped_packet, length + CPU_HDR_LEN) == -1) {
+    printf("error on injecting packet [%s]\n", pcap_geterr(adapter_pcap));
+  }
+  free(encaped_packet);
+}
+
+int sai_adapter::vlan_netdev_sniffer(int in_dev_fd, uint16_t vlan_id) {
+  u_char buffer[1500]; // change to get_mtu?
+  uint16_t length;
+  while (1) {
+    length = read(in_dev_fd, buffer, sizeof(buffer));
+    (*logger)->info("received packet of length: {}", length);
+    ethernet_hdr_t *ether = (ethernet_hdr_t *)buffer;
+    (*logger)->info("ethertype: {0:02X}. DMAC:", ntohs(ether->ether_type));
+    print_mac_to_log(ether->dst_addr, *logger);
+    vlan_netdev_packet_handler(vlan_id, length, buffer);
   }
   return 0;
 }
