@@ -1883,9 +1883,43 @@ void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list
     logger->info("sai_thrift_create_acl_table");
   }
 
+  void sai_thrift_parse_hostif_table_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it1 = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it1++) {
+          attribute = (sai_thrift_attribute_t)*it1;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+              case SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE:
+              case SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
+              case SAI_HOSTIF_TABLE_ENTRY_ATTR_TRAP_ID:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
+              default:
+                  break;
+          }
+      }
+  }
+
   sai_thrift_object_id_t sai_thrift_create_hostif_table_entry(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
     // Your implementation goes here
     logger->info("sai_thrift_create_hostif_table_entry");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_hostif_api_t *hostif_api;
+    sai_object_id_t hif_table_id;
+    status = sai_api_query(SAI_API_HOSTIF, (void **) &hostif_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        return status;
+    }
+    sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+    sai_thrift_parse_hostif_table_attributes(thrift_attr_list, attr_list);
+    uint32_t attr_count = thrift_attr_list.size();
+    sai_object_id_t s_id = 0;
+    status = hostif_api->create_hostif_table_entry(&hif_table_id, s_id, attr_count, attr_list);
+    free(attr_list);
+    return hif_table_id;
   }
 
   sai_thrift_status_t sai_thrift_remove_hostif_table_entry(const sai_thrift_object_id_t hif_table_entry_id) {

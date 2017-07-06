@@ -448,6 +448,19 @@ public:
     return nullptr;
   }
 
+  HostIF_obj *GetHostIFFromVlanId(int vid) {
+    for (hostif_id_map_t::iterator it = hostifs.begin(); it != hostifs.end();
+         ++it) {
+      spdlog::get("logger")->debug("hostif vlan_id {} ",
+                                   it->second->netdev_obj.vlan->vid);
+      if (it->second->netdev_obj.vlan->vid == vid) {
+        return it->second;
+      }
+    }
+    spdlog::get("logger")->error("hostif not found for vlan id {} ", vid);
+    return nullptr;
+  }
+
   uint32_t GetNewVrf() {
     std::vector<uint32_t> vrfs;
     for (vr_id_map_t::iterator it = vrs.begin();

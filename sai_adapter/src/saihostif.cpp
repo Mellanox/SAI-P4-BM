@@ -100,6 +100,10 @@ sai_status_t sai_adapter::create_hostif_table_entry(
     handler_fn = netdev_phys_port_fn;
     (*logger)->info("netdev_phys_port_fn");
     break;
+  case SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_L3:
+    handler_fn = netdev_vlan_fn;
+    (*logger)->info("netdev_vlan_fn");
+    break;
   default:
     (*logger)->error("channel type not supported");
     return SAI_STATUS_NOT_SUPPORTED;
@@ -287,7 +291,7 @@ void sai_adapter::lookup_hostif_trap_id_table(u_char *packet, cpu_hdr_t *cpu,
     it->second(packet, cpu, pkt_len);
     return;
   } else {
-    printf("hostif_table lookup failed\n"); // TODO logger / return value
+    (*logger)->error("hostif_table lookup failed");
   }
 }
 
@@ -298,7 +302,9 @@ void sai_adapter::netdev_phys_port_fn(u_char *packet, cpu_hdr_t *cpu,
       cpu->ingress_port, pkt_len);
   HostIF_obj *hostif =
       switch_metadata_ptr->GetHostIFFromPhysicalPort(cpu->ingress_port);
-  write(hostif->netdev_fd, packet, pkt_len);
+  if (hostif != nullptr) {
+    write(hostif->netdev_fd, packet, pkt_len);
+  }
   return;
 }
 
@@ -311,9 +317,9 @@ void sai_adapter::phys_netdev_packet_handler(int hw_port, int length,
   cpu_hdr->ingress_port = hw_port;
   memcpy(encaped_packet + CPU_HDR_LEN, packet, length);
   // sai_adapter *adapter = (sai_adapter*) arg_array[1];
-  if (pcap_inject(adapter_pcap, encaped_packet, length + CPU_HDR_LEN) == -1) {
-    printf("error on injecting packet [%s]\n", pcap_geterr(adapter_pcap));
-  }
+  // if (pcap_inject(adapter_pcap, encaped_packet, length + CPU_HDR_LEN) == -1) {
+    // printf("error on injecting packet [%s]\n", pcap_geterr(adapter_pcap));
+  // }
   free(encaped_packet);
 }
 
@@ -336,19 +342,22 @@ int sai_adapter::phys_netdev_sniffer(int in_dev_fd, int hw_port) {
 
 void sai_adapter::netdev_vlan_fn(u_char *packet, cpu_hdr_t *cpu,
                                       int pkt_len) {
-  // (*logger)->info(
-      // "trap arrived to physical netdev cahnnel @ ingress_port {}. len = {}",
-      // cpu->ingress_port, pkt_len);
-  // HostIF_obj *hostif =
-      // switch_metadata_ptr->GetHostIFFromPhysicalPort(cpu->ingress_port);
-  // write(hostif->netdev_fd, packet, pkt_len);
+  vlan_hdr_t *vlan_hdr = (vlan_hdr_t *) (packet + ETHER_HDR_LEN);
+  uint16_t vid = ntohs(vlan_hdr->tci) & 0x0fff;
+  (*logger)->info(
+      "trap arrived to vlan netdev cahnnel @ vlan_id {}. len = {}", vid, pkt_len);
+  HostIF_obj *hostif =
+      switch_metadata_ptr->GetHostIFFromVlanId(vid);
+  if (hostif != nullptr) {
+    write(hostif->netdev_fd, packet, pkt_len);
+  }
   return;
 }
 
 void sai_adapter::vlan_netdev_packet_handler(uint16_t vlan_id, int length,
                                              const u_char *packet) {
   (*logger)->info("recieved packet on vlan netdev {}", vlan_id);
-  vlan_hdr_t *vlan_hdr = (vlan_hdr_t *) (packet + ETHER_ADDR_LEN);
+  vlan_hdr_t *vlan_hdr = (vlan_hdr_t *) (packet + ETHER_HDR_LEN);
   vlan_hdr->tci = (0xf000 & vlan_hdr->tci) + vlan_id;
   u_char *encaped_packet =
       (u_char *)malloc(sizeof(u_char) * (CPU_HDR_LEN + length));
@@ -356,9 +365,9 @@ void sai_adapter::vlan_netdev_packet_handler(uint16_t vlan_id, int length,
   cpu_hdr->ingress_port = 0;
   memcpy(encaped_packet + CPU_HDR_LEN, packet, length);
   // sai_adapter *adapter = (sai_adapter*) arg_array[1];
-  if (pcap_inject(adapter_pcap, encaped_packet, length + CPU_HDR_LEN) == -1) {
-    printf("error on injecting packet [%s]\n", pcap_geterr(adapter_pcap));
-  }
+  // if (pcap_inject(adapter_pcap, encaped_packet, length + CPU_HDR_LEN) == -1) {
+    // printf("error on injecting packet [%s]\n", pcap_geterr(adapter_pcap));
+  // }
   free(encaped_packet);
 }
 
