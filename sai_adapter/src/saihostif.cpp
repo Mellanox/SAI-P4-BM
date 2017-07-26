@@ -7,6 +7,7 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
                                         sai_object_id_t switch_id,
                                         uint32_t attr_count,
                                         const sai_attribute_t *attr_list) {
+  // TODO - move to 1 thread listening to all hostif (like in cpu ports)?
   (*logger)->info("create_hostif");
   HostIF_obj *hostif = new HostIF_obj(sai_id_map_ptr);
   switch_metadata_ptr->hostifs[hostif->sai_object_id] = hostif;
@@ -60,6 +61,9 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
 
 sai_status_t sai_adapter::remove_hostif(sai_object_id_t hif_id) {
   (*logger)->info("remove_hostif");
+  HostIF_obj *hostif = switch_metadata_ptr->hostifs[hif_id];
+  switch_metadata_ptr->hostifs.erase(hostif->sai_object_id);
+  sai_id_map_ptr->free_id(hostif->sai_object_id);
   return SAI_STATUS_SUCCESS;
 }
 
@@ -130,7 +134,11 @@ sai_status_t sai_adapter::create_hostif_table_entry(
 
 sai_status_t
 sai_adapter::remove_hostif_table_entry(sai_object_id_t hif_table_entry) {
+  //TODO: DELETE TABLE ENTRIES!
   (*logger)->info("remove_hostif_table_entry");
+  HostIF_Table_Entry_obj *hostif_table_entry = switch_metadata_ptr->hostif_table_entries[hif_table_entry];
+  switch_metadata_ptr->hostif_table_entries.erase(hostif_table_entry->sai_object_id);
+  sai_id_map_ptr->free_id(hostif_table_entry->sai_object_id);
 }
 
 sai_status_t sai_adapter::create_hostif_trap_group(
@@ -149,6 +157,9 @@ sai_status_t sai_adapter::create_hostif_trap_group(
 sai_status_t
 sai_adapter::remove_hostif_trap_group(sai_object_id_t hostif_trap_group_id) {
   (*logger)->info("remove_hostif_trap_group");
+  HostIF_Trap_Group_obj *hostif_trap_group = switch_metadata_ptr->hostif_trap_groups[hostif_trap_group_id];
+  switch_metadata_ptr->hostif_trap_groups.erase(hostif_trap_group->sai_object_id);
+  sai_id_map_ptr->free_id(hostif_trap_group->sai_object_id);
   return SAI_STATUS_SUCCESS;
 }
 
@@ -191,7 +202,7 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
       match_params.push_back(
           parse_exact_match_param(1652522221570, 6)); // dmac : 01-80-c2-00-00-02
       action_data.push_back(parse_param(hostif_trap->trap_id, 2));
-      hostif_trap->handle_l2_trap = bm_bridge_client_ptr->bm_mt_add_entry(
+      hostif_trap->handle_trap = bm_bridge_client_ptr->bm_mt_add_entry(
           cxt_id, "table_l2_trap", match_params, "action_set_trap_id",
           action_data, options);
       (*logger)->info("added l2 trap - lacp , trap_id: {}.", hostif_trap->trap_id,
@@ -223,7 +234,7 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
       match_params.push_back(parse_ternary_param(0x806, 2, 0xffff));
       match_params.push_back(parse_lpm_param(0, 4, 0));
       action_data.push_back(parse_param(hostif_trap->trap_id, 2));
-      hostif_trap->handle_l2_trap = bm_router_client_ptr->bm_mt_add_entry(
+      hostif_trap->handle_trap = bm_router_client_ptr->bm_mt_add_entry(
           cxt_id, "table_pre_l3_trap", match_params, "action_set_trap_id",
           action_data, options);
       (*logger)->info("added ARP trap. trap_id: {}.", hostif_trap->trap_id,
@@ -261,18 +272,24 @@ sai_status_t sai_adapter::remove_hostif_trap(sai_object_id_t hostif_trap_id) {
   (*logger)->info("remove_hostif_trap trap_id: {}", hostif_trap_id);
   HostIF_Trap_obj *hostif_trap =
       switch_metadata_ptr->hostif_traps[hostif_trap_id];
-  if (hostif_trap->trap_type == SAI_HOSTIF_TRAP_TYPE_LACP) {
-    try {
-      bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_l2_trap",
-                                        hostif_trap->handle_l2_trap);
+  switch (hostif_trap->trap_type) {
+    // bridge
+    case SAI_HOSTIF_TRAP_TYPE_LACP:
       bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_trap_id",
-                                        hostif_trap->handle_trap_id);
-    } catch (...) {
-      (*logger)->warn("--> unable to remove hostif_trap tables entries");
-    }
-  } else {
-    (*logger)->warn("unsupported remove trap requested, trap type is: {}",
-                    hostif_trap->trap_type);
+                                           hostif_trap->handle_trap_id);
+      bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_l2_trap",
+                                           hostif_trap->handle_trap);
+      break;
+
+
+
+    // pre-l3 table
+    case SAI_HOSTIF_TRAP_TYPE_ARP_REQUEST:
+      bm_router_client_ptr->bm_mt_delete_entry(cxt_id, "table_l3_trap_id",
+                                           hostif_trap->handle_trap_id);
+      bm_router_client_ptr->bm_mt_delete_entry(cxt_id, "table_pre_l3_trap",
+                                           hostif_trap->handle_trap);
+      break;
   }
   switch_metadata_ptr->hostif_traps.erase(hostif_trap->sai_object_id);
   sai_id_map_ptr->free_id(hostif_trap->sai_object_id);

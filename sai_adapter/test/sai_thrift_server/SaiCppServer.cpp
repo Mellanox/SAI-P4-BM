@@ -1925,6 +1925,14 @@ void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list
   sai_thrift_status_t sai_thrift_remove_hostif_table_entry(const sai_thrift_object_id_t hif_table_entry_id) {
     // Your implementation goes here
     logger->info("sai_thrift_remove_hostif_table_entry");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_hostif_api_t *hostif_api;
+    status = sai_api_query(SAI_API_HOSTIF, (void **) &hostif_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        return status;
+    }
+    status = hostif_api->remove_hostif_table_entry(hif_table_entry_id);
+    return status;
   }
 
   sai_thrift_status_t

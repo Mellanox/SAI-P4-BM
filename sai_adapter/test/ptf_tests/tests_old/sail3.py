@@ -17,6 +17,7 @@ Thrift SAI interface L3 tests
 """
 import socket
 import sys
+import time
 from struct import pack, unpack
 
 from switch import *
@@ -133,7 +134,7 @@ class ArpTest(sai_base_test.ThriftInterfaceDataPlane):
                                               packet_action=SAI_PACKET_ACTION_TRAP,
                                               trap_group=trap_group)
 
-        sai_thrift_create_hostif_table_entry(client=self.client,
+        hostif_table = sai_thrift_create_hostif_table_entry(client=self.client,
                                              trap_id=trap1,
                                              channel_type=SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_L3)
         
@@ -146,8 +147,12 @@ class ArpTest(sai_base_test.ThriftInterfaceDataPlane):
                                    hw_snd=src_mac,
                                    hw_tgt='ff:ff:ff:ff:ff:ff')
 
-        # try:
-        send_packet(self, 1, str(pkt))
+        try:
+        	send_packet(self, 1, str(pkt))
+        	time.sleep(1)
             # verify_packets(self, exp_pkt, [1])
-        # finally:
-            # a
+        finally:
+            self.client.sai_thrift_remove_hostif_table_entry(hostif_table)
+            self.client.sai_thrift_remove_hostif(hostif)
+            self.client.sai_thrift_remove_hostif_trap(trap1)
+            self.client.sai_thrift_remove_hostif_trap_group(trap_group)

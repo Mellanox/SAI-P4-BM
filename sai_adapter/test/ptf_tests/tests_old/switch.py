@@ -446,10 +446,6 @@ def sai_thrift_create_hostif_trap(client,
     trap_id = client.sai_thrift_create_hostif_trap(attr_list)
     return trap_id
 
-def sai_thrift_remove_hostif_trap(client,
-                                  trap_id):
-    client.sai_thrift_remove_hostif_trap(trap_id)
-
 def sai_thrift_create_port(client, bind_mode, hw_port, vlan_id=None):
     attr_list = []
     bind_attr_value = sai_thrift_attribute_value_t(s32=bind_mode)
@@ -544,7 +540,7 @@ def sai_thrift_create_hostif_table_entry(client, trap_id, channel_type):
     attribute3 = sai_thrift_attribute_t(id=SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE,
                                         value=attribute3_value)
     attr_list = [attribute1, attribute2, attribute3]
-    client.sai_thrift_create_hostif_table_entry(attr_list)
+    return client.sai_thrift_create_hostif_table_entry(attr_list)
 
 def sai_thrift_create_acl_table(client, addr_family,
                                 ip_src, ip_dst,
