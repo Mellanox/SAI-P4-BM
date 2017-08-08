@@ -26,8 +26,8 @@ void sai_adapter::release_pcap_lock() {
 
 void sai_adapter::PacketSniffer() {
   char errstr[1024];
-  fd_set rset;
   int maxfd = 0;
+  fd_set sniff_set;
   int i;
   int num_of_devs = 2; //TODO: vector?
   cpu_port[0].dev = "switch_port";
@@ -46,7 +46,6 @@ void sai_adapter::PacketSniffer() {
       return;
     }
     cpu_port[i].fd = pcap_get_selectable_fd(cpu_port[i].pcap);
-    maxfd = std::max(maxfd, cpu_port[i].fd);
   }
 
   int break_sniff_loop = 0;
@@ -55,23 +54,28 @@ void sai_adapter::PacketSniffer() {
     (*logger)->error("error creating pipe");
     return;
   }
-  maxfd = std::max(maxfd, sniff_pipe_fd[0]);
   struct pcap_pkthdr *pcap_header;
   const u_char *pcap_packet;
   (*logger)->info("start sniffing on {}, {}", cpu_port[0].dev, cpu_port[1].dev);
   release_pcap_lock();
   while (break_sniff_loop == 0) {
-    FD_ZERO(&rset);
+    FD_ZERO(&sniff_set);
+    FD_SET(sniff_pipe_fd[0], &sniff_set);
+    maxfd = sniff_pipe_fd[0];
     for (i = 0; i < num_of_devs; i++) {
-      FD_SET(cpu_port[i].fd, &rset);
+      FD_SET(cpu_port[i].fd, &sniff_set);
+      maxfd = std::max(maxfd, cpu_port[i].fd);
     }
-    FD_SET(sniff_pipe_fd[0], &rset);
-    if (select(maxfd + 1, &rset, NULL, NULL, NULL) < 0) {
+    for (std::vector<netdev_fd_t>::iterator it = active_netdevs.begin(); it!=active_netdevs.end(); it++) {
+      FD_SET(it->fd, &sniff_set);
+      maxfd = std::max(maxfd, it->fd);
+    }
+    if (select(maxfd + 1, &sniff_set, NULL, NULL, NULL) < 0) {
       (*logger)->error("select error");
       exit(1);
     }
     for (i = 0; i < num_of_devs; i++) {
-      if (FD_ISSET(cpu_port[i].fd, &rset)) {
+      if (FD_ISSET(cpu_port[i].fd, &sniff_set)) {
         switch (pcap_next_ex(cpu_port[i].pcap, &pcap_header, &pcap_packet)) {
           case -1:
             /* Error */
@@ -95,7 +99,25 @@ void sai_adapter::PacketSniffer() {
         }
       }
     }
-    if (FD_ISSET(sniff_pipe_fd[0], &rset)) {
+    for (std::vector<netdev_fd_t>::iterator it = active_netdevs.begin(); it!=active_netdevs.end(); it++) {
+      if (FD_ISSET(it->fd, &sniff_set)) {
+        u_char buffer[1000];
+        int length = read(it->fd, &buffer, 1000);
+        (*logger)->info("packet recieved of length {}", length);
+        switch (it->type) {
+          case SAI_OBJECT_TYPE_VLAN:
+            vlan_netdev_packet_handler((it->data).vid, length, buffer);
+            break;
+          case SAI_OBJECT_TYPE_PORT:
+            phys_netdev_packet_handler((it->data).hw_port, length, buffer);
+            break;
+          // case SAI_OBJECT_TYPE_LAG:
+            // vlan_netdev_packet_handler(it->vid, length, buffer);
+            // break;
+        }
+      }
+    }
+    if (FD_ISSET(sniff_pipe_fd[0], &sniff_set)) {
       // TODO: read?
       char ch;
       read(sniff_pipe_fd[0], &ch, 1);

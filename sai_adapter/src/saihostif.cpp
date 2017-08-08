@@ -22,20 +22,25 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
       break;
     case SAI_HOSTIF_ATTR_OBJ_ID:
       hostif->netdev_obj_type = _sai_object_type_query(attribute.value.oid);
-      if (hostif->netdev_obj_type == SAI_OBJECT_TYPE_PORT) {
-        (*logger)->info("port object");
-        hostif->netdev_obj.port = switch_metadata_ptr->ports[attribute.value.oid];
-      }
-      if (hostif->netdev_obj_type == SAI_OBJECT_TYPE_LAG) {
-        (*logger)->info("lag object");
-        hostif->netdev_obj.lag = switch_metadata_ptr->lags[attribute.value.oid];
-      }
-      if (hostif->netdev_obj_type == SAI_OBJECT_TYPE_VLAN) {
-        (*logger)->info("vlan object");
-        hostif->netdev_obj.vlan = switch_metadata_ptr->vlans[attribute.value.oid];
-      }
-      if (hostif->netdev_obj_type == SAI_OBJECT_TYPE_NULL) {
-        (*logger)->error("object id {} given to create hostif is invalid", attribute.value.oid);
+      switch (hostif->netdev_obj_type) {
+        case SAI_OBJECT_TYPE_PORT:
+          (*logger)->info("port object");
+          hostif->netdev_obj.port = switch_metadata_ptr->ports[attribute.value.oid];
+          break;
+        case SAI_OBJECT_TYPE_LAG:
+          (*logger)->info("lag object");
+          hostif->netdev_obj.lag = switch_metadata_ptr->lags[attribute.value.oid];
+          break;
+        case SAI_OBJECT_TYPE_VLAN:
+          (*logger)->info("vlan object");
+          hostif->netdev_obj.vlan = switch_metadata_ptr->vlans[attribute.value.oid];
+          break;
+        default:
+          (*logger)->error("object id {} given to create hostif is invalid", attribute.value.oid);
+          switch_metadata_ptr->hostifs.erase(hostif->sai_object_id);
+          sai_id_map_ptr->free_id(hostif->sai_object_id);
+          return SAI_STATUS_INVALID_OBJECT_TYPE;
+          break;  
       }
       break;
     case SAI_HOSTIF_ATTR_NAME:
@@ -50,10 +55,18 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
     }
     (*logger)->info("creating netdev {}", hostif->netdev_name);
     hostif->netdev_fd = tun_alloc(netdev_name, 1);
-    int hw_port = hostif->netdev_obj.port->hw_port;
-    hostif->netdev_thread =
-        std::thread(phys_netdev_sniffer, hostif->netdev_fd, hw_port);
-    hostif->netdev_thread.detach();
+    // hostif->netdev.type = hostif->netdev_obj_type;
+    switch (hostif->netdev_obj_type) {
+        case SAI_OBJECT_TYPE_PORT:
+          // hostif->netdev_thread = std::thread(phys_netdev_sniffer, hostif->netdev_fd, hostif->netdev_obj.port->hw_port);
+          break;
+        case SAI_OBJECT_TYPE_LAG:
+          // hostif->netdev_thread = std::thread(, hostif->netdev_fd,);
+          break;
+        case SAI_OBJECT_TYPE_VLAN:
+          vlan_netdev_sniffer(hostif->netdev_fd, hostif->netdev_obj.vlan->vid);
+          break;
+    }
   }
   *hif_id = hostif->sai_object_id;
   return SAI_STATUS_SUCCESS;
@@ -62,6 +75,12 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
 sai_status_t sai_adapter::remove_hostif(sai_object_id_t hif_id) {
   (*logger)->info("remove_hostif");
   HostIF_obj *hostif = switch_metadata_ptr->hostifs[hif_id];
+  active_netdevs.erase(std::remove_if(active_netdevs.begin(),
+                                      active_netdevs.end(),
+                                      [&](const netdev_fd_t x)-> bool { return (x.fd == hostif->netdev_fd);}),
+                       active_netdevs.end());
+  write(sniff_pipe_fd[1], "b", 1);
+  tun_delete(hostif->netdev_fd);
   switch_metadata_ptr->hostifs.erase(hostif->sai_object_id);
   sai_id_map_ptr->free_id(hostif->sai_object_id);
   return SAI_STATUS_SUCCESS;
@@ -327,34 +346,24 @@ void sai_adapter::netdev_phys_port_fn(u_char *packet, cpu_hdr_t *cpu,
 
 void sai_adapter::phys_netdev_packet_handler(int hw_port, int length,
                                              const u_char *packet) {
-  (*logger)->info("recieved packet on physical netdev port {}", hw_port);
   u_char *encaped_packet =
       (u_char *)malloc(sizeof(u_char) * (CPU_HDR_LEN + length));
   cpu_hdr_t *cpu_hdr = (cpu_hdr_t *)encaped_packet;
   cpu_hdr->ingress_port = hw_port;
   memcpy(encaped_packet + CPU_HDR_LEN, packet, length);
-  // sai_adapter *adapter = (sai_adapter*) arg_array[1];
-  // if (pcap_inject(adapter_pcap, encaped_packet, length + CPU_HDR_LEN) == -1) {
-    // printf("error on injecting packet [%s]\n", pcap_geterr(adapter_pcap));
-  // }
+  if (pcap_inject(cpu_port[0].pcap, encaped_packet, length + CPU_HDR_LEN) == -1) {
+    (*logger)->error("error on injecting packet [%s]", pcap_geterr(cpu_port[0].pcap));
+  }
   free(encaped_packet);
 }
 
 int sai_adapter::phys_netdev_sniffer(int in_dev_fd, int hw_port) {
-  u_char buffer[1500]; // change to get_mtu?
-  uint16_t length;
-  while (1) {
-    // read(in_dev_fd, (char*) &length, sizeof(length));
-    // length = ntohs(length);
-
-    length = read(in_dev_fd, buffer, sizeof(buffer));
-    (*logger)->info("received packet of length: {}", length);
-    ethernet_hdr_t *ether = (ethernet_hdr_t *)buffer;
-    (*logger)->info("ethertype: {0:02X}. DMAC:", ntohs(ether->ether_type));
-    print_mac_to_log(ether->dst_addr, *logger);
-    phys_netdev_packet_handler(hw_port, length, buffer);
-  }
-  return 0;
+  netdev_fd_t netdev;
+  netdev.fd = in_dev_fd;
+  netdev.type = SAI_OBJECT_TYPE_PORT;
+  netdev.data.hw_port = hw_port;
+  active_netdevs.push_back(netdev);
+  write(sniff_pipe_fd[1], "b", 1);
 }
 
 void sai_adapter::netdev_vlan_fn(u_char *packet, cpu_hdr_t *cpu,
@@ -373,31 +382,26 @@ void sai_adapter::netdev_vlan_fn(u_char *packet, cpu_hdr_t *cpu,
 
 void sai_adapter::vlan_netdev_packet_handler(uint16_t vlan_id, int length,
                                              const u_char *packet) {
-  (*logger)->info("recieved packet on vlan netdev {}", vlan_id);
-  vlan_hdr_t *vlan_hdr = (vlan_hdr_t *) (packet + ETHER_HDR_LEN);
-  vlan_hdr->tci = (0xf000 & vlan_hdr->tci) + vlan_id;
+  ethernet_hdr_t *ether_hdr = (ethernet_hdr_t *) packet;
+  uint16_t ethertype = ntohs(ether_hdr->ether_type);
+  (*logger)->info("recieved packet on vlan {0}, ethertype 0x{1:02X}.", vlan_id, ethertype);
   u_char *encaped_packet =
       (u_char *)malloc(sizeof(u_char) * (CPU_HDR_LEN + length));
   cpu_hdr_t *cpu_hdr = (cpu_hdr_t *)encaped_packet;
-  cpu_hdr->ingress_port = 0;
+  cpu_hdr->ingress_port = vlan_id;
   memcpy(encaped_packet + CPU_HDR_LEN, packet, length);
   // sai_adapter *adapter = (sai_adapter*) arg_array[1];
-  // if (pcap_inject(adapter_pcap, encaped_packet, length + CPU_HDR_LEN) == -1) {
-    // printf("error on injecting packet [%s]\n", pcap_geterr(adapter_pcap));
-  // }
+  if (pcap_inject(cpu_port[1].pcap, encaped_packet, length + CPU_HDR_LEN) == -1) {
+    (*logger)->debug("error on injecting packet [%s]\n", pcap_geterr(cpu_port[1].pcap));
+  }
   free(encaped_packet);
 }
 
 int sai_adapter::vlan_netdev_sniffer(int in_dev_fd, uint16_t vlan_id) {
-  u_char buffer[1500]; // change to get_mtu?
-  uint16_t length;
-  while (1) {
-    length = read(in_dev_fd, buffer, sizeof(buffer));
-    (*logger)->info("received packet of length: {}", length);
-    ethernet_hdr_t *ether = (ethernet_hdr_t *)buffer;
-    (*logger)->info("ethertype: {0:02X}. DMAC:", ntohs(ether->ether_type));
-    print_mac_to_log(ether->dst_addr, *logger);
-    vlan_netdev_packet_handler(vlan_id, length, buffer);
-  }
-  return 0;
+  netdev_fd_t netdev;
+  netdev.fd = in_dev_fd;
+  netdev.type = SAI_OBJECT_TYPE_VLAN;
+  netdev.data.vid = vlan_id;
+  active_netdevs.push_back(netdev);
+  write(sniff_pipe_fd[1], "b", 1);
 }

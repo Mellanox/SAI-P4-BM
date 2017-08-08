@@ -149,9 +149,10 @@ class ArpTest(sai_base_test.ThriftInterfaceDataPlane):
 
         try:
         	send_packet(self, 1, str(pkt))
-        	time.sleep(1)
+        	time.sleep(0.5)
             # verify_packets(self, exp_pkt, [1])
         finally:
+        	# print 'done!'
             self.client.sai_thrift_remove_hostif_table_entry(hostif_table)
             self.client.sai_thrift_remove_hostif(hostif)
             self.client.sai_thrift_remove_hostif_trap(trap1)

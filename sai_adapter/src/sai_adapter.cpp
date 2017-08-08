@@ -13,6 +13,7 @@ std::condition_variable sai_adapter::cv;
 hostif_trap_id_table_t sai_adapter::hostif_trap_id_table;
 pcap_fd_t sai_adapter::cpu_port[2];
 int sai_adapter::sniff_pipe_fd[2];
+std::vector<netdev_fd_t> sai_adapter::active_netdevs;
 
 sai_adapter::sai_adapter()
     : //  constructor pre initializations

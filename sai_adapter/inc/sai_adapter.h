@@ -77,6 +77,16 @@ typedef struct pcap_fd {
     const char *dev;
 } pcap_fd_t;
 
+typedef struct netdev_fd {
+    int fd;
+    sai_object_type_t type;
+    union {
+      uint16_t vid;
+      uint16_t hw_port;
+      uint16_t lag_id; 
+    } data;
+} netdev_fd_t;
+
 typedef void (*adapter_packet_handler_fn)(u_char *, cpu_hdr_t *, int);
 typedef std::map<uint16_t, adapter_packet_handler_fn> hostif_trap_id_table_t;
 
@@ -288,7 +298,8 @@ public:
 private:
   // sai_object_id_t switch_id;
   // sai adapter threading handlers
-  static pcap_fd_t cpu_port[2]; //todo: vector?
+  static pcap_fd_t cpu_port[2];
+  static std::vector<netdev_fd_t> active_netdevs;
   std::thread SaiAdapterThread;
   static bool pcap_loop_started;
   static std::mutex m;

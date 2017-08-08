@@ -61,3 +61,12 @@ int tun_alloc(char *dev, int make_presistent) { //, int flags) {
    * with the virtual interface */
   return fd;
 }
+
+int tun_delete(int tun_fd) {
+  if(ioctl(tun_fd, TUNSETPERSIST, 0) < 0){
+      perror("disabling TUNSETPERSIST");
+      exit(1);
+  }
+  close(tun_fd);
+  return 0;
+}
