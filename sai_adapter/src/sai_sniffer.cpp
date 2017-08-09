@@ -172,7 +172,7 @@ void sai_adapter::packetHandler(u_char *userData,
   // ReverseBytes((uint8_t *)cpu, CPU_HDR_LEN);
   cpu->trap_id = ntohs(cpu->trap_id);
   (*logger)->info("CPU packet captured. trap_id = {}. ingress_port = {}",
-                  cpu->trap_id, cpu->ingress_port);
+                  cpu->trap_id, cpu->dst.hw_port);
   u_char *decap_packet = (u_char *)(packet + CPU_HDR_LEN);
   HostIF_Table_Entry_obj *hostif_table_entry =
       switch_metadata_ptr->GetTableEntryFromTrapID(cpu->trap_id);
@@ -192,7 +192,7 @@ void sai_adapter::packetHandler(u_char *userData,
 }
 
 void sai_adapter::learn_mac(u_char *packet, cpu_hdr_t *cpu, int pkt_len) {
-  uint32_t ingress_port = cpu->ingress_port;
+  uint32_t ingress_port =  cpu->dst.hw_port;
   (*logger)->info("learn_mac from port {}", ingress_port);
   ethernet_hdr_t *ether = (ethernet_hdr_t *)packet;
   ether->ether_type = ntohs(ether->ether_type);

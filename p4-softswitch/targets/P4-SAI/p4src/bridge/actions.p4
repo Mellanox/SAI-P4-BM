@@ -163,12 +163,15 @@ action action_set_mc_fdb_miss() {
 
 action action_cpu_encap() { 
 	add_header(cpu_header);
-	cpu_header.port = standard_metadata.ingress_port;
+	cpu_header.netdev_type = PORT;
+	cpu_header.dst = standard_metadata.ingress_port;
 	cpu_header.trap_id = ingress_metadata.trap_id;
 }
 
 action action_forward_cpu() {
+	add_header(vlan);
+	vlan.etherType = ethernet.etherType;
+	ethernet.etherType = ETHERTYPE_VLAN;
+	vlan.vid = cpu_header.dst;
 	remove_header(cpu_header);
-	standard_metadata.egress_spec = cpu_header.port;
-	// modify_field(standard_metadata.egress_spec,cpu_header.port);
 }

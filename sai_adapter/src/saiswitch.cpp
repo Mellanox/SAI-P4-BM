@@ -72,6 +72,7 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
       // Store default table entries
       match_params.clear();
       match_params.push_back(parse_exact_match_param(port->l2_if, 1));
+      (*logger)->info("debug1. ");
       bm_bridge_client_ptr->bm_mt_get_entry_from_key(
           entry, cxt_id, "table_port_ingress_interface_type", match_params,
           options);

@@ -119,8 +119,10 @@ metadata intrinsic_metadata_t intrinsic_metadata;
 
 header_type cpu_header_t {
     fields {
-        bit<8>  port;
-        bit<16> trap_id;
+        bit<6>   reserved;
+        bit<2>   netdev_type;
+        bit<16>  dst;
+        bit<16>  trap_id;
     }
 }
 
