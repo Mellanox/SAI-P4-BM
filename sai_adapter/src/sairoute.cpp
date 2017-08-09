@@ -61,20 +61,36 @@ sai_status_t sai_adapter::create_route_entry(const sai_route_entry_t *route_entr
         const sai_attribute_t *attr_list) {
   (*logger)->info("create_route_entry");
   NextHop_obj *nhop;
-
+  sai_object_type_t nhop_obj_type;
   // parsing attributes
   sai_attribute_t attribute;
   for (uint32_t i = 0; i < attr_count; i++) {
     attribute = attr_list[i];
     switch (attribute.id) {
-    case SAI_ROUTE_ENTRY_ATTR_NEXT_HOP_ID:
-      nhop = switch_metadata_ptr->nhops[attribute.value.oid];
-      break;
-    default:
-      (*logger)->error(
-          "while parsing lag member, attribute.id = was dumped in sai_obj",
-          attribute.id);
-      break;
+      case SAI_ROUTE_ENTRY_ATTR_NEXT_HOP_ID:
+        nhop_obj_type = _sai_object_type_query(attribute.value.oid);
+        switch (nhop_obj_type) {
+          case SAI_OBJECT_TYPE_NEXT_HOP:
+            nhop = switch_metadata_ptr->nhops[attribute.value.oid];
+            break;
+          // case SAI_OBJECT_TYPE_NEXT_HOP_GROUP
+          // case SAI_OBJECT_TYPE_ROUTER_INTERFACE
+          case SAI_OBJECT_TYPE_PORT:
+            if (attribute.value.oid != switch_metadata_ptr->cpu_port_id) {
+              (*logger)->error("adding route with port object id ({}) which is not SAI_SWITCH_ATTR_CPU_PORT ({})", attribute.value.oid, switch_metadata_ptr->cpu_port_id);
+              return SAI_STATUS_INVALID_OBJECT_ID;
+            } else {
+              (*logger)->info("added CPU_PORT route (IP2ME)");
+            }
+            break;
+        }
+        break;
+
+      default:
+        (*logger)->error(
+            "while parsing lag member, attribute.id = was dumped in sai_obj",
+            attribute.id);
+        break;
     }
   }
 
@@ -82,15 +98,26 @@ sai_status_t sai_adapter::create_route_entry(const sai_route_entry_t *route_entr
   BmAddEntryOptions options;
   BmActionData action_data;
   BmMatchParams match_params = get_match_param_from_route_entry(route_entry, switch_metadata_ptr);
-  action_data.push_back(parse_param(nhop->nhop_id, 1));
-  bm_router_client_ptr->bm_mt_add_entry(cxt_id, "table_router",
-        match_params, "action_set_nhop_id",
-        action_data, options);
-
+  switch (nhop_obj_type) {
+    case SAI_OBJECT_TYPE_NEXT_HOP:
+      action_data.push_back(parse_param(nhop->nhop_id, 1));
+      bm_router_client_ptr->bm_mt_add_entry(
+          cxt_id, "table_router", match_params, "action_set_nhop_id",
+          action_data, options);
+      break;
+    // case SAI_OBJECT_TYPE_NEXT_HOP_GROUP
+    // case SAI_OBJECT_TYPE_ROUTER_INTERFACE
+    case SAI_OBJECT_TYPE_PORT:
+      bm_router_client_ptr->bm_mt_add_entry(
+          cxt_id, "table_router", match_params, "action_set_ip2me",
+          action_data, options);
+      break;
+  }
+  return SAI_STATUS_SUCCESS;
 }
 
 sai_status_t sai_adapter::remove_route_entry(const sai_route_entry_t *route_entry) {
-	(*logger)->info("remove_route_entry");
+  (*logger)->info("remove_route_entry");
   BmMtEntry bm_entry;
   BmAddEntryOptions options;
   BmMatchParams match_params = get_match_param_from_route_entry(route_entry, switch_metadata_ptr);

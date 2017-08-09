@@ -55,6 +55,7 @@ rewrite_mac2='00:77:66:55:44:02'
 default_bridge = 0
 default_bridge_type = SAI_BRIDGE_TYPE_1Q
 default_vlan_oid = 0
+cpu_port = 0
 
 
 is_bmv2 = ('BMV2_TEST' in os.environ) and (int(os.environ['BMV2_TEST']) == 1)
@@ -75,6 +76,8 @@ def switch_init(client):
                 attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_ADMIN_STATE, value=attr_value)
                 client.sai_thrift_set_port_attribute(port_id, attr)
                 sai_port_list.append(port_id)
+        elif attribute.id == SAI_SWITCH_ATTR_CPU_PORT:
+            cpu_port = attribute.value.oid
         else:
             print "unknown switch attribute"
     attr_value = sai_thrift_attribute_value_t(mac=router_mac)
@@ -129,12 +132,12 @@ def switch_init2(client):
                 port_id = attr.value.oid
                 br_port_list[port_id] = br_port
                 break
-
+    cpu_port = client.sai_thrift_get_cpu_port_id()
     attr_value = sai_thrift_attribute_value_t(mac=router_mac)
     attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_SRC_MAC_ADDRESS, value=attr_value)
     client.sai_thrift_set_switch_attribute(attr)  
     switch_inited = 1
-    return default_bridge, default_vlan_oid
+    return default_bridge, default_vlan_oid, cpu_port
 
 def sai_thrift_get_cpu_port_id(client):
     cpu_port = client.sai_thrift_get_cpu_port_id()

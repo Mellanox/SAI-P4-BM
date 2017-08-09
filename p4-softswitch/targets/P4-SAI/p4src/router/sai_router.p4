@@ -23,13 +23,17 @@ control control_1q_uni_router{
 	apply(table_ingress_vrf);
 	// apply(table_L3_ingress_acl); TODO
 	apply(table_pre_l3_trap);
-	apply(table_l3_trap_id);
 	apply(table_router){
 		action_set_nhop_grp_id{
 			apply(table_next_hop_group);
 		}
 	}
-	apply(table_next_hop);	
+	if (router_metadata.ip2me == 1) {
+		apply(table_ip2me_trap);
+	} else {
+		apply(table_next_hop);	
+	}
+	apply(table_l3_trap_id);
 }
 
 

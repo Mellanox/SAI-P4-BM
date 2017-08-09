@@ -1499,6 +1499,9 @@ void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list
     if (sai_attr->id == SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID) {
       thrift_attr.value.oid = sai_attr->value.oid;
     }
+    if (sai_attr->id == SAI_SWITCH_ATTR_CPU_PORT) {
+      thrift_attr.value.oid = sai_attr->value.oid;
+    }
     // if (sai_attr->id == SAI_SWITCH_ATTR_PORT_LIST) {
     //   thrift_attr.value.objlist.object_id_list.clear();
     //   thrift_attr.value.objlist.count = sai_attr->value.objlist.count;
@@ -1515,7 +1518,9 @@ void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list
       sai_switch_api_t *switch_api;
       sai_attribute_t max_port_attribute;
       sai_attribute_t port_list_object_attribute;
+      sai_attribute_t cpu_port_attribute;
       sai_thrift_attribute_t thrift_port_list_attribute;
+      sai_thrift_attribute_t thrift_cpu_port_attribute;
       sai_object_list_t *port_list_object;
       int max_ports = 0;
       status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
@@ -1543,6 +1548,11 @@ void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list
       }
       attr_list.push_back(thrift_port_list_attribute);
       free(port_list_object_attribute.value.objlist.list);
+
+      cpu_port_attribute.id = SAI_SWITCH_ATTR_CPU_PORT;
+      switch_api->get_switch_attribute(0, 1, &cpu_port_attribute);
+      thrift_cpu_port_attribute = parse_switch_thrift_attribute(&cpu_port_attribute);
+      attr_list.push_back(thrift_cpu_port_attribute);
   }
 
   void sai_thrift_get_port_list_by_front_port(sai_thrift_attribute_t &_return) {
@@ -1553,6 +1563,16 @@ void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list
   sai_thrift_object_id_t sai_thrift_get_cpu_port_id() {
     // Your implementation goes here
     logger->info("sai_thrift_get_cpu_port_id");
+    sai_switch_api_t *switch_api;
+    sai_status_t status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        logger->error("sai_api_query failed!!!");
+        return SAI_NULL_OBJECT_ID;
+    }
+    sai_attribute_t cpu_port_attribute;
+    cpu_port_attribute.id = SAI_SWITCH_ATTR_CPU_PORT;
+    switch_api->get_switch_attribute(0, 1, &cpu_port_attribute);
+    return cpu_port_attribute.value.oid;
   }
 
   sai_thrift_object_id_t sai_thrift_get_default_trap_group() {

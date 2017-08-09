@@ -61,7 +61,7 @@ typedef struct _ethernet_hdr_t {
   uint16_t ether_type;
 } ethernet_hdr_t;
 
-typedef struct _cpu_hdr_t { // TODO: remove bridge_port and id
+typedef struct _cpu_hdr_t {
   unsigned int ingress_port : 8;
   unsigned int trap_id : 16;
 } cpu_hdr_t;

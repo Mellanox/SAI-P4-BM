@@ -120,7 +120,7 @@ class ArpTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         print
         print "Sending arp packet to port 1"
-        default_bridge, default_vlan_oid = switch_init2(self.client)
+        default_bridge, default_vlan_oid, cpu_port = switch_init2(self.client)
         # port1 = port_list[1]
         src_mac = '00:11:22:33:44:55'
         src_ip = '192.168.50.50'
@@ -152,8 +152,87 @@ class ArpTest(sai_base_test.ThriftInterfaceDataPlane):
         	time.sleep(0.5)
             # verify_packets(self, exp_pkt, [1])
         finally:
-        	# print 'done!'
-            self.client.sai_thrift_remove_hostif_table_entry(hostif_table)
-            self.client.sai_thrift_remove_hostif(hostif)
-            self.client.sai_thrift_remove_hostif_trap(trap1)
-            self.client.sai_thrift_remove_hostif_trap_group(trap_group)
+        	print 'done!'
+            # self.client.sai_thrift_remove_hostif_table_entry(hostif_table)
+            # self.client.sai_thrift_remove_hostif(hostif)
+            # self.client.sai_thrift_remove_hostif_trap(trap1)
+            # self.client.sai_thrift_remove_hostif_trap_group(trap_group)
+
+
+@group('l3')
+class IP2METest(sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        print
+        print "Sending IP2ME packet to port 1"
+        default_bridge, default_vlan_oid, cpu_port = switch_init2(self.client)
+        # port1 = port_list[1]
+        src_mac = '00:11:22:33:44:55'
+        router_ip = '192.168.45.45'
+        router_ip_mask = '255.255.255.255'
+        v4_enabled = 1
+        v6_enabled = 0
+        port1 = port_list[1]
+        bridge_port1 = br_port_list[port1]
+        vid = 5
+
+        attr_value = sai_thrift_attribute_value_t(u16=vid)
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value) 
+        self.client.sai_thrift_set_port_attribute(port1, attr)
+
+        vlan_attr_value = sai_thrift_attribute_value_t(u16= vid)
+        vlan_attr = sai_thrift_attribute_t(id=SAI_VLAN_ATTR_VLAN_ID, value=vlan_attr_value)
+        vlan_oid = self.client.sai_thrift_create_vlan([vlan_attr])
+
+        tagging_mode = SAI_VLAN_TAGGING_MODE_UNTAGGED
+        vlan_member0 = sai_thrift_create_vlan_member(self.client, vlan_oid, bridge_port1, tagging_mode)
+
+        vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
+        addr_family = SAI_IP_ADDR_FAMILY_IPV4
+        rif_id0 = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vid, v4_enabled, v6_enabled, router_mac)
+        sai_thrift_create_route(self.client, vr_id, addr_family, router_ip, router_ip_mask, cpu_port)
+
+
+        hostif = sai_thrift_create_hostif(client=self.client,
+                                          obj_id=vlan_oid,
+                                          intf_name="vlan5")
+        trap_group = sai_thrift_create_hostif_trap_group(self.client, 0, 0)
+        ip2me_trap = sai_thrift_create_hostif_trap(client=self.client,
+                                              trap_type=SAI_HOSTIF_TRAP_TYPE_IP2ME,
+                                              packet_action=SAI_PACKET_ACTION_TRAP,
+                                              trap_group=trap_group)
+        bgp_trap = sai_thrift_create_hostif_trap(client=self.client,
+                                              trap_type=SAI_HOSTIF_TRAP_TYPE_BGP,
+                                              packet_action=SAI_PACKET_ACTION_TRAP,
+                                              trap_group=trap_group)
+
+        hostif_table1 = sai_thrift_create_hostif_table_entry(client=self.client,
+                                             trap_id=ip2me_trap,
+                                             channel_type=SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_L3)
+        hostif_table2 = sai_thrift_create_hostif_table_entry(client=self.client,
+                                             trap_id=bgp_trap,
+                                             channel_type=SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_L3)
+        
+        
+        # send the test packet(s)
+        ip2me_pkt = simple_tcp_packet(eth_dst=router_mac,
+                                      eth_src='00:22:22:22:22:55',
+                                      ip_dst=router_ip,
+                                      ip_src='192.168.0.1')
+        bgp_pkt =   simple_tcp_packet(eth_dst=router_mac,
+                                      eth_src='00:22:22:22:22:55',
+                                      ip_dst=router_ip,
+                                      ip_src='192.168.0.1',
+                                      tcp_sport=179,
+                                      tcp_dport=179)
+
+        try:
+            send_packet(self, 1, str(ip2me_pkt))
+            send_packet(self, 1, str(bgp_pkt))
+            time.sleep(0.5)
+            # verify_packets(self, exp_pkt, [1])
+        finally:
+        	print 'done!'
+            # self.client.sai_thrift_remove_hostif_table_entry(hostif_table)
+            # self.client.sai_thrift_remove_hostif(hostif)
+            # self.client.sai_thrift_remove_hostif_trap(trap1)
+            # self.client.sai_thrift_remove_hostif_trap_group(trap_group)

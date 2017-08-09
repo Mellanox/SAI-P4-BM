@@ -181,6 +181,9 @@ sai_object_type_t sai_adapter::_sai_object_type_query(sai_object_id_t sai_object
   if (switch_metadata_ptr->switch_id == sai_object_id) {
     return SAI_OBJECT_TYPE_SWITCH;
   }
+  if (switch_metadata_ptr->cpu_port_id == sai_object_id) {
+    return SAI_OBJECT_TYPE_PORT;
+  }
   if (switch_metadata_ptr->ports.find(sai_object_id) != switch_metadata_ptr->ports.end()) {
     return SAI_OBJECT_TYPE_PORT;
   }
