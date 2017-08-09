@@ -22,7 +22,16 @@ table table_pre_l3_trap {
 		vlan.etherType : ternary;
 		ipv4.dstAddr   : lpm;
 	}
-	actions { action_set_trap_id;}
+	actions { action_set_trap_id; _drop;}
+}
+
+table table_ip2me_trap {
+	reads {
+		l4_metadata.srcPort : exact;
+		l4_metadata.dstPort : exact;
+		ipv4.protocol       : exact;
+	}
+	actions { action_set_trap_id; _drop;}
 }
 
 table table_l3_trap_id {
@@ -37,7 +46,7 @@ table table_router {
 		ipv4.dstAddr : lpm;
 		// router_metadata.l3_lpm_key : lpm;
 	}
-	actions{action_set_nhop_id; action_set_nhop_grp_id; _drop;}
+	actions{action_set_nhop_id; action_set_nhop_grp_id; action_set_ip2me; _drop;}
 	size: ROUTER_LPM_TABLE_SIZE;
 }
 

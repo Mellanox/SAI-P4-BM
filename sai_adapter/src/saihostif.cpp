@@ -224,8 +224,6 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
       hostif_trap->handle_trap = bm_bridge_client_ptr->bm_mt_add_entry(
           cxt_id, "table_l2_trap", match_params, "action_set_trap_id",
           action_data, options);
-      (*logger)->info("added l2 trap - lacp , trap_id: {}.", hostif_trap->trap_id,
-                      hostif_trap->sai_object_id);
 
       action_data.clear();
       match_params.clear();
@@ -256,8 +254,6 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
       hostif_trap->handle_trap = bm_router_client_ptr->bm_mt_add_entry(
           cxt_id, "table_pre_l3_trap", match_params, "action_set_trap_id",
           action_data, options);
-      (*logger)->info("added ARP trap. trap_id: {}.", hostif_trap->trap_id,
-                      hostif_trap->sai_object_id);
 
       action_data.clear();
       match_params.clear();
@@ -279,6 +275,67 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
       (*logger)->info("added ARP trap to cpu, trap_id: {}. sai_object_id: {}",
                       hostif_trap->trap_id, hostif_trap->sai_object_id);
       break;
+
+
+
+    // Router traps
+    case SAI_HOSTIF_TRAP_TYPE_IP2ME:
+      action_data.push_back(parse_param(hostif_trap->trap_id, 2));
+      bm_router_client_ptr->bm_mt_set_default_action(
+          cxt_id, "table_ip2me_trap", "action_set_trap_id",
+          action_data);
+
+      action_data.clear();
+      match_params.clear();
+      match_params.push_back(parse_exact_match_param(hostif_trap->trap_id, 2));
+      switch (hostif_trap->trap_action) {
+        case SAI_PACKET_ACTION_TRAP:
+          hostif_trap->handle_trap_id = bm_router_client_ptr->bm_mt_add_entry(
+              cxt_id, "table_l3_trap_id", match_params, "action_trap_to_cpu",
+              action_data, options);
+          break;
+        case SAI_PACKET_ACTION_LOG:
+        case SAI_PACKET_ACTION_COPY:
+          hostif_trap->handle_trap_id = bm_router_client_ptr->bm_mt_add_entry(
+              cxt_id, "table_l3_trap_id", match_params, "action_copy_to_cpu",
+              action_data, options);
+          break;
+      }
+
+      (*logger)->info("added IP2ME trap to cpu, trap_id: {}. sai_object_id: {}",
+                      hostif_trap->trap_id, hostif_trap->sai_object_id);
+      break;
+
+    // Router pre-l3 traps
+    case SAI_HOSTIF_TRAP_TYPE_BGP:    
+      match_params.push_back(parse_exact_match_param(179, 2));
+      match_params.push_back(parse_exact_match_param(179, 2));
+      match_params.push_back(parse_exact_match_param(6, 1));
+      action_data.push_back(parse_param(hostif_trap->trap_id, 2));
+      hostif_trap->handle_trap = bm_router_client_ptr->bm_mt_add_entry(
+          cxt_id, "table_ip2me_trap", match_params, "action_set_trap_id",
+          action_data, options);
+
+      action_data.clear();
+      match_params.clear();
+      match_params.push_back(parse_exact_match_param(hostif_trap->trap_id, 2));
+      switch (hostif_trap->trap_action) {
+        case SAI_PACKET_ACTION_TRAP:
+          hostif_trap->handle_trap_id = bm_router_client_ptr->bm_mt_add_entry(
+              cxt_id, "table_l3_trap_id", match_params, "action_trap_to_cpu",
+              action_data, options);
+          break;
+        case SAI_PACKET_ACTION_LOG:
+        case SAI_PACKET_ACTION_COPY:
+          hostif_trap->handle_trap_id = bm_router_client_ptr->bm_mt_add_entry(
+              cxt_id, "table_l3_trap_id", match_params, "action_copy_to_cpu",
+              action_data, options);
+          break;
+      }
+
+      (*logger)->info("added BGP trap to cpu, trap_id: {}. sai_object_id: {}",
+                      hostif_trap->trap_id, hostif_trap->sai_object_id);
+      break;
     default:
       (*logger)->warn(
         "unsupported trap requested, trap type is: {}, trap_action is: {}",
@@ -292,7 +349,7 @@ sai_status_t sai_adapter::remove_hostif_trap(sai_object_id_t hostif_trap_id) {
   HostIF_Trap_obj *hostif_trap =
       switch_metadata_ptr->hostif_traps[hostif_trap_id];
   switch (hostif_trap->trap_type) {
-    // bridge
+    // l2 traps
     case SAI_HOSTIF_TRAP_TYPE_LACP:
       bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_trap_id",
                                            hostif_trap->handle_trap_id);
@@ -301,14 +358,22 @@ sai_status_t sai_adapter::remove_hostif_trap(sai_object_id_t hostif_trap_id) {
       break;
 
 
-
-    // pre-l3 table
+    // pre-l3 traps
     case SAI_HOSTIF_TRAP_TYPE_ARP_REQUEST:
       bm_router_client_ptr->bm_mt_delete_entry(cxt_id, "table_l3_trap_id",
                                            hostif_trap->handle_trap_id);
       bm_router_client_ptr->bm_mt_delete_entry(cxt_id, "table_pre_l3_trap",
                                            hostif_trap->handle_trap);
       break;
+
+    // IP2ME trap
+    case SAI_HOSTIF_TRAP_TYPE_IP2ME:
+      BmActionData action_data;
+      bm_router_client_ptr->bm_mt_set_default_action(
+          cxt_id, "table_ip2me_trap", "_drop", action_data);
+      break;
+      // post-IP2Me traps
+      // case SAI_HOSTIF_TRAP_TYPE_BGP:
   }
   switch_metadata_ptr->hostif_traps.erase(hostif_trap->sai_object_id);
   sai_id_map_ptr->free_id(hostif_trap->sai_object_id);
