@@ -169,9 +169,6 @@ action action_cpu_encap() {
 }
 
 action action_forward_cpu() {
-	add_header(vlan);
-	vlan.etherType = ethernet.etherType;
-	ethernet.etherType = ETHERTYPE_VLAN;
-	vlan.vid = cpu_header.dst;
+	standard_metadata.egress_spec = cpu_header.dst;
 	remove_header(cpu_header);
 }

@@ -400,9 +400,9 @@ void sai_adapter::netdev_phys_port_fn(u_char *packet, cpu_hdr_t *cpu,
                                       int pkt_len) {
   (*logger)->info(
       "trap arrived to physical netdev cahnnel @ ingress_port {}. len = {}",
-      cpu->dst.hw_port, pkt_len);
+      cpu->dst, pkt_len);
   HostIF_obj *hostif =
-      switch_metadata_ptr->GetHostIFFromPhysicalPort(cpu->dst.hw_port);
+      switch_metadata_ptr->GetHostIFFromPhysicalPort(cpu->dst);
   if (hostif != nullptr && cpu->type == PORT) {
     write(hostif->netdev_fd, packet, pkt_len);
   }
@@ -420,7 +420,7 @@ void sai_adapter::phys_netdev_packet_handler(int hw_port, int length,
       (u_char *)malloc(sizeof(u_char) * (CPU_HDR_LEN + length));
   cpu_hdr_t *cpu_hdr = (cpu_hdr_t *)encaped_packet;
   cpu_hdr->type = PORT;
-  cpu_hdr->dst.hw_port = hw_port;
+  cpu_hdr->dst = hw_port;
   memcpy(encaped_packet + CPU_HDR_LEN, packet, length);
   if (pcap_inject(cpu_port[0].pcap, encaped_packet, length + CPU_HDR_LEN) == -1) {
     (*logger)->error("error on injecting packet [%s]", pcap_geterr(cpu_port[0].pcap));
@@ -460,7 +460,8 @@ void sai_adapter::vlan_netdev_packet_handler(uint16_t vlan_id, int length,
       (u_char *)malloc(sizeof(u_char) * (CPU_HDR_LEN + length));
   cpu_hdr_t *cpu_hdr = (cpu_hdr_t *)encaped_packet;
   cpu_hdr->type = VLAN;
-  cpu_hdr->dst.vid = vlan_id;
+  cpu_hdr->dst = htons(vlan_id);
+  cpu_hdr->trap_id = htons(0xffff);
   memcpy(encaped_packet + CPU_HDR_LEN, packet, length);
   // sai_adapter *adapter = (sai_adapter*) arg_array[1];
   if (pcap_inject(cpu_port[1].pcap, encaped_packet, length + CPU_HDR_LEN) == -1) {

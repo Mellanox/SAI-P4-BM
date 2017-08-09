@@ -51,7 +51,7 @@ using namespace bm_runtime::standard;
 using namespace bm_runtime::simple_pre_lag;
 
 #define ETHER_ADDR_LEN 6
-#define CPU_HDR_LEN 4
+#define CPU_HDR_LEN 5
 #define ETHER_HDR_LEN ETHER_ADDR_LEN+ETHER_ADDR_LEN+2
 #define MAC_LEARN_TRAP_ID 512
 
@@ -69,13 +69,9 @@ VLAN=2,
 } cpu_hdr_type_t;
 
 typedef struct _cpu_hdr_t { // TODO: remove bridge_port and id
-  uint8_t    type; // reserved[6] , cpu_hdr_type_t[2]
-  union dst_t{
-      uint16_t hw_port;
-      uint16_t lag_id; 
-      uint16_t vid;
-  } dst;
-  uint16_t    trap_id;
+  uint8_t  type; // reserved[6] , cpu_hdr_type_t[2]
+  uint16_t dst;
+  uint16_t trap_id;
 } cpu_hdr_t;
 
 typedef struct _vlan_hdr_t {
