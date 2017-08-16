@@ -7,8 +7,8 @@
 #include <list>
 #include <map>
 #include <sai.h>
-#include <standard_types.h>
-#include <simple_pre_lag_types.h>
+#include <bm/standard_types.h>
+#include <bm/simple_pre_lag_types.h>
 #include <vector>
 
 using namespace bm_runtime::standard;

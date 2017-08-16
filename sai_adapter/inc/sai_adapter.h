@@ -17,10 +17,10 @@ extern "C" {
 // #include "sai_hostif_table.h"
 
 // thrift bm clinet
-#include <Standard.h>
-#include <standard_types.h>
-#include <SimplePreLAG.h>
-#include <simple_pre_lag_types.h>
+#include <bm/Standard.h>
+#include <bm/standard_types.h>
+#include <bm/SimplePreLAG.h>
+#include <bm/simple_pre_lag_types.h>
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/protocol/TMultiplexedProtocol.h>
 #include <thrift/transport/TSocket.h>
