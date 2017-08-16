@@ -85,7 +85,7 @@ void sai_adapter::PacketSniffer() {
 
           case 0:
             /* No more packets to read for now */
-            (*logger)->info("recieved breakloop0");
+            (*logger)->info("No packets recieved");
             break;
           case -2:
             /* Somebody called pcap_breakloop() */
@@ -94,7 +94,7 @@ void sai_adapter::PacketSniffer() {
             break;
 
           default:
-            packetHandler((u_char*) this, pcap_header, pcap_packet);
+            cpu_port_packetHandler((u_char*) this, pcap_header, pcap_packet);
             break;
         }
       }
@@ -164,15 +164,16 @@ void sai_adapter::adapter_create_fdb_entry(
   create_fdb_entry(&sai_fdb_entry, 3, attr);
 }
 
-void sai_adapter::packetHandler(u_char *userData,
+void sai_adapter::cpu_port_packetHandler(u_char *userData,
                                 const struct pcap_pkthdr *pkthdr,
                                 const u_char *packet) {
   sai_adapter *adapter = (sai_adapter *)userData;
-  cpu_hdr_t *cpu = (cpu_hdr_t *)packet;
-  // ReverseBytes((uint8_t *)cpu, CPU_HDR_LEN);
+  cpu_hdr_t *cpu = (cpu_hdr_t*) packet;
   cpu->trap_id = ntohs(cpu->trap_id);
-  (*logger)->info("CPU packet captured. trap_id = {}. ingress_port = {}",
-                  cpu->trap_id, cpu->dst.hw_port);
+  cpu->dst = ntohs(cpu->dst);
+  std::string type_str = (cpu->type == PORT) ? "port" : (cpu->type == LAG) ? "lag" : "vlan";
+  (*logger)->info("CPU packet captured from netdev: type {}, trap_id = {}, src = {}",
+                  type_str, cpu->trap_id, cpu->dst);
   u_char *decap_packet = (u_char *)(packet + CPU_HDR_LEN);
   HostIF_Table_Entry_obj *hostif_table_entry =
       switch_metadata_ptr->GetTableEntryFromTrapID(cpu->trap_id);
@@ -192,7 +193,7 @@ void sai_adapter::packetHandler(u_char *userData,
 }
 
 void sai_adapter::learn_mac(u_char *packet, cpu_hdr_t *cpu, int pkt_len) {
-  uint32_t ingress_port =  cpu->dst.hw_port;
+  uint32_t ingress_port =  cpu->dst;
   (*logger)->info("learn_mac from port {}", ingress_port);
   ethernet_hdr_t *ether = (ethernet_hdr_t *)packet;
   ether->ether_type = ntohs(ether->ether_type);

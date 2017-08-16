@@ -8,6 +8,8 @@ table_set_default table_router _drop
 table_set_default table_next_hop _drop
 table_set_default table_ip2me_trap _drop 
 table_set_default table_l3_trap_id _drop
+table_add table_l3_trap_id _nop 0xff =>
 table_set_default table_egress_clone_internal _nop
 table_add table_egress_clone_internal action_cpu_encap 1 =>
 table_add table_cpu_forward action_forward_cpu 1  =>
+table_add table_egress_L3_if action_set_smac_vid 0 => 00:00:00:00:00:00 1

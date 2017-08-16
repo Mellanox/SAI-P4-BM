@@ -76,7 +76,6 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
       // Store default table entries
       match_params.clear();
       match_params.push_back(parse_exact_match_param(port->l2_if, 1));
-      (*logger)->info("debug1. ");
       bm_bridge_client_ptr->bm_mt_get_entry_from_key(
           entry, cxt_id, "table_port_ingress_interface_type", match_params,
           options);
@@ -156,6 +155,12 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
         entry, cxt_id, "table_egress_br_port_to_if", match_params, options);
     bridge_port->handle_egress_br_port_to_if = entry.entry_handle;
 
+    // Default switch src mac (for all rifs unless overriden)
+    (*logger)->info("Setting default switch src MAC to 00:00:00:00:00:00");
+    for (int i = 0; i < ETHER_ADDR_LEN; i++) {
+      switch_metadata_ptr->default_switch_mac[i] = 0;
+    }
+    
     // Default virtual router and default vlan rif
     VirtualRouter_obj *vr = new VirtualRouter_obj(sai_id_map_ptr);
     switch_metadata_ptr->vrs[vr->sai_object_id] = vr;

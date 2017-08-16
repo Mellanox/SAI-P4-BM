@@ -69,9 +69,9 @@ VLAN=2,
 } cpu_hdr_type_t;
 
 typedef struct _cpu_hdr_t { // TODO: remove bridge_port and id
-  uint8_t  type; // reserved[6] , cpu_hdr_type_t[2]
   uint16_t dst;
   uint16_t trap_id;
+  uint8_t  type; // reserved[6] , cpu_hdr_type_t[2]
 } cpu_hdr_t;
 
 typedef struct _vlan_hdr_t {
@@ -323,7 +323,7 @@ private:
   void internal_init_switch();
   static uint32_t
   get_bridge_id_from_fdb_entry(const sai_fdb_entry_t *fdb_entry);
-  static void packetHandler(u_char *, const struct pcap_pkthdr *,
+  static void cpu_port_packetHandler(u_char *, const struct pcap_pkthdr *,
                             const u_char *);
   static void adapter_create_fdb_entry(sai_object_id_t, sai_mac_t,
                                        sai_fdb_entry_bridge_type_t,

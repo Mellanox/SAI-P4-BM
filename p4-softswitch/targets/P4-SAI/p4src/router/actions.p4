@@ -79,7 +79,7 @@ action action_set_smac_vid(in bit<48> smac, in bit<12> vid){
 
 action action_cpu_encap() { 
 	add_header(cpu_header);
-	cpu_header.dst = standard_metadata.ingress_port;
+	cpu_header.dst = vlan.vid;
 	cpu_header.netdev_type = VLAN;
 	cpu_header.trap_id = ingress_metadata.trap_id;
 	standard_metadata.egress_spec = COPY_TO_CPU_MIRROR_ID;

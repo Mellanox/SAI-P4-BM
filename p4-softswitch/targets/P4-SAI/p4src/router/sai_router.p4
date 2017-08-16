@@ -51,7 +51,9 @@ control egress{
 }
 
 control control_cpu {
-	apply(table_cpu_forward);
+	if (cpu_header.netdev_type == VLAN) {
+		apply(table_cpu_forward);
+	}
 }
 	
 

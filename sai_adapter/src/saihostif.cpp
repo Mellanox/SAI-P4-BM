@@ -58,7 +58,7 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
     // hostif->netdev.type = hostif->netdev_obj_type;
     switch (hostif->netdev_obj_type) {
         case SAI_OBJECT_TYPE_PORT:
-          // hostif->netdev_thread = std::thread(phys_netdev_sniffer, hostif->netdev_fd, hostif->netdev_obj.port->hw_port);
+          phys_netdev_sniffer(hostif->netdev_fd, hostif->netdev_obj.port->hw_port);
           break;
         case SAI_OBJECT_TYPE_LAG:
           // hostif->netdev_thread = std::thread(, hostif->netdev_fd,);
@@ -348,6 +348,7 @@ sai_status_t sai_adapter::remove_hostif_trap(sai_object_id_t hostif_trap_id) {
   (*logger)->info("remove_hostif_trap trap_id: {}", hostif_trap_id);
   HostIF_Trap_obj *hostif_trap =
       switch_metadata_ptr->hostif_traps[hostif_trap_id];
+  BmActionData action_data;
   switch (hostif_trap->trap_type) {
     // l2 traps
     case SAI_HOSTIF_TRAP_TYPE_LACP:
@@ -368,12 +369,19 @@ sai_status_t sai_adapter::remove_hostif_trap(sai_object_id_t hostif_trap_id) {
 
     // IP2ME trap
     case SAI_HOSTIF_TRAP_TYPE_IP2ME:
-      BmActionData action_data;
+      bm_router_client_ptr->bm_mt_delete_entry(cxt_id, "table_l3_trap_id",
+                                           hostif_trap->handle_trap_id);
       bm_router_client_ptr->bm_mt_set_default_action(
           cxt_id, "table_ip2me_trap", "_drop", action_data);
       break;
-      // post-IP2Me traps
-      // case SAI_HOSTIF_TRAP_TYPE_BGP:
+
+    // post-IP2Me traps
+    case SAI_HOSTIF_TRAP_TYPE_BGP:
+      bm_router_client_ptr->bm_mt_delete_entry(cxt_id, "table_l3_trap_id",
+                                           hostif_trap->handle_trap_id);
+      bm_router_client_ptr->bm_mt_delete_entry(cxt_id, "table_ip2me_trap",
+                                           hostif_trap->handle_trap);
+      break;
   }
   switch_metadata_ptr->hostif_traps.erase(hostif_trap->sai_object_id);
   sai_id_map_ptr->free_id(hostif_trap->sai_object_id);
@@ -420,8 +428,12 @@ void sai_adapter::phys_netdev_packet_handler(int hw_port, int length,
       (u_char *)malloc(sizeof(u_char) * (CPU_HDR_LEN + length));
   cpu_hdr_t *cpu_hdr = (cpu_hdr_t *)encaped_packet;
   cpu_hdr->type = PORT;
-  cpu_hdr->dst = hw_port;
+  cpu_hdr->dst = htons(hw_port);
+  cpu_hdr->trap_id = htons(0xff);
   memcpy(encaped_packet + CPU_HDR_LEN, packet, length);
+  // TODO: We should probably do this without copying the entire packet.
+  //       currently not sure how to do it
+
   if (pcap_inject(cpu_port[0].pcap, encaped_packet, length + CPU_HDR_LEN) == -1) {
     (*logger)->error("error on injecting packet [%s]", pcap_geterr(cpu_port[0].pcap));
   }
@@ -461,8 +473,11 @@ void sai_adapter::vlan_netdev_packet_handler(uint16_t vlan_id, int length,
   cpu_hdr_t *cpu_hdr = (cpu_hdr_t *)encaped_packet;
   cpu_hdr->type = VLAN;
   cpu_hdr->dst = htons(vlan_id);
-  cpu_hdr->trap_id = htons(0xffff);
+  cpu_hdr->trap_id = htons(0xff);
   memcpy(encaped_packet + CPU_HDR_LEN, packet, length);
+  // TODO: We should probably do this without copying the entire packet.
+  //       currently not sure how to do it
+
   // sai_adapter *adapter = (sai_adapter*) arg_array[1];
   if (pcap_inject(cpu_port[1].pcap, encaped_packet, length + CPU_HDR_LEN) == -1) {
     (*logger)->debug("error on injecting packet [%s]\n", pcap_geterr(cpu_port[1].pcap));

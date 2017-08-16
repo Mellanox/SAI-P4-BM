@@ -152,7 +152,7 @@ class ArpTest(sai_base_test.ThriftInterfaceDataPlane):
         	time.sleep(0.5)
             # verify_packets(self, exp_pkt, [1])
         finally:
-        	# print 'done!'
+        	print 'done!'
             self.client.sai_thrift_remove_hostif_table_entry(hostif_table)
             self.client.sai_thrift_remove_hostif(hostif)
             self.client.sai_thrift_remove_hostif_trap(trap1)
@@ -231,18 +231,27 @@ class IP2METest(sai_base_test.ThriftInterfaceDataPlane):
             time.sleep(0.5)
             # verify_packets(self, exp_pkt, [1])
         finally:
-        	print 'done!'
-            # self.client.sai_thrift_remove_hostif_table_entry(hostif_table)
-            # self.client.sai_thrift_remove_hostif(hostif)
-            # self.client.sai_thrift_remove_hostif_trap(trap1)
-            # self.client.sai_thrift_remove_hostif_trap_group(trap_group)
+            print 'done!'
+            self.client.sai_thrift_remove_hostif_table_entry(hostif_table1)
+            self.client.sai_thrift_remove_hostif_table_entry(hostif_table2)
+            self.client.sai_thrift_remove_hostif(hostif)
+            self.client.sai_thrift_remove_hostif_trap(ip2me_trap)
+            self.client.sai_thrift_remove_hostif_trap(bgp_trap)
+            self.client.sai_thrift_remove_hostif_trap_group(trap_group)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, router_ip, router_ip_mask, cpu_port)
+            self.client.sai_thrift_remove_router_interface(rif_id0)
+            self.client.sai_thrift_remove_virtual_router(vr_id)
+            attr_value = sai_thrift_attribute_value_t(u16=1)
+            attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value) 
+            self.client.sai_thrift_set_port_attribute(port1, attr)
+            self.client.sai_thrift_remove_vlan_member(vlan_member0)
+            self.client.sai_thrift_remove_vlan(vlan_oid)
 
 
 @group('l3')
 class CPUForwardTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         print
-        print "Sending IP2ME packet to port 1"
         default_bridge, default_vlan_oid, cpu_port = switch_init2(self.client)
         # port1 = port_list[1]
         dst_mac = '00:11:22:33:44:55'
