@@ -295,7 +295,7 @@ target_alias =
 top_build_prefix = 
 top_builddir = .
 top_srcdir = .
-SUBDIRS = src
+SUBDIRS = src test
 all: all-recursive
 
 .SUFFIXES:
