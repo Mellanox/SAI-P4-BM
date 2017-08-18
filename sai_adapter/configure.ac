@@ -12,7 +12,7 @@ AC_PROG_RANLIB
 AM_PROG_AR
 
 # automake initialisation and check for minimal automake API version 1.9
-AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 
 # use the C++ compiler for the following checks
 AC_LANG([C++])
@@ -35,6 +35,10 @@ AC_SUBST([AM_LDFLAGS])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([src/Makefile])
 AC_CONFIG_FILES([test/Makefile])
+AC_CONFIG_FILES([test/sai_thrift_server/Makefile])
+
+#echo "Creating sai_types.py"
+#ctypesgen.py $ac_top_srcdir/inc/SAI/55N*.h -o $ac_top_srcdir/test/ptf_tests/sai_types.py -I$ac_top_srcdir/inc/SAI
 
 # generate the final Makefile etc.
 AC_OUTPUT

@@ -176,16 +176,16 @@ am__relativize = \
     dir1=`echo "$$dir1" | sed -e "$$sed_rest"`; \
   done; \
   reldir="$$dir2"
-ACLOCAL = ${SHELL} /home/yonatanp/P4/SAI-P4-BM/sai_adapter/missing aclocal-1.15
+ACLOCAL = ${SHELL} /home/jon/P4/SAI-P4-BM/sai_adapter/missing aclocal-1.15
 AMTAR = $${TAR-tar}
 AM_CFLAGS = 
 AM_CXXFLAGS = 
 AM_DEFAULT_VERBOSITY = 1
 AM_LDFLAGS = 
 AR = ar
-AUTOCONF = ${SHELL} /home/yonatanp/P4/SAI-P4-BM/sai_adapter/missing autoconf
-AUTOHEADER = ${SHELL} /home/yonatanp/P4/SAI-P4-BM/sai_adapter/missing autoheader
-AUTOMAKE = ${SHELL} /home/yonatanp/P4/SAI-P4-BM/sai_adapter/missing automake-1.15
+AUTOCONF = ${SHELL} /home/jon/P4/SAI-P4-BM/sai_adapter/missing autoconf
+AUTOHEADER = ${SHELL} /home/jon/P4/SAI-P4-BM/sai_adapter/missing autoheader
+AUTOMAKE = ${SHELL} /home/jon/P4/SAI-P4-BM/sai_adapter/missing automake-1.15
 AWK = mawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -213,7 +213,7 @@ LDFLAGS =
 LIBOBJS = 
 LIBS = 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/yonatanp/P4/SAI-P4-BM/sai_adapter/missing makeinfo
+MAKEINFO = ${SHELL} /home/jon/P4/SAI-P4-BM/sai_adapter/missing makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = p4sai
@@ -229,10 +229,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = 
 VERSION = 1.0
-abs_builddir = /home/yonatanp/P4/SAI-P4-BM/sai_adapter/test
-abs_srcdir = /home/yonatanp/P4/SAI-P4-BM/sai_adapter/test
-abs_top_builddir = /home/yonatanp/P4/SAI-P4-BM/sai_adapter
-abs_top_srcdir = /home/yonatanp/P4/SAI-P4-BM/sai_adapter
+abs_builddir = /home/jon/P4/SAI-P4-BM/sai_adapter/test
+abs_srcdir = /home/jon/P4/SAI-P4-BM/sai_adapter/test
+abs_top_builddir = /home/jon/P4/SAI-P4-BM/sai_adapter
+abs_top_srcdir = /home/jon/P4/SAI-P4-BM/sai_adapter
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -253,7 +253,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/yonatanp/P4/SAI-P4-BM/sai_adapter/install-sh
+install_sh = ${SHELL} /home/jon/P4/SAI-P4-BM/sai_adapter/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -274,7 +274,9 @@ target_alias =
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
-SUBDIRS = ptf_tests 
+
+# SUBDIRS = ptf_tests sai_thrift_src
+SUBDIRS = ptf_tests sai_thrift_src sai_thrift_server
 all: all-recursive
 
 .SUFFIXES:
@@ -579,7 +581,6 @@ uninstall-am:
 
 .PRECIOUS: Makefile
 
-# sai_thrift_server
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
