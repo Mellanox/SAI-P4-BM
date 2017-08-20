@@ -3,3 +3,7 @@ all: sai_types.py
 default: sai_types.py
 sai_types.py: 
 	ctypesgen.py ${SAI_INC_DIR}/*.h -o sai_types.py -I${SAI_INC_DIR}
+clean:
+	${RM} -rf sai_types.py
+install: ;
+uninstall : ;
