@@ -5,9 +5,9 @@
 
 #define TCP_PROTOCOL_NUM	0x06
 #define UDP_PROTOCOL_NUM	0x11
-#define VLAN_TYPE 		0x8100
-#define IPV4_TYPE		0x0800
-
+#define ETHERTYPE_IPV4         0x0800
+#define ETHERTYPE_IPV6         0x86dd
+#define ETHERTYPE_VLAN         0x8100
 
 // parser starts here
 // check if needs to add clone_to_cpu encapsulation
@@ -36,8 +36,8 @@ parser parse_ethernet {
     extract(ethernet);
     set_metadata(ingress_metadata.is_tagged,0);
     return select(latest.etherType) {
-    	VLAN_TYPE : parse_vlan;
-        IPV4_TYPE : parse_ipv4;
+    	ETHERTYPE_VLAN : parse_vlan;
+        ETHERTYPE_IPV4 : parse_ipv4;
         default: ingress;
     }
 }
@@ -46,7 +46,7 @@ parser parse_vlan {
     extract(vlan);
     set_metadata(ingress_metadata.is_tagged, (bit)(vlan.vid >> 11) | (bit)(vlan.vid >> 10) | (bit)(vlan.vid >> 9) | (bit)(vlan.vid >> 8) | (bit)(vlan.vid >> 7) | (bit)(vlan.vid >> 6) | (bit)(vlan.vid >> 5) | (bit)(vlan.vid >> 4) | (bit)(vlan.vid >> 3) | (bit)(vlan.vid >> 2) | (bit)(vlan.vid >> 1) | (bit)(vlan.vid)); //if vid==0 not tagged. TODO: need to do this better (maybe add parser support for casting boolean)
     return select(latest.etherType) {
-        IPV4_TYPE : parse_ipv4;
+        ETHERTYPE_IPV4 : parse_ipv4;
         default: ingress;
     }
 }
@@ -67,14 +67,18 @@ parser post_parse_ipv4 {
 }
 
 
-// TCP parser, next layer are irrelvant for us, thus not included
+// L4 parser, next layer are irrelvant for us, thus not included
 // (cosidered payload data).
 parser parse_udp {
 	extract(udp);
+    set_metadata(l4_metadata.srcPort,udp.srcPort);
+    set_metadata(l4_metadata.dstPort,udp.dstPort);
 	return ingress;
 }
 
 parser parse_tcp {
 	extract(tcp);
+    set_metadata(l4_metadata.srcPort,tcp.srcPort);
+    set_metadata(l4_metadata.dstPort,tcp.dstPort);
 	return ingress;
 }

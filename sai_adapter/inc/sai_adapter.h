@@ -17,10 +17,10 @@ extern "C" {
 // #include "sai_hostif_table.h"
 
 // thrift bm clinet
-#include <Standard.h>
-#include <standard_types.h>
-#include <SimplePreLAG.h>
-#include <simple_pre_lag_types.h>
+#include <bm/Standard.h>
+#include <bm/standard_types.h>
+#include <bm/SimplePreLAG.h>
+#include <bm/simple_pre_lag_types.h>
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/protocol/TMultiplexedProtocol.h>
 #include <thrift/transport/TSocket.h>
@@ -51,7 +51,8 @@ using namespace bm_runtime::standard;
 using namespace bm_runtime::simple_pre_lag;
 
 #define ETHER_ADDR_LEN 6
-#define CPU_HDR_LEN 3
+#define CPU_HDR_LEN 5
+#define ETHER_HDR_LEN ETHER_ADDR_LEN+ETHER_ADDR_LEN+2
 #define MAC_LEARN_TRAP_ID 512
 
 typedef struct _ethernet_hdr_t {
@@ -60,10 +61,39 @@ typedef struct _ethernet_hdr_t {
   uint16_t ether_type;
 } ethernet_hdr_t;
 
+
+typedef enum _cpu_hdr_type_t {
+PORT=0,
+LAG=1,
+VLAN=2,
+} cpu_hdr_type_t;
+
 typedef struct _cpu_hdr_t { // TODO: remove bridge_port and id
-  unsigned int ingress_port : 8;
-  unsigned int trap_id : 16;
+  uint16_t dst;
+  uint16_t trap_id;
+  uint8_t  type; // reserved[6] , cpu_hdr_type_t[2]
 } cpu_hdr_t;
+
+typedef struct _vlan_hdr_t {
+  uint16_t tci;
+  uint16_t etherType;
+} vlan_hdr_t;
+
+typedef struct pcap_fd {
+    int fd;
+    pcap_t *pcap;
+    const char *dev;
+} pcap_fd_t;
+
+typedef struct netdev_fd {
+    int fd;
+    sai_object_type_t type;
+    union {
+      uint16_t vid;
+      uint16_t hw_port;
+      uint16_t lag_id; 
+    } data;
+} netdev_fd_t;
 
 typedef void (*adapter_packet_handler_fn)(u_char *, cpu_hdr_t *, int);
 typedef std::map<uint16_t, adapter_packet_handler_fn> hostif_trap_id_table_t;
@@ -76,6 +106,7 @@ string parse_param(uint64_t param, uint32_t num_of_bytes);
 BmMatchParam parse_exact_match_param(uint64_t param, uint32_t num_of_bytes);
 BmMatchParam parse_valid_match_param(bool param);
 BmMatchParam parse_lpm_param(uint64_t param, uint32_t num_of_bytes, uint32_t prefix_length);
+BmMatchParam parse_ternary_param(uint64_t param, uint32_t num_of_bytes, uint64_t mask);
 uint64_t parse_mac_64(uint8_t const mac_8[6]);
 void print_mac_to_log(const uint8_t *, std::shared_ptr<spdlog::logger>);
 class sai_adapter {
@@ -274,13 +305,15 @@ public:
 
 private:
   // sai_object_id_t switch_id;
-  static pcap_t *adapter_pcap;
   // sai adapter threading handlers
+  static pcap_fd_t cpu_port[2];
+  static std::vector<netdev_fd_t> active_netdevs;
   std::thread SaiAdapterThread;
   static bool pcap_loop_started;
   static std::mutex m;
-  std::condition_variable cv;
+  static std::condition_variable cv;
   static hostif_trap_id_table_t hostif_trap_id_table;
+  static int sniff_pipe_fd[2];
   void startSaiAdapterMain();
   void endSaiAdapterMain();
   void SaiAdapterMain();
@@ -290,18 +323,21 @@ private:
   void internal_init_switch();
   static uint32_t
   get_bridge_id_from_fdb_entry(const sai_fdb_entry_t *fdb_entry);
-  static void packetHandler(u_char *, const struct pcap_pkthdr *,
+  static void cpu_port_packetHandler(u_char *, const struct pcap_pkthdr *,
                             const u_char *);
   static void adapter_create_fdb_entry(sai_object_id_t, sai_mac_t,
                                        sai_fdb_entry_bridge_type_t,
                                        sai_vlan_id_t, sai_object_id_t);
   static void learn_mac(u_char *, cpu_hdr_t *, int);
-  static void netdev_phys_port_fn(u_char *, cpu_hdr_t *, int);
   static void lookup_hostif_trap_id_table(u_char *packet, cpu_hdr_t *, int);
   static void add_hostif_trap_id_table_entry(uint16_t,
                                              adapter_packet_handler_fn);
+  static void netdev_phys_port_fn(u_char *, cpu_hdr_t *, int);
+  static void netdev_vlan_fn(u_char *, cpu_hdr_t *, int);
   static void phys_netdev_packet_handler(int, int, const u_char *);
   static int phys_netdev_sniffer(int, int);
+  static void vlan_netdev_packet_handler(uint16_t vlan_id, int length, const u_char *packet);
+  static int vlan_netdev_sniffer(int in_dev_fd, uint16_t vlan_id);
   static void update_mc_node_vlan(Vlan_obj *vlan);
   // static void update_mc_node_bridge(Bridge_obj *bridge);
   // hostif_table_t hostif_table;

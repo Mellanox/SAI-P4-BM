@@ -9,8 +9,11 @@ std::vector<sai_object_id_t> *sai_adapter::switch_list_ptr;
 std::shared_ptr<spdlog::logger> *sai_adapter::logger;
 bool sai_adapter::pcap_loop_started;
 std::mutex sai_adapter::m;
+std::condition_variable sai_adapter::cv;
 hostif_trap_id_table_t sai_adapter::hostif_trap_id_table;
-pcap_t *sai_adapter::adapter_pcap;
+pcap_fd_t sai_adapter::cpu_port[2];
+int sai_adapter::sniff_pipe_fd[2];
+std::vector<netdev_fd_t> sai_adapter::active_netdevs;
 
 sai_adapter::sai_adapter()
     : //  constructor pre initializations
@@ -178,6 +181,9 @@ sai_object_type_t sai_adapter::_sai_object_type_query(sai_object_id_t sai_object
   if (switch_metadata_ptr->switch_id == sai_object_id) {
     return SAI_OBJECT_TYPE_SWITCH;
   }
+  if (switch_metadata_ptr->cpu_port_id == sai_object_id) {
+    return SAI_OBJECT_TYPE_PORT;
+  }
   if (switch_metadata_ptr->ports.find(sai_object_id) != switch_metadata_ptr->ports.end()) {
     return SAI_OBJECT_TYPE_PORT;
   }
@@ -235,37 +241,21 @@ void sai_adapter::startSaiAdapterMain() {
   internal_init_switch();
   pcap_loop_started = false;
   SaiAdapterThread = std::thread(&sai_adapter::SaiAdapterMain, this);
-  {
-    std::unique_lock<std::mutex> lk(m);
-    cv.wait(lk, [] { return pcap_loop_started; });
-  }
-  std::this_thread::sleep_for(
-      std::chrono::milliseconds(500)); // TODO consider later release of lock
+  std::unique_lock<std::mutex> lk(m);
+  cv.wait(lk, [] { return pcap_loop_started; });
+  // std::this_thread::sleep_for(
+      // std::chrono::milliseconds(500)); // TODO consider later release of lock
   (*logger)->info("Sniffer initialization done");
 }
 
 void sai_adapter::endSaiAdapterMain() {
-  pcap_breakloop(adapter_pcap);
-  pcap_close(adapter_pcap);
+  (*logger)->info("endSaiAdapterMain");
+  write(sniff_pipe_fd[1], "c", 1);
   SaiAdapterThread.join();
 }
 
 void sai_adapter::SaiAdapterMain() {
   (*logger)->info("SAI Adapter Thread Started");
-  // Change to sai_adapter network namespace (hostif_net)
-  // int fd = open("/var/run/netns/hostif_net",
-  //               O_RDONLY); /* Get descriptor for namespace */
-  // if (fd == -1) {
-  //   (*logger)->error("open netns fd failed");
-  //   release_pcap_lock();
-  //   return;
-  // }
-  // if (setns(fd, 0) == -1) { /* Join that namespace */
-  //   (*logger)->error("setns failed");
-  //   release_pcap_lock();
-  //   return;
-  // }
-
   PacketSniffer();
   (*logger)->info("SAI Adapter Thread Ended");
 }
@@ -281,7 +271,7 @@ BmMatchParam parse_exact_match_param(uint64_t param, uint32_t num_of_bytes) {
   BmMatchParam match_param;
   match_param.type = BmMatchParamType::type::EXACT;
   BmMatchParamExact match_param_exact;
-  match_param_exact.key = parse_param(param, num_of_bytes);
+  match_param_exact.__set_key(parse_param(param, num_of_bytes));
   match_param.__set_exact(match_param_exact);
   return match_param;
 }
@@ -290,9 +280,19 @@ BmMatchParam parse_lpm_param(uint64_t param, uint32_t num_of_bytes, uint32_t pre
   BmMatchParam match_param;
   match_param.type = BmMatchParamType::type::LPM;
   BmMatchParamLPM match_param_lpm;
-  match_param_lpm.key = parse_param(param, num_of_bytes);
+  match_param_lpm.__set_key(parse_param(param, num_of_bytes));
   match_param_lpm.__set_prefix_length(prefix_length);
   match_param.__set_lpm(match_param_lpm);
+  return match_param;
+}
+
+BmMatchParam parse_ternary_param(uint64_t param, uint32_t num_of_bytes, uint64_t mask) {
+  BmMatchParam match_param;
+  match_param.type = BmMatchParamType::type::TERNARY;
+  BmMatchParamTernary match_param_ternary;
+  match_param_ternary.__set_key(parse_param(param, num_of_bytes));
+  match_param_ternary.__set_mask(parse_param(mask, num_of_bytes));
+  match_param.__set_ternary(match_param_ternary);
   return match_param;
 }
 

@@ -7,8 +7,8 @@
 #include <list>
 #include <map>
 #include <sai.h>
-#include <standard_types.h>
-#include <simple_pre_lag_types.h>
+#include <bm/standard_types.h>
+#include <bm/simple_pre_lag_types.h>
 #include <vector>
 
 using namespace bm_runtime::standard;
@@ -247,13 +247,19 @@ public:
 
 class HostIF_obj : public Sai_obj {
 public:
-  Port_obj *port;
+  union netdev_obj {
+    Port_obj *port;
+    Lag_obj  *lag;
+    Vlan_obj *vlan;
+  } netdev_obj;
+  sai_object_type_t netdev_obj_type;
   sai_hostif_type_t hostif_type;
   std::string netdev_name;
   int netdev_fd;
-  std::thread netdev_thread;
+  // std::thread netdev_thread;
+  // netdev_fd_t netdev;
   HostIF_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
-    this->port = nullptr;
+    this->netdev_obj.port = nullptr;
     this->hostif_type = SAI_HOSTIF_TYPE_NETDEV;
     this->netdev_name = "";
   }
@@ -278,7 +284,7 @@ public:
   sai_hostif_trap_type_t trap_type;
   sai_packet_action_t trap_action;
   uint16_t trap_id;
-  BmEntryHandle handle_l2_trap;
+  BmEntryHandle handle_trap;
   BmEntryHandle handle_trap_id;
   HostIF_Trap_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->trap_id = 0;
@@ -383,6 +389,7 @@ public:
   nhop_id_map_t nhops;
   sai_object_id_t default_bridge_id;
   sai_object_id_t default_vlan_oid;
+  sai_object_id_t cpu_port_id;
   BridgePort_obj *router_bridge_port;
   sai_mac_t default_switch_mac;
   Switch_metadata() {
@@ -433,13 +440,26 @@ public:
     for (hostif_id_map_t::iterator it = hostifs.begin(); it != hostifs.end();
          ++it) {
       spdlog::get("logger")->debug("hostif hw_port {} ",
-                                   it->second->port->hw_port);
-      if (it->second->port->hw_port == port_num) {
+                                   it->second->netdev_obj.port->hw_port);
+      if (it->second->netdev_obj.port->hw_port == port_num) {
         return it->second;
       }
     }
     spdlog::get("logger")->error("hostif not found for physical port {} ",
                                  port_num);
+    return nullptr;
+  }
+
+  HostIF_obj *GetHostIFFromVlanId(int vid) {
+    for (hostif_id_map_t::iterator it = hostifs.begin(); it != hostifs.end();
+         ++it) {
+      spdlog::get("logger")->debug("hostif vlan_id {} ",
+                                   it->second->netdev_obj.vlan->vid);
+      if (it->second->netdev_obj.vlan->vid == vid) {
+        return it->second;
+      }
+    }
+    spdlog::get("logger")->error("hostif not found for vlan id {} ", vid);
     return nullptr;
   }
 
@@ -453,12 +473,12 @@ public:
     for (int i = 0; i < vrfs.size(); ++i) {
       if (std::find(vrfs.begin(), vrfs.end(), i) ==
           vrfs.end()) {
-        spdlog::get("logger")->debug("-->GetNewNextHopID: vrf is: {} ",
+        spdlog::get("logger")->debug("-->GetNewVrf: vrf is: {} ",
                                      i);
         return i;
       }
     }
-    spdlog::get("logger")->debug("--> GetNewNextHopID: vrf is: {} ",
+    spdlog::get("logger")->debug("--> GetNewVrf: vrf is: {} ",
                                  vrfs.size());
     return vrfs.size();
   }

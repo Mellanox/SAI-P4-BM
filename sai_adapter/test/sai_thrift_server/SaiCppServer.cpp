@@ -1499,6 +1499,9 @@ void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list
     if (sai_attr->id == SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID) {
       thrift_attr.value.oid = sai_attr->value.oid;
     }
+    if (sai_attr->id == SAI_SWITCH_ATTR_CPU_PORT) {
+      thrift_attr.value.oid = sai_attr->value.oid;
+    }
     // if (sai_attr->id == SAI_SWITCH_ATTR_PORT_LIST) {
     //   thrift_attr.value.objlist.object_id_list.clear();
     //   thrift_attr.value.objlist.count = sai_attr->value.objlist.count;
@@ -1515,7 +1518,9 @@ void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list
       sai_switch_api_t *switch_api;
       sai_attribute_t max_port_attribute;
       sai_attribute_t port_list_object_attribute;
+      sai_attribute_t cpu_port_attribute;
       sai_thrift_attribute_t thrift_port_list_attribute;
+      sai_thrift_attribute_t thrift_cpu_port_attribute;
       sai_object_list_t *port_list_object;
       int max_ports = 0;
       status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
@@ -1543,6 +1548,11 @@ void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list
       }
       attr_list.push_back(thrift_port_list_attribute);
       free(port_list_object_attribute.value.objlist.list);
+
+      cpu_port_attribute.id = SAI_SWITCH_ATTR_CPU_PORT;
+      switch_api->get_switch_attribute(0, 1, &cpu_port_attribute);
+      thrift_cpu_port_attribute = parse_switch_thrift_attribute(&cpu_port_attribute);
+      attr_list.push_back(thrift_cpu_port_attribute);
   }
 
   void sai_thrift_get_port_list_by_front_port(sai_thrift_attribute_t &_return) {
@@ -1553,6 +1563,16 @@ void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list
   sai_thrift_object_id_t sai_thrift_get_cpu_port_id() {
     // Your implementation goes here
     logger->info("sai_thrift_get_cpu_port_id");
+    sai_switch_api_t *switch_api;
+    sai_status_t status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        logger->error("sai_api_query failed!!!");
+        return SAI_NULL_OBJECT_ID;
+    }
+    sai_attribute_t cpu_port_attribute;
+    cpu_port_attribute.id = SAI_SWITCH_ATTR_CPU_PORT;
+    switch_api->get_switch_attribute(0, 1, &cpu_port_attribute);
+    return cpu_port_attribute.value.oid;
   }
 
   sai_thrift_object_id_t sai_thrift_get_default_trap_group() {
@@ -1709,40 +1729,158 @@ void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list
     return status;
   }
 
-  sai_thrift_object_id_t sai_thrift_create_hostif(
-      const std::vector<sai_thrift_attribute_t> &thrift_attr_list) {
-    // Your implementation goes here
-    logger->info("sai_thrift_create_hostif");
+  void sai_thrift_parse_hostif_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it1 = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it1++) {
+          attribute = (sai_thrift_attribute_t)*it1;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+              case SAI_HOSTIF_ATTR_TYPE:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
+              case SAI_HOSTIF_ATTR_OBJ_ID:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
+              case SAI_HOSTIF_ATTR_NAME:
+                  memcpy(attr_list[i].value.chardata, attribute.value.chardata.c_str(), HOSTIF_NAME_SIZE);
+                  break;
+          }
+      }
   }
 
-  sai_thrift_status_t
-  sai_thrift_remove_hostif(const sai_thrift_object_id_t hif_id) {
-    // Your implementation goes here
-    logger->info("sai_thrift_remove_hostif");
+  sai_thrift_object_id_t sai_thrift_create_hostif(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+      logger->info("sai_thrift_create_hostif");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_hostif_api_t *hostif_api;
+      sai_object_id_t hif_id;
+      status = sai_api_query(SAI_API_HOSTIF, (void **) &hostif_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+      sai_thrift_parse_hostif_attributes(thrift_attr_list, attr_list);
+      uint32_t attr_count = thrift_attr_list.size();
+      sai_object_id_t s_id = 0;
+      status = hostif_api->create_hostif(&hif_id, s_id, attr_count, attr_list);
+      free(attr_list);
+      return hif_id;
   }
 
-  sai_thrift_object_id_t sai_thrift_create_hostif_trap_group(
-      const std::vector<sai_thrift_attribute_t> &thrift_attr_list) {
-    // Your implementation goes here
-    logger->info("sai_thrift_create_hostif_trap_group");
+  sai_thrift_status_t sai_thrift_remove_hostif(const sai_thrift_object_id_t hif_id) {
+      logger->info("sai_thrift_remove_hostif");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_hostif_api_t *hostif_api;
+      status = sai_api_query(SAI_API_HOSTIF, (void **) &hostif_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      status = hostif_api->remove_hostif((sai_object_id_t) hif_id);
+      return status;
   }
 
-  sai_thrift_status_t sai_thrift_remove_hostif_trap_group(
-      const sai_thrift_object_id_t trap_group_id) {
-    // Your implementation goes here
-    logger->info("sai_thrift_remove_hostif_trap_group");
+  void sai_thrift_parse_hostif_trap_group_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it1 = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it1++) {
+          attribute = (sai_thrift_attribute_t)*it1;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+              case SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE:
+                  attr_list[i].value.u32 = attribute.value.u32;
+                  break;
+              case SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
+          }
+      }
+  }
+
+  sai_thrift_object_id_t sai_thrift_create_hostif_trap_group(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+      logger->info("sai_thrift_create_hostif_trap_group");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_hostif_api_t *hostif_api;
+      sai_object_id_t hif_trap_group_id;
+      status = sai_api_query(SAI_API_HOSTIF, (void **) &hostif_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+      sai_thrift_parse_hostif_trap_group_attributes(thrift_attr_list, attr_list);
+      uint32_t attr_count = thrift_attr_list.size();
+      sai_object_id_t s_id = 0;
+      status = hostif_api->create_hostif_trap_group(&hif_trap_group_id, s_id, attr_count, attr_list);
+      free(attr_list);
+      return hif_trap_group_id;
+  }
+
+  sai_thrift_status_t sai_thrift_remove_hostif_trap_group(const sai_thrift_object_id_t hif_trap_group_id) {
+      logger->info("sai_thrift_remove_hostif_trap_group\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_hostif_api_t *hostif_api;
+      status = sai_api_query(SAI_API_HOSTIF, (void **) &hostif_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      status = hostif_api->remove_hostif_trap_group((sai_object_id_t) hif_trap_group_id);
+      return status;
+  }
+
+  void sai_thrift_parse_hostif_trap_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it1 = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it1++) {
+          attribute = (sai_thrift_attribute_t)*it1;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+              case SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION:
+              case SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
+              case SAI_HOSTIF_TRAP_ATTR_TRAP_PRIORITY:
+                  attr_list[i].value.u32 = attribute.value.u32;
+                  break;
+              case SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
+              default:
+                  break;
+          }
+      }
   }
 
   sai_thrift_status_t sai_thrift_create_hostif_trap(
       const std::vector<sai_thrift_attribute_t> &thrift_attr_list) {
     // Your implementation goes here
     logger->info("sai_thrift_create_hostif_trap");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_hostif_api_t *hostif_api;
+    sai_object_id_t hif_trap_id;
+    status = sai_api_query(SAI_API_HOSTIF, (void **) &hostif_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        return status;
+    }
+    sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+    sai_thrift_parse_hostif_trap_attributes(thrift_attr_list, attr_list);
+    uint32_t attr_count = thrift_attr_list.size();
+    sai_object_id_t s_id = 0;
+    status = hostif_api->create_hostif_trap(&hif_trap_id, s_id, attr_count, attr_list);
+    free(attr_list);
+    return hif_trap_id;
   }
 
   sai_thrift_status_t
   sai_thrift_remove_hostif_trap(const sai_thrift_hostif_trap_id_t trap_id) {
     // Your implementation goes here
     logger->info("sai_thrift_remove_hostif_trap");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_hostif_api_t *hostif_api;
+      status = sai_api_query(SAI_API_HOSTIF, (void **) &hostif_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      status = hostif_api->remove_hostif_trap((sai_object_id_t) trap_id);
+      return status;
   }
 
   sai_thrift_status_t
@@ -1763,6 +1901,58 @@ void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list
       const std::vector<sai_thrift_attribute_t> &thrift_attr_list) {
     // Your implementation goes here
     logger->info("sai_thrift_create_acl_table");
+  }
+
+  void sai_thrift_parse_hostif_table_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it1 = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it1++) {
+          attribute = (sai_thrift_attribute_t)*it1;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+              case SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE:
+              case SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
+              case SAI_HOSTIF_TABLE_ENTRY_ATTR_TRAP_ID:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
+              default:
+                  break;
+          }
+      }
+  }
+
+  sai_thrift_object_id_t sai_thrift_create_hostif_table_entry(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+    // Your implementation goes here
+    logger->info("sai_thrift_create_hostif_table_entry");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_hostif_api_t *hostif_api;
+    sai_object_id_t hif_table_id;
+    status = sai_api_query(SAI_API_HOSTIF, (void **) &hostif_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        return status;
+    }
+    sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+    sai_thrift_parse_hostif_table_attributes(thrift_attr_list, attr_list);
+    uint32_t attr_count = thrift_attr_list.size();
+    sai_object_id_t s_id = 0;
+    status = hostif_api->create_hostif_table_entry(&hif_table_id, s_id, attr_count, attr_list);
+    free(attr_list);
+    return hif_table_id;
+  }
+
+  sai_thrift_status_t sai_thrift_remove_hostif_table_entry(const sai_thrift_object_id_t hif_table_entry_id) {
+    // Your implementation goes here
+    logger->info("sai_thrift_remove_hostif_table_entry");
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    sai_hostif_api_t *hostif_api;
+    status = sai_api_query(SAI_API_HOSTIF, (void **) &hostif_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        return status;
+    }
+    status = hostif_api->remove_hostif_table_entry(hif_table_entry_id);
+    return status;
   }
 
   sai_thrift_status_t
@@ -1959,10 +2149,12 @@ int main(int argc, char **argv) {
   logger->info("creating server for SAI on port {}", sai_port);
 
   // open server to sai functions
-  int fd = open("/proc/1/ns/net", O_RDONLY);
-  if (setns(fd, 0) == -1) {
-    return -1;
-  }
+  // boost::shared_ptr<switch_sai_rpcHandler> handler(new switch_sai_rpcHandler());
+  //int fd = open("/proc/1/ns/net", O_RDONLY);
+  //if (setns(fd, 0) == -1) {
+  //  return -1;
+  //}
+
   boost::shared_ptr<switch_sai_rpcHandler> handler(new switch_sai_rpcHandler());
   // fd = open("/var/run/netns/sw_net",
   //               O_RDONLY);
@@ -1976,7 +2168,6 @@ int main(int argc, char **argv) {
       new TBufferedTransportFactory());
   boost::shared_ptr<TProtocolFactory> protocolFactory(
       new TBinaryProtocolFactory());
-
   TSimpleServer server(processor, serverTransport, transportFactory,
                        protocolFactory);
   server_ptr = &server;

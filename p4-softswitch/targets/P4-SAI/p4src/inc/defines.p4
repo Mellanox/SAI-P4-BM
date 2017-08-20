@@ -65,6 +65,12 @@
 #define OUT_IF_IS_ROUTER	2 // TODO
 
 
+// CPU_HDR TYPE
+#define PORT    0
+#define LAG 	1
+#define VLAN 	2
+
+
 // L3
 // ERIF_TYPE
 #define VLAN_IF 0

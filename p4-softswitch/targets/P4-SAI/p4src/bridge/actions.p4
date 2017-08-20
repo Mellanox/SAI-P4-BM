@@ -20,11 +20,11 @@ action action_set_trap_id(in bit<11> trap_id) {
 }
 
 action action_copy_to_cpu() {
-	clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_FL);
+	clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_bridge_FL);
 }
 
 action action_trap_to_cpu() {
-	clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_FL);
+	clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_bridge_FL);
 	drop();
 }
 
@@ -88,7 +88,7 @@ action action_go_to_in_l3_if_table(){
 // L2
 action action_learn_mac() {
 	ingress_metadata.trap_id = MAC_LEARN_RECEIVER;	 //TODO, should this be configurable to support hostif interface(?)
-	clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_FL);
+	clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_bridge_FL);
 }
 
 action action_set_egress_br_port(in bit<8> br_port){
@@ -135,7 +135,7 @@ action action_forward_vlan_tag(in bit<3> pcp, in bit cfi, in bit<12> vid){
 	vlan.cfi = cfi;
 	vlan.vid = vid;
 	vlan.etherType = ethernet.etherType;
-	ethernet.etherType = VLAN_TYPE;
+	ethernet.etherType = ETHERTYPE_VLAN;
 	// egress_metadata.tag_mode = tag_mode;
 }
 
@@ -163,12 +163,12 @@ action action_set_mc_fdb_miss() {
 
 action action_cpu_encap() { 
 	add_header(cpu_header);
-	cpu_header.port = standard_metadata.ingress_port;
+	cpu_header.netdev_type = PORT;
+	cpu_header.dst = standard_metadata.ingress_port;
 	cpu_header.trap_id = ingress_metadata.trap_id;
 }
 
 action action_forward_cpu() {
+	standard_metadata.egress_spec = cpu_header.dst;
 	remove_header(cpu_header);
-	standard_metadata.egress_spec = cpu_header.port;
-	// modify_field(standard_metadata.egress_spec,cpu_header.port);
 }

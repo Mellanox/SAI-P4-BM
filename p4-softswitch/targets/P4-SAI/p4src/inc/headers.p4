@@ -119,8 +119,10 @@ metadata intrinsic_metadata_t intrinsic_metadata;
 
 header_type cpu_header_t {
     fields {
-        bit<8>  port;
-        bit<16> trap_id;
+        bit<16>  dst;
+        bit<16>  trap_id;
+        bit<6>   reserved;
+        bit<2>   netdev_type;
     }
 }
 
@@ -137,7 +139,31 @@ header_type router_metadata_t{
         bit<8> next_hop_id;
         bit<3> next_hop_group_id;
         bit<3> next_hop_hash;
+        bit    ip2me;
         // bit<2> packet_action;
-        bit<40> l3_lpm_key;
+        // bit<40> l3_lpm_key;
     }    
 }
+
+header_type l4_metadata_t {
+    fields {
+        bit<16> srcPort;
+        bit<16> dstPort;
+    }
+}
+
+// headers
+header   ethernet_t       ethernet;
+header   vlan_t           vlan;
+header   ipv4_t           ipv4;
+header   tcp_t            tcp;
+header   udp_t            udp;
+header   cpu_header_t     cpu_header;  
+
+// metadata
+// TODO - seperate ingress/egress metadata to bridge, router, and common.
+// common should stay here, but bridge and router should be defined inside
+// main file, to prevernt unnecessary memory usage
+metadata    ingress_metadata_t   ingress_metadata;
+metadata    egress_metadata_t    egress_metadata;
+metadata    l4_metadata_t        l4_metadata;

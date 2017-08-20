@@ -1,5 +1,5 @@
-#include "../inc/sai_adapter.h"
 #include <sched.h>
+#include "../inc/sai_adapter.h"
 
 void ReverseBytes(uint8_t *byte_arr, int size) {
   uint8_t tmp;
@@ -17,32 +17,123 @@ void print_mac_to_log(const uint8_t *mac,
 }
 
 void sai_adapter::release_pcap_lock() {
-  (*logger)->info("release pcap lock");
   std::unique_lock<std::mutex> lk(m);
   pcap_loop_started = true;
   lk.unlock();
   cv.notify_one();
+  (*logger)->info("pcap lock released");
 }
 
 void sai_adapter::PacketSniffer() {
-  const char *dev = "switch_port";
+  char errstr[1024];
+  int maxfd = 0;
+  fd_set sniff_set;
+  int i;
+  int num_of_devs = 2; //TODO: vector?
+  cpu_port[0].dev = "switch_port";
+  cpu_port[1].dev = "router_port";
 
-  char errbuf[PCAP_ERRBUF_SIZE];
+  for (i = 0; i < num_of_devs; i++) {
+    cpu_port[i].pcap = pcap_open_live(cpu_port[i].dev, BUFSIZ, 0, -1, errstr);
+    if (cpu_port[i].pcap == NULL) {
+      (*logger)->error("pcap_open_live() failed: {}", errstr);
+      release_pcap_lock();
+      return;
+    }
+    if (pcap_setnonblock(cpu_port[i].pcap, 1, errstr) == -1) {
+      (*logger)->error("pcap_setnonblock() failed: {}", errstr);
+      release_pcap_lock();
+      return;
+    }
+    cpu_port[i].fd = pcap_get_selectable_fd(cpu_port[i].pcap);
+  }
 
-  (*logger)->info("pcap started on dev {}", dev);
-  adapter_pcap = pcap_open_live(dev, BUFSIZ, 0, -1, errbuf);
-  if (adapter_pcap == NULL) {
-    (*logger)->error("pcap_open_live() failed: {}", errbuf);
-    release_pcap_lock();
+  int break_sniff_loop = 0;
+  // if (pipe2(sniff_pipe_fd, O_NONBLOCK) != 0) {
+  if (pipe(sniff_pipe_fd) != 0) {
+    (*logger)->error("error creating pipe");
     return;
   }
-
+  struct pcap_pkthdr *pcap_header;
+  const u_char *pcap_packet;
+  (*logger)->info("start sniffing on {}, {}", cpu_port[0].dev, cpu_port[1].dev);
   release_pcap_lock();
+  while (break_sniff_loop == 0) {
+    FD_ZERO(&sniff_set);
+    FD_SET(sniff_pipe_fd[0], &sniff_set);
+    maxfd = sniff_pipe_fd[0];
+    for (i = 0; i < num_of_devs; i++) {
+      FD_SET(cpu_port[i].fd, &sniff_set);
+      maxfd = std::max(maxfd, cpu_port[i].fd);
+    }
+    for (std::vector<netdev_fd_t>::iterator it = active_netdevs.begin(); it!=active_netdevs.end(); it++) {
+      FD_SET(it->fd, &sniff_set);
+      maxfd = std::max(maxfd, it->fd);
+    }
+    if (select(maxfd + 1, &sniff_set, NULL, NULL, NULL) < 0) {
+      (*logger)->error("select error");
+      exit(1);
+    }
+    for (i = 0; i < num_of_devs; i++) {
+      if (FD_ISSET(cpu_port[i].fd, &sniff_set)) {
+        switch (pcap_next_ex(cpu_port[i].pcap, &pcap_header, &pcap_packet)) {
+          case -1:
+            /* Error */
+            (*logger)->error("pcap_next_ex failed: {}", pcap_geterr(cpu_port[i].pcap));
+            exit(2);
+            break;
 
-  if (pcap_loop(adapter_pcap, 0, packetHandler, (u_char *)this) == -1) {
-    (*logger)->error("pcap_loop() failed: {}", pcap_geterr(adapter_pcap));
+          case 0:
+            /* No more packets to read for now */
+            (*logger)->info("No packets recieved");
+            break;
+          case -2:
+            /* Somebody called pcap_breakloop() */
+            (*logger)->info("recieved breakloop");
+            break_sniff_loop = 1;
+            break;
+
+          default:
+            cpu_port_packetHandler((u_char*) this, pcap_header, pcap_packet);
+            break;
+        }
+      }
+    }
+    for (std::vector<netdev_fd_t>::iterator it = active_netdevs.begin(); it!=active_netdevs.end(); it++) {
+      if (FD_ISSET(it->fd, &sniff_set)) {
+        u_char buffer[1000];
+        int length = read(it->fd, &buffer, 1000);
+        (*logger)->info("packet recieved of length {}", length);
+        switch (it->type) {
+          case SAI_OBJECT_TYPE_VLAN:
+            vlan_netdev_packet_handler((it->data).vid, length, buffer);
+            break;
+          case SAI_OBJECT_TYPE_PORT:
+            phys_netdev_packet_handler((it->data).hw_port, length, buffer);
+            break;
+          // case SAI_OBJECT_TYPE_LAG:
+            // vlan_netdev_packet_handler(it->vid, length, buffer);
+            // break;
+        }
+      }
+    }
+    if (FD_ISSET(sniff_pipe_fd[0], &sniff_set)) {
+      // TODO: read?
+      char ch;
+      read(sniff_pipe_fd[0], &ch, 1);
+      if (ch == 'c') {
+        (*logger)->info("recieved breakloop");
+        break_sniff_loop = 1;
+      }
+    }
   }
-  (*logger)->info("pcap loop ended");
+
+  for (i=0; i<num_of_devs; i++) {
+    (*logger)->info("closing pcap on dev {}", cpu_port[i].dev);
+    pcap_close(cpu_port[i].pcap);
+  }
+  close(sniff_pipe_fd[0]);
+  close(sniff_pipe_fd[1]);
   return;
 }
 
@@ -73,16 +164,16 @@ void sai_adapter::adapter_create_fdb_entry(
   create_fdb_entry(&sai_fdb_entry, 3, attr);
 }
 
-void sai_adapter::packetHandler(u_char *userData,
+void sai_adapter::cpu_port_packetHandler(u_char *userData,
                                 const struct pcap_pkthdr *pkthdr,
                                 const u_char *packet) {
-
   sai_adapter *adapter = (sai_adapter *)userData;
-  cpu_hdr_t *cpu = (cpu_hdr_t *)packet;
-  // ReverseBytes((uint8_t *)cpu, CPU_HDR_LEN);
+  cpu_hdr_t *cpu = (cpu_hdr_t*) packet;
   cpu->trap_id = ntohs(cpu->trap_id);
-  (*logger)->info("CPU packet captured. trap_id = {}. ingress_port = {}",
-                  cpu->trap_id, cpu->ingress_port);
+  cpu->dst = ntohs(cpu->dst);
+  std::string type_str = (cpu->type == PORT) ? "port" : (cpu->type == LAG) ? "lag" : "vlan";
+  (*logger)->info("CPU packet captured from netdev: type {}, trap_id = {}, src = {}",
+                  type_str, cpu->trap_id, cpu->dst);
   u_char *decap_packet = (u_char *)(packet + CPU_HDR_LEN);
   HostIF_Table_Entry_obj *hostif_table_entry =
       switch_metadata_ptr->GetTableEntryFromTrapID(cpu->trap_id);
@@ -91,10 +182,10 @@ void sai_adapter::packetHandler(u_char *userData,
     return;
   }
   switch (hostif_table_entry->entry_type) {
-  case SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID:
-    adapter->lookup_hostif_trap_id_table(decap_packet, cpu,
-                                         pkthdr->len - CPU_HDR_LEN);
-    break;
+    case SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID:
+      adapter->lookup_hostif_trap_id_table(decap_packet, cpu,
+                                           pkthdr->len - CPU_HDR_LEN);
+      break;
   }
   // if (cpu_hdr->trap_id == 512) {
   //   adapter->learn_mac(ether, cpu_hdr);
@@ -102,7 +193,7 @@ void sai_adapter::packetHandler(u_char *userData,
 }
 
 void sai_adapter::learn_mac(u_char *packet, cpu_hdr_t *cpu, int pkt_len) {
-  uint32_t ingress_port = cpu->ingress_port;
+  uint32_t ingress_port =  cpu->dst;
   (*logger)->info("learn_mac from port {}", ingress_port);
   ethernet_hdr_t *ether = (ethernet_hdr_t *)packet;
   ether->ether_type = ntohs(ether->ether_type);
@@ -159,7 +250,7 @@ void sai_adapter::learn_mac(u_char *packet, cpu_hdr_t *cpu, int pkt_len) {
     vlan_id = bridge_port->vlan_id;
   }
   // if (ether->ether_type == 0x8100) {
-    //TODO: get vlan from packet
+  // TODO: get vlan from packet
   // }
   adapter_create_fdb_entry(bridge_port->sai_object_id, src_mac, bridge_type,
                            vlan_id, bridge->sai_object_id);

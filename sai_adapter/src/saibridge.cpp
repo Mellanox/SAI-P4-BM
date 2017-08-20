@@ -71,7 +71,6 @@ sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
   uint32_t bridge_port_num = switch_metadata_ptr->GetNewBridgePort();
   BridgePort_obj *bridge_port = new BridgePort_obj(sai_id_map_ptr);
   switch_metadata_ptr->bridge_ports[bridge_port->sai_object_id] = bridge_port;
-  (*logger)->info("debug0");
   bridge_port->bridge_port = bridge_port_num;
   sai_attribute_t attribute;
   for (uint32_t i = 0; i < attr_count; i++) {
@@ -79,24 +78,19 @@ sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
     switch (attribute.id) {
     case SAI_BRIDGE_PORT_ATTR_VLAN_ID:
       bridge_port->vlan_id = attribute.value.u16;
-      (*logger)->info("debug1");
       break;
     case SAI_BRIDGE_PORT_ATTR_BRIDGE_ID:
       bridge_port->bridge_id = attribute.value.oid;
-      (*logger)->info("debug2");
       break;
     case SAI_BRIDGE_PORT_ATTR_TYPE:
       bridge_port->bridge_port_type =
           (sai_bridge_port_type_t)attribute.value.s32;
-      (*logger)->info("debug3");
       break;
     case SAI_BRIDGE_PORT_ATTR_PORT_ID:
       bridge_port->port_id = attribute.value.oid;
-      (*logger)->info("debug4");
       break;
     }
   }
-  (*logger)->info("debug5");
   switch_metadata_ptr->bridges[bridge_port->bridge_id]
       ->bridge_port_list.push_back(bridge_port->sai_object_id);
 
@@ -125,10 +119,8 @@ sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
   }
   // 1Q
   else if (bridge_port->bridge_port_type == SAI_BRIDGE_PORT_TYPE_PORT) {
-    (*logger)->info("debug6");
     l2_if_type = 3;
   }
-  (*logger)->info("debug7");
   uint32_t bind_mode;
   uint32_t l2_if;
   uint32_t is_lag;
@@ -140,17 +132,13 @@ sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
     l2_if = port->l2_if;
     is_lag = 0;
   } else { // port_id is lag
-    (*logger)->info("debug10");
     Lag_obj *lag = switch_metadata_ptr->lags[bridge_port->port_id];
-    (*logger)->info("debug11");
     if (lag->port_obj == nullptr) {
       bind_mode = SAI_PORT_BIND_MODE_PORT;
     } else {
       bind_mode = lag->port_obj->bind_mode;
     }
-    (*logger)->info("debug12");
     l2_if = lag->l2_if;
-    (*logger)->info("debug13");
     is_lag = 1;
   }
 
@@ -162,12 +150,10 @@ sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
   bridge_port->handle_egress_br_port_to_if = bm_bridge_client_ptr->bm_mt_add_entry(
       cxt_id, "table_egress_br_port_to_if", match_params,
       "action_forward_set_outIfType", action_data, options);
-  (*logger)->info("debug8 is_lag = {}", is_lag);
   if (bind_mode == SAI_PORT_BIND_MODE_SUB_PORT) {
     match_params.clear();
     match_params.push_back(
         parse_exact_match_param(l2_if, 1)); // TODO p4 table match is on l2_if
-    (*logger)->info("debug9");
     match_params.push_back(parse_exact_match_param(bridge_port->vlan_id, 2));
     action_data.clear();
     action_data.push_back(parse_param(l2_if_type, 1));
@@ -182,7 +168,6 @@ sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
     action_data.clear();
     action_data.push_back(parse_param(l2_if_type, 1));
     action_data.push_back(parse_param(bridge_port->bridge_port, 1));
-    (*logger)->info("debug10");
     bridge_port->handle_port_ingress_interface_type =
         bm_bridge_client_ptr->bm_mt_add_entry(
             cxt_id, "table_port_ingress_interface_type", match_params,

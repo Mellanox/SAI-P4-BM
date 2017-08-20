@@ -3,10 +3,9 @@ BM_DIR = ${SAI_ADAPTER_DIR}/../p4-softswitch/
 INC_DIR = ${SAI_ADAPTER_DIR}/inc
 SAI_INC_DIR    = ${INC_DIR}/SAI
 SAI_SRC_DIR = ${SAI_ADAPTER_DIR}/src
-LIBS_DIRS  = -L${SAI_ADAPTER_DIR}/lib -L${BM_DIR}/libp4bm
 CPP_DEFS   = -D=HAVE_CONFIG_H
 CPP_OPTS   =-Wall -O3 -std=c++11 -pthread -w
-LIBS       = ${LIBS_DIRS} -lp4sai -lpcap -lthrift -lteam -ljansson -lp4bm
+LIBS       = -lp4sai -lpcap -lthrift -lteam -ljansson -lruntimestubs
 INC_DIRS = -I${INC_DIR} -I${SAI_INC_DIR}
 OBJ_DIR = obj
 LACP_SRC = $(wildcard *.c)

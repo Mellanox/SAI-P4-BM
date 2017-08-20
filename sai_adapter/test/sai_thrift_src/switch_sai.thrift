@@ -316,6 +316,9 @@ service switch_sai_rpc {
     sai_thrift_status_t sai_thrift_set_hostif_trap(1: sai_thrift_object_id_t trap_id, 2: sai_thrift_attribute_t thrift_attr);
     sai_thrift_status_t sai_thrift_set_hostif_trap_group(1: sai_thrift_object_id_t trap_group_id, 2: sai_thrift_attribute_t thrift_attr);
 
+    sai_thrift_object_id_t sai_thrift_create_hostif_table_entry(1: list<sai_thrift_attribute_t> thrift_attr_list);
+    sai_thrift_status_t sai_thrift_remove_hostif_table_entry(1: sai_thrift_object_id_t hif_table_entry_id);
+
     // ACL API
     sai_thrift_object_id_t sai_thrift_create_acl_table(1: list<sai_thrift_attribute_t> thrift_attr_list);
     sai_thrift_status_t sai_thrift_remove_acl_table(1: sai_thrift_object_id_t acl_table_id);
