@@ -2,6 +2,7 @@ AC_INIT([p4sai], [1.0], [yonatanp@mellanox.com])
 
 # check if the source folder is correct
 AC_CONFIG_SRCDIR([src/sai.c])
+AC_CHECK_FILE([/usr/include/sai/sai.h],[],[AC_MSG_ERROR([Please install sai headers to /usr/include/sai])])
 
 # Checks for programs
 
@@ -36,9 +37,6 @@ AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([src/Makefile])
 AC_CONFIG_FILES([test/Makefile])
 AC_CONFIG_FILES([test/sai_thrift_server/Makefile])
-
-#echo "Creating sai_types.py"
-#ctypesgen.py $ac_top_srcdir/inc/SAI/55N*.h -o $ac_top_srcdir/test/ptf_tests/sai_types.py -I$ac_top_srcdir/inc/SAI
 
 # generate the final Makefile etc.
 AC_OUTPUT
