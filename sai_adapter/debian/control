@@ -1,0 +1,15 @@
+Source: p4-sai-adapter
+Section: net
+Priority: optional
+Maintainer: Yonatan Piasetzky <yonatanp@mellanox.com>
+Build-Depends: debhelper (>=9),autotools-dev
+Standards-Version: 3.9.6
+Homepage: <insert the upstream URL, if relevant>
+#Vcs-Git: git://anonscm.debian.org/collab-maint/p4-sai-adapter.git
+#Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/p4-sai-adapter.git
+
+Package: p4-sai-adapter
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: sai-adapter for p4 software switch
+ sai-adapter exposes sai api to configure p4-bmv2 software switch

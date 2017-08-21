@@ -98,3 +98,4 @@ VERSION-build
 
 # dist archives
 *.tar.gz
+*.tar.xz
