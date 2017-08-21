@@ -212,8 +212,8 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/depcomp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = ${SHELL} /home/yonatanp/P4/SAI-P4-BM/sai_adapter/missing aclocal-1.15
 AMTAR = $${TAR-tar}
-AM_CFLAGS = -I$(top_srcdir)/inc -I$(top_srcdir)/inc/SAI 
-AM_CXXFLAGS = -I$(top_srcdir)/inc -I$(top_srcdir)/inc/SAI -Wall -O3 -std=c++11 -pthread -w 
+AM_CFLAGS = -I$(top_srcdir)/inc -I/usr/include/sai 
+AM_CXXFLAGS = -I$(top_srcdir)/inc -I/usr/include/sai -Wall -O3 -std=c++11 -pthread -w 
 AM_DEFAULT_VERBOSITY = 1
 AM_LDFLAGS = 
 AR = ar
