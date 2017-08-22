@@ -1,8 +1,7 @@
-AC_INIT([p4sai], [1.0], [yonatanp@mellanox.com])
+AC_INIT([p4-sai-adapter], [0.1], [yonatanp@mellanox.com])
 
 # check if the source folder is correct
 AC_CONFIG_SRCDIR([src/sai.c])
-AC_CHECK_FILE([/usr/include/sai/sai.h],[],[AC_MSG_ERROR([Please install sai headers to /usr/include/sai])])
 
 # Checks for programs
 
@@ -11,6 +10,15 @@ AC_PROG_CXXCPP
 AC_PROG_CXX
 AC_PROG_RANLIB
 AM_PROG_AR
+
+#   # Check for thrift    - Why doesn't this work?
+#   AC_PATH_PROG([THRIFT], [thrift], [])
+#   AC_SUBST([THRIFT_LIB], ["-lthrift"])
+#   AC_CHECK_HEADER([thrift/Thrift.h], [], [AC_MSG_ERROR([Thrift headers not found. Install Thrift from http://thrift.apache.org/docs/install/])])
+
+# Create thrift output for sai_thrift_server (needed for ptf)
+echo "Generating thrift output file for sai_thrift_server"
+thrift --gen cpp --gen py -o test/sai_thrift_src/ test/sai_thrift_src/switch_sai.thrift 
 
 # automake initialisation and check for minimal automake API version 1.9
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
@@ -34,9 +42,11 @@ AC_SUBST([AM_LDFLAGS])
 
 # files to generate via autotools (.am or .in source files)
 AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([inc/Makefile])
 AC_CONFIG_FILES([src/Makefile])
 AC_CONFIG_FILES([test/Makefile])
 AC_CONFIG_FILES([test/sai_thrift_server/Makefile])
+AC_CONFIG_FILES([test/sai_thrift_src/Makefile])
 
 # generate the final Makefile etc.
 AC_OUTPUT

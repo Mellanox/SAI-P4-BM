@@ -98,3 +98,9 @@ VERSION-build
 
 # dist archives
 *.tar.gz
+*.tar.xz
+
+# debian package
+*.changes 
+*.deb
+*.build 

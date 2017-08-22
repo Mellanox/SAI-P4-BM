@@ -1,7 +1,7 @@
 # additional include paths necessary to compile the C++ library
 
-AM_CXXFLAGS = -I$(top_srcdir)/inc -I$(top_srcdir)/inc/SAI -Wall -O3 -std=c++11 -pthread -w @AM_CXXFLAGS@
-AM_CFLAGS = -I$(top_srcdir)/inc -I$(top_srcdir)/inc/SAI @AM_CFLAGS@
+AM_CXXFLAGS = -I$(top_srcdir)/inc -I$(top_srcdir)/inc/sai -Wall -O3 -std=c++11 -pthread -w @AM_CXXFLAGS@
+AM_CFLAGS = -I$(top_srcdir)/inc -I$(top_srcdir)/inc/sai @AM_CFLAGS@
 ###############################################################################
 # THE LIBRARIES TO BUILD
 ###############################################################################
