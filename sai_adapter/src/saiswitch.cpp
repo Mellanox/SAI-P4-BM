@@ -5,7 +5,7 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
                                         const sai_attribute_t *attr_list) {
   (*logger)->info("create switch");
   if (switch_list_ptr->size() != 0) {
-    (*logger)->debug(
+    (*logger)->info(
         "currently one switch is supportred, returning operating switch_id: {}",
         (*switch_list_ptr)[0]);
     *switch_id = (*switch_list_ptr)[0];

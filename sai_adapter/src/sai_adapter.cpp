@@ -170,8 +170,7 @@ sai_status_t sai_adapter::sai_api_query(sai_api_t sai_api_id,
     *api_method_table = &neighbor_api;
     break;
   default:
-    (*logger)->info("api requested was %d, while sai_api_port is %d\n",
-                    sai_api_id, SAI_API_PORT);
+    (*logger)->info("unsupported api request made ({})", sai_api_id);
     return SAI_STATUS_FAILURE;
   }
   return SAI_STATUS_SUCCESS;
