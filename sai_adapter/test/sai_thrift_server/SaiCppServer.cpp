@@ -49,7 +49,6 @@ sai_status_t sai_api_uninitialize(void);
 }
 // globals
 const int sai_port = 9092;
-sai_object_id_t switch_id;
 
 class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
 public:
@@ -65,16 +64,18 @@ public:
     // initialization
     logger = spdlog::get("logger");
     sai_api_initialize(0, &test_services);
-    sai_switch_api_t switch_api;
+    sai_switch_api_t *switch_api;
     if (sai_api_query(SAI_API_SWITCH, (void **) &switch_api) != SAI_STATUS_SUCCESS) {
       logger->error("Failed to query sai_switch_api");
       exit(1);
     }
+
+    sai_object_id_t switch_id;
     sai_attribute_t switch_attr;
     switch_attr.id = SAI_SWITCH_ATTR_INIT_SWITCH;
     switch_attr.value.booldata = true;
     logger->info("Switch init with default configurations");
-    switch_api.create_switch(&switch_id, 1, &switch_attr);
+    switch_api->create_switch(&switch_id, 1, &switch_attr);
     logger->info("Switch init with default configurations done");
     // server_internal_init_switch();
   }
