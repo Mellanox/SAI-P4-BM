@@ -116,6 +116,153 @@ sai_adapter::sai_adapter()
   route_api.create_route_entry = &sai_adapter::create_route_entry;
   route_api.remove_route_entry = &sai_adapter::remove_route_entry;
 
+  policer_api.create_policer = &sai_adapter::create_policer;
+  policer_api.remove_policer = &sai_adapter::remove_policer;
+  policer_api.set_policer_attribute = &sai_adapter::set_policer_attribute;
+  policer_api.get_policer_attribute = &sai_adapter::get_policer_attribute;
+  policer_api.get_policer_stats = &sai_adapter::get_policer_stats;
+  policer_api.clear_policer_stats = &sai_adapter::clear_policer_stats;
+  mirror_api.create_mirror_session = &sai_adapter::create_mirror_session;
+  mirror_api.remove_mirror_session = &sai_adapter::remove_mirror_session;
+  mirror_api.set_mirror_session_attribute = &sai_adapter::set_mirror_session_attribute;
+  mirror_api.get_mirror_session_attribute = &sai_adapter::get_mirror_session_attribute;
+  stp_api.create_stp = &sai_adapter::create_stp;
+  stp_api.remove_stp = &sai_adapter::remove_stp;
+  stp_api.set_stp_attribute = &sai_adapter::set_stp_attribute;
+  stp_api.get_stp_attribute = &sai_adapter::get_stp_attribute;
+  stp_api.create_stp_port = &sai_adapter::create_stp_port;
+  stp_api.remove_stp_port = &sai_adapter::remove_stp_port;
+  stp_api.set_stp_port_attribute = &sai_adapter::set_stp_port_attribute;
+  stp_api.get_stp_port_attribute = &sai_adapter::get_stp_port_attribute;
+  stp_api.create_stp_ports = &sai_adapter::create_stp_ports;
+  stp_api.remove_stp_ports = &sai_adapter::remove_stp_ports;
+  samplepacket_api.create_samplepacket = &sai_adapter::create_samplepacket;
+  samplepacket_api.remove_samplepacket = &sai_adapter::remove_samplepacket;
+  samplepacket_api.set_samplepacket_attribute = &sai_adapter::set_samplepacket_attribute;
+  samplepacket_api.get_samplepacket_attribute = &sai_adapter::get_samplepacket_attribute;
+  wred_api.create_wred = &sai_adapter::create_wred;
+  wred_api.remove_wred = &sai_adapter::remove_wred;
+  wred_api.set_wred_attribute = &sai_adapter::set_wred_attribute;
+  wred_api.get_wred_attribute = &sai_adapter::get_wred_attribute;
+  qos_map_api.create_qos_map = &sai_adapter::create_qos_map;
+  qos_map_api.remove_qos_map = &sai_adapter::remove_qos_map;
+  qos_map_api.set_qos_map_attribute = &sai_adapter::set_qos_map_attribute;
+  qos_map_api.get_qos_map_attribute = &sai_adapter::get_qos_map_attribute;
+  queue_api.create_queue = &sai_adapter::create_queue;
+  queue_api.remove_queue = &sai_adapter::remove_queue;
+  queue_api.set_queue_attribute = &sai_adapter::set_queue_attribute;
+  queue_api.get_queue_attribute = &sai_adapter::get_queue_attribute;
+  queue_api.get_queue_stats = &sai_adapter::get_queue_stats;
+  queue_api.clear_queue_stats = &sai_adapter::clear_queue_stats;
+  scheduler_group_api.create_scheduler_group = &sai_adapter::create_scheduler_group;
+  scheduler_group_api.remove_scheduler_group = &sai_adapter::remove_scheduler_group;
+  scheduler_group_api.set_scheduler_group_attribute = &sai_adapter::set_scheduler_group_attribute;
+  scheduler_group_api.get_scheduler_group_attribute = &sai_adapter::get_scheduler_group_attribute;
+  scheduler_api.create_scheduler = &sai_adapter::create_scheduler;
+  scheduler_api.remove_scheduler = &sai_adapter::remove_scheduler;
+  scheduler_api.set_scheduler_attribute = &sai_adapter::set_scheduler_attribute;
+  scheduler_api.get_scheduler_attribute = &sai_adapter::get_scheduler_attribute;
+  hash_api.create_hash = &sai_adapter::create_hash;
+  hash_api.remove_hash = &sai_adapter::remove_hash;
+  hash_api.set_hash_attribute = &sai_adapter::set_hash_attribute;
+  hash_api.get_hash_attribute = &sai_adapter::get_hash_attribute;
+  udf_api.create_udf = &sai_adapter::create_udf;
+  udf_api.remove_udf = &sai_adapter::remove_udf;
+  udf_api.set_udf_attribute = &sai_adapter::set_udf_attribute;
+  udf_api.get_udf_attribute = &sai_adapter::get_udf_attribute;
+  udf_api.create_udf_match = &sai_adapter::create_udf_match;
+  udf_api.remove_udf_match = &sai_adapter::remove_udf_match;
+  udf_api.set_udf_match_attribute = &sai_adapter::set_udf_match_attribute;
+  udf_api.get_udf_match_attribute = &sai_adapter::get_udf_match_attribute;
+  udf_api.create_udf_group = &sai_adapter::create_udf_group;
+  udf_api.remove_udf_group = &sai_adapter::remove_udf_group;
+  udf_api.set_udf_group_attribute = &sai_adapter::set_udf_group_attribute;
+  udf_api.get_udf_group_attribute = &sai_adapter::get_udf_group_attribute;
+  l2mc_group_api.create_l2mc_group = &sai_adapter::create_l2mc_group;
+  l2mc_group_api.remove_l2mc_group = &sai_adapter::remove_l2mc_group;
+  l2mc_group_api.set_l2mc_group_attribute = &sai_adapter::set_l2mc_group_attribute;
+  l2mc_group_api.get_l2mc_group_attribute = &sai_adapter::get_l2mc_group_attribute;
+  l2mc_group_api.create_l2mc_group_member = &sai_adapter::create_l2mc_group_member;
+  l2mc_group_api.remove_l2mc_group_member = &sai_adapter::remove_l2mc_group_member;
+  l2mc_group_api.set_l2mc_group_member_attribute = &sai_adapter::set_l2mc_group_member_attribute;
+  l2mc_group_api.get_l2mc_group_member_attribute = &sai_adapter::get_l2mc_group_member_attribute;
+  ipmc_group_api.create_ipmc_group = &sai_adapter::create_ipmc_group;
+  ipmc_group_api.remove_ipmc_group = &sai_adapter::remove_ipmc_group;
+  ipmc_group_api.set_ipmc_group_attribute = &sai_adapter::set_ipmc_group_attribute;
+  ipmc_group_api.get_ipmc_group_attribute = &sai_adapter::get_ipmc_group_attribute;
+  ipmc_group_api.create_ipmc_group_member = &sai_adapter::create_ipmc_group_member;
+  ipmc_group_api.remove_ipmc_group_member = &sai_adapter::remove_ipmc_group_member;
+  ipmc_group_api.set_ipmc_group_member_attribute = &sai_adapter::set_ipmc_group_member_attribute;
+  ipmc_group_api.get_ipmc_group_member_attribute = &sai_adapter::get_ipmc_group_member_attribute;
+  tunnel_api.create_tunnel_map = &sai_adapter::create_tunnel_map;
+  tunnel_api.remove_tunnel_map = &sai_adapter::remove_tunnel_map;
+  tunnel_api.set_tunnel_map_attribute = &sai_adapter::set_tunnel_map_attribute;
+  tunnel_api.get_tunnel_map_attribute = &sai_adapter::get_tunnel_map_attribute;
+  tunnel_api.create_tunnel = &sai_adapter::create_tunnel;
+  tunnel_api.remove_tunnel = &sai_adapter::remove_tunnel;
+  tunnel_api.set_tunnel_attribute = &sai_adapter::set_tunnel_attribute;
+  tunnel_api.get_tunnel_attribute = &sai_adapter::get_tunnel_attribute;
+  tunnel_api.create_tunnel_term_table_entry = &sai_adapter::create_tunnel_term_table_entry;
+  tunnel_api.remove_tunnel_term_table_entry = &sai_adapter::remove_tunnel_term_table_entry;
+  tunnel_api.set_tunnel_term_table_entry_attribute = &sai_adapter::set_tunnel_term_table_entry_attribute;
+  tunnel_api.get_tunnel_term_table_entry_attribute = &sai_adapter::get_tunnel_term_table_entry_attribute;
+  tunnel_api.create_tunnel_map_entry = &sai_adapter::create_tunnel_map_entry;
+  tunnel_api.remove_tunnel_map_entry = &sai_adapter::remove_tunnel_map_entry;
+  tunnel_api.set_tunnel_map_entry_attribute = &sai_adapter::set_tunnel_map_entry_attribute;
+  tunnel_api.get_tunnel_map_entry_attribute = &sai_adapter::get_tunnel_map_entry_attribute;
+  l2mc_api.create_l2mc_entry = &sai_adapter::create_l2mc_entry;
+  l2mc_api.remove_l2mc_entry = &sai_adapter::remove_l2mc_entry;
+  l2mc_api.set_l2mc_entry_attribute = &sai_adapter::set_l2mc_entry_attribute;
+  l2mc_api.get_l2mc_entry_attribute = &sai_adapter::get_l2mc_entry_attribute;
+  ipmc_api.create_ipmc_entry = &sai_adapter::create_ipmc_entry;
+  ipmc_api.remove_ipmc_entry = &sai_adapter::remove_ipmc_entry;
+  ipmc_api.set_ipmc_entry_attribute = &sai_adapter::set_ipmc_entry_attribute;
+  ipmc_api.get_ipmc_entry_attribute = &sai_adapter::get_ipmc_entry_attribute;
+  mcast_fdb_api.create_mcast_fdb_entry = &sai_adapter::create_mcast_fdb_entry;
+  mcast_fdb_api.remove_mcast_fdb_entry = &sai_adapter::remove_mcast_fdb_entry;
+  mcast_fdb_api.set_mcast_fdb_entry_attribute = &sai_adapter::set_mcast_fdb_entry_attribute;
+  mcast_fdb_api.get_mcast_fdb_entry_attribute = &sai_adapter::get_mcast_fdb_entry_attribute;
+  buffer_api.create_buffer_pool = &sai_adapter::create_buffer_pool;
+  buffer_api.remove_buffer_pool = &sai_adapter::remove_buffer_pool;
+  buffer_api.set_buffer_pool_attribute = &sai_adapter::set_buffer_pool_attribute;
+  buffer_api.get_buffer_pool_attribute = &sai_adapter::get_buffer_pool_attribute;
+  buffer_api.get_buffer_pool_stats = &sai_adapter::get_buffer_pool_stats;
+  buffer_api.clear_buffer_pool_stats = &sai_adapter::clear_buffer_pool_stats;
+  buffer_api.create_ingress_priority_group = &sai_adapter::create_ingress_priority_group;
+  buffer_api.remove_ingress_priority_group = &sai_adapter::remove_ingress_priority_group;
+  buffer_api.set_ingress_priority_group_attribute = &sai_adapter::set_ingress_priority_group_attribute;
+  buffer_api.get_ingress_priority_group_attribute = &sai_adapter::get_ingress_priority_group_attribute;
+  buffer_api.get_ingress_priority_group_stats = &sai_adapter::get_ingress_priority_group_stats;
+  buffer_api.clear_ingress_priority_group_stats = &sai_adapter::clear_ingress_priority_group_stats;
+  buffer_api.create_buffer_profile = &sai_adapter::create_buffer_profile;
+  buffer_api.remove_buffer_profile = &sai_adapter::remove_buffer_profile;
+  buffer_api.set_buffer_profile_attribute = &sai_adapter::set_buffer_profile_attribute;
+  buffer_api.get_buffer_profile_attribute = &sai_adapter::get_buffer_profile_attribute;
+  acl_api.create_acl_table = &sai_adapter::create_acl_table;
+  acl_api.remove_acl_table = &sai_adapter::remove_acl_table;
+  acl_api.set_acl_table_attribute = &sai_adapter::set_acl_table_attribute;
+  acl_api.get_acl_table_attribute = &sai_adapter::get_acl_table_attribute;
+  acl_api.create_acl_entry = &sai_adapter::create_acl_entry;
+  acl_api.remove_acl_entry = &sai_adapter::remove_acl_entry;
+  acl_api.set_acl_entry_attribute = &sai_adapter::set_acl_entry_attribute;
+  acl_api.get_acl_entry_attribute = &sai_adapter::get_acl_entry_attribute;
+  acl_api.create_acl_counter = &sai_adapter::create_acl_counter;
+  acl_api.remove_acl_counter = &sai_adapter::remove_acl_counter;
+  acl_api.set_acl_counter_attribute = &sai_adapter::set_acl_counter_attribute;
+  acl_api.get_acl_counter_attribute = &sai_adapter::get_acl_counter_attribute;
+  acl_api.create_acl_range = &sai_adapter::create_acl_range;
+  acl_api.remove_acl_range = &sai_adapter::remove_acl_range;
+  acl_api.set_acl_range_attribute = &sai_adapter::set_acl_range_attribute;
+  acl_api.get_acl_range_attribute = &sai_adapter::get_acl_range_attribute;
+  acl_api.create_acl_table_group = &sai_adapter::create_acl_table_group;
+  acl_api.remove_acl_table_group = &sai_adapter::remove_acl_table_group;
+  acl_api.set_acl_table_group_attribute = &sai_adapter::set_acl_table_group_attribute;
+  acl_api.get_acl_table_group_attribute = &sai_adapter::get_acl_table_group_attribute;
+  acl_api.create_acl_table_group_member = &sai_adapter::create_acl_table_group_member;
+  acl_api.remove_acl_table_group_member = &sai_adapter::remove_acl_table_group_member;
+  acl_api.set_acl_table_group_member_attribute = &sai_adapter::set_acl_table_group_member_attribute;
+  acl_api.get_acl_table_group_member_attribute = &sai_adapter::get_acl_table_group_member_attribute;
+
   startSaiAdapterMain();
   (*logger)->info("BM connection started on port {}", bm_port_bridge);
 }
@@ -168,6 +315,66 @@ sai_status_t sai_adapter::sai_api_query(sai_api_t sai_api_id,
     break;
   case SAI_API_NEIGHBOR:
     *api_method_table = &neighbor_api;
+    break;
+  case SAI_API_ACL:
+    *api_method_table = &acl_api;
+    break;
+  case SAI_API_MIRROR:
+    *api_method_table = &mirror_api;
+    break;
+  case SAI_API_SAMPLEPACKET:
+    *api_method_table = &samplepacket_api;
+    break;
+  case SAI_API_STP:
+    *api_method_table = &stp_api;
+    break;
+  case SAI_API_POLICER:
+    *api_method_table = &policer_api;
+    break;
+  case SAI_API_WRED:
+    *api_method_table = &wred_api;
+    break;
+  case SAI_API_QOS_MAP:
+    *api_method_table = &qos_map_api;
+    break;
+  case SAI_API_QUEUE:
+    *api_method_table = &queue_api;
+    break;
+  case SAI_API_SCHEDULER:
+    *api_method_table = &scheduler_api;
+    break;
+  case SAI_API_SCHEDULER_GROUP:
+    *api_method_table = &scheduler_group_api;
+    break;
+  case SAI_API_BUFFER:
+    *api_method_table = &buffer_api;
+    break;
+  case SAI_API_HASH:
+    *api_method_table = &hash_api;
+    break;
+  case SAI_API_UDF:
+    *api_method_table = &udf_api;
+    break;
+  case SAI_API_TUNNEL:
+    *api_method_table = &tunnel_api;
+    break;
+  case SAI_API_L2MC:
+    *api_method_table = &l2mc_api;
+    break;
+  case SAI_API_IPMC:
+    *api_method_table = &ipmc_api;
+    break;
+  case SAI_API_RPF_GROUP:
+    *api_method_table = &rpf_group_api;
+    break;
+  case SAI_API_L2MC_GROUP:
+    *api_method_table = &l2mc_group_api;
+    break;
+  case SAI_API_IPMC_GROUP:
+    *api_method_table = &ipmc_group_api;
+    break;
+  case SAI_API_MCAST_FDB:
+    *api_method_table = &mcast_fdb_api;
     break;
   default:
     (*logger)->info("unsupported api request made ({})", sai_api_id);
@@ -229,15 +436,15 @@ sai_object_type_t sai_adapter::_sai_object_type_query(sai_object_id_t sai_object
 }
 
 void sai_adapter::internal_init_switch() {
-  sai_object_id_t switch_id2;
-  (*logger)->info("Switch init with default configurations");
-  switch_api.create_switch(&switch_id2, 0, NULL);
-  (*logger)->info("Switch init with default configurations done");
+  // sai_object_id_t switch_id2;
+  // (*logger)->info("Switch init with default configurations");
+  // switch_api.create_switch(&switch_id2, 0, NULL);
+  // (*logger)->info("Switch init with default configurations done");
   return;
 }
 
 void sai_adapter::startSaiAdapterMain() {
-  internal_init_switch();
+  // internal_init_switch();
   pcap_loop_started = false;
   SaiAdapterThread = std::thread(&sai_adapter::SaiAdapterMain, this);
   std::unique_lock<std::mutex> lk(m);

@@ -138,7 +138,8 @@ public:
   static SimplePreLAGClient *bm_bridge_client_mc_ptr;
   static Switch_metadata *switch_metadata_ptr;
   static std::shared_ptr<spdlog::logger> *logger;
-  // switch
+
+  // sai api functions
   static sai_status_t create_switch(sai_object_id_t *switch_id,
                                     uint32_t attr_count,
                                     const sai_attribute_t *attr_list);
@@ -146,7 +147,6 @@ public:
                                            sai_uint32_t attr_count,
                                            sai_attribute_t *attr_list);
   static sai_status_t set_switch_attribute(sai_object_id_t switch_id, const sai_attribute_t *attr);
-  // port functions
   static sai_status_t create_port(sai_object_id_t *port_id,
                                   sai_object_id_t switch_id,
                                   uint32_t attr_count,
@@ -162,7 +162,6 @@ public:
                                         sai_attribute_t attribute);
   static void get_parsed_port_attribute(Port_obj *port,
                                         sai_attribute_t *attribute);
-  // bridge functions
   static sai_status_t create_bridge(sai_object_id_t *bridge_id,
                                     sai_object_id_t switch_id,
                                     uint32_t attr_count,
@@ -171,8 +170,6 @@ public:
   static sai_status_t get_bridge_attribute(sai_object_id_t bridge_id,
                                            uint32_t attr_count,
                                            sai_attribute_t *attr_list);
-
-  // bridge_port functions
   static sai_status_t create_bridge_port(sai_object_id_t *bridge_port_id,
                                          sai_object_id_t switch_id,
                                          uint32_t attr_count,
@@ -181,7 +178,6 @@ public:
   static sai_status_t get_bridge_port_attribute(sai_object_id_t bridge_port_id,
                                                 uint32_t attr_count,
                                                 sai_attribute_t *attr_list);
-  // fdb
   static sai_status_t create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
                                        uint32_t attr_count,
                                        const sai_attribute_t *attr_list);
@@ -189,8 +185,6 @@ public:
   static sai_status_t flush_fdb_entries(sai_object_id_t switch_id,
                                         uint32_t attr_count,
                                         const sai_attribute_t *attr_list);
-
-  // vlan
   static sai_status_t create_vlan(sai_object_id_t *vlan_id,
                                   sai_object_id_t switch_id,
                                   uint32_t attr_count,
@@ -218,6 +212,10 @@ public:
   static sai_status_t clear_vlan_stats(sai_object_id_t vlan_id,
                                        const sai_vlan_stat_t *counter_ids,
                                        uint32_t number_of_counters);
+static sai_status_t create_vlan_members(sai_object_id_t switch_id,uint32_t object_count,const uint32_t *attr_count,const sai_attribute_t **attrs,sai_bulk_op_type_t type,sai_object_id_t *object_id,sai_status_t *object_statuses);
+
+static sai_status_t remove_vlan_members(uint32_t object_count,const sai_object_id_t *object_id,sai_bulk_op_type_t type,sai_status_t *object_statuses);
+
   // lag
   static sai_status_t create_lag(sai_object_id_t *lag_id,
                                  sai_object_id_t switch_id, uint32_t attr_count,
@@ -230,8 +228,6 @@ public:
   static sai_status_t remove_lag_member(sai_object_id_t lag_member_id);
   static sai_status_t get_lag_member_attribute(sai_object_id_t lag_member_id, uint32_t attr_count, sai_attribute_t *attr_list);
   static void get_parsed_lag_attribute(Lag_member_obj *lag_member, sai_attribute_t *attribute);
-
-  // hostif
   static sai_status_t create_hostif(sai_object_id_t *hif_id,
                                     sai_object_id_t switch_id,
                                     uint32_t attr_count,
@@ -254,8 +250,6 @@ public:
                                          uint32_t attr_count,
                                          const sai_attribute_t *attr_list);
   static sai_status_t remove_hostif_trap(sai_object_id_t hostif_trap_id);
-
-  // ROUTER
   static sai_status_t create_virtual_router (sai_object_id_t *vr_id,
                                             sai_object_id_t switch_id,
                                             uint32_t attr_count,
@@ -272,7 +266,6 @@ public:
                                             uint32_t attr_count,
                                             const sai_attribute_t *attr_list);
   static sai_status_t remove_neighbor_entry(const sai_neighbor_entry_t *neighbor_entry);
-
   static sai_status_t create_next_hop (sai_object_id_t *next_hop_id,
                                             sai_object_id_t switch_id,
                                             uint32_t attr_count,
@@ -283,6 +276,160 @@ public:
                                          uint32_t attr_count,
                                          const sai_attribute_t *attr_list);
   static sai_status_t remove_route_entry(const sai_route_entry_t *route_entry);
+  static sai_status_t create_policer(sai_object_id_t *policer_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_policer(sai_object_id_t policer_id);
+  static sai_status_t set_policer_attribute(sai_object_id_t policer_id,const sai_attribute_t *attr);
+  static sai_status_t get_policer_attribute(sai_object_id_t policer_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t get_policer_stats(sai_object_id_t policer_id,const sai_policer_stat_t *counter_ids,uint32_t number_of_counters,uint64_t *counters);
+  static sai_status_t clear_policer_stats(sai_object_id_t policer_id,uint32_t number_of_counters,const sai_policer_stat_t *counter_ids);
+  static sai_status_t create_mirror_session(sai_object_id_t *session_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_mirror_session(sai_object_id_t session_id);
+  static sai_status_t set_mirror_session_attribute(sai_object_id_t session_id,const sai_attribute_t *attr);
+  static sai_status_t get_mirror_session_attribute(sai_object_id_t session_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_stp(sai_object_id_t *stp_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_stp(sai_object_id_t stp_id);
+  static sai_status_t set_stp_attribute(sai_object_id_t stp_id,const sai_attribute_t *attr);
+  static sai_status_t get_stp_attribute(sai_object_id_t stp_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_stp_port(sai_object_id_t *stp_port_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_stp_port(sai_object_id_t stp_port_id);
+  static sai_status_t set_stp_port_attribute(sai_object_id_t stp_port_id,const sai_attribute_t *attr);
+  static sai_status_t get_stp_port_attribute(sai_object_id_t stp_port_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_stp_ports(sai_object_id_t switch_id,uint32_t object_count,const uint32_t *attr_count,const sai_attribute_t **attrs,sai_bulk_op_type_t type,sai_object_id_t *object_id,sai_status_t *object_statuses);
+  static sai_status_t remove_stp_ports(uint32_t object_count,const sai_object_id_t *object_id,sai_bulk_op_type_t type,sai_status_t *object_statuses);
+  static sai_status_t create_samplepacket(sai_object_id_t *samplepacket_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_samplepacket(sai_object_id_t samplepacket_id);
+  static sai_status_t set_samplepacket_attribute(sai_object_id_t samplepacket_id,const sai_attribute_t *attr);
+  static sai_status_t get_samplepacket_attribute(sai_object_id_t samplepacket_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_wred(sai_object_id_t *wred_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_wred(sai_object_id_t wred_id);
+  static sai_status_t set_wred_attribute(sai_object_id_t wred_id,const sai_attribute_t *attr);
+  static sai_status_t get_wred_attribute(sai_object_id_t wred_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_qos_map(sai_object_id_t *qos_map_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_qos_map(sai_object_id_t qos_map_id);
+  static sai_status_t set_qos_map_attribute(sai_object_id_t qos_map_id,const sai_attribute_t *attr);
+  static sai_status_t get_qos_map_attribute(sai_object_id_t qos_map_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_queue(sai_object_id_t *queue_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_queue(sai_object_id_t queue_id);
+  static sai_status_t set_queue_attribute(sai_object_id_t queue_id,const sai_attribute_t *attr);
+  static sai_status_t get_queue_attribute(sai_object_id_t queue_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t get_queue_stats(sai_object_id_t queue_id,const sai_queue_stat_t *counter_ids,uint32_t number_of_counters,uint64_t *counters);
+  static sai_status_t clear_queue_stats(sai_object_id_t queue_id,const sai_queue_stat_t *counter_ids,uint32_t number_of_counters);
+  static sai_status_t create_scheduler_group(sai_object_id_t *scheduler_group_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_scheduler_group(sai_object_id_t scheduler_group_id);
+  static sai_status_t set_scheduler_group_attribute(sai_object_id_t scheduler_group_id,const sai_attribute_t *attr);
+  static sai_status_t get_scheduler_group_attribute(sai_object_id_t scheduler_group_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_scheduler(sai_object_id_t *scheduler_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_scheduler(sai_object_id_t scheduler_id);
+  static sai_status_t set_scheduler_attribute(sai_object_id_t scheduler_id,const sai_attribute_t *attr);
+  static sai_status_t get_scheduler_attribute(sai_object_id_t scheduler_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_hash(sai_object_id_t *hash_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_hash(sai_object_id_t hash_id);
+  static sai_status_t set_hash_attribute(sai_object_id_t hash_id,const sai_attribute_t *attr);
+  static sai_status_t get_hash_attribute(sai_object_id_t hash_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_udf(sai_object_id_t *udf_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_udf(sai_object_id_t udf_id);
+  static sai_status_t set_udf_attribute(sai_object_id_t udf_id,const sai_attribute_t *attr);
+  static sai_status_t get_udf_attribute(sai_object_id_t udf_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_udf_match(sai_object_id_t *udf_match_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_udf_match(sai_object_id_t udf_match_id);
+  static sai_status_t set_udf_match_attribute(sai_object_id_t udf_match_id,const sai_attribute_t *attr);
+  static sai_status_t get_udf_match_attribute(sai_object_id_t udf_match_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_udf_group(sai_object_id_t *udf_group_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_udf_group(sai_object_id_t udf_group_id);
+  static sai_status_t set_udf_group_attribute(sai_object_id_t udf_group_id,const sai_attribute_t *attr);
+  static sai_status_t get_udf_group_attribute(sai_object_id_t udf_group_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_l2mc_group(sai_object_id_t *l2mc_group_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_l2mc_group(sai_object_id_t l2mc_group_id);
+  static sai_status_t set_l2mc_group_attribute(sai_object_id_t l2mc_group_id,const sai_attribute_t *attr);
+  static sai_status_t get_l2mc_group_attribute(sai_object_id_t l2mc_group_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_l2mc_group_member(sai_object_id_t *l2mc_group_member_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_l2mc_group_member(sai_object_id_t l2mc_group_member_id);
+  static sai_status_t set_l2mc_group_member_attribute(sai_object_id_t l2mc_group_member_id,const sai_attribute_t *attr);
+  static sai_status_t get_l2mc_group_member_attribute(sai_object_id_t l2mc_group_member_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_ipmc_group(sai_object_id_t *ipmc_group_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_ipmc_group(sai_object_id_t ipmc_group_id);
+  static sai_status_t set_ipmc_group_attribute(sai_object_id_t ipmc_group_id,const sai_attribute_t *attr);
+  static sai_status_t get_ipmc_group_attribute(sai_object_id_t ipmc_group_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_ipmc_group_member(sai_object_id_t *ipmc_group_member_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_ipmc_group_member(sai_object_id_t ipmc_group_member_id);
+  static sai_status_t set_ipmc_group_member_attribute(sai_object_id_t ipmc_group_member_id,const sai_attribute_t *attr);
+  static sai_status_t get_ipmc_group_member_attribute(sai_object_id_t ipmc_group_member_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_tunnel_map(sai_object_id_t *tunnel_map_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_tunnel_map(sai_object_id_t tunnel_map_id);
+  static sai_status_t set_tunnel_map_attribute(sai_object_id_t tunnel_map_id,const sai_attribute_t *attr);
+  static sai_status_t get_tunnel_map_attribute(sai_object_id_t tunnel_map_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_tunnel(sai_object_id_t *tunnel_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_tunnel(sai_object_id_t tunnel_id);
+  static sai_status_t set_tunnel_attribute(sai_object_id_t tunnel_id,const sai_attribute_t *attr);
+  static sai_status_t get_tunnel_attribute(sai_object_id_t tunnel_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_tunnel_term_table_entry(sai_object_id_t *tunnel_term_table_entry_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_tunnel_term_table_entry(sai_object_id_t tunnel_term_table_entry_id);
+  static sai_status_t set_tunnel_term_table_entry_attribute(sai_object_id_t tunnel_term_table_entry_id,const sai_attribute_t *attr);
+  static sai_status_t get_tunnel_term_table_entry_attribute(sai_object_id_t tunnel_term_table_entry_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_tunnel_map_entry(sai_object_id_t *tunnel_map_entry_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_tunnel_map_entry(sai_object_id_t tunnel_map_entry_id);
+  static sai_status_t set_tunnel_map_entry_attribute(sai_object_id_t tunnel_map_entry_id,const sai_attribute_t *attr);
+  static sai_status_t get_tunnel_map_entry_attribute(sai_object_id_t tunnel_map_entry_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_l2mc_entry(const sai_l2mc_entry_t *l2mc_entry,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_l2mc_entry(const sai_l2mc_entry_t *l2mc_entry);
+  static sai_status_t set_l2mc_entry_attribute(const sai_l2mc_entry_t *l2mc_entry,const sai_attribute_t *attr);
+  static sai_status_t get_l2mc_entry_attribute(const sai_l2mc_entry_t *l2mc_entry,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_ipmc_entry(const sai_ipmc_entry_t *ipmc_entry,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_ipmc_entry(const sai_ipmc_entry_t *ipmc_entry);
+  static sai_status_t set_ipmc_entry_attribute(const sai_ipmc_entry_t *ipmc_entry,const sai_attribute_t *attr);
+  static sai_status_t get_ipmc_entry_attribute(const sai_ipmc_entry_t *ipmc_entry,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_mcast_fdb_entry(const sai_mcast_fdb_entry_t *fdb_entry,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_mcast_fdb_entry(const sai_mcast_fdb_entry_t *fdb_entry);
+  static sai_status_t set_mcast_fdb_entry_attribute(const sai_mcast_fdb_entry_t *fdb_entry,const sai_attribute_t *attr);
+  static sai_status_t get_mcast_fdb_entry_attribute(const sai_mcast_fdb_entry_t *fdb_entry,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_buffer_pool(sai_object_id_t *pool_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_buffer_pool(sai_object_id_t pool_id);
+  static sai_status_t set_buffer_pool_attribute(sai_object_id_t pool_id,const sai_attribute_t *attr);
+  static sai_status_t get_buffer_pool_attribute(sai_object_id_t pool_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t get_buffer_pool_stats(sai_object_id_t pool_id,const sai_buffer_pool_stat_t *counter_ids,uint32_t number_of_counters,uint64_t *counters);
+  static sai_status_t clear_buffer_pool_stats(sai_object_id_t pool_id,uint32_t number_of_counters,const sai_buffer_pool_stat_t *counter_ids);
+  static sai_status_t create_ingress_priority_group(sai_object_id_t *ingress_pg_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_ingress_priority_group(sai_object_id_t ingress_pg_id);
+  static sai_status_t set_ingress_priority_group_attribute(sai_object_id_t ingress_pg_id,const sai_attribute_t *attr);
+  static sai_status_t get_ingress_priority_group_attribute(sai_object_id_t ingress_pg_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t get_ingress_priority_group_stats(sai_object_id_t ingress_pg_id,const sai_ingress_priority_group_stat_t *counter_ids,uint32_t number_of_counters,uint64_t *counters);
+  static sai_status_t clear_ingress_priority_group_stats(sai_object_id_t ingress_pg_id,uint32_t number_of_counters,const sai_ingress_priority_group_stat_t *counter_ids);
+  static sai_status_t create_buffer_profile(sai_object_id_t *buffer_profile_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_buffer_profile(sai_object_id_t buffer_profile_id);
+  static sai_status_t set_buffer_profile_attribute(sai_object_id_t buffer_profile_id,const sai_attribute_t *attr);
+  static sai_status_t get_buffer_profile_attribute(sai_object_id_t buffer_profile_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_acl_table(sai_object_id_t *acl_table_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_acl_table(sai_object_id_t acl_table_id);
+  static sai_status_t set_acl_table_attribute(sai_object_id_t acl_table_id,const sai_attribute_t *attr);
+  static sai_status_t get_acl_table_attribute(sai_object_id_t acl_table_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_acl_entry(sai_object_id_t *acl_entry_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_acl_entry(sai_object_id_t acl_entry_id);
+  static sai_status_t set_acl_entry_attribute(sai_object_id_t acl_entry_id,const sai_attribute_t *attr);
+  static sai_status_t get_acl_entry_attribute(sai_object_id_t acl_entry_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_acl_counter(sai_object_id_t *acl_counter_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_acl_counter(sai_object_id_t acl_counter_id);
+  static sai_status_t set_acl_counter_attribute(sai_object_id_t acl_counter_id,const sai_attribute_t *attr);
+  static sai_status_t get_acl_counter_attribute(sai_object_id_t acl_counter_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_acl_range(sai_object_id_t *acl_range_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_acl_range(sai_object_id_t acl_range_id);
+  static sai_status_t set_acl_range_attribute(sai_object_id_t acl_range_id,const sai_attribute_t *attr);
+  static sai_status_t get_acl_range_attribute(sai_object_id_t acl_range_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_acl_table_group(sai_object_id_t *acl_table_group_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_acl_table_group(sai_object_id_t acl_table_group_id);
+  static sai_status_t set_acl_table_group_attribute(sai_object_id_t acl_table_group_id,const sai_attribute_t *attr);
+  static sai_status_t get_acl_table_group_attribute(sai_object_id_t acl_table_group_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_acl_table_group_member(sai_object_id_t *acl_table_group_member_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
+  static sai_status_t remove_acl_table_group_member(sai_object_id_t acl_table_group_member_id);
+  static sai_status_t set_acl_table_group_member_attribute(sai_object_id_t acl_table_group_member_id,const sai_attribute_t *attr);
+  static sai_status_t get_acl_table_group_member_attribute(sai_object_id_t acl_table_group_member_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_rpf_group(sai_object_id_t *rpf_group_id,sai_object_id_t switch_id);
+  static sai_status_t remove_rpf_group(sai_object_id_t rpf_group_id);
+  static sai_status_t set_rpf_group_attribute(sai_object_id_t rpf_group_id,const sai_attribute_t *attr);
+  static sai_status_t get_rpf_group_attribute(sai_object_id_t rpf_group_id,uint32_t attr_count,sai_attribute_t *attr_list);
+  static sai_status_t create_rpf_group_member(sai_object_id_t *rpf_group_member_id,sai_object_id_t switch_id);
+  static sai_status_t remove_rpf_group_member(sai_object_id_t rpf_group_member_id);
+  static sai_status_t set_rpf_group_member_attribute(sai_object_id_t rpf_group_member_id,const sai_attribute_t *attr);
+  static sai_status_t get_rpf_group_member_attribute(sai_object_id_t rpf_group_member_id,uint32_t attr_count,sai_attribute_t *attr_list);
 
   // api s
   sai_port_api_t port_api;
@@ -298,6 +445,26 @@ public:
   sai_next_hop_group_api_t next_hop_group_api;
   sai_router_interface_api_t router_interface_api;
   sai_neighbor_api_t neighbor_api;
+  sai_acl_api_t acl_api;
+  sai_mirror_api_t mirror_api;
+  sai_samplepacket_api_t samplepacket_api;
+  sai_stp_api_t stp_api;
+  sai_policer_api_t policer_api;
+  sai_wred_api_t wred_api;
+  sai_qos_map_api_t qos_map_api;
+  sai_queue_api_t queue_api;
+  sai_scheduler_api_t scheduler_api;
+  sai_scheduler_group_api_t scheduler_group_api;
+  sai_buffer_api_t buffer_api;
+  sai_hash_api_t hash_api;
+  sai_udf_api_t udf_api;
+  sai_tunnel_api_t tunnel_api;
+  sai_l2mc_api_t l2mc_api;
+  sai_ipmc_api_t ipmc_api;
+  sai_rpf_group_api_t rpf_group_api;
+  sai_l2mc_group_api_t l2mc_group_api;
+  sai_ipmc_group_api_t ipmc_group_api;
+  sai_mcast_fdb_api_t mcast_fdb_api;
   sai_adapter();
   ~sai_adapter();
   sai_status_t sai_api_query(sai_api_t sai_api_id, void **api_method_table);

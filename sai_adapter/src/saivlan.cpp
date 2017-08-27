@@ -291,8 +291,32 @@ sai_status_t sai_adapter::clear_vlan_stats(sai_object_id_t vlan_id,
                                            const sai_vlan_stat_t *counter_ids,
                                            uint32_t number_of_counters) {
   (*logger)->info("TODO : clear_vlan_stats not implemened");
+  return SAI_STATUS_NOT_IMPLEMENTED;
   // implementation
 }
+
+sai_status_t sai_adapter::create_vlan_members(
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t object_count,
+        _In_ const uint32_t *attr_count,
+        _In_ const sai_attribute_t **attrs,
+        _In_ sai_bulk_op_type_t type,
+        _Out_ sai_object_id_t *object_id,
+        _Out_ sai_status_t *object_statuses) {
+  (*logger)->info("create_vlan_members");
+  return SAI_STATUS_NOT_IMPLEMENTED;
+}
+
+sai_status_t sai_adapter::remove_vlan_members(
+        _In_ uint32_t object_count,
+        _In_ const sai_object_id_t *object_id,
+        _In_ sai_bulk_op_type_t type,
+        _Out_ sai_status_t *object_statuses) {
+  (*logger)->info("remove_vlan_members");
+  return SAI_STATUS_NOT_IMPLEMENTED;
+}
+
+
 
 void sai_adapter::update_mc_node_vlan(Vlan_obj *vlan) {
   std::string port_map;
