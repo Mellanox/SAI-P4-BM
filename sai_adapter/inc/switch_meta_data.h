@@ -390,6 +390,7 @@ public:
   sai_object_id_t default_bridge_id;
   sai_object_id_t default_vlan_oid;
   sai_object_id_t cpu_port_id;
+  sai_object_id_t default_vr_id;
   BridgePort_obj *router_bridge_port;
   sai_mac_t default_switch_mac;
   Switch_metadata() {

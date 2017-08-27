@@ -164,6 +164,7 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
     // Default virtual router and default vlan rif
     VirtualRouter_obj *vr = new VirtualRouter_obj(sai_id_map_ptr);
     switch_metadata_ptr->vrs[vr->sai_object_id] = vr;
+    switch_metadata_ptr->default_vr_id = vr->sai_object_id;
 
     RouterInterface_obj *rif = new RouterInterface_obj(sai_id_map_ptr);
     switch_metadata_ptr->rifs[rif->sai_object_id] = rif;
@@ -211,6 +212,9 @@ sai_status_t sai_adapter::get_switch_attribute(sai_object_id_t switch_id,
         break;
       case SAI_SWITCH_ATTR_CPU_PORT:
         (attr_list + i)->value.oid = switch_metadata_ptr->cpu_port_id;
+        break;
+      case SAI_SWITCH_ATTR_DEFAULT_VIRTUAL_ROUTER_ID:
+        (attr_list + i)->value.oid = switch_metadata_ptr->default_vr_id;
         break;
     }
   }
