@@ -393,6 +393,7 @@ public:
   sai_object_id_t default_vr_id;
   BridgePort_obj *router_bridge_port;
   sai_mac_t default_switch_mac;
+  sai_fdb_event_notification_fn fdb_event_notification_fn;
   Switch_metadata() {
     ports.clear();
     bridge_ports.clear();

@@ -4,11 +4,35 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
                                         uint32_t attr_count,
                                         const sai_attribute_t *attr_list) {
   (*logger)->info("create switch");
+  bool deafult_mac_set = false;
+  sai_status_t status;
+  for (int j=0; j<attr_count; j++) {
+    (*logger)->info("attr if = {}", attr_list[j].id);
+    switch (attr_list[j].id) {
+      case SAI_SWITCH_ATTR_INIT_SWITCH:
+        if (attr_list[j].value.booldata) {
+          status = init_switch(deafult_mac_set);
+          if (status != SAI_STATUS_SUCCESS) {
+            return status;
+          }
+        }
+        break;
+      case SAI_SWITCH_ATTR_SRC_MAC_ADDRESS:
+        deafult_mac_set = true;
+      default:
+        set_switch_attribute(switch_metadata_ptr->switch_id, &attr_list[j]);
+        break;
+    }
+  }
+  *switch_id = switch_metadata_ptr->switch_id;
+  return SAI_STATUS_SUCCESS;
+}
+
+sai_status_t sai_adapter::init_switch(bool deafult_mac_set) {
   if (switch_list_ptr->size() != 0) {
     (*logger)->info(
         "currently one switch is supportred, returning operating switch_id: {}",
         (*switch_list_ptr)[0]);
-    *switch_id = (*switch_list_ptr)[0];
     return SAI_STATUS_ITEM_ALREADY_EXISTS;
   } else {
     BmAddEntryOptions options;
@@ -33,12 +57,6 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
     vlan->handle_mc_mgrp = 0;
     vlan->handle_mc_l1 = 0;
     match_params.push_back(parse_exact_match_param(vlan->bridge_id, 2));
-    // bm_bridge_client_ptr->bm_mt_get_entry_from_key(entry, cxt_id,
-    // "table_broadcast", match_params, options);
-    // vlan->handle_broadcast = entry.entry_handle;
-    // bm_bridge_client_ptr->bm_mt_get_entry_from_key(entry, cxt_id,
-    // "table_flood", match_params, options);
-    // vlan->handle_flood = entry.entry_handle;
     switch_metadata_ptr->default_vlan_oid = vlan->sai_object_id;
     (*logger)->info("Default vlan id 1 (oid = {})", vlan->sai_object_id);
     for (int i = 0; i < switch_metadata_ptr->hw_port_list.count; i++) {
@@ -131,36 +149,21 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
     bridge->bridge_port_list.push_back(bridge_port->sai_object_id);
     (*logger)->info("Router bridge_port_id {}. bridge_port = {}",
                     bridge_port->sai_object_id, bridge_port->bridge_port);
-    // Store default table entries
-    // match_params.clear();
-    // match_params.push_back(parse_exact_match_param(port->l2_if, 1));
-    // bridge_port->handle_port_ingress_interface_type =
-    // bm_bridge_client_ptr->bm_mt_add_entr(
-    // entry, cxt_id, "table_port_ingress_interface_type", match_params,
-    // options);
+
     match_params.clear();
     match_params.push_back(
         parse_exact_match_param(bridge_port->bridge_port, 1));
-    // action_data.clear();
-    // action_data.push_back(parse_param(port->hw_port, 1));
-    // action_data.push_back(parse_param(2,1)); // 2 - out_if_type == ROUTER
-    // table_add table_egress_br_port_to_if action_forward_set_outIfType 0 => 0
-    // 0
 
-    // bridge_port->handle_egress_br_port_to_if =
-    // bm_bridge_client_ptr->bm_mt_add_entry(cxt_id,
-    // "table_egress_br_port_to_if", match_params,
-    // "action_forward_set_outIfType", action_data, options);
     bm_bridge_client_ptr->bm_mt_get_entry_from_key(
         entry, cxt_id, "table_egress_br_port_to_if", match_params, options);
     bridge_port->handle_egress_br_port_to_if = entry.entry_handle;
 
     // Default switch src mac (for all rifs unless overriden)
-    (*logger)->info("Setting default switch src MAC to 00:00:00:00:00:00");
-    for (int i = 0; i < ETHER_ADDR_LEN; i++) {
-      switch_metadata_ptr->default_switch_mac[i] = 0;
+    if (!deafult_mac_set) {
+      (*logger)->info("Setting default switch src MAC to 00:00:00:00:00:00");
+      memset(switch_metadata_ptr->default_switch_mac, 0, ETHER_ADDR_LEN);
     }
-    
+
     // Default virtual router and default vlan rif
     VirtualRouter_obj *vr = new VirtualRouter_obj(sai_id_map_ptr);
     switch_metadata_ptr->vrs[vr->sai_object_id] = vr;
@@ -179,9 +182,7 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
     hostif_table_entry->entry_type = SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID;
     hostif_table_entry->trap_id = MAC_LEARN_TRAP_ID;
     add_hostif_trap_id_table_entry(MAC_LEARN_TRAP_ID, learn_mac);
-
     switch_list_ptr->push_back(switch_obj->sai_object_id);
-    *switch_id = switch_obj->sai_object_id;
     return SAI_STATUS_SUCCESS;
   }
 }
@@ -230,6 +231,9 @@ sai_status_t sai_adapter::set_switch_attribute(sai_object_id_t switch_id,
       (*logger)->info("default switch mac set to:");
       print_mac_to_log(switch_metadata_ptr->default_switch_mac, *logger);
       break;
+    case SAI_SWITCH_ATTR_FDB_EVENT_NOTIFY:
+      (*logger)->info("fdb event notification funciton was set");
+      switch_metadata_ptr->fdb_event_notification_fn = (sai_fdb_event_notification_fn) attr->value.ptr;
   }
   return SAI_STATUS_SUCCESS;
 }

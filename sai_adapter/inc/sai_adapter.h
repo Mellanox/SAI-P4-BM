@@ -492,9 +492,7 @@ private:
   get_bridge_id_from_fdb_entry(const sai_fdb_entry_t *fdb_entry);
   static void cpu_port_packetHandler(u_char *, const struct pcap_pkthdr *,
                             const u_char *);
-  static void adapter_create_fdb_entry(sai_object_id_t, sai_mac_t,
-                                       sai_fdb_entry_bridge_type_t,
-                                       sai_vlan_id_t, sai_object_id_t);
+  static void build_fdb_entry(sai_mac_t mac, sai_fdb_entry_bridge_type_t bridge_type, sai_vlan_id_t vlan_id, sai_object_id_t bridge_id, sai_fdb_entry_t *fdb_entry);
   static void learn_mac(u_char *, cpu_hdr_t *, int);
   static void lookup_hostif_trap_id_table(u_char *packet, cpu_hdr_t *, int);
   static void add_hostif_trap_id_table_entry(uint16_t,
@@ -506,6 +504,7 @@ private:
   static void vlan_netdev_packet_handler(uint16_t vlan_id, int length, const u_char *packet);
   static int vlan_netdev_sniffer(int in_dev_fd, uint16_t vlan_id);
   static void update_mc_node_vlan(Vlan_obj *vlan);
+  static sai_status_t init_switch(bool deafult_mac_set);
   // static void update_mc_node_bridge(Bridge_obj *bridge);
   // hostif_table_t hostif_table;
   // static hostif_table_t* hostif_table_p;

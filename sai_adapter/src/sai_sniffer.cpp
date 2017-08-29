@@ -137,31 +137,19 @@ void sai_adapter::PacketSniffer() {
   return;
 }
 
-void sai_adapter::adapter_create_fdb_entry(
-    sai_object_id_t bridge_port_id, sai_mac_t mac,
+void sai_adapter::build_fdb_entry(sai_mac_t mac,
     sai_fdb_entry_bridge_type_t bridge_type, sai_vlan_id_t vlan_id,
-    sai_object_id_t bridge_id) {
-  sai_attribute_t attr[3];
-  attr[0].id = SAI_FDB_ENTRY_ATTR_TYPE;
-  attr[0].value.s32 = SAI_FDB_ENTRY_TYPE_STATIC;
-
-  attr[1].id = SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID;
-  attr[1].value.oid = bridge_port_id;
-
-  attr[2].id = SAI_FDB_ENTRY_ATTR_PACKET_ACTION;
-  attr[2].value.s32 = SAI_PACKET_ACTION_FORWARD;
-
-  sai_fdb_entry_t sai_fdb_entry;
-  sai_fdb_entry.switch_id = 0;
-  for (int i = 0; i < ETHER_ADDR_LEN; i++) {
-    sai_fdb_entry.mac_address[i] = mac[i];
-  }
-  sai_fdb_entry.bridge_type = bridge_type;
+    sai_object_id_t bridge_id, sai_fdb_entry_t *fdb_entry) {
+  fdb_entry->switch_id = 0;
+  // for (int i = 0; i < ETHER_ADDR_LEN; i++) {
+    // fdb_entry->mac_address[i] = mac[i];
+  // }
+  memcpy(fdb_entry->mac_address, mac, 6);
+  fdb_entry->bridge_type = bridge_type;
   if (bridge_type == SAI_FDB_ENTRY_BRIDGE_TYPE_1Q) {
-    sai_fdb_entry.vlan_id = vlan_id;
+    fdb_entry->vlan_id = vlan_id;
   }
-  sai_fdb_entry.bridge_id = bridge_id;
-  create_fdb_entry(&sai_fdb_entry, 3, attr);
+  fdb_entry->bridge_id = bridge_id;
 }
 
 void sai_adapter::cpu_port_packetHandler(u_char *userData,
@@ -252,6 +240,23 @@ void sai_adapter::learn_mac(u_char *packet, cpu_hdr_t *cpu, int pkt_len) {
   // if (ether->ether_type == 0x8100) {
   // TODO: get vlan from packet
   // }
-  adapter_create_fdb_entry(bridge_port->sai_object_id, src_mac, bridge_type,
-                           vlan_id, bridge->sai_object_id);
+  sai_fdb_entry_t fdb_entry;
+  build_fdb_entry(src_mac, bridge_type, vlan_id, bridge->sai_object_id, &fdb_entry);
+  sai_attribute_t attr[3];
+  attr[0].id = SAI_FDB_ENTRY_ATTR_TYPE;
+  attr[0].value.s32 = SAI_FDB_ENTRY_TYPE_DYNAMIC;
+  attr[1].id = SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID;
+  attr[1].value.oid = bridge_port->sai_object_id;
+  attr[2].id = SAI_FDB_ENTRY_ATTR_PACKET_ACTION;
+  attr[2].value.s32 = SAI_PACKET_ACTION_FORWARD;
+
+  create_fdb_entry(&fdb_entry, 3, attr);
+
+  // Notify SW:
+  sai_fdb_event_notification_data_t notification_data;
+  notification_data.event_type = SAI_FDB_EVENT_LEARNED;
+  notification_data.fdb_entry = fdb_entry;
+  notification_data.attr_count = 3;
+  notification_data.attr = attr;
+  (*switch_metadata_ptr->fdb_event_notification_fn) (1, &notification_data);
 }
