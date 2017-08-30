@@ -164,6 +164,9 @@ sai_status_t sai_adapter::flush_fdb_entries(sai_object_id_t switch_id,
              it != bridge_port_obj->handle_fdb_port.end(); ++it) {
           if ((mode == 1) or (bridge_port_obj->fdb_entry_type_port[it->first] == entry_type)) {
             bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb", it->second);
+            bm_bridge_client_ptr->bm_mt_delete_entry(
+              cxt_id, "table_learn_fdb",
+              bridge_port_obj->handle_fdb_learn_port[it->first]);
             bridge_port_obj->handle_fdb_port.erase(it->first);
             bridge_port_obj->handle_fdb_learn_port.erase(it->first);
           }
@@ -191,7 +194,7 @@ sai_status_t sai_adapter::flush_fdb_entries(sai_object_id_t switch_id,
     case 3: // flush by vlan_id and bridge_port
     case 7:
       (*logger)->info("flushing entries by vlan id {} and bridge_port id {}", vid, bridge_port_obj->sai_object_id);
-      if (bridge_port_obj->handle_fdb_port[bridge_id]) {
+      if (bridge_port_obj->does_fdb_exist(bridge_id)) {
         if ((mode == 3) or (entry_type == bridge_port_obj->fdb_entry_type_port[bridge_id])) {
           bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb",
                                             bridge_port_obj->handle_fdb_port[bridge_id]);
@@ -204,6 +207,34 @@ sai_status_t sai_adapter::flush_fdb_entries(sai_object_id_t switch_id,
         }
       }
       break;
+    case 4:
+      (*logger)->info("flushing all fdb entries of type {}", (entry_type == SAI_FDB_ENTRY_TYPE_STATIC) ? "STATIC" : "DYNAMIC");
+      for (bridge_port_id_map_t::iterator it_bp = switch_metadata_ptr->bridge_ports.begin(); it_bp!=switch_metadata_ptr->bridge_ports.end(); ++it_bp) {
+        if (it_bp->second->bridge_port_type == SAI_BRIDGE_PORT_TYPE_PORT) {
+          for (std::map<uint32_t, BmEntryHandle>::iterator it =
+                   it_bp->second->handle_fdb_port.begin();
+               it != it_bp->second->handle_fdb_port.end(); ++it) {
+            if ((it_bp->second->does_fdb_exist(it->first)) and (it_bp->second->fdb_entry_type_port[it->first] == entry_type)) {
+              bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb", it->second);
+              bm_bridge_client_ptr->bm_mt_delete_entry(
+              cxt_id, "table_learn_fdb",
+              it_bp->second->handle_fdb_learn_port[it->first]);
+              it_bp->second->handle_fdb_port.erase(it->first);
+              it_bp->second->handle_fdb_learn_port.erase(it->first);
+            }
+          }
+        } else if (it_bp->second->bridge_port_type == SAI_BRIDGE_PORT_TYPE_SUB_PORT) {
+          if (it_bp->second->does_fdb_exist(0)) {
+            bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb",
+                                            it_bp->second->handle_fdb_sub_port);
+            bm_bridge_client_ptr->bm_mt_delete_entry(
+                cxt_id, "table_learn_fdb",
+                it_bp->second->handle_fdb_learn_sub_port);
+            it_bp->second->handle_fdb_sub_port = NULL_HANDLE;
+            it_bp->second->handle_fdb_learn_sub_port = NULL_HANDLE;
+          }
+        }
+      }
     default:
       (*logger)->error("fdb_flush with unsupported mode");
       break;
