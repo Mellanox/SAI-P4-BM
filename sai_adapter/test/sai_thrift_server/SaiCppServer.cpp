@@ -2154,7 +2154,7 @@ void close_rpc_server(int signum) { server_ptr->stop(); }
 
 int main(int argc, char **argv) {
   // logging
-  auto logger = spdlog::basic_logger_mt("logger", "logs/log.txt");
+  auto logger = spdlog::basic_logger_mt("logger", "log.txt");
   logger->flush_on(spdlog::level::info);     // make err
   spdlog::set_pattern("[thread %t %T] %l %v "); // add %T for time
   auto inline_log = spdlog::stdout_color_mt("inline_log");
