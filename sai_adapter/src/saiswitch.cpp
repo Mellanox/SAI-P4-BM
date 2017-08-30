@@ -5,13 +5,14 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
                                         const sai_attribute_t *attr_list) {
   (*logger)->info("create switch");
   bool deafult_mac_set = false;
+  bool fdb_notification_set = false;
   sai_status_t status;
   for (int j=0; j<attr_count; j++) {
     (*logger)->info("attr if = {}", attr_list[j].id);
     switch (attr_list[j].id) {
       case SAI_SWITCH_ATTR_INIT_SWITCH:
         if (attr_list[j].value.booldata) {
-          status = init_switch(deafult_mac_set);
+          status = init_switch(deafult_mac_set, fdb_notification_set);
           if (status != SAI_STATUS_SUCCESS) {
             return status;
           }
@@ -19,6 +20,12 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
         break;
       case SAI_SWITCH_ATTR_SRC_MAC_ADDRESS:
         deafult_mac_set = true;
+        set_switch_attribute(switch_metadata_ptr->switch_id, &attr_list[j]);
+        break;
+      case SAI_SWITCH_ATTR_FDB_EVENT_NOTIFY:
+        fdb_notification_set = true;
+        set_switch_attribute(switch_metadata_ptr->switch_id, &attr_list[j]);
+        break;
       default:
         set_switch_attribute(switch_metadata_ptr->switch_id, &attr_list[j]);
         break;
@@ -28,7 +35,7 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
   return SAI_STATUS_SUCCESS;
 }
 
-sai_status_t sai_adapter::init_switch(bool deafult_mac_set) {
+sai_status_t sai_adapter::init_switch(bool deafult_mac_set, bool fdb_notification_set) {
   if (switch_list_ptr->size() != 0) {
     (*logger)->info(
         "currently one switch is supportred, returning operating switch_id: {}",
@@ -182,6 +189,9 @@ sai_status_t sai_adapter::init_switch(bool deafult_mac_set) {
     hostif_table_entry->entry_type = SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID;
     hostif_table_entry->trap_id = MAC_LEARN_TRAP_ID;
     add_hostif_trap_id_table_entry(MAC_LEARN_TRAP_ID, learn_mac);
+    if (!fdb_notification_set) {
+      switch_metadata_ptr->fdb_event_notification_fn = NULL;
+    }
     switch_list_ptr->push_back(switch_obj->sai_object_id);
     return SAI_STATUS_SUCCESS;
   }

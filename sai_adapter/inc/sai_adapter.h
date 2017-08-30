@@ -504,7 +504,7 @@ private:
   static void vlan_netdev_packet_handler(uint16_t vlan_id, int length, const u_char *packet);
   static int vlan_netdev_sniffer(int in_dev_fd, uint16_t vlan_id);
   static void update_mc_node_vlan(Vlan_obj *vlan);
-  static sai_status_t init_switch(bool deafult_mac_set);
+  static sai_status_t init_switch(bool deafult_mac_set, bool fdb_notification_set);
   // static void update_mc_node_bridge(Bridge_obj *bridge);
   // hostif_table_t hostif_table;
   // static hostif_table_t* hostif_table_p;

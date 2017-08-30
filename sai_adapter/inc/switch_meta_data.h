@@ -109,9 +109,12 @@ public:
   std::map<uint32_t, BmEntryHandle>
       handle_fdb_port; // per bridge_id, valid for .1Q
   std::map<uint32_t, BmEntryHandle>
-      handle_fdb_learn_port;               // per bridge_id, valid for .1Q
-  BmEntryHandle handle_fdb_sub_port;       // valid for .1D
-  BmEntryHandle handle_fdb_learn_sub_port; // valid for .1D
+      handle_fdb_learn_port;                     // per bridge_id, valid for .1Q
+  std::map<uint32_t, sai_fdb_entry_type_t>
+      fdb_entry_type_port;                       // per bridge_id, valid for .1Q
+  BmEntryHandle handle_fdb_sub_port;             // valid for .1D
+  BmEntryHandle handle_fdb_learn_sub_port;       // valid for .1D
+  sai_fdb_entry_type_t fdb_entry_type_sub_port;  // per bridge_id, valid for .1Q
   // BmEntryHandle handle_cfg; // TODO
   BridgePort_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->port_id = 0;
@@ -138,13 +141,15 @@ public:
   }
 
   void set_fdb_handle(BmEntryHandle handle_fdb, BmEntryHandle handle_learn_fdb,
-                      uint32_t bridge_id) {
+                      uint32_t bridge_id, sai_fdb_entry_type_t entry_type) {
     if (bridge_port_type == SAI_BRIDGE_PORT_TYPE_SUB_PORT) {
       handle_fdb_sub_port = handle_fdb;
       handle_fdb_learn_sub_port = handle_learn_fdb;
+      fdb_entry_type_sub_port = entry_type;
     } else {
       handle_fdb_port[bridge_id] = handle_fdb;
       handle_fdb_learn_port[bridge_id] = handle_learn_fdb;
+      fdb_entry_type_port[bridge_id] = entry_type;
     }
   }
 

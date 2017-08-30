@@ -258,5 +258,7 @@ void sai_adapter::learn_mac(u_char *packet, cpu_hdr_t *cpu, int pkt_len) {
   notification_data.fdb_entry = fdb_entry;
   notification_data.attr_count = 3;
   notification_data.attr = attr;
-  (*switch_metadata_ptr->fdb_event_notification_fn) (1, &notification_data);
+  if (switch_metadata_ptr->fdb_event_notification_fn != NULL) {
+    (*switch_metadata_ptr->fdb_event_notification_fn) (1, &notification_data);
+  }
 }

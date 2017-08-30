@@ -16,10 +16,6 @@ sai_status_t sai_adapter::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
     switch (attribute.id) {
     case SAI_FDB_ENTRY_ATTR_TYPE:
       entry_type = (sai_fdb_entry_type_t)attribute.value.s32;
-      // (*logger)->error("--> attr packet type="<<attribute.value.s32<<endl;
-      // (*logger)->error("--> attr packet_static" <<
-      // SAI_FDB_ENTRY_TYPE_STATIC
-      // <<endl;
       break;
     case SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID:
       (*logger)->info("bridge port_id {}", attribute.value.oid);
@@ -27,11 +23,6 @@ sai_status_t sai_adapter::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
       break;
     case SAI_FDB_ENTRY_ATTR_PACKET_ACTION:
       packet_action = (sai_packet_action_t)attribute.value.s32;
-      // (*logger)->error("--> attr
-      // packet_action="<<attribute.value.s32<<endl;
-      // (*logger)->error("--> attr packet_action_fwd=" <<
-      // SAI_PACKET_ACTION_FORWARD
-      // <<endl;
       break;
     default:
       (*logger)->error(
@@ -42,9 +33,6 @@ sai_status_t sai_adapter::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
   }
   uint32_t bridge_port = bridge_port_obj->bridge_port;
   (*logger)->info("bridge port {}", bridge_port);
-  // out_if_type = 0 # port_type (not lag or router). TODO: check how to do it
-  // with SAI
-
   uint32_t bridge_id = get_bridge_id_from_fdb_entry(fdb_entry);
   if (!bridge_port_obj->does_fdb_exist(bridge_id)) {
     (*logger)->info("create fdb - bridge_id = {}", bridge_id);
@@ -69,7 +57,7 @@ sai_status_t sai_adapter::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
             cxt_id, "table_learn_fdb", match_params, "_nop", action_data,
             options);
         bridge_port_obj->set_fdb_handle(handle_fdb, handle_learn_fdb,
-                                        bridge_id);
+                                        bridge_id, entry_type);
       } catch (...) {
         (*logger)->warn("trying to add existing fdb_entry");
       }
@@ -123,6 +111,7 @@ sai_status_t sai_adapter::flush_fdb_entries(sai_object_id_t switch_id,
   Vlan_obj *vlan;
   uint16_t vid;
   uint32_t bridge_id;
+  sai_fdb_entry_type_t  entry_type;
   sai_attribute_t attribute;
   int mode = 0; 
   for (uint32_t i = 0; i < attr_count; i++) {
@@ -142,7 +131,10 @@ sai_status_t sai_adapter::flush_fdb_entries(sai_object_id_t switch_id,
       bridge_id = vlan->bridge_id;
       mode |= 2;
       break;
-    // TODO - add entry type as well (mode |= 4).
+    case SAI_FDB_FLUSH_ATTR_ENTRY_TYPE:
+      entry_type = (sai_fdb_entry_type_t) attribute.value.s32;
+      mode |= 4;
+      break;
     default:
       (*logger)->error(
           "flush_fdb_entries attribute.id = {} was dumped in sai_obj",
@@ -150,62 +142,70 @@ sai_status_t sai_adapter::flush_fdb_entries(sai_object_id_t switch_id,
       break;
     }
   }  
+
   switch(mode) {
     case 1: // flush by bridge_port
+    case 5:
       (*logger)->info("flushing entries by bridge port (id: {})",
                       bridge_port_obj->sai_object_id);
       if (bridge_port_obj->bridge_port_type == SAI_BRIDGE_PORT_TYPE_SUB_PORT) {
-
-        bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb",
-                                          bridge_port_obj->handle_fdb_sub_port);
-        bm_bridge_client_ptr->bm_mt_delete_entry(
-            cxt_id, "table_learn_fdb",
-            bridge_port_obj->handle_fdb_learn_sub_port);
-        bridge_port_obj->handle_fdb_sub_port = NULL_HANDLE;
-        bridge_port_obj->handle_fdb_learn_sub_port = NULL_HANDLE;
+        if ((mode == 1) or (bridge_port_obj->fdb_entry_type_sub_port == entry_type)) {
+          bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb",
+                                            bridge_port_obj->handle_fdb_sub_port);
+          bm_bridge_client_ptr->bm_mt_delete_entry(
+              cxt_id, "table_learn_fdb",
+              bridge_port_obj->handle_fdb_learn_sub_port);
+          bridge_port_obj->handle_fdb_sub_port = NULL_HANDLE;
+          bridge_port_obj->handle_fdb_learn_sub_port = NULL_HANDLE;
+        } 
       } else {
         for (std::map<uint32_t, BmEntryHandle>::iterator it =
                  bridge_port_obj->handle_fdb_port.begin();
              it != bridge_port_obj->handle_fdb_port.end(); ++it) {
-          bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb", it->second);
-          bridge_port_obj->handle_fdb_port.erase(it->first);
-        }
-        for (std::map<uint32_t, BmEntryHandle>::iterator it =
-                 bridge_port_obj->handle_fdb_learn_port.begin();
-             it != bridge_port_obj->handle_fdb_learn_port.end(); ++it) {
-          bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_learn_fdb",
-                                            it->second);
-          bridge_port_obj->handle_fdb_learn_port.erase(it->first);
+          if ((mode == 1) or (bridge_port_obj->fdb_entry_type_port[it->first] == entry_type)) {
+            bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb", it->second);
+            bridge_port_obj->handle_fdb_port.erase(it->first);
+            bridge_port_obj->handle_fdb_learn_port.erase(it->first);
+          }
         }
       }
       break;
     case 2: // flush by vlan_id
+    case 6:
       (*logger)->info("flushing entries by vlan id {} (bridge_id {})", vid, bridge_id);
       for (bridge_port_id_map_t::iterator it = switch_metadata_ptr->bridge_ports.begin(); it!=switch_metadata_ptr->bridge_ports.end(); ++it) {
         if (it->second->does_fdb_exist(bridge_id)) {
-          (*logger)->info("removing bridge_port {}", it->first);
-          bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb",
-                                            it->second->handle_fdb_port[bridge_id]);
-          bm_bridge_client_ptr->bm_mt_delete_entry(
-              cxt_id, "table_learn_fdb",
-              it->second->handle_fdb_learn_port[bridge_id]);
-              it->second->handle_fdb_learn_port.erase(bridge_id);
-              it->second->handle_fdb_port.erase(bridge_id);
+          if ((mode == 2) or (entry_type == it->second->fdb_entry_type_port[bridge_id])) {
+            (*logger)->info("removing bridge_port {}", it->first);
+            bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb",
+                                              it->second->handle_fdb_port[bridge_id]);
+            bm_bridge_client_ptr->bm_mt_delete_entry(
+                cxt_id, "table_learn_fdb",
+                it->second->handle_fdb_learn_port[bridge_id]);
+                it->second->handle_fdb_learn_port.erase(bridge_id);
+                it->second->handle_fdb_port.erase(bridge_id);
+          }
         }
       }
       break;
     case 3: // flush by vlan_id and bridge_port
+    case 7:
       (*logger)->info("flushing entries by vlan id {} and bridge_port id {}", vid, bridge_port_obj->sai_object_id);
       if (bridge_port_obj->handle_fdb_port[bridge_id]) {
-        bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb",
-                                          bridge_port_obj->handle_fdb_port[bridge_id]);
-        bm_bridge_client_ptr->bm_mt_delete_entry(
-            cxt_id, "table_learn_fdb",
-            bridge_port_obj->handle_fdb_learn_port[bridge_id]);
+        if ((mode == 3) or (entry_type == bridge_port_obj->fdb_entry_type_port[bridge_id])) {
+          bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb",
+                                            bridge_port_obj->handle_fdb_port[bridge_id]);
+          bm_bridge_client_ptr->bm_mt_delete_entry(
+              cxt_id, "table_learn_fdb",
+              bridge_port_obj->handle_fdb_learn_port[bridge_id]);
 
-        bridge_port_obj->handle_fdb_learn_port.erase(bridge_id);
-        bridge_port_obj->handle_fdb_port.erase(bridge_id);
+          bridge_port_obj->handle_fdb_learn_port.erase(bridge_id);
+          bridge_port_obj->handle_fdb_port.erase(bridge_id);
+        }
       }
+      break;
+    default:
+      (*logger)->error("fdb_flush with unsupported mode");
       break;
   }
   return SAI_STATUS_SUCCESS;
