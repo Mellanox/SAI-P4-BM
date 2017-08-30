@@ -1,2 +1,5 @@
 m4/*
 simple_switch_CLI.in
+sswitch_runtime/*
+simple_switch
+simple_switch_CLI

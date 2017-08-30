@@ -53,7 +53,7 @@ libsimpleswitch_la_LIBADD = \
 @P4_BM_TOPDIR@/src/bf_lpm_trie/libbflpmtrie.la \
 @P4_BM_TOPDIR@/src/BMI/libbmi.la \
 @P4_BM_TOPDIR@/third_party/jsoncpp/libjson.la \
--lboost_system -lboost_program_options -lthrift -lstam
+-lboost_system -lboost_program_options -lthrift
 
 noinst_LTLIBRARIES = libsimpleswitch.la
 
