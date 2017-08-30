@@ -25,21 +25,8 @@ python_PYTHON = sswitch_CLI.py
 edit = sed \
 	-e 's|@pythondir[@]|$(pythondir)|g'
 
-simple_switch_CLI: Makefile
-	rm -f $@ $@.tmp
-	$(edit) $(srcdir)/$@.in >$@.tmp
-	chmod +x $@.tmp
-	chmod a-w $@.tmp
-	mv $@.tmp $@
-
-simple_switch_CLI: simple_switch_CLI.in
-
 EXTRA_DIST = \
-simple_switch_CLI.in \
 sswitch_CLI
-
-bin_SCRIPTS = \
-simple_switch_CLI
 
 AM_CXXFLAGS += -std=c++11 \
 -I$(srcdir)/thrift/src/ \
