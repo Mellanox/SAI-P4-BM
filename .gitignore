@@ -104,3 +104,5 @@ VERSION-build
 *.changes 
 *.deb
 *.build
+
+*ar-lib

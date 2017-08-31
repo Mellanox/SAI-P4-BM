@@ -21,6 +21,6 @@ if [ $# -gt 2 ]; then
 fi
 
 CLI=$THIS_DIR/sswitch_CLI.py
-TOOLS_DIR=$THIS_DIR/../p4-softswitch/tools/
+TOOLS_DIR=$THIS_DIR/../behavioral-model/tools/
 
 PYTHONPATH=$PYTHONPATH:$TOOLS_DIR python $CLI $json $port

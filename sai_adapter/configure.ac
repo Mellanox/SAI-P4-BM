@@ -8,13 +8,13 @@ AC_CONFIG_SRCDIR([src/sai.c])
 # check for C++ preprocessor and compiler and the library compiler
 AC_PROG_CXXCPP
 AC_PROG_CXX
-AC_PROG_RANLIB
 AM_PROG_AR
+LT_INIT
 
-#   # Check for thrift    - Why doesn't this work?
-#   AC_PATH_PROG([THRIFT], [thrift], [])
-#   AC_SUBST([THRIFT_LIB], ["-lthrift"])
-#   AC_CHECK_HEADER([thrift/Thrift.h], [], [AC_MSG_ERROR([Thrift headers not found. Install Thrift from http://thrift.apache.org/docs/install/])])
+AC_CONFIG_MACRO_DIRS([m4])
+
+P4_BM_DIR="../behavioral-model"
+AC_SUBST(P4_BM_DIR)
 
 # Create thrift output for sai_thrift_server (needed for ptf)
 echo "Generating thrift output file for sai_thrift_server"

@@ -20,7 +20,7 @@ AC_CONFIG_MACRO_DIR([m4])
 # AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
 
 # add this to ARG macro
-P4_BM_TOPDIR="../p4-softswitch"
+P4_BM_TOPDIR="../behavioral-model"
 AC_SUBST(P4_BM_TOPDIR)
 
 
