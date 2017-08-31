@@ -3,13 +3,13 @@ AM_CXXFLAGS = ${INC_DIRS} -Wall -O3 -std=c++11 -pthread -w @AM_CXXFLAGS@
 AM_CFLAGS = ${INC_DIRS} @AM_CFLAGS@
 
 
-lib_LTLIBRARIES  = libp4sai.la
+lib_LTLIBRARIES  = libsai.la
 
 # where to install the headers on the system
-libp4sai_ladir = $(includedir)/p4sai
+libsai_ladir = $(includedir)/sai
 
 # the sources to add to the library and to add to the source distribution
-libp4sai_la_SOURCES =    \
+libsai_la_SOURCES =    \
 						sai.c \
 						tun_if.c \
 						saiacl.cpp \
@@ -48,5 +48,5 @@ libp4sai_la_SOURCES =    \
 						sail2mcgroup.cpp \
 						sairpfgroup.cpp
 
-libp4sai_la_LIBADD = ../@P4_BM_DIR@/thrift_src/libruntimestubs.la
+libsai_la_LIBADD = ../@P4_BM_DIR@/thrift_src/libruntimestubs.la -lthrift -lpcap
 						
