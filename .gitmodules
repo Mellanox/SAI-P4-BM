@@ -1,0 +1,3 @@
+[submodule "behavioral-model"]
+	path = behavioral-model
+	url = git@github.com:YonatanPitz/behavioral-model.git
