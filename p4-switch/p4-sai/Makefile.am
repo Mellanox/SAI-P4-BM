@@ -1,5 +1,3 @@
-ACLOCAL_AMFLAGS = -I m4
-
 simple_switch_thrift_py_files = \
 gen-py/sswitch_runtime/constants.py \
 gen-py/sswitch_runtime/__init__.py \

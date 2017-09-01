@@ -1,0 +1,11 @@
+Source: p4-bmv2
+Maintainer: Guohan Lu <gulv@microsoft.com>
+Section: net
+Priority: optional
+Build-Depends: debhelper (>=9), autotools-dev
+Standards-Version: 1.0.0
+
+Package: p4-bmv2
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: This package contains p4 bmv2 behavior model.
