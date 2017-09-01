@@ -321,21 +321,25 @@ public:
   bool mac_valid;
   uint16_t vid;
   uint32_t rif_id;
+  VirtualRouter_obj* vr;
   sai_router_interface_type_t type;
   BmEntryHandle handle_l3_interface;
   BmEntryHandle handle_egress_vlan_tag;
   BmEntryHandle handle_egress_l3;
   BmEntryHandle handle_ingress_l3;
+  BmEntryHandle handle_ingress_vrf;
   RouterInterface_obj(sai_id_map_t *sai_id_map_ptr)
       : Sai_obj(sai_id_map_ptr) {
         this->vid = 1;
         this->mac_valid = false;
         this->rif_id = 0;
         this->type = SAI_ROUTER_INTERFACE_TYPE_VLAN;
+        this->vr = nullptr;
         this->handle_l3_interface = NULL_HANDLE;
         this->handle_egress_vlan_tag = NULL_HANDLE;
         this->handle_egress_l3 = NULL_HANDLE;
         this->handle_ingress_l3 = NULL_HANDLE;
+        this->handle_ingress_vrf = NULL_HANDLE;
       }
 };
 

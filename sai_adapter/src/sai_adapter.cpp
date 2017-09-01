@@ -53,6 +53,7 @@ sai_adapter::sai_adapter()
 
   // api set
   switch_api.create_switch = &sai_adapter::create_switch;
+  switch_api.remove_switch = &sai_adapter::remove_switch;
   switch_api.get_switch_attribute = &sai_adapter::get_switch_attribute;
   switch_api.set_switch_attribute = &sai_adapter::set_switch_attribute;
 
@@ -64,13 +65,18 @@ sai_adapter::sai_adapter()
   bridge_api.create_bridge = &sai_adapter::create_bridge;
   bridge_api.remove_bridge = &sai_adapter::remove_bridge;
   bridge_api.get_bridge_attribute = &sai_adapter::get_bridge_attribute;
+  bridge_api.set_bridge_attribute = &sai_adapter::set_bridge_attribute;
   bridge_api.create_bridge_port = &sai_adapter::create_bridge_port;
   bridge_api.remove_bridge_port = &sai_adapter::remove_bridge_port;
   bridge_api.get_bridge_port_attribute =
       &sai_adapter::get_bridge_port_attribute;
+  bridge_api.set_bridge_port_attribute =
+      &sai_adapter::set_bridge_port_attribute;
 
   fdb_api.create_fdb_entry = &sai_adapter::create_fdb_entry;
   fdb_api.remove_fdb_entry = &sai_adapter::remove_fdb_entry;
+  // fdb_api.set_fdb_entry_attribute = &sai_adapter::set_fdb_entry_attribute;
+  // fdb_api.get_fdb_entry_attribute = &sai_adapter::get_fdb_entry_attribute;
   fdb_api.flush_fdb_entries = &sai_adapter::flush_fdb_entries;
 
   vlan_api.create_vlan = &sai_adapter::create_vlan;
@@ -103,9 +109,13 @@ sai_adapter::sai_adapter()
 
   router_interface_api.create_router_interface = &sai_adapter::create_router_interface;
   router_interface_api.remove_router_interface = &sai_adapter::remove_router_interface;
+  router_interface_api.set_router_interface_attribute = &sai_adapter::set_router_interface_attribute;
+  router_interface_api.get_router_interface_attribute = &sai_adapter::get_router_interface_attribute;
 
   virtual_router_api.create_virtual_router = &sai_adapter::create_virtual_router;
   virtual_router_api.remove_virtual_router = &sai_adapter::remove_virtual_router;
+  virtual_router_api.set_virtual_router_attribute = &sai_adapter::set_virtual_router_attribute;
+  virtual_router_api.get_virtual_router_attribute = &sai_adapter::get_virtual_router_attribute;
 
   neighbor_api.create_neighbor_entry = &sai_adapter::create_neighbor_entry;
   neighbor_api.remove_neighbor_entry = &sai_adapter::remove_neighbor_entry;

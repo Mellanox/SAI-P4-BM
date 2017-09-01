@@ -61,6 +61,12 @@ sai_status_t sai_adapter::get_bridge_attribute(sai_object_id_t bridge_id,
   return SAI_STATUS_SUCCESS;
 }
 
+sai_status_t sai_adapter::set_bridge_attribute(
+        _In_ sai_object_id_t bridge_id,
+        _In_ const sai_attribute_t *attr) {
+  return SAI_STATUS_NOT_IMPLEMENTED;
+}
+
 // Bridge Port
 
 sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
@@ -269,4 +275,10 @@ sai_adapter::get_bridge_port_attribute(sai_object_id_t bridge_port_id,
     }
   }
   return SAI_STATUS_SUCCESS;
+}
+
+sai_status_t sai_adapter::set_bridge_port_attribute(
+        _In_ sai_object_id_t bridge_port_id,
+        _In_ const sai_attribute_t *attr) {
+  return SAI_STATUS_NOT_IMPLEMENTED;
 }

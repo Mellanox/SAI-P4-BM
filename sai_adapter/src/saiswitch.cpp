@@ -178,7 +178,23 @@ sai_status_t sai_adapter::init_switch(bool deafult_mac_set, bool fdb_notificatio
 
     RouterInterface_obj *rif = new RouterInterface_obj(sai_id_map_ptr);
     switch_metadata_ptr->rifs[rif->sai_object_id] = rif;
-    // TODO: add table enrties
+
+    match_params.clear();
+    match_params.push_back(parse_exact_match_param(0, 2)); //default port 0
+    match_params.push_back(parse_exact_match_param(1, 2)); //dfeault vid 1
+    bm_router_client_ptr->bm_mt_get_entry_from_key(
+        entry, cxt_id, "table_ingress_l3_if", match_params, options);
+    rif->handle_ingress_l3 = entry.entry_handle;
+
+    match_params.clear();
+    match_params.push_back(parse_exact_match_param(rif->rif_id, 1));
+    bm_router_client_ptr->bm_mt_get_entry_from_key(
+        entry, cxt_id, "table_egress_L3_if", match_params, options);
+    rif->handle_egress_l3 = entry.entry_handle;
+
+    bm_router_client_ptr->bm_mt_get_entry_from_key(
+        entry, cxt_id, "table_ingress_vrf", match_params, options);
+    rif->handle_ingress_vrf = entry.entry_handle;
 
     // Create MAC learn hostif_table_entry
     HostIF_Table_Entry_obj *hostif_table_entry =
@@ -195,6 +211,10 @@ sai_status_t sai_adapter::init_switch(bool deafult_mac_set, bool fdb_notificatio
     switch_list_ptr->push_back(switch_obj->sai_object_id);
     return SAI_STATUS_SUCCESS;
   }
+}
+
+sai_status_t sai_adapter::remove_switch(sai_object_id_t switch_id) {
+  return SAI_STATUS_NOT_IMPLEMENTED;
 }
 
 sai_status_t sai_adapter::get_switch_attribute(sai_object_id_t switch_id,

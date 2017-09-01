@@ -143,6 +143,7 @@ public:
   static sai_status_t create_switch(sai_object_id_t *switch_id,
                                     uint32_t attr_count,
                                     const sai_attribute_t *attr_list);
+  static sai_status_t remove_switch(sai_object_id_t switch_id);
   static sai_status_t get_switch_attribute(sai_object_id_t switch_id,
                                            sai_uint32_t attr_count,
                                            sai_attribute_t *attr_list);
@@ -170,6 +171,7 @@ public:
   static sai_status_t get_bridge_attribute(sai_object_id_t bridge_id,
                                            uint32_t attr_count,
                                            sai_attribute_t *attr_list);
+  static sai_status_t set_bridge_attribute(sai_object_id_t bridge_id,const sai_attribute_t *attr);
   static sai_status_t create_bridge_port(sai_object_id_t *bridge_port_id,
                                          sai_object_id_t switch_id,
                                          uint32_t attr_count,
@@ -178,6 +180,7 @@ public:
   static sai_status_t get_bridge_port_attribute(sai_object_id_t bridge_port_id,
                                                 uint32_t attr_count,
                                                 sai_attribute_t *attr_list);
+  static sai_status_t set_bridge_port_attribute(sai_object_id_t bridge_port_id, const sai_attribute_t *attr);
   static sai_status_t create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
                                        uint32_t attr_count,
                                        const sai_attribute_t *attr_list);
@@ -255,12 +258,15 @@ static sai_status_t remove_vlan_members(uint32_t object_count,const sai_object_i
                                             uint32_t attr_count,
                                             const sai_attribute_t *attr_list);
   static sai_status_t remove_virtual_router(sai_object_id_t vr_id);
-
+  static sai_status_t set_virtual_router_attribute(sai_object_id_t vr_id, const sai_attribute_t *attr);
+  static sai_status_t get_virtual_router_attribute(sai_object_id_t vr_id, uint32_t attr_count, sai_attribute_t *attr_list);
   static sai_status_t create_router_interface (sai_object_id_t *lag_member_id,
                                             sai_object_id_t switch_id,
                                             uint32_t attr_count,
                                             const sai_attribute_t *attr_list);
   static sai_status_t remove_router_interface (sai_object_id_t router_interface_id);
+  static sai_status_t set_router_interface_attribute(sai_object_id_t rif_id, const sai_attribute_t *attr);
+  static sai_status_t get_router_interface_attribute(sai_object_id_t rif_id, uint32_t attr_count, sai_attribute_t *attr_list);
 
   static sai_status_t create_neighbor_entry (const sai_neighbor_entry_t *neighbor_entry,
                                             uint32_t attr_count,

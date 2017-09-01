@@ -19,6 +19,7 @@ sai_status_t sai_adapter::create_router_interface (sai_object_id_t *router_inter
       rif->type = (sai_router_interface_type_t) attribute.value.s32;
       break;
     case SAI_ROUTER_INTERFACE_ATTR_VIRTUAL_ROUTER_ID:
+      rif->vr = switch_metadata_ptr->vrs[attribute.value.oid];
       break;
     case SAI_ROUTER_INTERFACE_ATTR_VLAN_ID:
       rif->vid = attribute.value.u16;
@@ -43,6 +44,15 @@ sai_status_t sai_adapter::create_router_interface (sai_object_id_t *router_inter
   BmAddEntryOptions options;
   BmMatchParams match_params;
   BmActionData action_data;
+
+  match_params.push_back(parse_exact_match_param(rif->rif_id, 1));
+  action_data.push_back(parse_param(rif->vr->vrf,1));
+  rif->handle_ingress_vrf = bm_router_client_ptr->bm_mt_add_entry(
+                cxt_id, "table_ingress_vrf", match_params, "action_set_vrf",
+                action_data, options);
+
+  action_data.clear();
+  match_params.clear();
   uint32_t bridge_id;
   uint64_t mac_address_64;
   if (rif->mac_valid) {
@@ -115,10 +125,20 @@ sai_status_t sai_adapter::remove_router_interface (sai_object_id_t router_interf
   if (rif->handle_ingress_l3 != NULL_HANDLE) {
     bm_router_client_ptr->bm_mt_delete_entry(cxt_id, "table_ingress_l3_if", rif->handle_ingress_l3);
   }
+  if (rif->handle_ingress_vrf != NULL_HANDLE) {
+    bm_router_client_ptr->bm_mt_delete_entry(cxt_id, "table_ingress_vrf", rif->handle_ingress_vrf);
+  }
   if (rif->handle_egress_vlan_tag != NULL_HANDLE) {
     bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_egress_vlan_tag", rif->handle_egress_vlan_tag);
   }
   switch_metadata_ptr->rifs.erase(router_interface_id);
   sai_id_map_ptr->free_id(router_interface_id);
   return SAI_STATUS_SUCCESS;
+}
+
+sai_status_t sai_adapter::set_router_interface_attribute(sai_object_id_t rif_id, const sai_attribute_t *attr) {
+	return SAI_STATUS_NOT_IMPLEMENTED;
+}
+sai_status_t sai_adapter::get_router_interface_attribute(sai_object_id_t rif_id, uint32_t attr_count, sai_attribute_t *attr_list) {
+	return SAI_STATUS_NOT_IMPLEMENTED;
 }
