@@ -108,6 +108,7 @@ gen-cpp/bm/simple_switch_constants.h \
 gen-cpp/bm/SimpleSwitch.h \
 gen-cpp/bm/simple_switch_types.h
 
+dist_bin_SCRIPTS = run_bm.sh
 
 P4_JSON_FILES = sai_bridge.json sai_router.json
 P4_SRC_FILES = p4src/bridge/sai_bridge.p4 p4src/router/sai_router.p4

@@ -1,0 +1,3 @@
+[submodule "p4-switch/behavioral-model"]
+	path = p4-switch/behavioral-model
+	url = git@github.com:p4lang/behavioral-model.git

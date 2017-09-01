@@ -1,7 +1,7 @@
 AC_INIT([p4-bmv2], [0.1], [yonatanp@mellanox.com])
 
 # check if the source folder is correct
-AC_CONFIG_SRCDIR([src/simple_switch.cpp])
+AC_CONFIG_SRCDIR([p4-sai/simple_switch.cpp])
 
 # Checks for programs
 
