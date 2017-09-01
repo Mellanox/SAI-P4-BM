@@ -11,10 +11,16 @@ AC_PROG_CXX
 AM_PROG_AR
 LT_INIT
 
+AM_PATH_PYTHON([2.7],, [:])
+
 AC_CONFIG_MACRO_DIRS([m4])
 
+# add this to ARG macro
 P4_BM_DIR="../behavioral-model"
 AC_SUBST(P4_BM_DIR)
+
+# Thrift
+AC_PATH_PROG([THRIFT], [thrift], [])
 
 # Create thrift output for sai_thrift_server (needed for ptf)
 echo "Generating thrift output file for sai_thrift_server"
@@ -42,6 +48,7 @@ AC_SUBST([AM_LDFLAGS])
 
 # files to generate via autotools (.am or .in source files)
 AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([p4-switch/Makefile])
 AC_CONFIG_FILES([inc/Makefile])
 AC_CONFIG_FILES([src/Makefile])
 AC_CONFIG_FILES([test/Makefile])

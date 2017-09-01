@@ -1,2 +1,2 @@
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = inc src test
+SUBDIRS = p4-switch inc src test
