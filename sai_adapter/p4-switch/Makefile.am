@@ -111,10 +111,17 @@ gen-cpp/bm/SimpleSwitch.h \
 gen-cpp/bm/simple_switch_types.h
 
 
+P4_JSON_FILES = sai_bridge.json sai_router.json
+P4_SRC_FILES = p4src/bridge/sai_bridge.p4 p4src/router/sai_router.p4
+$(P4_JSON_FILES): $(P4_SRC_FILES)
+	p4c-bmv2 --p4-v1.1 --json sai_bridge.json p4src/bridge/sai_bridge.p4
+	p4c-bmv2 --p4-v1.1 --json sai_router.json p4src/router/sai_router.p4
+
 CLEANFILES = $(BUILT_SOURCES) \
 thrift_files.ts \
 gen-cpp/bm/SimpleSwitch_server.skeleton.cpp \
-$(bin_SCRIPTS)
+$(bin_SCRIPTS) \
+P4_JSON_FILES
 
 # I used to do a rm on gen-cpp, but it was removing a .deps directory, instead I
 # am adding the skeleton file to CLEANFILES

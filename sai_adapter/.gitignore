@@ -2,3 +2,6 @@ COPYING
 INSTALL
 ar-lib
 m4/*
+debian/.debhelper
+config.guess.dh-orig
+config.sub.dh-orig
