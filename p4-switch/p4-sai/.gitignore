@@ -3,3 +3,5 @@ simple_switch_CLI.in
 sswitch_runtime/*
 simple_switch
 simple_switch_CLI
+sai_router.json
+sai_bridge.json
