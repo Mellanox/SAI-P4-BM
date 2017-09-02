@@ -1,4 +1,4 @@
-INC_DIRS = -I$(top_srcdir)/inc -I$(top_srcdir)/inc/sai -I../@P4_BM_DIR@/thrift_src/gen-cpp
+INC_DIRS = -I$(top_srcdir)/@SAI_ADAPTER_DIR@/inc -I$(top_srcdir)/@SAI_ADAPTER_DIR@/inc/sai -I$(top_srcdir)/@P4_BM_DIR@/thrift_src/gen-cpp
 AM_CXXFLAGS = ${INC_DIRS} -Wall -O3 -std=c++11 -pthread -w @AM_CXXFLAGS@
 AM_CFLAGS = ${INC_DIRS} @AM_CFLAGS@
 
@@ -48,5 +48,5 @@ libsai_la_SOURCES =    \
 						sail2mcgroup.cpp \
 						sairpfgroup.cpp
 
-libsai_la_LIBADD = ../@P4_BM_DIR@/thrift_src/libruntimestubs.la -lthrift -lpcap
+libsai_la_LIBADD = $(top_srcdir)/@P4_BM_DIR@/thrift_src/libruntimestubs.la -lthrift -lpcap
 						

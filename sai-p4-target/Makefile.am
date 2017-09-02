@@ -29,15 +29,15 @@ sswitch_CLI
 AM_CXXFLAGS += -std=c++11 \
 -I$(srcdir)/thrift/src/ \
 -I$(builddir)/gen-cpp \
--I../@P4_BM_DIR@/include \
--isystem../@P4_BM_DIR@/third_party/jsoncpp/include \
--isystem../@P4_BM_DIR@/third_party/spdlog
+-I$(top_srcdir)/@P4_BM_DIR@/include \
+-isystem$(top_srcdir)/@P4_BM_DIR@/third_party/jsoncpp/include \
+-isystem$(top_srcdir)/@P4_BM_DIR@/third_party/spdlog
 
 libsimpleswitch_la_LIBADD = \
-../@P4_BM_DIR@/src/bm_sim/libbmsim.la \
-../@P4_BM_DIR@/src/bf_lpm_trie/libbflpmtrie.la \
-../@P4_BM_DIR@/src/BMI/libbmi.la \
-../@P4_BM_DIR@/third_party/jsoncpp/libjson.la \
+$(top_srcdir)/@P4_BM_DIR@/src/bm_sim/libbmsim.la \
+$(top_srcdir)/@P4_BM_DIR@/src/bf_lpm_trie/libbflpmtrie.la \
+$(top_srcdir)/@P4_BM_DIR@/src/BMI/libbmi.la \
+$(top_srcdir)/@P4_BM_DIR@/third_party/jsoncpp/libjson.la \
 -lboost_system -lboost_program_options -lthrift
 
 noinst_LTLIBRARIES = libsimpleswitch.la
@@ -49,8 +49,8 @@ thrift/src/SimpleSwitch_server.cpp
 bin_PROGRAMS = simple_switch
 
 simple_switch_LDADD = \
-../@P4_BM_DIR@/src/bm_runtime/libbmruntime.la \
-../@P4_BM_DIR@/thrift_src/libruntimestubs.la \
+$(top_srcdir)/@P4_BM_DIR@/src/bm_runtime/libbmruntime.la \
+$(top_srcdir)/@P4_BM_DIR@/thrift_src/libruntimestubs.la \
 libsimpleswitch.la \
 libsimpleswitch_thrift.la \
 -lthrift

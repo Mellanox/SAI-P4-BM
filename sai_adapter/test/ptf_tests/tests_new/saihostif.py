@@ -19,11 +19,11 @@ from ptf.testutils import *
 from ptf.dataplane import match_exp_pkt
 import datetime
 import subprocess
+import sys
 from switch import *
 import sai_base_test
 
 # import switch_sai_thrift.switch_sai_rpc as switch_sai_rpc
-import sys
 sys.path.append('../sai_thrift_src/gen-py')
 import switch_sai.switch_sai_rpc as switch_sai_rpc
 from thrift.transport import TSocket

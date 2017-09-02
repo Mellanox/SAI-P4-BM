@@ -17,9 +17,9 @@ Thrift SAI interface basic tests
 """
 
 # import switch_sai_thrift
+import sys
 from sai_base_test import *
 import time
-import sys
 sys.path.append('../sai_thrift_src/gen-py')
 from switch_sai.ttypes import *
 import logging
@@ -27,7 +27,7 @@ import logging
 import unittest
 import random
 
-import sai_base_test
+# import sai_base_test
 
 from ptf import config
 from ptf.testutils import *

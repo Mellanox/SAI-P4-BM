@@ -32,7 +32,6 @@ from thrift.protocol import TBinaryProtocol
 
 sys.path.append('../sai_thrift_src/gen-py/')
 from switch_sai.ttypes import *
-sys.path.append('../')
 from sai_types import *
 
 interface_to_front_mapping = {}
