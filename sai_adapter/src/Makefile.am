@@ -48,5 +48,5 @@ libsai_la_SOURCES =    \
 						sail2mcgroup.cpp \
 						sairpfgroup.cpp
 
-libsai_la_LIBADD = -L$(top_srcdir)/@P4_BM_DIR@/thrift_src/.libs/ -llibruntimestubs -lthrift -lpcap
+libsai_la_LIBADD = -lruntimestubs -lthrift -lpcap
 						
