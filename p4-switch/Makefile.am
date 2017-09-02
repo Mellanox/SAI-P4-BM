@@ -1,2 +1,2 @@
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = behavioral-model sai-p4-target sai_adapter
+SUBDIRS = behavioral-model sai-p4-target

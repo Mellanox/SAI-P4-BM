@@ -1,7 +1,7 @@
-AC_INIT([p4-sai-bm], [0.1], [yonatanp@mellanox.com])
+AC_INIT([p4-sai-adapter], [0.1], [yonatanp@mellanox.com])
 
 # check if the source folder is correct
-AC_CONFIG_SRCDIR([sai-p4-target/simple_switch.cpp])
+AC_CONFIG_SRCDIR([src/sai.c])
 
 # Checks for programs
 
@@ -16,8 +16,9 @@ AM_PATH_PYTHON([2.7],, [:])
 AC_CONFIG_MACRO_DIRS([m4])
 
 # add this to ARG macro
-P4_BM_DIR="behavioral-model"
+P4_BM_DIR="../behavioral-model"
 AC_SUBST(P4_BM_DIR)
+
 
 # Thrift
 AC_PATH_PROG([THRIFT], [thrift], [])
@@ -48,15 +49,12 @@ AC_SUBST([AM_LDFLAGS])
 
 # files to generate via autotools (.am or .in source files)
 AC_CONFIG_FILES([Makefile])
-AC_CONFIG_FILES([sai-p4-target/Makefile])
-
-AC_ARG_WITH([targets],
-    AS_HELP_STRING([--without-targets], [Do not build targets]),
-    [], [want_targets=yes])
-
-AM_CONDITIONAL([COND_TARGETS], [test "$want_targets" = yes])
-
-AC_CONFIG_SUBDIRS([behavioral-model])
+AC_CONFIG_FILES([inc/Makefile])
+AC_CONFIG_FILES([src/Makefile])
+AC_CONFIG_FILES([test/Makefile])
+AC_CONFIG_FILES([test/sai_thrift_server/Makefile])
+AC_CONFIG_FILES([test/sai_thrift_src/Makefile])
+AC_CONFIG_FILES([test/ptf_tests/Makefile])
 
 # generate the final Makefile etc.
 AC_OUTPUT
