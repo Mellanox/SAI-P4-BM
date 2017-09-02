@@ -59,6 +59,12 @@ AC_CONFIG_FILES([sai_adapter/test/Makefile])
 AC_CONFIG_FILES([sai_adapter/test/sai_thrift_server/Makefile])
 AC_CONFIG_FILES([sai_adapter/test/sai_thrift_src/Makefile])
 
+AC_ARG_WITH([targets],
+    AS_HELP_STRING([--without-targets], [Do not build targets]),
+    [], [want_targets=yes])
+
+AM_CONDITIONAL([COND_TARGETS], [test "$want_targets" = yes])
+
 AC_CONFIG_SUBDIRS([behavioral-model])
 
 # generate the final Makefile etc.

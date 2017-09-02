@@ -1,11 +1,11 @@
-Source: p4-bmv2
-Maintainer: Guohan Lu <gulv@microsoft.com>
+Source: sai-p4-bm
+Maintainer: Yonatan Piasetzky <yonatanp@mellanox.com>
 Section: net
 Priority: optional
 Build-Depends: debhelper (>=9), autotools-dev
 Standards-Version: 1.0.0
 
-Package: p4-bmv2
+Package: sai-p4-bm
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: This package contains p4 bmv2 behavior model.
+Description: This package contains p4 bmv2 implementation of sai behavior model.

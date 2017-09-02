@@ -1,5 +1,5 @@
-p4-bmv2 (1.0.0) stable; urgency=medium
+sai-p4-bm (1.0.0) stable; urgency=medium
 
   * Initial release.
 
- -- Guohan Lu <gulv@microsoft.com> Wed, 23 Mar 2016 12:00:00 -0800
+ -- Yonatan Piasetzky <yonatanp@mellanox.com> Fri, 1 Sep 2017 12:00:00 -0800

@@ -5,5 +5,5 @@ AM_CXXFLAGS = -I${SAI_ADAPTER_DIR}/inc/sai -I${SAI_ADAPTER_DIR}/inc -I${SAI_THRI
 noinst_PROGRAMS = SaiCppServer
 nodist_SaiCppServer_SOURCES = SaiCppServer.cpp 
 
-SaiCppServer_LDADD = ${SAI_ADAPTER_DIR}/src/libsai.la ${SAI_THRIFT_SRC_DIR}/libsai_thrift.a -lthrift
+SaiCppServer_LDADD = ${SAI_ADAPTER_DIR}/src/libsai.la ${SAI_THRIFT_SRC_DIR}/libsai_thrift.la -lthrift
 # -lthrift -lpcap
