@@ -13,4 +13,4 @@ libsai_thrift_a_SOURCES = ${sai_thrift_files}
 ${sai_thrift_files}: switch_sai.thrift 
 	thrift --gen cpp --gen py switch_sai.thrift 
 
-CLEANFILES = ${CLEANFILES}
+CLEANFILES = ${sai_thrift_files}

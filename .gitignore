@@ -104,5 +104,8 @@ VERSION-build
 *.changes 
 *.deb
 *.build
+*config.guess.dh-orig
+*config.sub.dh-orig
+debian/.debhelper/
 
 *ar-lib
