@@ -23,7 +23,17 @@ python_PYTHON = sswitch_CLI.py
 edit = sed \
 	-e 's|@pythondir[@]|$(pythondir)|g'
 
+simple_switch_CLI: Makefile
+	rm -f $@ $@.tmp
+	$(edit) $(srcdir)/$@.in >$@.tmp
+	chmod +x $@.tmp
+	chmod a-w $@.tmp
+	mv $@.tmp $@
+
+simple_switch_CLI: simple_switch_CLI.in
+
 EXTRA_DIST = \
+simple_switch_CLI.in \
 sswitch_CLI
 
 AM_CXXFLAGS += -std=c++11 \
@@ -108,9 +118,10 @@ gen-cpp/bm/simple_switch_constants.h \
 gen-cpp/bm/SimpleSwitch.h \
 gen-cpp/bm/simple_switch_types.h
 
-dist_bin_SCRIPTS = run_bm.sh \
-				veth_setup.sh \
-				veth_teardown.sh
+bin_SCRIPTS = run_bm.sh \
+			  veth_setup.sh \
+			  veth_teardown.sh \
+			  simple_switch_CLI
 
 # P4_JSON_FILES = sai_bridge.json sai_router.json
 # dist_pkgdata_DATA = ${P4_JSON_FILES}
