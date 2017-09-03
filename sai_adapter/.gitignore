@@ -5,3 +5,8 @@ m4/*
 debian/.debhelper
 config.guess.dh-orig
 config.sub.dh-orig
+debian/files
+debian/p4-sai-adapter.postinst.debhelper
+debian/p4-sai-adapter.postrm.debhelper
+debian/p4-sai-adapter.substvars
+debian/p4-sai-adapter/
