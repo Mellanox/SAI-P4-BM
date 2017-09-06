@@ -74,7 +74,9 @@ public:
   uint32_t mtu;
   uint32_t drop_tagged;
   uint32_t drop_untagged;
+  bool internal;
   bool is_lag;
+  bool admin_state;
   BmEntryHandle handle_lag_if;
   BmEntryHandle handle_port_cfg;
   BmEntryHandle handle_ingress_lag;
@@ -91,6 +93,8 @@ public:
     this->handle_ingress_lag = NULL_HANDLE;
     this->handle_port_cfg = NULL_HANDLE;
     this->handle_lag_if = NULL_HANDLE;
+    this->internal = false;
+    this->admin_state = true;
   }
 };
 
@@ -101,6 +105,7 @@ public:
   uint32_t bridge_port;
   sai_bridge_port_type_t bridge_port_type;
   sai_object_id_t bridge_id;
+  sai_bridge_port_fdb_learning_mode_t learning_mode;
   BmEntryHandle handle_id_1d;
   BmEntryHandle handle_egress_set_vlan;
   BmEntryHandle handle_egress_br_port_to_if;
@@ -121,6 +126,7 @@ public:
     this->vlan_id = 1;
     this->bridge_port = NULL;
     this->bridge_id = NULL;
+    this->learning_mode = SAI_BRIDGE_PORT_FDB_LEARNING_MODE_HW;
     this->bridge_port_type = SAI_BRIDGE_PORT_TYPE_PORT;
     // TODO NULL_HANDLE is inavlid. consider other notation
     this->handle_id_1d = NULL_HANDLE;
@@ -400,16 +406,17 @@ public:
   sai_object_id_t default_vlan_oid;
   sai_object_id_t cpu_port_id;
   sai_object_id_t default_vr_id;
+  sai_object_id_t default_trap_group;
   BridgePort_obj *router_bridge_port;
   sai_mac_t default_switch_mac;
   sai_fdb_event_notification_fn fdb_event_notification_fn;
+  sai_port_state_change_notification_fn port_state_change_notification_fn;
   Switch_metadata() {
-    ports.clear();
-    bridge_ports.clear();
-    bridges.clear();
-    vlans.clear();
-    vlan_members.clear();
-    lags.clear();
+    printf("switch_metadata constructor\n");
+    fdb_event_notification_fn = NULL;
+    port_state_change_notification_fn = NULL;
+    memset(default_switch_mac, 0, 6);
+    printf("switch_metadata constructor finished\n");
   }
 
   HostIF_Table_Entry_obj *GetTableEntryFromTrapID(uint16_t trap_id) {

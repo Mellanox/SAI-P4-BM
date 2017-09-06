@@ -227,6 +227,7 @@ void sai_adapter::learn_mac(u_char *packet, cpu_hdr_t *cpu, int pkt_len) {
       break;
     }
   }
+  // TODO Add here a check on bridge_port learning mode!
   (*logger)->info("MAC learned (bridge sai_object_id {}):",
                   bridge->sai_object_id);
   print_mac_to_log(src_mac, *logger);

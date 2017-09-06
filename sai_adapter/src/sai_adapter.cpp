@@ -14,6 +14,7 @@ hostif_trap_id_table_t sai_adapter::hostif_trap_id_table;
 pcap_fd_t sai_adapter::cpu_port[2];
 int sai_adapter::sniff_pipe_fd[2];
 std::vector<netdev_fd_t> sai_adapter::active_netdevs;
+adapter_packet_handler_fn sai_adapter::wildcard_entry;
 
 sai_adapter::sai_adapter()
     : //  constructor pre initializations
@@ -48,6 +49,7 @@ sai_adapter::sai_adapter()
   bm_bridge_client_mc_ptr = &bm_bridge_client_mc;
   bm_router_client_ptr = &bm_router_client;
   sai_id_map_ptr = &sai_id_map;
+  wildcard_entry = NULL;
   transport->open();
   router_transport->open();
 
@@ -61,6 +63,7 @@ sai_adapter::sai_adapter()
   port_api.remove_port = &sai_adapter::remove_port;
   port_api.set_port_attribute = &sai_adapter::set_port_attribute;
   port_api.get_port_attribute = &sai_adapter::get_port_attribute;
+  port_api.get_port_stats = &sai_adapter::get_port_stats;
 
   bridge_api.create_bridge = &sai_adapter::create_bridge;
   bridge_api.remove_bridge = &sai_adapter::remove_bridge;
@@ -104,6 +107,8 @@ sai_adapter::sai_adapter()
       &sai_adapter::remove_hostif_table_entry;
   hostif_api.create_hostif_trap_group = &sai_adapter::create_hostif_trap_group;
   hostif_api.remove_hostif_trap_group = &sai_adapter::remove_hostif_trap_group;
+  hostif_api.set_hostif_trap_group_attribute = &sai_adapter::set_hostif_trap_group_attribute;
+  hostif_api.get_hostif_trap_group_attribute = &sai_adapter::get_hostif_trap_group_attribute;
   hostif_api.create_hostif_trap = &sai_adapter::create_hostif_trap;
   hostif_api.remove_hostif_trap = &sai_adapter::remove_hostif_trap;
 
@@ -445,22 +450,12 @@ sai_object_type_t sai_adapter::_sai_object_type_query(sai_object_id_t sai_object
   return SAI_OBJECT_TYPE_NULL;
 }
 
-void sai_adapter::internal_init_switch() {
-  // sai_object_id_t switch_id2;
-  // (*logger)->info("Switch init with default configurations");
-  // switch_api.create_switch(&switch_id2, 0, NULL);
-  // (*logger)->info("Switch init with default configurations done");
-  return;
-}
-
 void sai_adapter::startSaiAdapterMain() {
   // internal_init_switch();
   pcap_loop_started = false;
   SaiAdapterThread = std::thread(&sai_adapter::SaiAdapterMain, this);
   std::unique_lock<std::mutex> lk(m);
   cv.wait(lk, [] { return pcap_loop_started; });
-  // std::this_thread::sleep_for(
-      // std::chrono::milliseconds(500)); // TODO consider later release of lock
   (*logger)->info("Sniffer initialization done");
 }
 

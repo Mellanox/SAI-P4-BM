@@ -26,7 +26,7 @@ sai_status_t sai_adapter::create_neighbor_entry (const sai_neighbor_entry_t *nei
       break;
     default:
       (*logger)->error(
-          "while parsing lag member, attribute.id = was dumped in sai_obj",
+          "while parsing neighbor_entry, attribute.id = {}. was dumped in sai_obj",
           attribute.id);
       break;
     }  

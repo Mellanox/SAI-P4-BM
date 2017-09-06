@@ -5,7 +5,9 @@ sai_status_t sai_adapter::create_acl_table(
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list) {
-	return SAI_STATUS_NOT_IMPLEMENTED;
+        Sai_obj *acl_table = new Sai_obj(sai_id_map_ptr);
+        *acl_table_id = acl_table->sai_object_id;
+	return SAI_STATUS_SUCCESS;
 }
        
 sai_status_t sai_adapter::remove_acl_table(
@@ -31,7 +33,9 @@ sai_status_t sai_adapter::create_acl_entry(
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list) {
-        return SAI_STATUS_NOT_IMPLEMENTED;
+        Sai_obj *acl_entry = new Sai_obj(sai_id_map_ptr);
+        *acl_entry_id = acl_entry->sai_object_id;
+        return SAI_STATUS_SUCCESS;
 }
        
 sai_status_t sai_adapter::remove_acl_entry(

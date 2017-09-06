@@ -159,10 +159,11 @@ public:
                                          uint32_t attr_count,
                                          sai_attribute_t *attr_list);
   static void config_port(Port_obj *port);
-  static void set_parsed_port_attribute(Port_obj *port,
+  static bool set_parsed_port_attribute(Port_obj *port,
                                         sai_attribute_t attribute);
-  static void get_parsed_port_attribute(Port_obj *port,
+  static sai_status_t get_parsed_port_attribute(Port_obj *port,
                                         sai_attribute_t *attribute);
+  static sai_status_t get_port_stats(sai_object_id_t port_id, const sai_port_stat_t *counter_ids, uint32_t number_of_counters, uint64_t *counters);
   static sai_status_t create_bridge(sai_object_id_t *bridge_id,
                                     sai_object_id_t switch_id,
                                     uint32_t attr_count,
@@ -248,6 +249,8 @@ static sai_status_t remove_vlan_members(uint32_t object_count,const sai_object_i
                            const sai_attribute_t *attr_list);
   static sai_status_t
   remove_hostif_trap_group(sai_object_id_t hostif_trap_group_id);
+  static sai_status_t set_hostif_trap_group_attribute(sai_object_id_t hostif_trap_group_id,const sai_attribute_t *attr);
+  static sai_status_t get_hostif_trap_group_attribute(sai_object_id_t hostif_trap_group_id,uint32_t attr_count,sai_attribute_t *attr_list);
   static sai_status_t create_hostif_trap(sai_object_id_t *hostif_trap_id,
                                          sai_object_id_t switch_id,
                                          uint32_t attr_count,
@@ -485,7 +488,9 @@ private:
   static bool pcap_loop_started;
   static std::mutex m;
   static std::condition_variable cv;
+  // TODO - move to switch_metadata.
   static hostif_trap_id_table_t hostif_trap_id_table;
+  static adapter_packet_handler_fn wildcard_entry;
   static int sniff_pipe_fd[2];
   void startSaiAdapterMain();
   void endSaiAdapterMain();
@@ -493,7 +498,6 @@ private:
   void release_pcap_lock();
   //
   void PacketSniffer();
-  void internal_init_switch();
   static uint32_t
   get_bridge_id_from_fdb_entry(const sai_fdb_entry_t *fdb_entry);
   static void cpu_port_packetHandler(u_char *, const struct pcap_pkthdr *,
@@ -510,7 +514,7 @@ private:
   static void vlan_netdev_packet_handler(uint16_t vlan_id, int length, const u_char *packet);
   static int vlan_netdev_sniffer(int in_dev_fd, uint16_t vlan_id);
   static void update_mc_node_vlan(Vlan_obj *vlan);
-  static sai_status_t init_switch(bool deafult_mac_set, bool fdb_notification_set);
+  static sai_status_t init_switch(); //bool deafult_mac_set);//, bool fdb_notification_set);
   // static void update_mc_node_bridge(Bridge_obj *bridge);
   // hostif_table_t hostif_table;
   // static hostif_table_t* hostif_table_p;

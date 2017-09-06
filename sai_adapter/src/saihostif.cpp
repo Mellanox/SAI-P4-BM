@@ -141,9 +141,12 @@ sai_status_t sai_adapter::create_hostif_table_entry(
     add_hostif_trap_id_table_entry(hostif_table_entry->trap_id, handler_fn);
     (*logger)->info("after add hostif table entry");
     break;
+  case SAI_HOSTIF_TABLE_ENTRY_TYPE_WILDCARD:
+    wildcard_entry = handler_fn;
+    break;
   default:
     (*logger)->error("hostif table entry type not supported");
-    return SAI_STATUS_NOT_SUPPORTED;
+    return SAI_STATUS_NOT_IMPLEMENTED;
     break;
   }
 
@@ -153,9 +156,16 @@ sai_status_t sai_adapter::create_hostif_table_entry(
 
 sai_status_t
 sai_adapter::remove_hostif_table_entry(sai_object_id_t hif_table_entry) {
-  //TODO: DELETE TABLE ENTRIES!
   (*logger)->info("remove_hostif_table_entry");
   HostIF_Table_Entry_obj *hostif_table_entry = switch_metadata_ptr->hostif_table_entries[hif_table_entry];
+  switch (hostif_table_entry->entry_type) {
+    case SAI_HOSTIF_TABLE_ENTRY_TYPE_WILDCARD:
+      wildcard_entry = NULL;
+      break;
+    case SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID:
+      // TODO
+      break;
+  }
   switch_metadata_ptr->hostif_table_entries.erase(hostif_table_entry->sai_object_id);
   sai_id_map_ptr->free_id(hostif_table_entry->sai_object_id);
 }
@@ -216,6 +226,12 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
   action_data.clear();
   match_params.clear();
   switch (hostif_trap->trap_type) {
+
+    // TODO: SAI_HOSTIF_TRAP_TYPE_TTL_ERROR
+    case SAI_HOSTIF_TRAP_TYPE_TTL_ERROR:
+      return SAI_STATUS_SUCCESS;
+      break;
+      
     // l2 trap
     case SAI_HOSTIF_TRAP_TYPE_LACP:    
       match_params.push_back(
@@ -337,12 +353,30 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
                       hostif_trap->trap_id, hostif_trap->sai_object_id);
       break;
     default:
-      (*logger)->warn(
+      (*logger)->error(
         "unsupported trap requested, trap type is: {}, trap_action is: {}",
         hostif_trap->trap_type, hostif_trap->trap_action);
+      return SAI_STATUS_NOT_IMPLEMENTED;
       break;
   } 
+  return SAI_STATUS_SUCCESS;
 }
+
+sai_status_t  sai_adapter::set_hostif_trap_group_attribute(
+        _In_ sai_object_id_t hostif_trap_group_id,
+        _In_ const sai_attribute_t *attr) {
+  (*logger)->info("set_hostif_trap_group_attribute");
+  return SAI_STATUS_NOT_IMPLEMENTED;
+}
+
+sai_status_t sai_adapter::get_hostif_trap_group_attribute(
+        _In_ sai_object_id_t hostif_trap_group_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list) {
+  (*logger)->info("get_hostif_trap_group_attribute");
+  return SAI_STATUS_NOT_IMPLEMENTED;
+}
+
 
 sai_status_t sai_adapter::remove_hostif_trap(sai_object_id_t hostif_trap_id) {
   (*logger)->info("remove_hostif_trap trap_id: {}", hostif_trap_id);
@@ -399,9 +433,12 @@ void sai_adapter::lookup_hostif_trap_id_table(u_char *packet, cpu_hdr_t *cpu,
   if (it != hostif_trap_id_table.end()) {
     it->second(packet, cpu, pkt_len);
     return;
-  } else {
-    (*logger)->error("hostif_table lookup failed");
-  }
+  };
+  if (wildcard_entry != NULL) {
+    (*wildcard_entry)(packet, cpu, pkt_len);
+    return;
+  };
+  (*logger)->error("hostif_table lookup failed");
 }
 
 void sai_adapter::netdev_phys_port_fn(u_char *packet, cpu_hdr_t *cpu,

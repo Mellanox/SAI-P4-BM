@@ -274,10 +274,22 @@ sai_status_t
 sai_adapter::get_vlan_member_attribute(sai_object_id_t vlan_member_id,
                                        const uint32_t attr_count,
                                        sai_attribute_t *attr_list) {
-  (*logger)->info("TODO : get_vlan_member_attribute not implemened");
-  return SAI_STATUS_NOT_IMPLEMENTED;
-  // implementation
+  (*logger)->info("get_vlan_member_attribute");
+  int i;
+  Vlan_member_obj *vlan_member = switch_metadata_ptr->vlan_members[vlan_member_id];
+  for (i = 0; i < attr_count; i++) {
+    switch (attr_list[i].id) {
+      case SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID:
+        attr_list[i].value.oid = vlan_member->bridge_port_id;
+        break;
+      default:
+        (*logger)->error("vlan_member attribute not supported");
+        return SAI_STATUS_NOT_IMPLEMENTED;
+    }
+  }
+  return SAI_STATUS_SUCCESS;
 }
+
 sai_status_t sai_adapter::get_vlan_stats(sai_object_id_t vlan_id,
                                          const sai_vlan_stat_t *counter_ids,
                                          uint32_t number_of_counters,

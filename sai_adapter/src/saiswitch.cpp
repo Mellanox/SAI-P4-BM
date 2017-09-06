@@ -4,28 +4,32 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
                                         uint32_t attr_count,
                                         const sai_attribute_t *attr_list) {
   (*logger)->info("create switch");
-  bool deafult_mac_set = false;
-  bool fdb_notification_set = false;
+  // bool deafult_mac_set = false;
+  // bool fdb_notification_set = false;
+  // bool port_notification_set = false;
   sai_status_t status;
   for (int j=0; j<attr_count; j++) {
     (*logger)->info("attr if = {}", attr_list[j].id);
     switch (attr_list[j].id) {
       case SAI_SWITCH_ATTR_INIT_SWITCH:
         if (attr_list[j].value.booldata) {
-          status = init_switch(deafult_mac_set, fdb_notification_set);
+          // status = init_switch(deafult_mac_set, fdb_notification_set, port_notification_set);
+          status = init_switch();
           if (status != SAI_STATUS_SUCCESS) {
             return status;
           }
         }
         break;
-      case SAI_SWITCH_ATTR_SRC_MAC_ADDRESS:
-        deafult_mac_set = true;
-        set_switch_attribute(switch_metadata_ptr->switch_id, &attr_list[j]);
-        break;
-      case SAI_SWITCH_ATTR_FDB_EVENT_NOTIFY:
-        fdb_notification_set = true;
-        set_switch_attribute(switch_metadata_ptr->switch_id, &attr_list[j]);
-        break;
+      // case SAI_SWITCH_ATTR_SRC_MAC_ADDRESS:
+        // deafult_mac_set = true;
+        // set_switch_attribute(switch_metadata_ptr->switch_id, &attr_list[j]);
+        // break;
+      // case SAI_SWITCH_ATTR_FDB_EVENT_NOTIFY:
+      //   set_switch_attribute(switch_metadata_ptr->switch_id, &attr_list[j]);
+      //   break;
+      // case SAI_SWITCH_ATTR_PORT_STATE_CHANGE_NOTIFY:
+      //   set_switch_attribute(switch_metadata_ptr->switch_id, &attr_list[j]);
+      //   break;
       default:
         set_switch_attribute(switch_metadata_ptr->switch_id, &attr_list[j]);
         break;
@@ -35,7 +39,7 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
   return SAI_STATUS_SUCCESS;
 }
 
-sai_status_t sai_adapter::init_switch(bool deafult_mac_set, bool fdb_notification_set) {
+sai_status_t sai_adapter::init_switch() {
   if (switch_list_ptr->size() != 0) {
     (*logger)->info(
         "currently one switch is supportred, returning operating switch_id: {}",
@@ -133,8 +137,10 @@ sai_status_t sai_adapter::init_switch(bool deafult_mac_set, bool fdb_notificatio
 
     // Create CPU Ports
     Port_obj *port = new Port_obj(sai_id_map_ptr);
+    switch_metadata_ptr->ports[port->sai_object_id] = port;
     port->hw_port = 8;
     port->l2_if = 8;
+    port->internal = true;
     (*logger)->info("CPU port_id {}. hw_port = {}", port->sai_object_id,
                     port->hw_port);
     switch_metadata_ptr->cpu_port_id = port->sai_object_id;
@@ -144,6 +150,7 @@ sai_status_t sai_adapter::init_switch(bool deafult_mac_set, bool fdb_notificatio
     switch_metadata_ptr->ports[port->sai_object_id] = port;
     port->hw_port = 9;
     port->l2_if = 9;
+    port->internal = true;
     (*logger)->info("Router port_id {}. hw_port = {}", port->sai_object_id,
                     port->hw_port);
     BridgePort_obj *bridge_port = new BridgePort_obj(sai_id_map_ptr);
@@ -165,12 +172,6 @@ sai_status_t sai_adapter::init_switch(bool deafult_mac_set, bool fdb_notificatio
         entry, cxt_id, "table_egress_br_port_to_if", match_params, options);
     bridge_port->handle_egress_br_port_to_if = entry.entry_handle;
 
-    // Default switch src mac (for all rifs unless overriden)
-    if (!deafult_mac_set) {
-      (*logger)->info("Setting default switch src MAC to 00:00:00:00:00:00");
-      memset(switch_metadata_ptr->default_switch_mac, 0, ETHER_ADDR_LEN);
-    }
-
     // Default virtual router and default vlan rif
     VirtualRouter_obj *vr = new VirtualRouter_obj(sai_id_map_ptr);
     switch_metadata_ptr->vrs[vr->sai_object_id] = vr;
@@ -178,6 +179,11 @@ sai_status_t sai_adapter::init_switch(bool deafult_mac_set, bool fdb_notificatio
 
     RouterInterface_obj *rif = new RouterInterface_obj(sai_id_map_ptr);
     switch_metadata_ptr->rifs[rif->sai_object_id] = rif;
+
+    // Default Trap Group
+    HostIF_Trap_Group_obj *hostif_trap_group = new HostIF_Trap_Group_obj(sai_id_map_ptr);
+    switch_metadata_ptr->hostif_trap_groups[hostif_trap_group->sai_object_id] = hostif_trap_group;
+    switch_metadata_ptr->default_trap_group = hostif_trap_group->sai_object_id;
 
     match_params.clear();
     match_params.push_back(parse_exact_match_param(0, 2)); //default port 0
@@ -205,9 +211,6 @@ sai_status_t sai_adapter::init_switch(bool deafult_mac_set, bool fdb_notificatio
     hostif_table_entry->entry_type = SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID;
     hostif_table_entry->trap_id = MAC_LEARN_TRAP_ID;
     add_hostif_trap_id_table_entry(MAC_LEARN_TRAP_ID, learn_mac);
-    if (!fdb_notification_set) {
-      switch_metadata_ptr->fdb_event_notification_fn = NULL;
-    }
     switch_list_ptr->push_back(switch_obj->sai_object_id);
     return SAI_STATUS_SUCCESS;
   }
@@ -222,31 +225,57 @@ sai_status_t sai_adapter::get_switch_attribute(sai_object_id_t switch_id,
                                                sai_attribute_t *attr_list) {
   (*logger)->info("get_switch_attribute");
   int i;
-  int index = 0;
+  int index; 
+  int non_int_ports_num;
   for (i = 0; i < attr_count; i++) {
-    switch ((attr_list + i)->id) {
+    switch (attr_list[i].id) {
       case SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID:
-        (attr_list + i)->value.oid = switch_metadata_ptr->default_bridge_id;
+        attr_list[i].value.oid = switch_metadata_ptr->default_bridge_id;
         break;
       case SAI_SWITCH_ATTR_PORT_LIST:
+        non_int_ports_num = std::count_if(
+          switch_metadata_ptr->ports.begin(), 
+          switch_metadata_ptr->ports.end(), 
+          [](std::pair<sai_object_id_t, Port_obj*> p){return !(p.second->internal);}
+        );
+        if (attr_list[i].value.objlist.count < non_int_ports_num) {
+          (*logger)->error("Buffer size ({}) is too small for number of ports in switch {}", attr_list[i].value.objlist.count, non_int_ports_num);
+          return SAI_STATUS_BUFFER_OVERFLOW;
+        }
+        index = 0;
         for (port_id_map_t::iterator it = switch_metadata_ptr->ports.begin();
              it != switch_metadata_ptr->ports.end(); ++it) {
-          (attr_list + i)->value.objlist.list[index] = it->first;
-          index += 1;
+          if (!it->second->internal) {
+            attr_list[i].value.objlist.list[index] = it->first;
+            index += 1;
+          }
         }
+        attr_list[i].value.objlist.count = index;
         break;
       case SAI_SWITCH_ATTR_PORT_NUMBER:
-        (attr_list + i)->value.u32 = switch_metadata_ptr->hw_port_list.count;
+        attr_list[i].value.u32 = switch_metadata_ptr->hw_port_list.count;
         break;
       case SAI_SWITCH_ATTR_DEFAULT_VLAN_ID:
-        (attr_list + i)->value.oid = switch_metadata_ptr->default_vlan_oid;
+        attr_list[i].value.oid = switch_metadata_ptr->default_vlan_oid;
         break;
       case SAI_SWITCH_ATTR_CPU_PORT:
-        (attr_list + i)->value.oid = switch_metadata_ptr->cpu_port_id;
+        attr_list[i].value.oid = switch_metadata_ptr->cpu_port_id;
         break;
       case SAI_SWITCH_ATTR_DEFAULT_VIRTUAL_ROUTER_ID:
-        (attr_list + i)->value.oid = switch_metadata_ptr->default_vr_id;
+        attr_list[i].value.oid = switch_metadata_ptr->default_vr_id;
         break;
+      case SAI_SWITCH_ATTR_SRC_MAC_ADDRESS:
+        memcpy(attr_list[i].value.mac, switch_metadata_ptr->default_switch_mac, 6);
+        break;
+      case SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP:
+        attr_list[i].value.oid = switch_metadata_ptr->default_trap_group;
+        break;
+      case SAI_SWITCH_ATTR_NUMBER_OF_ECMP_GROUPS:
+        attr_list[i].value.u32 = 0;
+        break;
+      default:
+        (*logger)->error("unsupported switch attribute {}", attr_list[i].id);
+        return SAI_STATUS_NOT_IMPLEMENTED;
     }
   }
   return SAI_STATUS_SUCCESS;
@@ -254,7 +283,7 @@ sai_status_t sai_adapter::get_switch_attribute(sai_object_id_t switch_id,
 
 sai_status_t sai_adapter::set_switch_attribute(sai_object_id_t switch_id,
                                                const sai_attribute_t *attr) {
-  (*logger)->info("set_switch_attribute");
+  (*logger)->info("set_switch_attribute ({})", attr->id);
   switch (attr->id) {
     case SAI_SWITCH_ATTR_SRC_MAC_ADDRESS:
       memcpy(switch_metadata_ptr->default_switch_mac, attr->value.mac, 6);
@@ -264,6 +293,12 @@ sai_status_t sai_adapter::set_switch_attribute(sai_object_id_t switch_id,
     case SAI_SWITCH_ATTR_FDB_EVENT_NOTIFY:
       (*logger)->info("fdb event notification funciton was set");
       switch_metadata_ptr->fdb_event_notification_fn = (sai_fdb_event_notification_fn) attr->value.ptr;
+    case SAI_SWITCH_ATTR_PORT_STATE_CHANGE_NOTIFY:
+      (*logger)->info("port state notification funciton was set");
+      switch_metadata_ptr->port_state_change_notification_fn = (sai_port_state_change_notification_fn) attr->value.ptr;
+    default:
+      (*logger)->info("unsupported switch attribute {}", attr->id);
+      break;
   }
   return SAI_STATUS_SUCCESS;
 }

@@ -259,19 +259,23 @@ sai_adapter::get_bridge_port_attribute(sai_object_id_t bridge_port_id,
                    bridge_port_id);
   BridgePort_obj *bridge_port = switch_metadata_ptr->bridge_ports[bridge_port_id];
   for (int i = 0; i < attr_count; i++) {
-    switch ((attr_list + i)->id) {
-    case SAI_BRIDGE_PORT_ATTR_PORT_ID:
-      (attr_list + i)->value.oid = bridge_port->port_id;
-      break;
-    case SAI_BRIDGE_PORT_ATTR_VLAN_ID:
-      (attr_list + i)->value.u16 = bridge_port->vlan_id;
-      break;
-    case SAI_BRIDGE_PORT_ATTR_TYPE:
-      (attr_list + i)->value.s32 = bridge_port->bridge_port_type;
-      break;
-    case SAI_BRIDGE_PORT_ATTR_BRIDGE_ID:
-      (attr_list + i)->value.oid = bridge_port->bridge_port_type;
-      break;
+    (*logger)->info("attr_id = {}", attr_list[i].id);
+    switch (attr_list[i].id) {
+      case SAI_BRIDGE_PORT_ATTR_PORT_ID:
+        attr_list[i].value.oid = bridge_port->port_id;
+        break;
+      case SAI_BRIDGE_PORT_ATTR_VLAN_ID:
+        attr_list[i].value.u16 = bridge_port->vlan_id;
+        break;
+      case SAI_BRIDGE_PORT_ATTR_TYPE:
+        attr_list[i].value.s32 = bridge_port->bridge_port_type;
+        break;
+      case SAI_BRIDGE_PORT_ATTR_BRIDGE_ID:
+        attr_list[i].value.oid = bridge_port->bridge_port_type;
+        break;
+      default:
+        (*logger)->error("attribute not supported");
+        break;
     }
   }
   return SAI_STATUS_SUCCESS;
@@ -280,5 +284,15 @@ sai_adapter::get_bridge_port_attribute(sai_object_id_t bridge_port_id,
 sai_status_t sai_adapter::set_bridge_port_attribute(
         _In_ sai_object_id_t bridge_port_id,
         _In_ const sai_attribute_t *attr) {
-  return SAI_STATUS_NOT_IMPLEMENTED;
+  (*logger)->info("set_bridge_port_attribute ({})", attr->id);
+  BridgePort_obj *bridge_port = switch_metadata_ptr->bridge_ports[bridge_port_id];
+  switch (attr->id) {
+    case SAI_BRIDGE_PORT_ATTR_FDB_LEARNING_MODE:
+      bridge_port->learning_mode = (sai_bridge_port_fdb_learning_mode_t) attr->value.s32;
+      break;
+    default:
+      (*logger)->info("unsupported bridge port attribute {}", attr->id);
+      return SAI_STATUS_NOT_IMPLEMENTED;
+  }
+  return SAI_STATUS_SUCCESS;
 }

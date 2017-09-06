@@ -23,7 +23,7 @@ sai_status_t sai_adapter::create_virtual_router (sai_object_id_t *vr_id,
         break;
       default:
         (*logger)->error(
-            "while parsing lag member, attribute.id = was dumped in sai_obj",
+            "while parsing virtual router, attribute.id = {}. was dumped in sai_obj",
             attribute.id);
         break;
       }

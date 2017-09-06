@@ -60,8 +60,13 @@ sai_status_t sai_adapter::create_route_entry(const sai_route_entry_t *route_entr
         uint32_t attr_count,
         const sai_attribute_t *attr_list) {
   (*logger)->info("create_route_entry");
+  if (route_entry->destination.addr_family == SAI_IP_ADDR_FAMILY_IPV6) {
+    (*logger)->error("IPv6 is not yet supported");
+    return SAI_STATUS_SUCCESS;
+  }
   NextHop_obj *nhop;
   sai_object_type_t nhop_obj_type;
+  sai_packet_action_t action = SAI_PACKET_ACTION_FORWARD;
   // parsing attributes
   sai_attribute_t attribute;
   for (uint32_t i = 0; i < attr_count; i++) {
@@ -85,10 +90,12 @@ sai_status_t sai_adapter::create_route_entry(const sai_route_entry_t *route_entr
             break;
         }
         break;
-
+      case SAI_ROUTE_ENTRY_ATTR_PACKET_ACTION:
+        action = (sai_packet_action_t) attribute.value.s32;
+        break;
       default:
         (*logger)->error(
-            "while parsing lag member, attribute.id = was dumped in sai_obj",
+            "while parsing route entry, attribute.id = {} was dumped in sai_obj",
             attribute.id);
         break;
     }
@@ -98,22 +105,32 @@ sai_status_t sai_adapter::create_route_entry(const sai_route_entry_t *route_entr
   BmAddEntryOptions options;
   BmActionData action_data;
   BmMatchParams match_params = get_match_param_from_route_entry(route_entry, switch_metadata_ptr);
-  switch (nhop_obj_type) {
-    case SAI_OBJECT_TYPE_NEXT_HOP:
-      action_data.push_back(parse_param(nhop->nhop_id, 1));
-      bm_router_client_ptr->bm_mt_add_entry(
-          cxt_id, "table_router", match_params, "action_set_nhop_id",
-          action_data, options);
-      break;
-    // case SAI_OBJECT_TYPE_NEXT_HOP_GROUP
-    // case SAI_OBJECT_TYPE_ROUTER_INTERFACE
-    case SAI_OBJECT_TYPE_PORT:
-      bm_router_client_ptr->bm_mt_add_entry(
-          cxt_id, "table_router", match_params, "action_set_ip2me",
-          action_data, options);
-      break;
+  if (action == SAI_PACKET_ACTION_FORWARD) {
+    switch (nhop_obj_type) {
+      case SAI_OBJECT_TYPE_NEXT_HOP:
+        action_data.push_back(parse_param(nhop->nhop_id, 1));
+        bm_router_client_ptr->bm_mt_add_entry(
+            cxt_id, "table_router", match_params, "action_set_nhop_id",
+            action_data, options);
+        break;
+      // case SAI_OBJECT_TYPE_NEXT_HOP_GROUP
+      // case SAI_OBJECT_TYPE_ROUTER_INTERFACE
+      case SAI_OBJECT_TYPE_PORT:
+        bm_router_client_ptr->bm_mt_add_entry(
+            cxt_id, "table_router", match_params, "action_set_ip2me",
+            action_data, options);
+        break;
+    }
+    return SAI_STATUS_SUCCESS;
   }
-  return SAI_STATUS_SUCCESS;
+  if (action == SAI_PACKET_ACTION_DROP) {
+    bm_router_client_ptr->bm_mt_add_entry(
+            cxt_id, "table_router", match_params, "_drop",
+            action_data, options);
+    return SAI_STATUS_SUCCESS;
+  }
+  (*logger)->error("requested action type for route entry is not supported");
+  return SAI_STATUS_NOT_IMPLEMENTED;
 }
 
 sai_status_t sai_adapter::remove_route_entry(const sai_route_entry_t *route_entry) {

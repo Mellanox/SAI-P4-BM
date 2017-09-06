@@ -63,7 +63,7 @@ sai_status_t sai_adapter::create_lag_member(sai_object_id_t *lag_member_id,
       break;
     default:
       (*logger)->error(
-          "while parsing lag member, attribute.id = was dumped in sai_obj",
+          "while parsing lag member, attribute.id = {}. was dumped in sai_obj",
           attribute.id);
       break;
     }
