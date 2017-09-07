@@ -9,7 +9,7 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
   // bool port_notification_set = false;
   sai_status_t status;
   for (int j=0; j<attr_count; j++) {
-    (*logger)->info("attr if = {}", attr_list[j].id);
+    (*logger)->info("attr id = {}", attr_list[j].id);
     switch (attr_list[j].id) {
       case SAI_SWITCH_ATTR_INIT_SWITCH:
         if (attr_list[j].value.booldata) {

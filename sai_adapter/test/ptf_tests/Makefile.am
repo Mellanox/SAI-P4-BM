@@ -9,4 +9,5 @@ ${SAI_TYPES_PY}:
 	cp sai_types.py tests_new/.
 	mv sai_types.py tests_old/sai_types.py
 
+BUILT_SOURCES = ${SAI_TYPES_PY}
 CLEANFILES = ${SAI_TYPES_PY}

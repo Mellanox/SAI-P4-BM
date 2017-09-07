@@ -9,10 +9,8 @@ sai_status_t sai_adapter::create_port(sai_object_id_t *port_id,
   (*logger)->info("--> new port sai_id = {}, tot port num: {}",
                   port->sai_object_id, switch_metadata_ptr->ports.size());
   // parsing attributes
-  sai_attribute_t attribute;
   for (uint32_t i = 0; i < attr_count; i++) {
-    attribute = attr_list[i];
-    set_parsed_port_attribute(port, attribute);
+    set_parsed_port_attribute(port, *(attr_list+i));
   }
   BmAddEntryOptions options;
   BmMatchParams match_params;
@@ -78,7 +76,7 @@ sai_status_t sai_adapter::set_port_attribute(sai_object_id_t port_id,
 sai_status_t sai_adapter::get_port_attribute(sai_object_id_t port_id,
                                              uint32_t attr_count,
                                              sai_attribute_t *attr_list) {
-  (*logger)->info("get_port_attribute");
+  (*logger)->info("get_port_attribute (id {})", port_id);
   sai_status_t status = SAI_STATUS_SUCCESS;
   sai_status_t curr_status;
   Port_obj *port = (Port_obj *)sai_id_map_ptr->get_object(port_id);
@@ -93,46 +91,51 @@ sai_status_t sai_adapter::get_port_attribute(sai_object_id_t port_id,
 }
 
 bool sai_adapter::set_parsed_port_attribute(Port_obj *port,
-                                            sai_attribute_t attribute) {
-  (*logger)->info("set_parsed_port_attribute. attribute id = {}", attribute.id);
-  (*logger)->trace("vlan = {} | bind_mode = {} | hw_lane_list = {} | "
-                   "drop_untagged = {} | drop_tagged = {}",
-                   SAI_PORT_ATTR_PORT_VLAN_ID, SAI_PORT_ATTR_BIND_MODE,
-                   SAI_PORT_ATTR_HW_LANE_LIST, SAI_PORT_ATTR_DROP_UNTAGGED,
-                   SAI_PORT_ATTR_DROP_TAGGED);
-  switch (attribute.id) {
+                                            sai_attribute_t attribute1) {
+  sai_attribute_t *attribute = &attribute1;
+  (*logger)->info("set_parsed_port_attribute. attribute id = {}", attribute->id);
+  switch (attribute->id) {
     case SAI_PORT_ATTR_PORT_VLAN_ID:
-      port->pvid = attribute.value.u16;
+      port->pvid = attribute->value.u16;
       return true;
+      break;
     case SAI_PORT_ATTR_BIND_MODE:
-      port->bind_mode = attribute.value.s32;
+      port->bind_mode = attribute->value.s32;
       return true;
+      break;
     case SAI_PORT_ATTR_HW_LANE_LIST:
-      port->hw_port = attribute.value.u32list.list[0];
+      port->hw_port = attribute->value.u32list.list[0];
       return true;
+      break;
     case SAI_PORT_ATTR_DROP_UNTAGGED:
-      port->drop_untagged = attribute.value.booldata;
+      port->drop_untagged = attribute->value.booldata;
       return true;
+      break;
     case SAI_PORT_ATTR_DROP_TAGGED:
-      port->drop_tagged = attribute.value.booldata;
+      port->drop_tagged = attribute->value.booldata;
       return true;
+      break;
     case SAI_PORT_ATTR_ADMIN_STATE:
-      port->admin_state = attribute.value.booldata;
-
+      port->admin_state = attribute->value.booldata;
+      (*logger)->info("setting port admin state {}", port->admin_state);
       sai_port_oper_status_notification_t data;
       data.port_id = port->sai_object_id;
       data.port_state = (port->admin_state) ? SAI_PORT_OPER_STATUS_UP : SAI_PORT_OPER_STATUS_DOWN;
-      (*switch_metadata_ptr->port_state_change_notification_fn)(1, &data);
+      if (switch_metadata_ptr->port_state_change_notification_fn != NULL) {
+        (*switch_metadata_ptr->port_state_change_notification_fn)(1, &data);
+      }
       return false;
+      break;
     default:
       (*logger)->warn("port attribute not supported");
+      return false;
+      break;
   }
-  return false;
 }
 
 sai_status_t sai_adapter::get_parsed_port_attribute(Port_obj *port,
                                             sai_attribute_t *attribute) {
-  // (*logger)->info("attr_id {}", attribute->id);
+  (*logger)->info("attr_id {}", attribute->id);
   switch (attribute->id) {
     case SAI_PORT_ATTR_PORT_VLAN_ID:
       attribute->value.u16 = port->pvid;
@@ -151,6 +154,7 @@ sai_status_t sai_adapter::get_parsed_port_attribute(Port_obj *port,
       attribute->value.booldata = port->drop_tagged;
       break;
     case SAI_PORT_ATTR_OPER_STATUS:
+      (*logger)->info("getting port oper status. (admin state {})", port->admin_state);
       attribute->value.s32 = (port->admin_state) ? SAI_PORT_OPER_STATUS_UP : SAI_PORT_OPER_STATUS_DOWN; //TODO: add linux port status?
       break;
     case SAI_PORT_ATTR_NUMBER_OF_INGRESS_PRIORITY_GROUPS:

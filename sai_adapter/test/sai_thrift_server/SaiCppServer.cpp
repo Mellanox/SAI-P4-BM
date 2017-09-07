@@ -85,19 +85,17 @@ public:
     sai_attribute_t sai_attr;
     sai_attr.id = thrift_attr.id;
     switch (thrift_attr.id) {
-    case SAI_PORT_ATTR_UPDATE_DSCP:
-      sai_attr.value.booldata = thrift_attr.value.booldata;
-      break;
     case SAI_PORT_ATTR_PORT_VLAN_ID:
       sai_attr.value.u16 = thrift_attr.value.u16;
       break;
     case SAI_PORT_ATTR_BIND_MODE:
+    case SAI_PORT_OPER_STATUS_UP:
       sai_attr.value.s32 = thrift_attr.value.s32;
       break;
+    case SAI_PORT_ATTR_UPDATE_DSCP:
     case SAI_PORT_ATTR_DROP_UNTAGGED:
-      sai_attr.value.booldata = thrift_attr.value.booldata;
-      break;
     case SAI_PORT_ATTR_DROP_TAGGED:
+    case SAI_PORT_ATTR_ADMIN_STATE:
       sai_attr.value.booldata = thrift_attr.value.booldata;
       break;
     };
