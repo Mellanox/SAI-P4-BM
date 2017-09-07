@@ -101,6 +101,8 @@ sai_adapter::sai_adapter()
 
   hostif_api.create_hostif = &sai_adapter::create_hostif;
   hostif_api.remove_hostif = &sai_adapter::remove_hostif;
+  hostif_api.set_hostif_attribute = &sai_adapter::set_hostif_attribute;
+  hostif_api.get_hostif_attribute = &sai_adapter::get_hostif_attribute;
   hostif_api.create_hostif_table_entry =
       &sai_adapter::create_hostif_table_entry;
   hostif_api.remove_hostif_table_entry =

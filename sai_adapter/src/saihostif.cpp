@@ -86,6 +86,39 @@ sai_status_t sai_adapter::remove_hostif(sai_object_id_t hif_id) {
   return SAI_STATUS_SUCCESS;
 }
 
+sai_status_t sai_adapter::set_hostif_attribute(sai_object_id_t hif_id, const sai_attribute_t *attr) {
+  (*logger)->info("set_hostif_attribute ({})", attr->id);
+  HostIF_obj *hostif = switch_metadata_ptr->hostifs[hif_id];
+  switch (attr->id) {
+    case SAI_HOSTIF_ATTR_OPER_STATUS:
+      hostif->oper_status = attr->value.booldata;
+      break;
+    default:
+      (*logger)->info("unsupported hostif attribute {}", attr->id);
+      return SAI_STATUS_NOT_IMPLEMENTED;
+  }
+  return SAI_STATUS_SUCCESS;
+}
+
+sai_status_t sai_adapter::get_hostif_attribute(sai_object_id_t hif_id, uint32_t attr_count, sai_attribute_t *attr_list) {
+  (*logger)->info("get_hostif_attribute: hostif_id {}",
+                   hif_id);
+  HostIF_obj *hostif = switch_metadata_ptr->hostifs[hif_id];
+  for (int i = 0; i < attr_count; i++) {
+    (*logger)->info("attr_id = {}", attr_list[i].id);
+    switch (attr_list[i].id) {
+      case SAI_HOSTIF_ATTR_OPER_STATUS:
+        attr_list[i].value.booldata = hostif->oper_status;
+        break;
+      default:
+        (*logger)->error("attribute not supported");
+        return SAI_STATUS_NOT_IMPLEMENTED;
+    }
+  }
+  return SAI_STATUS_SUCCESS;
+}
+
+
 sai_status_t sai_adapter::create_hostif_table_entry(
     sai_object_id_t *hif_table_entry, sai_object_id_t switch_id,
     uint32_t attr_count, const sai_attribute_t *attr_list) {
@@ -231,7 +264,7 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
     case SAI_HOSTIF_TRAP_TYPE_TTL_ERROR:
       return SAI_STATUS_SUCCESS;
       break;
-      
+
     // l2 trap
     case SAI_HOSTIF_TRAP_TYPE_LACP:    
       match_params.push_back(

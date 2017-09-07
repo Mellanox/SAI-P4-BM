@@ -267,12 +267,14 @@ public:
   sai_hostif_type_t hostif_type;
   std::string netdev_name;
   int netdev_fd;
+  bool oper_status;
   // std::thread netdev_thread;
   // netdev_fd_t netdev;
   HostIF_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
     this->netdev_obj.port = nullptr;
     this->hostif_type = SAI_HOSTIF_TYPE_NETDEV;
     this->netdev_name = "";
+    this->oper_status = true;
   }
 };
 
@@ -412,11 +414,9 @@ public:
   sai_fdb_event_notification_fn fdb_event_notification_fn;
   sai_port_state_change_notification_fn port_state_change_notification_fn;
   Switch_metadata() {
-    printf("switch_metadata constructor\n");
     fdb_event_notification_fn = NULL;
     port_state_change_notification_fn = NULL;
     memset(default_switch_mac, 0, 6);
-    printf("switch_metadata constructor finished\n");
   }
 
   HostIF_Table_Entry_obj *GetTableEntryFromTrapID(uint16_t trap_id) {

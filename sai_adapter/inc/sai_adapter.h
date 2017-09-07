@@ -237,6 +237,8 @@ static sai_status_t remove_vlan_members(uint32_t object_count,const sai_object_i
                                     uint32_t attr_count,
                                     const sai_attribute_t *attr_list);
   static sai_status_t remove_hostif(sai_object_id_t hif_id);
+  static sai_status_t set_hostif_attribute(sai_object_id_t hif_id, const sai_attribute_t *attr);
+  static sai_status_t get_hostif_attribute(sai_object_id_t hif_id, uint32_t attr_count, sai_attribute_t *attr_list);
   static sai_status_t
   create_hostif_table_entry(sai_object_id_t *hif_table_entry,
                             sai_object_id_t switch_id, uint32_t attr_count,
