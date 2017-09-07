@@ -293,9 +293,11 @@ sai_status_t sai_adapter::set_switch_attribute(sai_object_id_t switch_id,
     case SAI_SWITCH_ATTR_FDB_EVENT_NOTIFY:
       (*logger)->info("fdb event notification funciton was set");
       switch_metadata_ptr->fdb_event_notification_fn = (sai_fdb_event_notification_fn) attr->value.ptr;
+      break;
     case SAI_SWITCH_ATTR_PORT_STATE_CHANGE_NOTIFY:
       (*logger)->info("port state notification funciton was set");
       switch_metadata_ptr->port_state_change_notification_fn = (sai_port_state_change_notification_fn) attr->value.ptr;
+      break;
     default:
       (*logger)->info("unsupported switch attribute {}", attr->id);
       break;

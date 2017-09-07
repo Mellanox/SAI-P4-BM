@@ -118,11 +118,13 @@ bool sai_adapter::set_parsed_port_attribute(Port_obj *port,
     case SAI_PORT_ATTR_ADMIN_STATE:
       port->admin_state = attribute->value.booldata;
       (*logger)->info("setting port admin state {}", port->admin_state);
-      sai_port_oper_status_notification_t data;
-      data.port_id = port->sai_object_id;
-      data.port_state = (port->admin_state) ? SAI_PORT_OPER_STATUS_UP : SAI_PORT_OPER_STATUS_DOWN;
+      sai_port_oper_status_notification_t data[1];
+      data[0].port_id = port->sai_object_id;
+      data[0].port_state = (port->admin_state) ? SAI_PORT_OPER_STATUS_UP : SAI_PORT_OPER_STATUS_DOWN;
       if (switch_metadata_ptr->port_state_change_notification_fn != NULL) {
-        (*switch_metadata_ptr->port_state_change_notification_fn)(1, &data);
+        (*logger)->info("port state change notification started");
+        (*switch_metadata_ptr->port_state_change_notification_fn)(1, data);
+        (*logger)->info("port state change notification ended");
       }
       return false;
       break;
