@@ -279,11 +279,14 @@ sai_adapter::get_vlan_member_attribute(sai_object_id_t vlan_member_id,
   Vlan_member_obj *vlan_member = switch_metadata_ptr->vlan_members[vlan_member_id];
   for (i = 0; i < attr_count; i++) {
     switch (attr_list[i].id) {
+      case SAI_VLAN_MEMBER_ATTR_VLAN_ID:
+        attr_list[i].value.oid = vlan_member->vlan_oid;
+        break;
       case SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID:
         attr_list[i].value.oid = vlan_member->bridge_port_id;
         break;
       default:
-        (*logger)->error("vlan_member attribute not supported");
+        (*logger)->error("vlan_member attribute {} not supported", attr_list[i].id);
         return SAI_STATUS_NOT_IMPLEMENTED;
     }
   }

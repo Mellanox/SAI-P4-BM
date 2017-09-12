@@ -296,7 +296,7 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
       break;
 
     // Router pre-l3 traps
-    case SAI_HOSTIF_TRAP_TYPE_ARP_REQUEST:    
+    case SAI_HOSTIF_TRAP_TYPE_ARP_REQUEST:
       match_params.push_back(parse_ternary_param(0x806, 2, 0xffff));
       match_params.push_back(parse_lpm_param(0, 4, 0));
       action_data.push_back(parse_param(hostif_trap->trap_id, 2));
@@ -399,7 +399,7 @@ sai_status_t  sai_adapter::set_hostif_trap_group_attribute(
         _In_ sai_object_id_t hostif_trap_group_id,
         _In_ const sai_attribute_t *attr) {
   (*logger)->info("set_hostif_trap_group_attribute");
-  return SAI_STATUS_NOT_IMPLEMENTED;
+  return SAI_STATUS_SUCCESS;
 }
 
 sai_status_t sai_adapter::get_hostif_trap_group_attribute(

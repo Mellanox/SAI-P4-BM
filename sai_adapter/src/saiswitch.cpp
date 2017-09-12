@@ -302,6 +302,10 @@ sai_status_t sai_adapter::get_switch_attribute(sai_object_id_t switch_id,
       case SAI_SWITCH_ATTR_NUMBER_OF_ECMP_GROUPS:
         attr_list[i].value.u32 = 0;
         break;
+      case SAI_SWITCH_ATTR_SWITCH_HARDWARE_INFO:
+        attr_list[i].value.s8list.list[0] = '\n';
+        attr_list[i].value.s8list.count = 1;
+        break;
       default:
         (*logger)->error("unsupported switch attribute {}", attr_list[i].id);
         return SAI_STATUS_NOT_IMPLEMENTED;

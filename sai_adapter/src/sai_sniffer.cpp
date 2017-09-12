@@ -255,6 +255,7 @@ void sai_adapter::PacketSniffer() {
   }
   close(sniff_pipe_fd[0]);
   close(sniff_pipe_fd[1]);
+  close(nl_fd);
   return;
 }
 

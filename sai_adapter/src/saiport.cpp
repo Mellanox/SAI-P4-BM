@@ -124,6 +124,8 @@ bool sai_adapter::set_parsed_port_attribute(Port_obj *port,
       send_link_status_message(port->ifi_index, port->admin_state);
       return false;
       break;
+    // case SAI_PORT_ATTR_MTU:
+      // break;
     default:
       (*logger)->warn("port attribute not supported");
       return false;
