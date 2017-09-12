@@ -9,7 +9,7 @@ action _nop() {
 }
 
 // ingres L2
-action action_set_lag_l2if(in bit is_lag, in bit<6> l2_if) { // , in bit<16> lag_id
+action action_set_lag_l2if(in bit is_lag, in bit<8> l2_if) { // , in bit<16> lag_id
 	ingress_metadata.is_lag	=	is_lag;
 	// ingress_metadata.lag_id =	lag_id;
 	ingress_metadata.l2_if 	=	l2_if;
@@ -99,7 +99,7 @@ action action_set_vlan(in bit<12> vid) {
 	ingress_metadata.vid = vid;
 }
 
-action action_forward_set_outIfType(in bit<6> out_if,in bit<1> out_if_type){
+action action_forward_set_outIfType(in bit<8> out_if,in bit<1> out_if_type){
 	egress_metadata.out_if 		  = out_if;
 	egress_metadata.out_if_type   = out_if_type;
 	standard_metadata.egress_spec = out_if; 
@@ -143,7 +143,7 @@ action action_set_lag_hash_size(in bit<6> lag_size) {
 	modify_field_with_hash_based_offset(egress_metadata.hash_val, 0, lag_hash, lag_size);
 }
 
-action action_set_out_port(in bit<6> port){
+action action_set_out_port(in bit<8> port){
 	standard_metadata.egress_spec = port;
 	// modify_field(standard_metadata.egress_spec, port);
 }
@@ -152,7 +152,7 @@ action action_set_out_port(in bit<6> port){
 //    modify_field(egress_metadata.mcast_grp, 1);
 //}
 
-action set_egr(in bit<6> egress_spec) {
+action set_egr(in bit<8> egress_spec) {
     standard_metadata.egress_spec = egress_spec;
 }
 

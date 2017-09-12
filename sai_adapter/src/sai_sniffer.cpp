@@ -1,5 +1,15 @@
 #include <sched.h>
+#include <errno.h>
+#include <asm/types.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <linux/netlink.h>
+#include <linux/rtnetlink.h>
+#include <linux/if.h>
 #include "../inc/sai_adapter.h"
+
+#define MAX_NL_BUFFER_LEN 4096
+#define MAX_PCAP_BUFFER_LEN 2048
 
 void ReverseBytes(uint8_t *byte_arr, int size) {
   uint8_t tmp;
@@ -24,9 +34,111 @@ void sai_adapter::release_pcap_lock() {
   (*logger)->info("pcap lock released");
 }
 
+int create_nl_socket(std::shared_ptr<spdlog::logger> logger)
+{
+    struct sockaddr_nl sa;
+    int fd = 0;
+    int err;
+    memset(&sa, 0, sizeof(sa));
+    int ns_fd = open("/var/run/netns/sw_net", O_RDONLY);
+    if (ns_fd == -1) {
+        logger->error("error opening sw_net fd");
+    }
+    int orig_ns_fd = open("/proc/self/ns/net", O_RDONLY);
+    if (orig_ns_fd == -1) {
+        logger->error("error opening original fd");
+    }
+    if (setns(ns_fd, 0) == -1) {
+        logger->error("failed setting namespace sw_net");
+        return -1;
+    }
+    fd = socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
+    if (fd <= 0) {
+        logger->error("Failed opening netlink socket (%s)", strerror(errno));
+        return 0;
+    }
+    sa.nl_family = AF_NETLINK;
+    sa.nl_groups = RTMGRP_LINK;
+    err = bind(fd, (struct sockaddr *) &sa, sizeof(sa));
+    if (err < 0) {
+        logger->error("Failed binding netlink socket (%s)", strerror(errno));
+        return 0;
+    }
+    if (setns(orig_ns_fd, 0) == -1) {
+        logger->error("failed setting namespace sw_net");
+        return -1;
+    }
+    return fd;
+}
+
+char *rtattr_get_name(struct rtattr *rta, int rta_len)
+{
+    char *if_name = NULL;
+
+    for ( ; RTA_OK(rta, rta_len) ; rta = RTA_NEXT(rta, rta_len)) {
+        if (rta->rta_type == IFLA_IFNAME) {
+            if_name = (char*)RTA_DATA(rta);
+            break;
+        }
+    }
+    
+    return if_name;
+}
+
+Port_obj* sai_adapter::get_port_by_if_name(const char *if_name) {
+      std::string if_name_str(if_name);
+    // "sw_portXX"
+    std::string if_num_str = if_name_str.substr(7);
+    int hw_port = std::stoi(if_num_str);
+    return switch_metadata_ptr->GetPortObjFromHwPort(hw_port);
+}
+
+int sai_adapter::handle_nl_msg(char buff[], int len)
+{
+    struct nlmsghdr *nh;
+    struct ifinfomsg *ifi;
+    char *if_name;
+    int res = 0;
+
+    for (nh = (struct nlmsghdr *)buff; NLMSG_OK(nh, len);
+        nh = NLMSG_NEXT(nh, len)) {
+
+        if (nh->nlmsg_type == NLMSG_DONE)
+            break;
+
+        if (nh->nlmsg_type == NLMSG_ERROR) {
+            (*logger)->error("Netlink error");
+            res = -1;
+            break;
+        }
+
+        ifi = (ifinfomsg*) NLMSG_DATA(nh);
+        // if (nh->nlmsg_type != RTM_NEWLINK || !ifi->ifi_change)
+            // continue;
+        if_name = rtattr_get_name(IFLA_RTA(ifi), IFLA_PAYLOAD(nh));
+        if (!if_name)
+            continue;
+        sai_port_oper_status_t oper_status = ((ifi->ifi_flags & IFF_UP) && (ifi->ifi_flags & IFF_LOWER_UP)) ? SAI_PORT_OPER_STATUS_UP : SAI_PORT_OPER_STATUS_DOWN;
+        Port_obj *port = get_port_by_if_name(if_name);
+        (*logger)->info("port {} (Interface {}) status updated ({})", port->sai_object_id, if_name, ((ifi->ifi_flags & IFF_UP) && (ifi->ifi_flags & IFF_LOWER_UP)) ? "up" : "down");
+        if (switch_metadata_ptr->port_state_change_notification_fn != NULL) {
+          sai_port_oper_status_notification_t data[1];
+          data[0].port_id = port->sai_object_id;
+          data[0].port_state = oper_status;
+          (*logger)->info("port state change notification started");
+          (*switch_metadata_ptr->port_state_change_notification_fn)(1, data);
+          (*logger)->info("port state change notification ended");
+        }
+    }
+
+    return res;
+}
+
+
 void sai_adapter::PacketSniffer() {
-  char errstr[1024];
+  char errstr[MAX_PCAP_BUFFER_LEN];
   int maxfd = 0;
+  nl_fd = create_nl_socket(*logger);
   fd_set sniff_set;
   int i;
   int num_of_devs = 2; //TODO: vector?
@@ -56,7 +168,7 @@ void sai_adapter::PacketSniffer() {
   }
   struct pcap_pkthdr *pcap_header;
   const u_char *pcap_packet;
-  (*logger)->info("start sniffing on {}, {}", cpu_port[0].dev, cpu_port[1].dev);
+  (*logger)->info("start sniffing on {}, {} and Netlink", cpu_port[0].dev, cpu_port[1].dev);
   release_pcap_lock();
   while (break_sniff_loop == 0) {
     FD_ZERO(&sniff_set);
@@ -70,6 +182,8 @@ void sai_adapter::PacketSniffer() {
       FD_SET(it->fd, &sniff_set);
       maxfd = std::max(maxfd, it->fd);
     }
+    FD_SET(nl_fd, &sniff_set);
+    maxfd = std::max(maxfd, nl_fd);
     if (select(maxfd + 1, &sniff_set, NULL, NULL, NULL) < 0) {
       (*logger)->error("select error");
       exit(1);
@@ -99,10 +213,11 @@ void sai_adapter::PacketSniffer() {
         }
       }
     }
+
     for (std::vector<netdev_fd_t>::iterator it = active_netdevs.begin(); it!=active_netdevs.end(); it++) {
       if (FD_ISSET(it->fd, &sniff_set)) {
-        u_char buffer[1000];
-        int length = read(it->fd, &buffer, 1000);
+        u_char buffer[MAX_PCAP_BUFFER_LEN];
+        int length = read(it->fd, &buffer, MAX_PCAP_BUFFER_LEN);
         (*logger)->info("packet recieved of length {}", length);
         switch (it->type) {
           case SAI_OBJECT_TYPE_VLAN:
@@ -117,8 +232,14 @@ void sai_adapter::PacketSniffer() {
         }
       }
     }
+
+    if (FD_ISSET(nl_fd, &sniff_set)) {
+      char buff[MAX_NL_BUFFER_LEN];
+      int len = read(nl_fd, buff, MAX_NL_BUFFER_LEN);
+      handle_nl_msg(buff, len);
+    }
+
     if (FD_ISSET(sniff_pipe_fd[0], &sniff_set)) {
-      // TODO: read?
       char ch;
       read(sniff_pipe_fd[0], &ch, 1);
       if (ch == 'c') {

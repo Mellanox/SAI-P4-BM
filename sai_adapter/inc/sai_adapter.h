@@ -128,7 +128,6 @@ public:
   sai_id_map_t sai_id_map;
   Switch_metadata switch_metadata;
   vector<sai_object_id_t> switch_list;
-  uint32_t list[8] = {0, 1, 2, 3, 4, 5, 6, 7};
   // logger
   std::shared_ptr<spdlog::logger> logger_o;
   static vector<sai_object_id_t> *switch_list_ptr;
@@ -494,6 +493,7 @@ private:
   static hostif_trap_id_table_t hostif_trap_id_table;
   static adapter_packet_handler_fn wildcard_entry;
   static int sniff_pipe_fd[2];
+  static int nl_fd;
   void startSaiAdapterMain();
   void endSaiAdapterMain();
   void SaiAdapterMain();
@@ -517,6 +517,10 @@ private:
   static int vlan_netdev_sniffer(int in_dev_fd, uint16_t vlan_id);
   static void update_mc_node_vlan(Vlan_obj *vlan);
   static sai_status_t init_switch(); //bool deafult_mac_set);//, bool fdb_notification_set);
+  static int handle_nl_msg(char buff[], int len);
+  static Port_obj* get_port_by_if_name(const char *if_name);
+  static void send_link_status_message(int ifi_index, bool admin_state);
+  static int get_port_ifi_index(int hw_port);
   // static void update_mc_node_bridge(Bridge_obj *bridge);
   // hostif_table_t hostif_table;
   // static hostif_table_t* hostif_table_p;

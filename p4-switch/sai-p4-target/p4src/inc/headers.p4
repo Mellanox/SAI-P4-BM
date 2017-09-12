@@ -63,8 +63,8 @@ header_type udp_t {
 
 header_type ingress_metadata_t {
 	fields {
-		bit<6> 	port;	//PHY_PORT_NUM_WDT
-		bit<6> 	l2_if;	//PHY_PORT_NUM_WDT
+		bit<8> 	port;	//PHY_PORT_NUM_WDT
+		bit<8> 	l2_if;	//PHY_PORT_NUM_WDT
 		bit 	is_tagged;
 		bit 	is_lag;
 		bit<16> lag_id; // LAG_WDT
@@ -93,7 +93,7 @@ header_type ingress_metadata_t {
 header_type egress_metadata_t {
 	fields {
 		bit 	out_if_type; 
-        bit<6> 	out_if; // PHY_PORT_NUM_WDT TODO remove? same as standard_metadata.egress_spec?
+        bit<8> 	out_if; // PHY_PORT_NUM_WDT TODO remove? same as standard_metadata.egress_spec?
         bit<2> 	stp_state; // same as ingress? duplication?
         bit  	tag_mode;
         bit<6> 	hash_val;// TODO for egress lag table, when it is set?
@@ -131,8 +131,8 @@ header_type cpu_header_t {
 // TODO review all wdt.
 header_type router_metadata_t{
     fields{
-        bit<3> ingress_rif;
-        bit<3> egress_rif;
+        bit<8> ingress_rif;
+        bit<8> egress_rif;
         bit<2> erif_type;
         bit<8> ingress_vrf;
         bit<32> next_hop_dst_ip;

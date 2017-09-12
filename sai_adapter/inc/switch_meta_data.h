@@ -2,6 +2,8 @@
 #define SWITCH_META_DATA_H
 
 #define NULL_HANDLE -1
+#define NUM_OF_PORTS 32
+
 #include "spdlog/spdlog.h"
 #include <iostream>
 #include <list>
@@ -74,9 +76,11 @@ public:
   uint32_t mtu;
   uint32_t drop_tagged;
   uint32_t drop_untagged;
+  int ifi_index;
   bool internal;
   bool is_lag;
   bool admin_state;
+  sai_port_oper_status_t oper_status;
   BmEntryHandle handle_lag_if;
   BmEntryHandle handle_port_cfg;
   BmEntryHandle handle_ingress_lag;
@@ -95,6 +99,8 @@ public:
     this->handle_lag_if = NULL_HANDLE;
     this->internal = false;
     this->admin_state = true;
+    this->oper_status = SAI_PORT_OPER_STATUS_UP;
+    this->ifi_index = 0;
   }
 };
 
@@ -389,7 +395,7 @@ typedef std::map<sai_object_id_t, NextHop_obj *> nhop_id_map_t;
 class Switch_metadata { 
 public:
   sai_object_id_t switch_id;
-  sai_u32_list_t hw_port_list;
+  std::vector<int> hw_port_list;
   port_id_map_t ports;
   bridge_port_id_map_t bridge_ports;
   bridge_id_map_t bridges;
@@ -414,6 +420,9 @@ public:
   sai_fdb_event_notification_fn fdb_event_notification_fn;
   sai_port_state_change_notification_fn port_state_change_notification_fn;
   Switch_metadata() {
+    for (int i = 0; i < NUM_OF_PORTS; i++){
+      hw_port_list.push_back(i);
+    }
     fdb_event_notification_fn = NULL;
     port_state_change_notification_fn = NULL;
     memset(default_switch_mac, 0, 6);
@@ -441,6 +450,18 @@ public:
     }
     spdlog::get("logger")->error(
         "bridge_port object not found for bridge_port {} ", bridge_port);
+    return nullptr;
+  }
+
+  Port_obj *GetPortObjFromHwPort(uint16_t hw_port) {
+    for (port_id_map_t::iterator it = ports.begin();
+         it != ports.end(); ++it) {
+      if (it->second->hw_port == hw_port) {
+        return it->second;
+      }
+    }
+    spdlog::get("logger")->error(
+        "port object not found for hw_port {} ", hw_port);
     return nullptr;
   }
 

@@ -9,7 +9,7 @@ action _nop() {
 	no_op();
 }
 
-action action_set_irif(in bit<3> ingress_rif) {
+action action_set_irif(in bit<8> ingress_rif) {
 	router_metadata.ingress_rif = ingress_rif;
 }
 
@@ -50,12 +50,12 @@ action action_set_ip2me() {
 	router_metadata.ip2me = 1;
 }
 
-action action_set_erif_set_nh_dstip_from_pkt(in bit<3> egress_rif){
+action action_set_erif_set_nh_dstip_from_pkt(in bit<8> egress_rif){
 	router_metadata.next_hop_dst_ip = ipv4.dstAddr;
 	router_metadata.egress_rif = egress_rif;
 }
 
-action action_set_erif_set_nh_dstip(in bit<32> next_hop_dst_ip , in bit<3> egress_rif){
+action action_set_erif_set_nh_dstip(in bit<32> next_hop_dst_ip , in bit<8> egress_rif){
 	router_metadata.next_hop_dst_ip = next_hop_dst_ip;
 	router_metadata.egress_rif = egress_rif;
 	

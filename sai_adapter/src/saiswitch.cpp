@@ -1,4 +1,5 @@
 #include "../inc/sai_adapter.h"
+#include <net/if.h>
 
 sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
                                         uint32_t attr_count,
@@ -39,6 +40,29 @@ sai_status_t sai_adapter::create_switch(sai_object_id_t *switch_id,
   return SAI_STATUS_SUCCESS;
 }
 
+int sai_adapter::get_port_ifi_index(int hw_port) {
+  int ns_fd = open("/var/run/netns/sw_net", O_RDONLY);
+  if (ns_fd == -1) {
+    (*logger)->error("error opening sw_net fd");
+  }
+  int orig_ns_fd = open("/proc/self/ns/net", O_RDONLY);
+  if (orig_ns_fd == -1) {
+    (*logger)->error("error opening original fd");
+  }
+  if (setns(ns_fd, 0) == -1) {
+    (*logger)->error("failed setting namespace sw_net");
+    return -1;
+  }
+  std::string if_name = "sw_port" + std::to_string(hw_port);
+  int ifi_index = if_nametoindex(if_name.c_str());
+  (*logger)->info("if {} index {}", if_name, ifi_index);
+  if (setns(orig_ns_fd, 0) == -1) {
+    (*logger)->error("failed setting namespace sw_net");
+    return -1;
+  }
+  return ifi_index;
+}
+
 sai_status_t sai_adapter::init_switch() {
   if (switch_list_ptr->size() != 0) {
     (*logger)->info(
@@ -70,14 +94,15 @@ sai_status_t sai_adapter::init_switch() {
     match_params.push_back(parse_exact_match_param(vlan->bridge_id, 2));
     switch_metadata_ptr->default_vlan_oid = vlan->sai_object_id;
     (*logger)->info("Default vlan id 1 (oid = {})", vlan->sai_object_id);
-    for (int i = 0; i < switch_metadata_ptr->hw_port_list.count; i++) {
-      int hw_port = switch_metadata_ptr->hw_port_list.list[i];
+    for (std::vector<int>::iterator it = switch_metadata_ptr->hw_port_list.begin(); it != switch_metadata_ptr->hw_port_list.end(); ++it) {
+      int hw_port = *it;
 
       // Create Default Ports (one for each hw_port)
       Port_obj *port = new Port_obj(sai_id_map_ptr);
       switch_metadata_ptr->ports[port->sai_object_id] = port;
       port->hw_port = hw_port;
       port->l2_if = hw_port;
+      port->ifi_index = get_port_ifi_index(hw_port);
       (*logger)->info("Default port_id {}. hw_port = {}", port->sai_object_id,
                       port->hw_port);
 
@@ -138,8 +163,8 @@ sai_status_t sai_adapter::init_switch() {
     // Create CPU Ports
     Port_obj *port = new Port_obj(sai_id_map_ptr);
     switch_metadata_ptr->ports[port->sai_object_id] = port;
-    port->hw_port = 8;
-    port->l2_if = 8;
+    port->hw_port = 250;
+    port->l2_if = 250;
     port->internal = true;
     (*logger)->info("CPU port_id {}. hw_port = {}", port->sai_object_id,
                     port->hw_port);
@@ -148,8 +173,8 @@ sai_status_t sai_adapter::init_switch() {
     // Create Bridge Router port and bridge_port
     port = new Port_obj(sai_id_map_ptr);
     switch_metadata_ptr->ports[port->sai_object_id] = port;
-    port->hw_port = 9;
-    port->l2_if = 9;
+    port->hw_port = 251;
+    port->l2_if = 251;
     port->internal = true;
     (*logger)->info("Router port_id {}. hw_port = {}", port->sai_object_id,
                     port->hw_port);
@@ -253,7 +278,11 @@ sai_status_t sai_adapter::get_switch_attribute(sai_object_id_t switch_id,
         attr_list[i].value.objlist.count = index;
         break;
       case SAI_SWITCH_ATTR_PORT_NUMBER:
-        attr_list[i].value.u32 = switch_metadata_ptr->hw_port_list.count;
+        attr_list[i].value.u32 = std::count_if(
+          switch_metadata_ptr->ports.begin(), 
+          switch_metadata_ptr->ports.end(), 
+          [](std::pair<sai_object_id_t, Port_obj*> p){return !(p.second->internal);}
+        );
         break;
       case SAI_SWITCH_ATTR_DEFAULT_VLAN_ID:
         attr_list[i].value.oid = switch_metadata_ptr->default_vlan_oid;

@@ -13,6 +13,7 @@ std::condition_variable sai_adapter::cv;
 hostif_trap_id_table_t sai_adapter::hostif_trap_id_table;
 pcap_fd_t sai_adapter::cpu_port[2];
 int sai_adapter::sniff_pipe_fd[2];
+int sai_adapter::nl_fd;
 std::vector<netdev_fd_t> sai_adapter::active_netdevs;
 adapter_packet_handler_fn sai_adapter::wildcard_entry;
 
@@ -43,8 +44,6 @@ sai_adapter::sai_adapter()
   // start P4 link
   switch_list_ptr = &switch_list;
   switch_metadata_ptr = &switch_metadata;
-  switch_metadata.hw_port_list.list = list;
-  switch_metadata.hw_port_list.count = 8;
   bm_bridge_client_ptr = &bm_bridge_client;
   bm_bridge_client_mc_ptr = &bm_bridge_client_mc;
   bm_router_client_ptr = &bm_router_client;

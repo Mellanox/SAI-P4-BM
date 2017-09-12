@@ -1,4 +1,7 @@
 #include "../inc/sai_adapter.h"
+#include <linux/netlink.h>
+#include <linux/rtnetlink.h>
+#include <net/if.h>
 
 sai_status_t sai_adapter::create_port(sai_object_id_t *port_id,
                                       sai_object_id_t switch_id,
@@ -118,14 +121,7 @@ bool sai_adapter::set_parsed_port_attribute(Port_obj *port,
     case SAI_PORT_ATTR_ADMIN_STATE:
       port->admin_state = attribute->value.booldata;
       (*logger)->info("setting port admin state {}", port->admin_state);
-      sai_port_oper_status_notification_t data[1];
-      data[0].port_id = port->sai_object_id;
-      data[0].port_state = (port->admin_state) ? SAI_PORT_OPER_STATUS_UP : SAI_PORT_OPER_STATUS_DOWN;
-      if (switch_metadata_ptr->port_state_change_notification_fn != NULL) {
-        (*logger)->info("port state change notification started");
-        (*switch_metadata_ptr->port_state_change_notification_fn)(1, data);
-        (*logger)->info("port state change notification ended");
-      }
+      send_link_status_message(port->ifi_index, port->admin_state);
       return false;
       break;
     default:
@@ -216,4 +212,30 @@ void sai_adapter::config_port(Port_obj *port) {
 
 sai_status_t sai_adapter::get_port_stats(sai_object_id_t port_id, const sai_port_stat_t *counter_ids, uint32_t number_of_counters, uint64_t *counters) {
   return SAI_STATUS_NOT_IMPLEMENTED;
+}
+
+void sai_adapter::send_link_status_message(int ifi_index, bool admin_state) {
+    struct sockaddr_nl sa;
+    struct iovec iov;
+    struct msghdr msg;
+    memset(&sa, 0, sizeof(sa));
+    sa.nl_family = AF_NETLINK;
+    sa.nl_groups = 0;
+    sa.nl_pid = 0;
+
+    struct {
+      struct nlmsghdr  nh;
+      struct ifinfomsg ifi;
+    } req;
+
+
+    memset(&req, 0, sizeof(req));
+    req.nh.nlmsg_len = NLMSG_LENGTH(sizeof(struct ifinfomsg));
+    req.nh.nlmsg_flags = NLM_F_REQUEST;
+    req.nh.nlmsg_type = RTM_NEWLINK;
+    req.ifi.ifi_family = AF_UNSPEC;
+    req.ifi.ifi_change = IFF_UP;
+    req.ifi.ifi_flags = admin_state ? IFF_UP : 0;
+    req.ifi.ifi_index = ifi_index;    
+    send(nl_fd, &req, req.nh.nlmsg_len, 0);
 }
