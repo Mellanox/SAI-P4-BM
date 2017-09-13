@@ -416,6 +416,11 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
       (*logger)->info("added BGP trap to cpu, trap_id: {}. sai_object_id: {}",
                       hostif_trap->trap_id, hostif_trap->sai_object_id);
       break;
+
+    case SAI_HOSTIF_TRAP_TYPE_IPV6_NEIGHBOR_DISCOVERY:
+      (*logger)->info("added unsupported negihbor dicovery trap");
+      break;
+
     default:
       (*logger)->error(
         "unsupported trap requested, trap type is: {}, trap_action is: {}",
@@ -458,6 +463,7 @@ sai_status_t sai_adapter::remove_hostif_trap(sai_object_id_t hostif_trap_id) {
 
 
     // pre-l3 traps
+    case SAI_HOSTIF_TRAP_TYPE_ARP_RESPONSE:
     case SAI_HOSTIF_TRAP_TYPE_ARP_REQUEST:
       bm_router_client_ptr->bm_mt_delete_entry(cxt_id, "table_l3_trap_id",
                                            hostif_trap->handle_trap_id);
