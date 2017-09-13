@@ -21,6 +21,7 @@ table table_pre_l3_trap {
 	reads {
 		vlan.etherType : ternary;
 		ipv4.dstAddr   : lpm;
+		arp_ipv4.opcode     : ternary;
 	}
 	actions { action_set_trap_id; _drop;}
 }

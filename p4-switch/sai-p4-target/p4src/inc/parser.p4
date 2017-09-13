@@ -5,9 +5,10 @@
 
 #define TCP_PROTOCOL_NUM	0x06
 #define UDP_PROTOCOL_NUM	0x11
-#define ETHERTYPE_IPV4         0x0800
-#define ETHERTYPE_IPV6         0x86dd
-#define ETHERTYPE_VLAN         0x8100
+#define ETHERTYPE_IPV4      0x0800
+#define ETHERTYPE_IPV6      0x86dd
+#define ETHERTYPE_VLAN      0x8100
+#define ETHERTYPE_ARP       0x0806
 
 // parser starts here
 // check if needs to add clone_to_cpu encapsulation
@@ -38,8 +39,14 @@ parser parse_ethernet {
     return select(latest.etherType) {
     	ETHERTYPE_VLAN : parse_vlan;
         ETHERTYPE_IPV4 : parse_ipv4;
+        ETHERTYPE_ARP  : parse_arp_ipv4;
         default: ingress;
     }
+}
+
+parser parse_arp_ipv4 {
+    extract(arp_ipv4);
+    return ingress;
 }
 
 parser parse_vlan {
@@ -47,6 +54,7 @@ parser parse_vlan {
     set_metadata(ingress_metadata.is_tagged, (bit)(vlan.vid >> 11) | (bit)(vlan.vid >> 10) | (bit)(vlan.vid >> 9) | (bit)(vlan.vid >> 8) | (bit)(vlan.vid >> 7) | (bit)(vlan.vid >> 6) | (bit)(vlan.vid >> 5) | (bit)(vlan.vid >> 4) | (bit)(vlan.vid >> 3) | (bit)(vlan.vid >> 2) | (bit)(vlan.vid >> 1) | (bit)(vlan.vid)); //if vid==0 not tagged. TODO: need to do this better (maybe add parser support for casting boolean)
     return select(latest.etherType) {
         ETHERTYPE_IPV4 : parse_ipv4;
+        ETHERTYPE_ARP  : parse_arp_ipv4;
         default: ingress;
     }
 }

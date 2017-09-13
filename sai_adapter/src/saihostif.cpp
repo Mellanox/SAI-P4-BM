@@ -299,6 +299,7 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
     case SAI_HOSTIF_TRAP_TYPE_ARP_REQUEST:
       match_params.push_back(parse_ternary_param(0x806, 2, 0xffff));
       match_params.push_back(parse_lpm_param(0, 4, 0));
+      match_params.push_back(parse_ternary_param(1, 2, 0xffff));
       action_data.push_back(parse_param(hostif_trap->trap_id, 2));
       hostif_trap->handle_trap = bm_router_client_ptr->bm_mt_add_entry(
           cxt_id, "table_pre_l3_trap", match_params, "action_set_trap_id",
@@ -321,7 +322,37 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
           break;
       }
 
-      (*logger)->info("added ARP trap to cpu, trap_id: {}. sai_object_id: {}",
+      (*logger)->info("added ARP REQUEST trap to cpu, trap_id: {}. sai_object_id: {}",
+                      hostif_trap->trap_id, hostif_trap->sai_object_id);
+      break;
+
+    case SAI_HOSTIF_TRAP_TYPE_ARP_RESPONSE:
+      match_params.push_back(parse_ternary_param(0x806, 2, 0xffff));
+      match_params.push_back(parse_lpm_param(0, 4, 0));
+      match_params.push_back(parse_ternary_param(2, 2, 0xffff));
+      action_data.push_back(parse_param(hostif_trap->trap_id, 2));
+      hostif_trap->handle_trap = bm_router_client_ptr->bm_mt_add_entry(
+          cxt_id, "table_pre_l3_trap", match_params, "action_set_trap_id",
+          action_data, options);
+
+      action_data.clear();
+      match_params.clear();
+      match_params.push_back(parse_exact_match_param(hostif_trap->trap_id, 2));
+      switch (hostif_trap->trap_action) {
+        case SAI_PACKET_ACTION_TRAP:
+          hostif_trap->handle_trap_id = bm_router_client_ptr->bm_mt_add_entry(
+              cxt_id, "table_l3_trap_id", match_params, "action_trap_to_cpu",
+              action_data, options);
+          break;
+        case SAI_PACKET_ACTION_LOG:
+        case SAI_PACKET_ACTION_COPY:
+          hostif_trap->handle_trap_id = bm_router_client_ptr->bm_mt_add_entry(
+              cxt_id, "table_l3_trap_id", match_params, "action_copy_to_cpu",
+              action_data, options);
+          break;
+      }
+
+      (*logger)->info("added ARP RESPONSE trap to cpu, trap_id: {}. sai_object_id: {}",
                       hostif_trap->trap_id, hostif_trap->sai_object_id);
       break;
 
@@ -355,7 +386,7 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
                       hostif_trap->trap_id, hostif_trap->sai_object_id);
       break;
 
-    // Router pre-l3 traps
+    // Router ip2me traps
     case SAI_HOSTIF_TRAP_TYPE_BGP:    
       match_params.push_back(parse_exact_match_param(179, 2));
       match_params.push_back(parse_exact_match_param(179, 2));

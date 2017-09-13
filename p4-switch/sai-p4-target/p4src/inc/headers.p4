@@ -60,6 +60,19 @@ header_type udp_t {
     }
 }
 
+header_type arp_ipv4_t {
+    fields {
+        bit<16> hwType;
+        bit<16> protoType;
+        bit<8>  hwAddrLen;
+        bit<8>  protoAddrLen;
+        bit<16> opcode;
+        bit<48> srcHwAddr;
+        bit<32> srcProtoAddr;
+        bit<48> dstHwAddr;
+        bit<32> dstProtoAddr;
+    }
+}
 
 header_type ingress_metadata_t {
 	fields {
@@ -159,6 +172,7 @@ header   ipv4_t           ipv4;
 header   tcp_t            tcp;
 header   udp_t            udp;
 header   cpu_header_t     cpu_header;  
+header   arp_ipv4_t       arp_ipv4;
 
 // metadata
 // TODO - seperate ingress/egress metadata to bridge, router, and common.

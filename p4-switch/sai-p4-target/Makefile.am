@@ -41,7 +41,8 @@ AM_CXXFLAGS += -std=c++11 \
 -I$(builddir)/gen-cpp \
 -I$(top_srcdir)/@P4_BM_DIR@/include \
 -isystem$(top_srcdir)/@P4_BM_DIR@/third_party/jsoncpp/include \
--isystem$(top_srcdir)/@P4_BM_DIR@/third_party/spdlog
+-isystem$(top_srcdir)/@P4_BM_DIR@/third_party/spdlog \
+-DBMLOG_DEBUG_ON -DBMLOG_TRACE_ON
 
 libsimpleswitch_la_LIBADD = \
 $(top_srcdir)/@P4_BM_DIR@/src/bm_sim/libbmsim.la \
@@ -132,8 +133,8 @@ bin_SCRIPTS = run_bm.sh \
 
 CLEANFILES = $(BUILT_SOURCES) \
 thrift_files.ts \
-gen-cpp/bm/SimpleSwitch_server.skeleton.cpp \
-$(bin_SCRIPTS)
+gen-cpp/bm/SimpleSwitch_server.skeleton.cpp
+# \ $(bin_SCRIPTS)
 # \ ${P4_JSON_FILES}
 
 # I used to do a rm on gen-cpp, but it was removing a .deps directory, instead I

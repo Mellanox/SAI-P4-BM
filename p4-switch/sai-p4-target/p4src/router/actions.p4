@@ -23,7 +23,7 @@ action action_copy_to_cpu() {
 }
 
 action action_trap_to_cpu() {
-	clone_ingress_pkt_to_egress(8, redirect_router_FL);
+	clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_router_FL);
 	drop();
 }
 

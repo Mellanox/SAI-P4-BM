@@ -6,7 +6,7 @@
 #define MAC_LEARN_RECEIVER 	512
 
 //  Mirroring and traps
-#define COPY_TO_CPU_MIRROR_ID 8
+#define COPY_TO_CPU_MIRROR_ID 250
 
 // header/metadata fields width
 #define LAG_WDT				16
@@ -31,7 +31,7 @@
 
 //phy
 #define PHY_PORT_NUM 		64  // TODO
-#define PHY_PORT_NUM_WDT 	6 	// TODO
+#define PHY_PORT_NUM_WDT 	8 	// TODO
 
 
 //port 
