@@ -4,6 +4,7 @@ sai_status_t sai_adapter::create_bridge(sai_object_id_t *bridge_id,
                                         sai_object_id_t switch_id,
                                         uint32_t attr_count,
                                         const sai_attribute_t *attr_list) {
+  (*logger)->info("create_bridge");
   Bridge_obj *bridge = new Bridge_obj(sai_id_map_ptr);
   switch_metadata_ptr->bridges[bridge->sai_object_id] = bridge;
 
@@ -64,6 +65,7 @@ sai_status_t sai_adapter::get_bridge_attribute(sai_object_id_t bridge_id,
 sai_status_t sai_adapter::set_bridge_attribute(
         _In_ sai_object_id_t bridge_id,
         _In_ const sai_attribute_t *attr) {
+  (*logger)->info("set_bridge_attribute");
   return SAI_STATUS_NOT_IMPLEMENTED;
 }
 
@@ -184,6 +186,7 @@ sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
 }
 
 sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
+  (*logger)->info("remove_bridge_port");
   sai_status_t status = SAI_STATUS_SUCCESS;
   BridgePort_obj *bridge_port =
       switch_metadata_ptr->bridge_ports[bridge_port_id];
