@@ -285,21 +285,40 @@ void sai_adapter::cpu_port_packetHandler(u_char *userData,
   (*logger)->info("CPU packet captured from netdev: type {}, trap_id = {}, src = {}",
                   type_str, cpu->trap_id, cpu->dst);
   u_char *decap_packet = (u_char *)(packet + CPU_HDR_LEN);
-  HostIF_Table_Entry_obj *hostif_table_entry =
-      switch_metadata_ptr->GetTableEntryFromTrapID(cpu->trap_id);
-  if (hostif_table_entry == nullptr) {
-    (*logger)->error("CPU packet recieved with unknown trap_id");
+
+  HostIF_Table_Entry_obj *hostif_table_entry;
+  // TODO: add port, lag and vlan host_table_entries
+  // switch (cpu->type) {
+  //   case PORT:
+  //     hostif_table_entry = switch_metadata_ptr->GetTableEntryFromTrapID(cpu->trap_id, SAI_HOSTIF_TABLE_ENTRY_TYPE_PORT);
+  //     if (hostif_table_entry != nullptr) {
+  //       adapter->lookup_hostif_trap_id_table_port(decap_packet, cpu, pkthdr->len - CPU_HDR_LEN);
+  //     return;
+  //     break;
+  //   case LAG:
+  //     hostif_table_entry = switch_metadata_ptr->GetTableEntryFromTrapID(cpu->trap_id, SAI_HOSTIF_TABLE_ENTRY_TYPE_LAG);
+  //     if (hostif_table_entry != nullptr) {
+  //       adapter->lookup_hostif_trap_id_table_lag(decap_packet, cpu, pkthdr->len - CPU_HDR_LEN);
+  //     return;
+  //     break;
+  //   case VLAN:
+  //     hostif_table_entry = switch_metadata_ptr->GetTableEntryFromTrapID(cpu->trap_id, SAI_HOSTIF_TABLE_ENTRY_TYPE_VLAN);
+  //     if (hostif_table_entry != nullptr) {
+  //       adapter->lookup_hostif_trap_id_table_vlan(decap_packet, cpu, pkthdr->len - CPU_HDR_LEN);
+  //     return;
+  //     break;
+  // }
+  hostif_table_entry = switch_metadata_ptr->GetTableEntryFromTrapID(cpu->trap_id, SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID);
+  if (hostif_table_entry != nullptr) {
+    adapter->lookup_hostif_trap_id_table(decap_packet, cpu, pkthdr->len - CPU_HDR_LEN);
     return;
   }
-  switch (hostif_table_entry->entry_type) {
-    case SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID:
-      adapter->lookup_hostif_trap_id_table(decap_packet, cpu,
-                                           pkthdr->len - CPU_HDR_LEN);
-      break;
-  }
-  // if (cpu_hdr->trap_id == 512) {
-  //   adapter->learn_mac(ether, cpu_hdr);
-  // }
+  if (wildcard_entry != NULL) {
+    (*wildcard_entry)(decap_packet, cpu, pkthdr->len - CPU_HDR_LEN);
+    return;
+  };
+  (*logger)->error("CPU packet recieved with unknown trap_id");
+  return;
 }
 
 void sai_adapter::learn_mac(u_char *packet, cpu_hdr_t *cpu, int pkt_len) {
@@ -365,6 +384,16 @@ void sai_adapter::learn_mac(u_char *packet, cpu_hdr_t *cpu, int pkt_len) {
   // }
   sai_fdb_entry_t fdb_entry;
   build_fdb_entry(src_mac, bridge_type, vlan_id, bridge->sai_object_id, &fdb_entry);
+
+  sai_attribute_t flush_attr[3];
+  flush_attr[0].id = SAI_FDB_FLUSH_ATTR_ENTRY_TYPE;
+  flush_attr[0].value.s32 = SAI_FDB_ENTRY_TYPE_DYNAMIC;
+  flush_attr[1].id = SAI_FDB_FLUSH_ATTR_VLAN_ID;
+  flush_attr[1].value.u16 = fdb_entry.vlan_id;
+  flush_attr[2].id = SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID;
+  flush_attr[2].value.oid = bridge_port->sai_object_id;
+  flush_fdb_entries(switch_metadata_ptr->switch_id, 3, flush_attr);
+
   sai_attribute_t attr[3];
   attr[0].id = SAI_FDB_ENTRY_ATTR_TYPE;
   attr[0].value.s32 = SAI_FDB_ENTRY_TYPE_DYNAMIC;
@@ -372,7 +401,6 @@ void sai_adapter::learn_mac(u_char *packet, cpu_hdr_t *cpu, int pkt_len) {
   attr[1].value.oid = bridge_port->sai_object_id;
   attr[2].id = SAI_FDB_ENTRY_ATTR_PACKET_ACTION;
   attr[2].value.s32 = SAI_PACKET_ACTION_FORWARD;
-
   create_fdb_entry(&fdb_entry, 3, attr);
 
   // Notify SW:

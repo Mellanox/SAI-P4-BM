@@ -341,7 +341,10 @@ void sai_adapter::update_mc_node_vlan(Vlan_obj *vlan) {
     bridge_port = switch_metadata_ptr->bridge_ports[switch_metadata_ptr->vlan_members[*it]->bridge_port_id]->bridge_port;
     ports_int += 1 << bridge_port;
   }
-  port_map = std::bitset<32>(ports_int).to_string();
+  // ports_int += 1 << switch_metadata_ptr->router_bridge_port->bridge_port;
+  std::bitset<256> port_bitset(ports_int);
+  port_bitset[switch_metadata_ptr->router_bridge_port->bridge_port] = true;
+  port_map = port_bitset.to_string();
   port_map.erase(0, std::min(port_map.find_first_not_of('0'), port_map.size()-1));
   (*logger)->info("updating mc_node {} with port_map {}", vlan->handle_mc_l1, port_map);
   bm_bridge_client_mc_ptr->bm_mc_node_update(cxt_id, vlan->handle_mc_l1, port_map, "");

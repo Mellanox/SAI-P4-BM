@@ -504,11 +504,7 @@ void sai_adapter::lookup_hostif_trap_id_table(u_char *packet, cpu_hdr_t *cpu,
     it->second(packet, cpu, pkt_len);
     return;
   };
-  if (wildcard_entry != NULL) {
-    (*wildcard_entry)(packet, cpu, pkt_len);
-    return;
-  };
-  (*logger)->error("hostif_table lookup failed");
+  (*logger)->error("hostif_table_trap_id lookup failed");
 }
 
 void sai_adapter::netdev_phys_port_fn(u_char *packet, cpu_hdr_t *cpu,
@@ -518,12 +514,13 @@ void sai_adapter::netdev_phys_port_fn(u_char *packet, cpu_hdr_t *cpu,
       cpu->dst, pkt_len);
   HostIF_obj *hostif =
       switch_metadata_ptr->GetHostIFFromPhysicalPort(cpu->dst);
-  if (hostif != nullptr && cpu->type == PORT) {
-    write(hostif->netdev_fd, packet, pkt_len);
+  if (hostif != nullptr) {
+    (*logger)->info("writing packet of length {}, to hostif id {} ({})", pkt_len, hostif->sai_object_id, hostif->netdev_name);
+    write(hostif->netdev_fd, packet+ETHER_HDR_LEN, pkt_len-ETHER_HDR_LEN);
   }
-  else if(cpu->type != PORT){
-    (*logger)->debug(
-      "bad cpu header type, expecting PORT - 0 but type is {}",
+  else {
+    (*logger)->error(
+      "can't find the needed hostif. CPU header type: {}",
       cpu->type);
   }
   return;

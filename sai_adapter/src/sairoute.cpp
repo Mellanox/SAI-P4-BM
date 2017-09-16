@@ -140,6 +140,8 @@ sai_status_t sai_adapter::remove_route_entry(const sai_route_entry_t *route_entr
   BmMatchParams match_params = get_match_param_from_route_entry(route_entry, switch_metadata_ptr);
   bm_router_client_ptr->bm_mt_get_entry_from_key(bm_entry, cxt_id, "table_router",
                                           match_params, options);
+  (*logger)->info("trying to remove table_router entry handle {}", bm_entry.entry_handle);
   bm_router_client_ptr->bm_mt_delete_entry(cxt_id, "table_router",
                                     bm_entry.entry_handle);
+  return SAI_STATUS_SUCCESS;
 }

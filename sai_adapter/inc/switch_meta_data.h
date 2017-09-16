@@ -428,15 +428,15 @@ public:
     memset(default_switch_mac, 0, 6);
   }
 
-  HostIF_Table_Entry_obj *GetTableEntryFromTrapID(uint16_t trap_id) {
+  HostIF_Table_Entry_obj *GetTableEntryFromTrapID(uint16_t trap_id, sai_hostif_table_entry_type_t entry_type) {
     for (hostif_table_entry_id_map_t::iterator it =
              hostif_table_entries.begin();
          it != hostif_table_entries.end(); ++it) {
-      if (it->second->trap_id == trap_id) {
+      if ((it->second->trap_id == trap_id) && (it->second->entry_type == entry_type)) {
         return it->second;
       }
     }
-    spdlog::get("logger")->error("hostif_table_entry not found for trap_id {} ",
+    spdlog::get("logger")->warn("hostif_table_entry not found for trap_id {} ",
                                  trap_id);
     return nullptr;
   }
