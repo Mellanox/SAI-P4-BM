@@ -22,16 +22,20 @@ control control_1q_uni_router{
 	apply(table_ingress_l3_if);
 	apply(table_ingress_vrf);
 	// apply(table_L3_ingress_acl); TODO
-	apply(table_pre_l3_trap);
-	apply(table_router){
-		action_set_nhop_grp_id{
-			apply(table_next_hop_group);
+	apply(table_pre_l3_trap) {
+
+		miss {
+			apply(table_router){
+				action_set_nhop_grp_id{
+					apply(table_next_hop_group);
+				}
+			}
+			if (router_metadata.ip2me == 1) {
+				apply(table_ip2me_trap);
+			} else {
+				apply(table_next_hop);	
+			}
 		}
-	}
-	if (router_metadata.ip2me == 1) {
-		apply(table_ip2me_trap);
-	} else {
-		apply(table_next_hop);	
 	}
 	apply(table_l3_trap_id);
 }
@@ -39,14 +43,18 @@ control control_1q_uni_router{
 
 control egress{
 	//apply(table_erif_check); TODO - mtu size, etc..
-	apply(table_ttl);
-	apply(table_neighbor);
-	apply(table_egress_L3_if);
 	// apply(table_L3_egress_acl); TODO
+
 	if (ingress_metadata.cpu_port == 1) {
 		control_cpu();
 	} else {
-		apply(table_egress_clone_internal);
+		apply(table_egress_clone_internal) {
+			miss {
+				apply(table_ttl);
+				apply(table_neighbor);
+				apply(table_egress_L3_if);
+			}
+		}
 	}
 }
 

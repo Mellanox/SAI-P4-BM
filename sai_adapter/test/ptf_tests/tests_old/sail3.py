@@ -161,12 +161,12 @@ class ArpTest(sai_base_test.ThriftInterfaceDataPlane):
                                    hw_snd=src_mac,
                                    hw_tgt='ff:ff:ff:ff:ff:ff')
 
-        try:
-            time.sleep(15)
+        try:            
+            time.sleep(20)
             print "Sending arp request packet to port 1"
             send_packet(self, 1, str(rq_pkt))
             # send_packet(self, 1, str(rp_pkt))
-            time.sleep(5)
+            time.sleep(2)
             # verify_packets(self, exp_pkt, [1])
         finally:
             print 'done!'
