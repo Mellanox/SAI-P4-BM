@@ -149,7 +149,6 @@ sai_status_t sai_adapter::create_hostif_table_entry(
       break;
     }
   }
-  (*logger)->info("after parsing attr");
   adapter_packet_handler_fn handler_fn;
   switch (hostif_table_entry->channel_type) {
   case SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_PHYSICAL_PORT:
@@ -166,13 +165,11 @@ sai_status_t sai_adapter::create_hostif_table_entry(
     break;
   }
 
-  (*logger)->info("after parsing channel type");
   switch (hostif_table_entry->entry_type) {
   case SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID:
-    (*logger)->info("add host if trap id. trap_id {}",
+    (*logger)->info("add hostif table entry of type trap id. trap_id {}",
                     hostif_table_entry->trap_id);
     add_hostif_trap_id_table_entry(hostif_table_entry->trap_id, handler_fn);
-    (*logger)->info("after add hostif table entry");
     break;
   case SAI_HOSTIF_TABLE_ENTRY_TYPE_WILDCARD:
     wildcard_entry = handler_fn;
@@ -553,6 +550,7 @@ int sai_adapter::phys_netdev_sniffer(int in_dev_fd, int hw_port) {
   write(sniff_pipe_fd[1], "b", 1);
 }
 
+// #define VLAN_HDR_LEN 4
 void sai_adapter::netdev_vlan_fn(u_char *packet, cpu_hdr_t *cpu,
                                       int pkt_len) {
   vlan_hdr_t *vlan_hdr = (vlan_hdr_t *) (packet + ETHER_HDR_LEN);
@@ -562,6 +560,8 @@ void sai_adapter::netdev_vlan_fn(u_char *packet, cpu_hdr_t *cpu,
   HostIF_obj *hostif =
       switch_metadata_ptr->GetHostIFFromVlanId(vid);
   if (hostif != nullptr) {
+    (*logger)->info("writing packet of length {}, to hostif id {} ({})", pkt_len, hostif->sai_object_id, hostif->netdev_name);
+    // write(hostif->netdev_fd, packet+ETHER_HDR_LEN+VLAN_HDR_LEN, pkt_len-ETHER_HDR_LEN-VLAN_HDR_LEN);
     write(hostif->netdev_fd, packet, pkt_len);
   }
   return;

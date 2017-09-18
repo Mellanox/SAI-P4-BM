@@ -30,7 +30,7 @@ int tun_alloc(char *dev, int make_presistent) { //, int flags) {
   memset(&ifr, 0, sizeof(ifr));
 
   ifr.ifr_flags =
-      IFF_TUN |
+      IFF_TAP |
       IFF_NO_PI; // flags;   /* IFF_TUN or IFF_TAP, plus maybe IFF_NO_PI */
 
   if (*dev) {
