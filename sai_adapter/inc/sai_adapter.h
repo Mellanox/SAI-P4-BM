@@ -162,7 +162,7 @@ public:
                                         sai_attribute_t attribute);
   static sai_status_t get_parsed_port_attribute(Port_obj *port,
                                         sai_attribute_t *attribute);
-  static sai_status_t get_port_stats(sai_object_id_t port_id, const sai_port_stat_t *counter_ids, uint32_t number_of_counters, uint64_t *counters);
+  static sai_status_t get_port_stats(sai_object_id_t port_id, uint32_t number_of_counters, const sai_port_stat_t *counter_ids, uint64_t *counters);
   static sai_status_t create_bridge(sai_object_id_t *bridge_id,
                                     sai_object_id_t switch_id,
                                     uint32_t attr_count,
@@ -209,12 +209,12 @@ public:
                                                 const uint32_t attr_count,
                                                 sai_attribute_t *attr_list);
   static sai_status_t get_vlan_stats(sai_object_id_t vlan_id,
-                                     const sai_vlan_stat_t *counter_ids,
                                      uint32_t number_of_counters,
+                                     const sai_vlan_stat_t *counter_ids,
                                      uint64_t *counters);
   static sai_status_t clear_vlan_stats(sai_object_id_t vlan_id,
-                                       const sai_vlan_stat_t *counter_ids,
-                                       uint32_t number_of_counters);
+                                       uint32_t number_of_counters,
+                                       const sai_vlan_stat_t *counter_ids);
 static sai_status_t create_vlan_members(sai_object_id_t switch_id,uint32_t object_count,const uint32_t *attr_count,const sai_attribute_t **attrs,sai_bulk_op_type_t type,sai_object_id_t *object_id,sai_status_t *object_statuses);
 
 static sai_status_t remove_vlan_members(uint32_t object_count,const sai_object_id_t *object_id,sai_bulk_op_type_t type,sai_status_t *object_statuses);
@@ -290,7 +290,7 @@ static sai_status_t remove_vlan_members(uint32_t object_count,const sai_object_i
   static sai_status_t remove_policer(sai_object_id_t policer_id);
   static sai_status_t set_policer_attribute(sai_object_id_t policer_id,const sai_attribute_t *attr);
   static sai_status_t get_policer_attribute(sai_object_id_t policer_id,uint32_t attr_count,sai_attribute_t *attr_list);
-  static sai_status_t get_policer_stats(sai_object_id_t policer_id,const sai_policer_stat_t *counter_ids,uint32_t number_of_counters,uint64_t *counters);
+  static sai_status_t get_policer_stats(sai_object_id_t policer_id,uint32_t number_of_counters,const sai_policer_stat_t *counter_ids,uint64_t *counters);
   static sai_status_t clear_policer_stats(sai_object_id_t policer_id,uint32_t number_of_counters,const sai_policer_stat_t *counter_ids);
   static sai_status_t create_mirror_session(sai_object_id_t *session_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
   static sai_status_t remove_mirror_session(sai_object_id_t session_id);
@@ -322,8 +322,8 @@ static sai_status_t remove_vlan_members(uint32_t object_count,const sai_object_i
   static sai_status_t remove_queue(sai_object_id_t queue_id);
   static sai_status_t set_queue_attribute(sai_object_id_t queue_id,const sai_attribute_t *attr);
   static sai_status_t get_queue_attribute(sai_object_id_t queue_id,uint32_t attr_count,sai_attribute_t *attr_list);
-  static sai_status_t get_queue_stats(sai_object_id_t queue_id,const sai_queue_stat_t *counter_ids,uint32_t number_of_counters,uint64_t *counters);
-  static sai_status_t clear_queue_stats(sai_object_id_t queue_id,const sai_queue_stat_t *counter_ids,uint32_t number_of_counters);
+  static sai_status_t get_queue_stats(sai_object_id_t queue_id,uint32_t number_of_counters,const sai_queue_stat_t *counter_ids,uint64_t *counters);
+  static sai_status_t clear_queue_stats(sai_object_id_t queue_id,uint32_t number_of_counters,const sai_queue_stat_t *counter_ids);
   static sai_status_t create_scheduler_group(sai_object_id_t *scheduler_group_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
   static sai_status_t remove_scheduler_group(sai_object_id_t scheduler_group_id);
   static sai_status_t set_scheduler_group_attribute(sai_object_id_t scheduler_group_id,const sai_attribute_t *attr);
@@ -396,13 +396,13 @@ static sai_status_t remove_vlan_members(uint32_t object_count,const sai_object_i
   static sai_status_t remove_buffer_pool(sai_object_id_t pool_id);
   static sai_status_t set_buffer_pool_attribute(sai_object_id_t pool_id,const sai_attribute_t *attr);
   static sai_status_t get_buffer_pool_attribute(sai_object_id_t pool_id,uint32_t attr_count,sai_attribute_t *attr_list);
-  static sai_status_t get_buffer_pool_stats(sai_object_id_t pool_id,const sai_buffer_pool_stat_t *counter_ids,uint32_t number_of_counters,uint64_t *counters);
+  static sai_status_t get_buffer_pool_stats(sai_object_id_t pool_id,uint32_t number_of_counters,const sai_buffer_pool_stat_t *counter_ids,uint64_t *counters);
   static sai_status_t clear_buffer_pool_stats(sai_object_id_t pool_id,uint32_t number_of_counters,const sai_buffer_pool_stat_t *counter_ids);
   static sai_status_t create_ingress_priority_group(sai_object_id_t *ingress_pg_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
   static sai_status_t remove_ingress_priority_group(sai_object_id_t ingress_pg_id);
   static sai_status_t set_ingress_priority_group_attribute(sai_object_id_t ingress_pg_id,const sai_attribute_t *attr);
   static sai_status_t get_ingress_priority_group_attribute(sai_object_id_t ingress_pg_id,uint32_t attr_count,sai_attribute_t *attr_list);
-  static sai_status_t get_ingress_priority_group_stats(sai_object_id_t ingress_pg_id,const sai_ingress_priority_group_stat_t *counter_ids,uint32_t number_of_counters,uint64_t *counters);
+  static sai_status_t get_ingress_priority_group_stats(sai_object_id_t ingress_pg_id,uint32_t number_of_counters,const sai_ingress_priority_group_stat_t *counter_ids,uint64_t *counters);
   static sai_status_t clear_ingress_priority_group_stats(sai_object_id_t ingress_pg_id,uint32_t number_of_counters,const sai_ingress_priority_group_stat_t *counter_ids);
   static sai_status_t create_buffer_profile(sai_object_id_t *buffer_profile_id,sai_object_id_t switch_id,uint32_t attr_count,const sai_attribute_t *attr_list);
   static sai_status_t remove_buffer_profile(sai_object_id_t buffer_profile_id);

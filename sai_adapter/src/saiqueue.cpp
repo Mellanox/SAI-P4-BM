@@ -28,15 +28,15 @@ sai_status_t sai_adapter::get_queue_attribute(
 
 sai_status_t sai_adapter::get_queue_stats(
         _In_ sai_object_id_t queue_id,
-        _In_ const sai_queue_stat_t *counter_ids,
         _In_ uint32_t number_of_counters,
+        _In_ const sai_queue_stat_t *counter_ids,
         _Out_ uint64_t *counters) {
 	return SAI_STATUS_NOT_IMPLEMENTED;
 }
 
 sai_status_t sai_adapter::clear_queue_stats(
         _In_ sai_object_id_t queue_id,
-        _In_ const sai_queue_stat_t *counter_ids,
-        _In_ uint32_t number_of_counters) {
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_queue_stat_t *counter_ids) {
 	return SAI_STATUS_NOT_IMPLEMENTED;
 }

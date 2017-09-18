@@ -212,7 +212,7 @@ void sai_adapter::config_port(Port_obj *port) {
   }
 }
 
-sai_status_t sai_adapter::get_port_stats(sai_object_id_t port_id, const sai_port_stat_t *counter_ids, uint32_t number_of_counters, uint64_t *counters) {
+sai_status_t sai_adapter::get_port_stats(sai_object_id_t port_id, uint32_t number_of_counters, const sai_port_stat_t *counter_ids, uint64_t *counters) {
   return SAI_STATUS_NOT_IMPLEMENTED;
 }
 
