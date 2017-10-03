@@ -124,12 +124,12 @@ bin_SCRIPTS = run_bm.sh \
 			  veth_teardown.sh \
 			  simple_switch_CLI
 
-# P4_JSON_FILES = sai_bridge.json sai_router.json
-# dist_pkgdata_DATA = ${P4_JSON_FILES}
-# sai_bridge.json: p4src/bridge/sai_bridge.p4
-# 	p4c-bmv2 --p4-v1.1 --json sai_bridge.json p4src/bridge/sai_bridge.p4
-# sai_router.json: p4src/router/sai_router.p4
-# 	p4c-bmv2 --p4-v1.1 --json sai_router.json p4src/router/sai_router.p4
+P4_JSON_FILES = sai_bridge.json sai_router.json
+dist_pkgdata_DATA = ${P4_JSON_FILES}
+sai_bridge.json: p4src/bridge/sai_bridge.p4
+	p4c-bmv2 --p4-v1.1 --json sai_bridge.json p4src/bridge/sai_bridge.p4
+sai_router.json: p4src/router/sai_router.p4
+	p4c-bmv2 --p4-v1.1 --json sai_router.json p4src/router/sai_router.p4
 
 CLEANFILES = $(BUILT_SOURCES) \
 thrift_files.ts \
