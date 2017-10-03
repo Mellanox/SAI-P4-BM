@@ -4,13 +4,13 @@ ip netns add $sw_net
 for idx in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31; do
     intf0="sw_port$(($idx))"
     intf1="host_port$(($idx))"
-    if ! ip link show $intf0 &> /dev/null; then
+    if ! ip netns exec sw_net ip link show $intf0 &> /dev/null; then
         ip link add name $intf0 type veth peer name $intf1
         ip link set dev $intf0 netns $sw_net
-        ip netns exec $sw_net ip link set dev $intf0 up
-    	ip link set dev $intf1 up
     	ip netns exec $sw_net sysctl net.ipv6.conf.$intf0.disable_ipv6=1
     	sysctl net.ipv6.conf.$intf1.disable_ipv6=1
+        ip netns exec $sw_net ip link set dev $intf0 up
+        ip link set dev $intf1 up
     fi
 done
 
