@@ -47,7 +47,7 @@ table table_router {
 		ipv4.dstAddr : lpm;
 		// router_metadata.l3_lpm_key : lpm;
 	}
-	actions{action_set_nhop_id; action_set_nhop_grp_id; action_set_ip2me; _drop;}
+	actions{action_set_nhop_id; action_set_nhop_grp_id; action_set_ip2me; action_set_erif_set_nh_dstip_from_pkt; _drop;}
 	size: ROUTER_LPM_TABLE_SIZE;
 }
 
@@ -65,7 +65,7 @@ table table_next_hop {
 	reads{
 		router_metadata.next_hop_id : exact;
 	}
-	actions{ action_set_erif_set_nh_dstip ; action_set_erif_set_nh_dstip_from_pkt  ; _drop;}
+	actions{ action_set_erif_set_nh_dstip; _drop;}
 	size: NHOP_TABLE_SIZE;
 }
 

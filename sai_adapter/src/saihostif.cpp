@@ -506,19 +506,31 @@ void sai_adapter::lookup_hostif_trap_id_table(u_char *packet, cpu_hdr_t *cpu,
 
 void sai_adapter::netdev_phys_port_fn(u_char *packet, cpu_hdr_t *cpu,
                                       int pkt_len) {
-  (*logger)->info(
-      "trap arrived to physical netdev cahnnel @ ingress_port {}. len = {}",
-      cpu->dst, pkt_len);
-  HostIF_obj *hostif =
-      switch_metadata_ptr->GetHostIFFromPhysicalPort(cpu->dst);
+  int hw_port = 0;
+  Vlan_obj *vlan;
+  sai_object_id_t bridge_port_id;
+  switch (cpu->type) {
+    case PORT:
+      (*logger)->info("trap arrived to physical netdev cahnnel @ ingress_port {}. len = {}", cpu->dst, pkt_len);
+      hw_port = cpu->dst;
+      break;
+    case VLAN:
+      (*logger)->info("trap arrived to physical netdev cahnnel @ vlan id {}. len = {}", cpu->dst, pkt_len);
+      vlan = switch_metadata_ptr->vlans[switch_metadata_ptr->GetVlanObjIdFromVid(cpu->dst)];
+      bridge_port_id = switch_metadata_ptr->vlan_members[vlan->vlan_members.front()]->bridge_port_id;
+      hw_port = switch_metadata_ptr->ports[switch_metadata_ptr->bridge_ports[bridge_port_id]->port_id]->hw_port;
+      (*logger)->info("trap directed to hw_port {}", hw_port);
+      break;
+    default:
+      (*logger)->error("trap arrived to physical port netdev function with invalid cpu header type");
+      break;
+  }
+  HostIF_obj *hostif = switch_metadata_ptr->GetHostIFFromPhysicalPort(hw_port);
   if (hostif != nullptr) {
     (*logger)->info("writing packet of length {}, to hostif id {} ({})", pkt_len, hostif->sai_object_id, hostif->netdev_name);
-    write(hostif->netdev_fd, packet+ETHER_HDR_LEN, pkt_len-ETHER_HDR_LEN);
-  }
-  else {
-    (*logger)->error(
-      "can't find the needed hostif. CPU header type: {}",
-      cpu->type);
+    write(hostif->netdev_fd, packet, pkt_len);
+  } else {
+    (*logger)->error("can't find the needed hostif. CPU header type: {}", cpu->type);
   }
   return;
 }
@@ -553,8 +565,7 @@ int sai_adapter::phys_netdev_sniffer(int in_dev_fd, int hw_port) {
 // #define VLAN_HDR_LEN 4
 void sai_adapter::netdev_vlan_fn(u_char *packet, cpu_hdr_t *cpu,
                                       int pkt_len) {
-  vlan_hdr_t *vlan_hdr = (vlan_hdr_t *) (packet + ETHER_HDR_LEN);
-  uint16_t vid = ntohs(vlan_hdr->tci) & 0x0fff;
+  uint16_t vid = cpu->dst;
   (*logger)->info(
       "trap arrived to vlan netdev cahnnel @ vlan_id {}. len = {}", vid, pkt_len);
   HostIF_obj *hostif =

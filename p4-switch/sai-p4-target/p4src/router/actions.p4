@@ -40,14 +40,16 @@ action action_dec_ttl() {
 
 action action_set_nhop_grp_id(in bit<3> next_hop_group_id){
 	router_metadata.next_hop_group_id = next_hop_group_id;
+	// router_metadata.nhop_table = 1;
 }
 
 action action_set_nhop_id(in bit<8> next_hop_id){
 	router_metadata.next_hop_id = next_hop_id;
+	router_metadata.nhop_table = 1;
 }
 
 action action_set_ip2me() {
-	router_metadata.ip2me = 1;
+	// router_metadata.ip2me = 1;
 }
 
 action action_set_erif_set_nh_dstip_from_pkt(in bit<8> egress_rif){

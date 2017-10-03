@@ -303,8 +303,18 @@ sai_status_t sai_adapter::get_switch_attribute(sai_object_id_t switch_id,
         attr_list[i].value.u32 = 0;
         break;
       case SAI_SWITCH_ATTR_SWITCH_HARDWARE_INFO:
-        attr_list[i].value.s8list.list[0] = '\n';
+        attr_list[i].value.s8list.list[0] = '\0';
         attr_list[i].value.s8list.count = 1;
+        break;
+      case SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY:
+      case SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY:
+      case SAI_SWITCH_ATTR_ACL_TABLE_GROUP_MINIMUM_PRIORITY:
+        attr_list[i].value.u32 = 10;
+        break;
+      case SAI_SWITCH_ATTR_ACL_ENTRY_MAXIMUM_PRIORITY:
+      case SAI_SWITCH_ATTR_ACL_TABLE_GROUP_MAXIMUM_PRIORITY:
+      case SAI_SWITCH_ATTR_ACL_TABLE_MAXIMUM_PRIORITY:
+      attr_list[i].value.u32 = 1000;
         break;
       default:
         (*logger)->error("unsupported switch attribute {}", attr_list[i].id);

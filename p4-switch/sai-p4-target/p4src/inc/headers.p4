@@ -152,7 +152,7 @@ header_type router_metadata_t{
         bit<8> next_hop_id;
         bit<3> next_hop_group_id;
         bit<3> next_hop_hash;
-        bit    ip2me;
+        bit    nhop_table;
         // bit<2> packet_action;
         // bit<40> l3_lpm_key;
     }    

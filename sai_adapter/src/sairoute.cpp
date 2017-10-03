@@ -65,6 +65,7 @@ sai_status_t sai_adapter::create_route_entry(const sai_route_entry_t *route_entr
     return SAI_STATUS_SUCCESS;
   }
   NextHop_obj *nhop;
+  RouterInterface_obj *rif;
   sai_object_type_t nhop_obj_type;
   sai_packet_action_t action = SAI_PACKET_ACTION_FORWARD;
   // parsing attributes
@@ -79,7 +80,9 @@ sai_status_t sai_adapter::create_route_entry(const sai_route_entry_t *route_entr
             nhop = switch_metadata_ptr->nhops[attribute.value.oid];
             break;
           // case SAI_OBJECT_TYPE_NEXT_HOP_GROUP
-          // case SAI_OBJECT_TYPE_ROUTER_INTERFACE
+          case SAI_OBJECT_TYPE_ROUTER_INTERFACE:
+            rif = switch_metadata_ptr->rifs[attribute.value.oid];
+            break;
           case SAI_OBJECT_TYPE_PORT:
             if (attribute.value.oid != switch_metadata_ptr->cpu_port_id) {
               (*logger)->error("adding route with port object id ({}) which is not SAI_SWITCH_ATTR_CPU_PORT ({})", attribute.value.oid, switch_metadata_ptr->cpu_port_id);
@@ -114,7 +117,12 @@ sai_status_t sai_adapter::create_route_entry(const sai_route_entry_t *route_entr
             action_data, options);
         break;
       // case SAI_OBJECT_TYPE_NEXT_HOP_GROUP
-      // case SAI_OBJECT_TYPE_ROUTER_INTERFACE
+      case SAI_OBJECT_TYPE_ROUTER_INTERFACE:
+        action_data.push_back(parse_param(rif->rif_id, 1));
+        bm_router_client_ptr->bm_mt_add_entry(
+            cxt_id, "table_router", match_params, "action_set_erif_set_nh_dstip_from_pkt",
+            action_data, options);
+        break;
       case SAI_OBJECT_TYPE_PORT:
         bm_router_client_ptr->bm_mt_add_entry(
             cxt_id, "table_router", match_params, "action_set_ip2me",

@@ -106,8 +106,8 @@ public:
 
 class BridgePort_obj : public Sai_obj {
 public:
-  uint32_t port_id;
-  uint32_t vlan_id;
+  sai_object_id_t port_id;
+  sai_object_id_t vlan_id;
   uint32_t bridge_port;
   sai_bridge_port_type_t bridge_port_type;
   sai_object_id_t bridge_id;

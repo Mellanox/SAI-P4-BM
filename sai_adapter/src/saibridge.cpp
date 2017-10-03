@@ -79,6 +79,7 @@ sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
   uint32_t bridge_port_num = switch_metadata_ptr->GetNewBridgePort();
   BridgePort_obj *bridge_port = new BridgePort_obj(sai_id_map_ptr);
   switch_metadata_ptr->bridge_ports[bridge_port->sai_object_id] = bridge_port;
+  bridge_port->bridge_id = switch_metadata_ptr->default_bridge_id;
   bridge_port->bridge_port = bridge_port_num;
   sai_attribute_t attribute;
   for (uint32_t i = 0; i < attr_count; i++) {
@@ -97,10 +98,15 @@ sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
     case SAI_BRIDGE_PORT_ATTR_PORT_ID:
       bridge_port->port_id = attribute.value.oid;
       break;
+    case SAI_BRIDGE_PORT_ATTR_ADMIN_STATE:
+      //
+      break;
+    default:
+      (*logger)->warn("unsupported bridge port attr {}", attribute.id);
+      break;
     }
   }
-  switch_metadata_ptr->bridges[bridge_port->bridge_id]
-      ->bridge_port_list.push_back(bridge_port->sai_object_id);
+  switch_metadata_ptr->bridges[bridge_port->bridge_id]->bridge_port_list.push_back(bridge_port->sai_object_id);
 
   BmAddEntryOptions options;
   BmMatchParams match_params;
@@ -132,10 +138,10 @@ sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
   uint32_t bind_mode;
   uint32_t l2_if;
   uint32_t is_lag;
-  port_id_map_t::iterator it =
-      switch_metadata_ptr->ports.find(bridge_port->port_id);
+  port_id_map_t::iterator it = switch_metadata_ptr->ports.find(bridge_port->port_id);
   if (it != switch_metadata_ptr->ports.end()) { // port_id is port
     Port_obj *port = (Port_obj *)it->second;
+    (*logger)->info("bridge_port port_id {} matches hw_port {}", bridge_port->port_id, port->hw_port);
     bind_mode = port->bind_mode;
     l2_if = port->l2_if;
     is_lag = 0;
@@ -186,7 +192,7 @@ sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
 }
 
 sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
-  (*logger)->info("remove_bridge_port");
+  (*logger)->info("remove_bridge_port {}", bridge_port_id);
   sai_status_t status = SAI_STATUS_SUCCESS;
   BridgePort_obj *bridge_port =
       switch_metadata_ptr->bridge_ports[bridge_port_id];

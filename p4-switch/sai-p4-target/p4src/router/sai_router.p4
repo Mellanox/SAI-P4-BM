@@ -29,11 +29,12 @@ control control_1q_uni_router{
 				action_set_nhop_grp_id{
 					apply(table_next_hop_group);
 				}
+				action_set_ip2me {
+					apply(table_ip2me_trap);
+				}
 			}
-			if (router_metadata.ip2me == 1) {
-				apply(table_ip2me_trap);
-			} else {
-				apply(table_next_hop);	
+			if (router_metadata.nhop_table == 1) {
+				apply(table_next_hop);
 			}
 		}
 	}

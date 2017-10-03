@@ -9,7 +9,7 @@ sai_status_t sai_adapter::create_router_interface (sai_object_id_t *router_inter
   RouterInterface_obj * rif = new RouterInterface_obj(sai_id_map_ptr);
   switch_metadata_ptr->rifs[rif->sai_object_id] = rif;
   rif->rif_id = rif_id;
-
+  Vlan_obj *vlan;
   // parsing attributes
   sai_attribute_t attribute;
   for (uint32_t i = 0; i < attr_count; i++) {
@@ -22,7 +22,8 @@ sai_status_t sai_adapter::create_router_interface (sai_object_id_t *router_inter
       rif->vr = switch_metadata_ptr->vrs[attribute.value.oid];
       break;
     case SAI_ROUTER_INTERFACE_ATTR_VLAN_ID:
-      rif->vid = attribute.value.u16;
+      vlan = switch_metadata_ptr->vlans[attribute.value.oid];
+      rif->vid = vlan->vid;
       break;
     case SAI_ROUTER_INTERFACE_ATTR_SRC_MAC_ADDRESS:
       memcpy(rif->mac,attribute.value.mac, 6);
@@ -63,7 +64,7 @@ sai_status_t sai_adapter::create_router_interface (sai_object_id_t *router_inter
 
   switch(rif->type) {
     case SAI_ROUTER_INTERFACE_TYPE_VLAN:  //Vlan interface
-      Vlan_obj *vlan = switch_metadata_ptr->vlans[switch_metadata_ptr->GetVlanObjIdFromVid(rif->vid)];
+      // Vlan_obj *vlan = switch_metadata_ptr->vlans[switch_metadata_ptr->GetVlanObjIdFromVid(rif->vid)];
 
       match_params.push_back(parse_exact_match_param(0, 2)); // vlan_interface port in router is 0
       match_params.push_back(parse_exact_match_param(vlan->vid, 2)); 
@@ -109,7 +110,7 @@ sai_status_t sai_adapter::create_router_interface (sai_object_id_t *router_inter
   }
 
   *router_interface_id = rif->sai_object_id;
-  (*logger)->info("object_id {}", rif->sai_object_id);
+  (*logger)->info("object_id {}. rif_id {}", rif->sai_object_id, rif->rif_id);
   return SAI_STATUS_SUCCESS;
 }
 
