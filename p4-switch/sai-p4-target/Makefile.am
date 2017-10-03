@@ -133,8 +133,8 @@ sai_router.json: p4src/router/sai_router.p4
 
 CLEANFILES = $(BUILT_SOURCES) \
 thrift_files.ts \
-gen-cpp/bm/SimpleSwitch_server.skeleton.cpp
-\ ${P4_JSON_FILES}
+gen-cpp/bm/SimpleSwitch_server.skeleton.cpp \
+${P4_JSON_FILES}
 # \ $(bin_SCRIPTS)
 
 # I used to do a rm on gen-cpp, but it was removing a .deps directory, instead I
