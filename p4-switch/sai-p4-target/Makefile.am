@@ -125,7 +125,14 @@ bin_SCRIPTS = run_bm.sh \
 			  simple_switch_CLI
 
 P4_JSON_FILES = sai_bridge.json sai_router.json
-dist_pkgdata_DATA = ${P4_JSON_FILES}
+
+DEFAULT_CONFIG_FILES = default_config/bridge_default_config_mirror.txt \
+					   default_config/bridge_default_config.txt \
+					   default_config/router_default_config_mirror.txt \
+					   default_config/router_default_config.txt
+
+dist_pkgdata_DATA = ${P4_JSON_FILES} ${DEFAULT_CONFIG_FILES}
+
 sai_bridge.json: p4src/bridge/sai_bridge.p4
 	p4c-bmv2 --p4-v1.1 --json sai_bridge.json p4src/bridge/sai_bridge.p4
 sai_router.json: p4src/router/sai_router.p4
