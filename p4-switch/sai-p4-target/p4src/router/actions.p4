@@ -27,6 +27,13 @@ action action_trap_to_cpu() {
 	drop();
 }
 
+action action_egress_trap_to_cpu() {
+	// clone_egress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_router_FL);
+	// drop();
+	// standard_metadata.egress_spec = COPY_TO_CPU_MIRROR_ID;
+	standard_metadata.egress_spec = 250;
+}
+
 action action_set_trap_id(bit<11> trap_id) {
 	ingress_metadata.trap_id = trap_id;
 }

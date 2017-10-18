@@ -89,7 +89,7 @@ table table_neighbor {
 		router_metadata.egress_rif 		: exact;
 		router_metadata.next_hop_dst_ip 	: exact;
 	}
-	actions{action_set_packet_dmac; action_trap_to_cpu;}
+	actions{action_set_packet_dmac; action_egress_trap_to_cpu; _drop;}
 		//TODO :action_trap ;action_forward ;action_drop; action_copy_to_cpu}
 	size: NEIGH_TABLE_SIZE;
 }
