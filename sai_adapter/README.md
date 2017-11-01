@@ -1,26 +1,18 @@
 # SAI API
-The sai lib (C lib) uses P4 thrift to configure the soft switch as described below:
-![[sai_arch]](https://github.com/Mellanox/SAI-P4-BM/blob/master/p4-softswitch/docs/SAI_arch.PNG)  
+The sai lib (C lib) uses P4 thrift to configure the soft switch.
 
 ## Including the SAI lib
-The sai_api lib is currently under development.
-In the meantime, please include sai.h, check the [unit test](test/unittest) folder for example.
-In the sai_adapter dir run:  
-```
-./install_deps.sh  
-make
-```
+
 
 ## PTF tests
 SAI Tests were written using the [ptf](https://github.com/p4lang/ptf) framework. 
-The directory is divided to tests (ready and passing tests), wip_tests for work in progress.
 
 ### Runing the tests
 First, run make from this location. This will build the sai library, generate the needed thrift and ctypesgen files, and will build the C thrift server, needed to run the tests. \\
 
 Now, follow these steps to run the PTF tests:  
-1. In SAI-P4-BM/tree/master/p4-softswitch/targets/P4-SAI/ run:  
-    1. veth_setup_ptf.sh  - to configure virtual ports. 
+1. In SAI-P4-BM/tree/master/p4-switch/sai-p4-target run:  
+    1. veth_setup.sh  - to configure virtual ports. 
     2. run_server.sh  - to start the P4 BM server.  
 
 2. Start new terminal and run the sai thrift server:  
@@ -30,8 +22,7 @@ Now, follow these steps to run the PTF tests:
 
 ### LOGS
 During the tests, the following logs are outputted:
-1) BM server logs can be found under SAI-P4-BM/p4-softswitch/targets/P4-SAI/logs/
-    - running the script: log_aggregation.py (found in the target dir) will merge the bridge and router logs together.
+1) BM server logs can be found under SAI-P4-BM/tree/master/p4-switch/sai-p4-target/logs
 2) thrift server log is outputted to SAI-P4-BM/sai_adapter/test/sai_thrift_server/logs/log.txt
 3) PTF log is stdout.  
 
@@ -52,4 +43,4 @@ tests/sai_thrift_development_python_server/sai_rpc_server.sh
 * Add the function implementation to a .cpp file in the [src/](src/) dir, under the sai_object namespace.
 ### Additional information
 * the sai_object uses the [switch_meta_data.h](inc/switch_meta_data.h) to manage the runtime information regarding the sai_object_ids etc... 
-* to configure the BM tables, use the P4 thrift API is found (after p4-sofswitch compliation) in /SAI-P4-BM/p4-softswitch/thrift_src/gen-cpp/bm/Standard.h
+* to configure the BM tables, use the P4 thrift API is found (after p4-sofswitch compliation) in /SAI-P4-BM/p4-switch/behavioral-model/thrift_src/gen-cpp/bm/Standard.h
