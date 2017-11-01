@@ -1,4 +1,7 @@
 ## Insatllation Instructions
+### Dependecies
+Please enter the behavioral model dir and follow instructions for intallation of p4 behavioral model dependecies.
+### Build
 To build, please run:
 1) ```./autogen.sh```
 2) ```./configure --without-targets```  
