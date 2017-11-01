@@ -1,8 +1,12 @@
 # SAI API
 The sai lib (C lib) uses P4 thrift to configure the soft switch.
 
-## Including the SAI lib
-
+## Build
+1) ```install_deps.sh``` will install python depencdecies.
+2) ```./autogen.sh```
+2) ```./configure```
+4) ```make```
+5) ```make install```    will install sai lib to default lib folder (usually /usr/local/lib/).
 
 ## PTF tests
 SAI Tests were written using the [ptf](https://github.com/p4lang/ptf) framework. 
