@@ -29,11 +29,6 @@ During the tests, the following logs are outputted:
 # SAI BM Contribution Guide
 ## Adding BM functionaity
 For new Soft Switch features ("HW" flows), please follow the [SAI-P4-BM/p4-softswitch](../SAI-P4-BM/p4-softswitch/) readme.
-### Python development server
-For P4 new features testing, it is possible to bypass implementing new SAI C implementations, and just update the thirft implementation in python.
-use the [python thrift server](test/sai_thrift_development_python_server/) found in test/sai_thrift_development_python_server/.
-If you decide to do so, run the sai p4 thrift server with:
-tests/sai_thrift_development_python_server/sai_rpc_server.sh
 
 ## Implementing new SAI functionaity:
 * in [sai_object_interface.h](inc/sai_object_interface.h) create C function decleration. 
