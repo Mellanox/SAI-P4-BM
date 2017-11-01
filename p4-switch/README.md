@@ -10,6 +10,7 @@ To build, please run:
   the flag ```--without-targets``` disables building p4's default targets, if they are needed, please remove the flag.
 3) ```make```
 4) optional, run ```make install``` if installation is needed.  
+  
 Alternatively, use ```build.sh``` to run all 3 steps.
 
 ### Installing P4 Compiler
