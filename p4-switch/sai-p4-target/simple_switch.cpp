@@ -76,7 +76,11 @@ extern int import_primitives();
 SimpleSwitch::SimpleSwitch(int max_port, bool enable_swap)
   : Switch(enable_swap),
     max_port(max_port),
-    input_buffer(1024),
+    input_buffer(256),
+    ingress_bridge_buffer(256),
+    egress_bridge_buffer(256),
+    ingress_router_buffer(256),
+    egress_router_buffer(256),
 #ifdef SSWITCH_PRIORITY_QUEUEING_ON
     egress_buffers(max_port, nb_egress_threads,
                    64, EgressThreadMapper(nb_egress_threads),
@@ -86,6 +90,7 @@ SimpleSwitch::SimpleSwitch(int max_port, bool enable_swap)
                    64, EgressThreadMapper(nb_egress_threads)),
 #endif
     output_buffer(128),
+    
     pre(new McSimplePreLAG()),
     start(clock::now()) {
   add_component<McSimplePreLAG>(pre);
@@ -168,12 +173,20 @@ SimpleSwitch::start_and_return() {
 
   std::thread t1(&SimpleSwitch::ingress_thread, this);
   t1.detach();
-  for (size_t i = 0; i < nb_egress_threads; i++) {
-    std::thread t2(&SimpleSwitch::egress_thread, this, i);
-    t2.detach();
-  }
-  std::thread t3(&SimpleSwitch::transmit_thread, this);
+  std::thread t2(&SimpleSwitch::ingress_bridge_thread, this);
+  t2.detach();
+  std::thread t3(&SimpleSwitch::egress_bridge_thread, this);
   t3.detach();
+  std::thread t4(&SimpleSwitch::ingress_router_thread, this);
+  t4.detach();
+  std::thread t5(&SimpleSwitch::egress_router_thread, this);
+  t5.detach();
+  for (size_t i = 0; i < nb_egress_threads; i++) {
+    std::thread t6(&SimpleSwitch::egress_thread, this, i);
+    t6.detach();
+  }
+  std::thread t7(&SimpleSwitch::transmit_thread, this);
+  t7.detach();
 }
 
 void
@@ -238,6 +251,11 @@ ts_res
 SimpleSwitch::get_ts() const {
   return duration_cast<ts_res>(clock::now() - start);
 }
+
+// void SimpleSwitch::enqueue_in_buffer(Queue<std::unique_ptr<Packet>> &buffer, std::unique_ptr<Packet> &&packet) {
+//   // PHV *phv = packet->get_phv();
+//   buffer->push_front(std::move(packet));
+// }
 
 void
 SimpleSwitch::enqueue(int egress_port, std::unique_ptr<Packet> &&packet) {
@@ -432,10 +450,65 @@ SimpleSwitch::ingress_thread() {
       BMLOG_DEBUG_PKT(*packet, "Dropping packet at the end of ingress");
       continue;
     }
-
-    enqueue(egress_port, std::move(packet));
+    packet->set_egress_port(egress_port);
+    ingress_bridge_buffer.push_front(std::move(packet));
   }
 }
+
+void
+SimpleSwitch::ingress_bridge_thread() {
+  PHV *phv;
+  while (1) {
+    std::unique_ptr<Packet> packet;
+    ingress_bridge_buffer.pop_back(&packet);
+    Pipeline *ingress_bridge_mau = this->get_pipeline("ingress_bridge");
+    BMLOG_DEBUG_PKT(*packet, "packet received on ingress bridge");
+    ingress_bridge_mau->apply(packet.get());
+    egress_bridge_buffer.push_front(std::move(packet));
+    }
+  }
+
+void
+SimpleSwitch::egress_bridge_thread() {
+  PHV *phv;
+  while (1) {
+    std::unique_ptr<Packet> packet;
+    egress_bridge_buffer.pop_back(&packet);
+    Pipeline *egress_bridge_mau = this->get_pipeline("egress_bridge");
+    BMLOG_DEBUG_PKT(*packet, "packet received on egress bridge");
+    egress_bridge_mau->apply(packet.get());
+    int egress_port = packet->get_egress_port();
+    ingress_router_buffer.push_front(std::move(packet));
+    }
+  }
+
+  void
+SimpleSwitch::ingress_router_thread() {
+  PHV *phv;
+  while (1) {
+    std::unique_ptr<Packet> packet;
+    ingress_router_buffer.pop_back(&packet);
+    Pipeline *ingress_router_mau = this->get_pipeline("ingress_router");
+    BMLOG_DEBUG_PKT(*packet, "packet received on ingress router");
+    ingress_router_mau->apply(packet.get());
+    int egress_port = packet->get_egress_port();
+    egress_router_buffer.push_front(std::move(packet));
+    }
+  }
+
+  void
+SimpleSwitch::egress_router_thread() {
+  PHV *phv;
+  while (1) {
+    std::unique_ptr<Packet> packet;
+    egress_router_buffer.pop_back(&packet);
+    Pipeline *egress_router_mau = this->get_pipeline("egress_router");
+    BMLOG_DEBUG_PKT(*packet, "packet received on egress router");
+    egress_router_mau->apply(packet.get());
+    int egress_port = packet->get_egress_port();
+    enqueue(egress_port, std::move(packet));
+    }
+  }
 
 void
 SimpleSwitch::egress_thread(size_t worker_id) {

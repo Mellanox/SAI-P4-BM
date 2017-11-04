@@ -93,6 +93,7 @@ action action_cpu_encap() {
 	ethernet.etherType = vlan.etherType;
 	remove_header(vlan);
 	cpu_header.trap_id = ingress_metadata.trap_id;
+
 	standard_metadata.egress_spec = COPY_TO_CPU_MIRROR_ID;
 }
 

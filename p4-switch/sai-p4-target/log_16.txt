@@ -1,0 +1,152 @@
+[21:45:15.675] [bmv2] [D] [thread 31349] Set default entry for table 'table_in_port': NoAction - 
+[21:45:15.675] [bmv2] [D] [thread 31349] Set default entry for table 'table_out_port': NoAction - 
+[21:45:15.675] [bmv2] [D] [thread 31349] Set default entry for table 'table_in_bridge': NoAction - 
+[21:45:15.675] [bmv2] [D] [thread 31349] Set default entry for table 'table_out_bridge': NoAction - 
+[21:45:15.675] [bmv2] [D] [thread 31349] Set default entry for table 'table_in_router': NoAction - 
+[21:45:15.675] [bmv2] [D] [thread 31349] Set default entry for table 'table_out_router': NoAction - 
+[21:45:15.677] [bmv2] [D] [thread 31349] Adding interface sw_port0 as port 0
+[21:45:15.679] [bmv2] [D] [thread 31349] Adding interface sw_port1 as port 1
+[21:45:46.873] [bmv2] [D] [thread 32245] [0.0] [cxt 0] Processing packet received on port 0
+[21:45:46.873] [bmv2] [D] [thread 32245] [0.0] [cxt 0] Parser 'parser': start
+[21:45:46.873] [bmv2] [D] [thread 32245] [0.0] [cxt 0] Extracting header 'ethernet'
+[21:45:46.873] [bmv2] [D] [thread 32245] [0.0] [cxt 0] Parser state 'start': key is 0800
+[21:45:46.873] [bmv2] [T] [thread 32245] [0.0] [cxt 0] Bytes parsed: 14
+[21:45:46.873] [bmv2] [D] [thread 32245] [0.0] [cxt 0] Extracting header 'ipv4'
+[21:45:46.873] [bmv2] [D] [thread 32245] [0.0] [cxt 0] Parser state 'parse_ipv4': key is 06
+[21:45:46.873] [bmv2] [T] [thread 32245] [0.0] [cxt 0] Bytes parsed: 34
+[21:45:46.873] [bmv2] [D] [thread 32245] [0.0] [cxt 0] Extracting header 'tcp'
+[21:45:46.873] [bmv2] [D] [thread 32245] [0.0] [cxt 0] Parser state 'parse_tcp' has no switch, going to default next state
+[21:45:46.873] [bmv2] [T] [thread 32245] [0.0] [cxt 0] Bytes parsed: 54
+[21:45:46.873] [bmv2] [D] [thread 32245] [0.0] [cxt 0] Parser 'parser': end
+[21:45:46.873] [bmv2] [D] [thread 32245] [0.0] [cxt 0] Pipeline 'ingress': start
+[21:45:46.873] [bmv2] [T] [thread 32245] [0.0] [cxt 0] Applying table 'table_in_port'
+[21:45:46.873] [bmv2] [D] [thread 32245] [0.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0000
+
+[21:45:46.873] [bmv2] [D] [thread 32245] [0.0] [cxt 0] Table 'table_in_port': miss
+[21:45:46.873] [bmv2] [D] [thread 32245] [0.0] [cxt 0] Action entry is NoAction - 
+[21:45:46.873] [bmv2] [D] [thread 32245] [0.0] [cxt 0] Pipeline 'ingress': end
+[21:45:46.873] [bmv2] [D] [thread 32245] [0.0] [cxt 0] Egress port is 0
+[21:45:46.873] [bmv2] [D] [thread 32246] [0.0] [cxt 0] packet received on ingress bridge
+[21:45:46.873] [bmv2] [D] [thread 32246] [0.0] [cxt 0] Pipeline 'ingress_bridge': start
+[21:45:46.873] [bmv2] [T] [thread 32246] [0.0] [cxt 0] Applying table 'table_in_bridge'
+[21:45:46.873] [bmv2] [D] [thread 32246] [0.0] [cxt 0] Looking up key:
+* ipv4.dstAddr        : 7f000001
+
+[21:45:46.873] [bmv2] [D] [thread 32246] [0.0] [cxt 0] Table 'table_in_bridge': miss
+[21:45:46.873] [bmv2] [D] [thread 32246] [0.0] [cxt 0] Action entry is NoAction - 
+[21:45:46.873] [bmv2] [D] [thread 32246] [0.0] [cxt 0] Pipeline 'ingress_bridge': end
+[21:45:46.873] [bmv2] [D] [thread 32247] [0.0] [cxt 0] packet received on egress bridge
+[21:45:46.873] [bmv2] [D] [thread 32247] [0.0] [cxt 0] Pipeline 'egress_bridge': start
+[21:45:46.873] [bmv2] [T] [thread 32247] [0.0] [cxt 0] Applying table 'table_out_bridge'
+[21:45:46.873] [bmv2] [D] [thread 32247] [0.0] [cxt 0] Looking up key:
+* ethernet.dstAddr    : ffffffffffff
+
+[21:45:46.873] [bmv2] [D] [thread 32247] [0.0] [cxt 0] Table 'table_out_bridge': miss
+[21:45:46.873] [bmv2] [D] [thread 32247] [0.0] [cxt 0] Action entry is NoAction - 
+[21:45:46.873] [bmv2] [D] [thread 32247] [0.0] [cxt 0] Pipeline 'egress_bridge': end
+[21:45:46.873] [bmv2] [D] [thread 32248] [0.0] [cxt 0] packet received on ingress router
+[21:45:46.873] [bmv2] [D] [thread 32248] [0.0] [cxt 0] Pipeline 'ingress_router': start
+[21:45:46.873] [bmv2] [T] [thread 32248] [0.0] [cxt 0] Applying table 'table_in_router'
+[21:45:46.873] [bmv2] [D] [thread 32248] [0.0] [cxt 0] Looking up key:
+* ipv4.dstAddr        : 7f000001
+
+[21:45:46.873] [bmv2] [D] [thread 32248] [0.0] [cxt 0] Table 'table_in_router': miss
+[21:45:46.873] [bmv2] [D] [thread 32248] [0.0] [cxt 0] Action entry is NoAction - 
+[21:45:46.873] [bmv2] [D] [thread 32248] [0.0] [cxt 0] Pipeline 'ingress_router': end
+[21:45:46.873] [bmv2] [D] [thread 32249] [0.0] [cxt 0] packet received on egress router
+[21:45:46.873] [bmv2] [D] [thread 32249] [0.0] [cxt 0] Pipeline 'egress_router': start
+[21:45:46.873] [bmv2] [T] [thread 32249] [0.0] [cxt 0] Applying table 'table_out_router'
+[21:45:46.873] [bmv2] [D] [thread 32249] [0.0] [cxt 0] Looking up key:
+* ethernet.dstAddr    : ffffffffffff
+
+[21:45:46.873] [bmv2] [D] [thread 32249] [0.0] [cxt 0] Table 'table_out_router': miss
+[21:45:46.873] [bmv2] [D] [thread 32249] [0.0] [cxt 0] Action entry is NoAction - 
+[21:45:46.873] [bmv2] [D] [thread 32249] [0.0] [cxt 0] Pipeline 'egress_router': end
+[21:45:46.873] [bmv2] [D] [thread 32250] [0.0] [cxt 0] Pipeline 'egress': start
+[21:45:46.873] [bmv2] [T] [thread 32250] [0.0] [cxt 0] Applying table 'table_out_port'
+[21:45:46.873] [bmv2] [D] [thread 32250] [0.0] [cxt 0] Looking up key:
+* standard_metadata.egress_spec: 0000
+
+[21:45:46.873] [bmv2] [D] [thread 32250] [0.0] [cxt 0] Table 'table_out_port': miss
+[21:45:46.873] [bmv2] [D] [thread 32250] [0.0] [cxt 0] Action entry is NoAction - 
+[21:45:46.873] [bmv2] [D] [thread 32250] [0.0] [cxt 0] Pipeline 'egress': end
+[21:45:46.873] [bmv2] [D] [thread 32250] [0.0] [cxt 0] Changed egress port at egress pipeline to 0
+[21:45:46.873] [bmv2] [D] [thread 32250] [0.0] [cxt 0] Deparser 'deparser': start
+[21:45:46.873] [bmv2] [D] [thread 32250] [0.0] [cxt 0] Deparsing header 'ethernet'
+[21:45:46.873] [bmv2] [D] [thread 32250] [0.0] [cxt 0] Deparsing header 'ipv4'
+[21:45:46.873] [bmv2] [D] [thread 32250] [0.0] [cxt 0] Deparsing header 'tcp'
+[21:45:46.873] [bmv2] [D] [thread 32250] [0.0] [cxt 0] Deparser 'deparser': end
+[21:45:46.873] [bmv2] [D] [thread 32251] [0.0] [cxt 0] Transmitting packet of size 54 out of port 0
+[21:45:48.837] [bmv2] [D] [thread 32245] [1.0] [cxt 0] Processing packet received on port 1
+[21:45:48.837] [bmv2] [D] [thread 32245] [1.0] [cxt 0] Parser 'parser': start
+[21:45:48.837] [bmv2] [D] [thread 32245] [1.0] [cxt 0] Extracting header 'ethernet'
+[21:45:48.837] [bmv2] [D] [thread 32245] [1.0] [cxt 0] Parser state 'start': key is 0800
+[21:45:48.837] [bmv2] [T] [thread 32245] [1.0] [cxt 0] Bytes parsed: 14
+[21:45:48.837] [bmv2] [D] [thread 32245] [1.0] [cxt 0] Extracting header 'ipv4'
+[21:45:48.837] [bmv2] [D] [thread 32245] [1.0] [cxt 0] Parser state 'parse_ipv4': key is 06
+[21:45:48.837] [bmv2] [T] [thread 32245] [1.0] [cxt 0] Bytes parsed: 34
+[21:45:48.837] [bmv2] [D] [thread 32245] [1.0] [cxt 0] Extracting header 'tcp'
+[21:45:48.837] [bmv2] [D] [thread 32245] [1.0] [cxt 0] Parser state 'parse_tcp' has no switch, going to default next state
+[21:45:48.837] [bmv2] [T] [thread 32245] [1.0] [cxt 0] Bytes parsed: 54
+[21:45:48.837] [bmv2] [D] [thread 32245] [1.0] [cxt 0] Parser 'parser': end
+[21:45:48.837] [bmv2] [D] [thread 32245] [1.0] [cxt 0] Pipeline 'ingress': start
+[21:45:48.837] [bmv2] [T] [thread 32245] [1.0] [cxt 0] Applying table 'table_in_port'
+[21:45:48.837] [bmv2] [D] [thread 32245] [1.0] [cxt 0] Looking up key:
+* standard_metadata.ingress_port: 0001
+
+[21:45:48.837] [bmv2] [D] [thread 32245] [1.0] [cxt 0] Table 'table_in_port': miss
+[21:45:48.837] [bmv2] [D] [thread 32245] [1.0] [cxt 0] Action entry is NoAction - 
+[21:45:48.837] [bmv2] [D] [thread 32245] [1.0] [cxt 0] Pipeline 'ingress': end
+[21:45:48.838] [bmv2] [D] [thread 32245] [1.0] [cxt 0] Egress port is 0
+[21:45:48.838] [bmv2] [D] [thread 32246] [1.0] [cxt 0] packet received on ingress bridge
+[21:45:48.838] [bmv2] [D] [thread 32246] [1.0] [cxt 0] Pipeline 'ingress_bridge': start
+[21:45:48.838] [bmv2] [T] [thread 32246] [1.0] [cxt 0] Applying table 'table_in_bridge'
+[21:45:48.838] [bmv2] [D] [thread 32246] [1.0] [cxt 0] Looking up key:
+* ipv4.dstAddr        : 7f000001
+
+[21:45:48.838] [bmv2] [D] [thread 32246] [1.0] [cxt 0] Table 'table_in_bridge': miss
+[21:45:48.838] [bmv2] [D] [thread 32246] [1.0] [cxt 0] Action entry is NoAction - 
+[21:45:48.838] [bmv2] [D] [thread 32246] [1.0] [cxt 0] Pipeline 'ingress_bridge': end
+[21:45:48.838] [bmv2] [D] [thread 32247] [1.0] [cxt 0] packet received on egress bridge
+[21:45:48.838] [bmv2] [D] [thread 32247] [1.0] [cxt 0] Pipeline 'egress_bridge': start
+[21:45:48.838] [bmv2] [T] [thread 32247] [1.0] [cxt 0] Applying table 'table_out_bridge'
+[21:45:48.838] [bmv2] [D] [thread 32247] [1.0] [cxt 0] Looking up key:
+* ethernet.dstAddr    : ffffffffffff
+
+[21:45:48.838] [bmv2] [D] [thread 32247] [1.0] [cxt 0] Table 'table_out_bridge': miss
+[21:45:48.838] [bmv2] [D] [thread 32247] [1.0] [cxt 0] Action entry is NoAction - 
+[21:45:48.838] [bmv2] [D] [thread 32247] [1.0] [cxt 0] Pipeline 'egress_bridge': end
+[21:45:48.838] [bmv2] [D] [thread 32248] [1.0] [cxt 0] packet received on ingress router
+[21:45:48.838] [bmv2] [D] [thread 32248] [1.0] [cxt 0] Pipeline 'ingress_router': start
+[21:45:48.838] [bmv2] [T] [thread 32248] [1.0] [cxt 0] Applying table 'table_in_router'
+[21:45:48.838] [bmv2] [D] [thread 32248] [1.0] [cxt 0] Looking up key:
+* ipv4.dstAddr        : 7f000001
+
+[21:45:48.838] [bmv2] [D] [thread 32248] [1.0] [cxt 0] Table 'table_in_router': miss
+[21:45:48.838] [bmv2] [D] [thread 32248] [1.0] [cxt 0] Action entry is NoAction - 
+[21:45:48.838] [bmv2] [D] [thread 32248] [1.0] [cxt 0] Pipeline 'ingress_router': end
+[21:45:48.838] [bmv2] [D] [thread 32249] [1.0] [cxt 0] packet received on egress router
+[21:45:48.838] [bmv2] [D] [thread 32249] [1.0] [cxt 0] Pipeline 'egress_router': start
+[21:45:48.838] [bmv2] [T] [thread 32249] [1.0] [cxt 0] Applying table 'table_out_router'
+[21:45:48.838] [bmv2] [D] [thread 32249] [1.0] [cxt 0] Looking up key:
+* ethernet.dstAddr    : ffffffffffff
+
+[21:45:48.838] [bmv2] [D] [thread 32249] [1.0] [cxt 0] Table 'table_out_router': miss
+[21:45:48.838] [bmv2] [D] [thread 32249] [1.0] [cxt 0] Action entry is NoAction - 
+[21:45:48.838] [bmv2] [D] [thread 32249] [1.0] [cxt 0] Pipeline 'egress_router': end
+[21:45:48.838] [bmv2] [D] [thread 32250] [1.0] [cxt 0] Pipeline 'egress': start
+[21:45:48.838] [bmv2] [T] [thread 32250] [1.0] [cxt 0] Applying table 'table_out_port'
+[21:45:48.838] [bmv2] [D] [thread 32250] [1.0] [cxt 0] Looking up key:
+* standard_metadata.egress_spec: 0000
+
+[21:45:48.838] [bmv2] [D] [thread 32250] [1.0] [cxt 0] Table 'table_out_port': miss
+[21:45:48.838] [bmv2] [D] [thread 32250] [1.0] [cxt 0] Action entry is NoAction - 
+[21:45:48.838] [bmv2] [D] [thread 32250] [1.0] [cxt 0] Pipeline 'egress': end
+[21:45:48.838] [bmv2] [D] [thread 32250] [1.0] [cxt 0] Changed egress port at egress pipeline to 0
+[21:45:48.838] [bmv2] [D] [thread 32250] [1.0] [cxt 0] Deparser 'deparser': start
+[21:45:48.838] [bmv2] [D] [thread 32250] [1.0] [cxt 0] Deparsing header 'ethernet'
+[21:45:48.838] [bmv2] [D] [thread 32250] [1.0] [cxt 0] Deparsing header 'ipv4'
+[21:45:48.838] [bmv2] [D] [thread 32250] [1.0] [cxt 0] Deparsing header 'tcp'
+[21:45:48.838] [bmv2] [D] [thread 32250] [1.0] [cxt 0] Deparser 'deparser': end
+[21:45:48.838] [bmv2] [D] [thread 32251] [1.0] [cxt 0] Transmitting packet of size 54 out of port 0

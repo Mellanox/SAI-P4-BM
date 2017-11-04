@@ -107,7 +107,7 @@ class SimpleSwitch : public Switch {
   uint64_t get_time_since_epoch_us() const;
 
  private:
-  static constexpr size_t nb_egress_threads = 4u;
+  static constexpr size_t nb_egress_threads = 1;//4u;
 
   enum PktInstanceType {
     PKT_INSTANCE_TYPE_NORMAL,
@@ -132,6 +132,10 @@ class SimpleSwitch : public Switch {
 
  private:
   void ingress_thread();
+  void ingress_bridge_thread();
+  void egress_bridge_thread();
+  void ingress_router_thread();
+  void egress_router_thread();
   void egress_thread(size_t worker_id);
   void transmit_thread();
 
@@ -145,6 +149,7 @@ class SimpleSwitch : public Switch {
 
   // TODO(antonin): switch to pass by value?
   void enqueue(int egress_port, std::unique_ptr<Packet> &&pkt);
+  void enqueue_rif(int rif, std::unique_ptr<Packet> &&packet);
 
   std::unique_ptr<Packet> copy_ingress_pkt(
       const std::unique_ptr<Packet> &pkt,
@@ -155,6 +160,10 @@ class SimpleSwitch : public Switch {
  private:
   int max_port;
   Queue<std::unique_ptr<Packet> > input_buffer;
+  Queue<std::unique_ptr<Packet> > ingress_bridge_buffer;
+  Queue<std::unique_ptr<Packet> > egress_bridge_buffer;
+  Queue<std::unique_ptr<Packet> > ingress_router_buffer;
+  Queue<std::unique_ptr<Packet> > egress_router_buffer;
 #ifdef SSWITCH_PRIORITY_QUEUEING_ON
   bm::QueueingLogicPriRL<std::unique_ptr<Packet>, EgressThreadMapper>
 #else

@@ -1,0 +1,2647 @@
+{
+  "program" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/sai_bm.p4",
+  "__meta__" : {
+    "version" : [2, 7],
+    "compiler" : "https://github.com/p4lang/p4c"
+  },
+  "header_types" : [
+    {
+      "name" : "scalars_0",
+      "id" : 0,
+      "fields" : [
+        ["tmp_1", 1, false],
+        ["tmp_2", 1, false],
+        ["_padding_3", 6, false]
+      ]
+    },
+    {
+      "name" : "cpu_header_h",
+      "id" : 1,
+      "fields" : [
+        ["dst", 16, false],
+        ["trap_id", 16, false],
+        ["reserved", 6, false],
+        ["netdev_type", 2, false]
+      ]
+    },
+    {
+      "name" : "ethernet_h",
+      "id" : 2,
+      "fields" : [
+        ["dstAddr", 48, false],
+        ["srcAddr", 48, false],
+        ["etherType", 16, false]
+      ]
+    },
+    {
+      "name" : "vlan_h",
+      "id" : 3,
+      "fields" : [
+        ["pcp", 3, false],
+        ["cfi", 1, false],
+        ["vid", 12, false],
+        ["etherType", 16, false]
+      ]
+    },
+    {
+      "name" : "ipv4_h",
+      "id" : 4,
+      "fields" : [
+        ["version", 4, false],
+        ["ihl", 4, false],
+        ["diffserv", 8, false],
+        ["ipv4_length", 16, false],
+        ["id", 16, false],
+        ["flags", 3, false],
+        ["offset", 13, false],
+        ["ttl", 8, false],
+        ["protocol", 8, false],
+        ["checksum", 16, false],
+        ["srcAddr", 32, false],
+        ["dstAddr", 32, false]
+      ]
+    },
+    {
+      "name" : "tcp_h",
+      "id" : 5,
+      "fields" : [
+        ["srcPort", 16, false],
+        ["dstPort", 16, false],
+        ["seqNo", 32, false],
+        ["ackNo", 32, false],
+        ["dataOffset", 4, false],
+        ["res", 4, false],
+        ["flags", 8, false],
+        ["window", 16, false],
+        ["checksum", 16, false],
+        ["urgentPtr", 16, false]
+      ]
+    },
+    {
+      "name" : "udp_h",
+      "id" : 6,
+      "fields" : [
+        ["srcPort", 16, false],
+        ["dstPort", 16, false],
+        ["length_", 16, false],
+        ["checksum", 16, false]
+      ]
+    },
+    {
+      "name" : "arp_ipv4_h",
+      "id" : 7,
+      "fields" : [
+        ["hwType", 16, false],
+        ["protoType", 16, false],
+        ["hwAddrLen", 8, false],
+        ["protoAddrLen", 8, false],
+        ["opcode", 16, false],
+        ["srcHwAddr", 48, false],
+        ["srcProtoAddr", 32, false],
+        ["dstHwAddr", 48, false],
+        ["dstProtoAddr", 32, false]
+      ]
+    },
+    {
+      "name" : "ingress_metadata_t",
+      "id" : 8,
+      "fields" : [
+        ["port", 8, false],
+        ["l2_if", 8, false],
+        ["is_tagged", 1, false],
+        ["is_lag", 1, false],
+        ["lag_id", 16, false],
+        ["bind_mode", 1, false],
+        ["l2_if_type", 2, false],
+        ["bridge_port", 8, false],
+        ["bridge_id", 12, false],
+        ["stp_state", 2, false],
+        ["stp_id", 3, false],
+        ["vid", 12, false],
+        ["mcast_mode", 2, false],
+        ["mc_fdb_miss", 1, false],
+        ["ipmc", 1, false],
+        ["isip", 1, false],
+        ["mtu", 32, false],
+        ["drop_tagged", 1, false],
+        ["drop_untagged", 1, false],
+        ["trap_id", 16, false],
+        ["cpu_port", 1, false],
+        ["parse_cpu", 64, false],
+        ["_padding", 6, false]
+      ]
+    },
+    {
+      "name" : "egress_metadata_t",
+      "id" : 9,
+      "fields" : [
+        ["out_if_type", 1, false],
+        ["out_if", 8, false],
+        ["stp_state", 2, false],
+        ["tag_mode", 1, false],
+        ["hash_val", 6, false],
+        ["mcast_grp", 4, false],
+        ["bridge_port", 8, false],
+        ["_padding_0", 2, false]
+      ]
+    },
+    {
+      "name" : "intrinsic_metadata_t",
+      "id" : 10,
+      "fields" : [
+        ["ingress_global_timestamp", 48, false],
+        ["lf_field_list", 8, false],
+        ["mcast_grp", 16, false],
+        ["egress_rid", 16, false],
+        ["resubmit_flag", 8, false],
+        ["recirculate_flag", 8, false]
+      ]
+    },
+    {
+      "name" : "router_metadata_t",
+      "id" : 11,
+      "fields" : [
+        ["ingress_rif", 8, false],
+        ["egress_rif", 8, false],
+        ["erif_type", 2, false],
+        ["ingress_vrf", 8, false],
+        ["next_hop_dst_ip", 32, false],
+        ["next_hop_id", 8, false],
+        ["next_hop_group_id", 3, false],
+        ["next_hop_hash", 3, false],
+        ["nhop_table", 1, false],
+        ["_padding_1", 7, false]
+      ]
+    },
+    {
+      "name" : "l4_metadata_t",
+      "id" : 12,
+      "fields" : [
+        ["srcPort", 16, false],
+        ["dstPort", 16, false]
+      ]
+    },
+    {
+      "name" : "standard_metadata",
+      "id" : 13,
+      "fields" : [
+        ["ingress_port", 9, false],
+        ["egress_spec", 9, false],
+        ["egress_port", 9, false],
+        ["clone_spec", 32, false],
+        ["instance_type", 32, false],
+        ["drop", 1, false],
+        ["recirculate_port", 16, false],
+        ["packet_length", 32, false],
+        ["enq_timestamp", 32, false],
+        ["enq_qdepth", 19, false],
+        ["deq_timedelta", 32, false],
+        ["deq_qdepth", 19, false],
+        ["ingress_global_timestamp", 48, false],
+        ["lf_field_list", 32, false],
+        ["mcast_grp", 16, false],
+        ["resubmit_flag", 1, false],
+        ["egress_rid", 16, false],
+        ["_padding_2", 5, false]
+      ]
+    }
+  ],
+  "headers" : [
+    {
+      "name" : "scalars",
+      "id" : 0,
+      "header_type" : "scalars_0",
+      "metadata" : true,
+      "pi_omit" : true
+    },
+    {
+      "name" : "standard_metadata",
+      "id" : 1,
+      "header_type" : "standard_metadata",
+      "metadata" : true,
+      "pi_omit" : true
+    },
+    {
+      "name" : "cpu_header",
+      "id" : 2,
+      "header_type" : "cpu_header_h",
+      "metadata" : false,
+      "pi_omit" : true
+    },
+    {
+      "name" : "ethernet",
+      "id" : 3,
+      "header_type" : "ethernet_h",
+      "metadata" : false,
+      "pi_omit" : true
+    },
+    {
+      "name" : "vlan",
+      "id" : 4,
+      "header_type" : "vlan_h",
+      "metadata" : false,
+      "pi_omit" : true
+    },
+    {
+      "name" : "ipv4",
+      "id" : 5,
+      "header_type" : "ipv4_h",
+      "metadata" : false,
+      "pi_omit" : true
+    },
+    {
+      "name" : "tcp",
+      "id" : 6,
+      "header_type" : "tcp_h",
+      "metadata" : false,
+      "pi_omit" : true
+    },
+    {
+      "name" : "udp",
+      "id" : 7,
+      "header_type" : "udp_h",
+      "metadata" : false,
+      "pi_omit" : true
+    },
+    {
+      "name" : "arp_ipv4",
+      "id" : 8,
+      "header_type" : "arp_ipv4_h",
+      "metadata" : false,
+      "pi_omit" : true
+    },
+    {
+      "name" : "ingress_metadata",
+      "id" : 9,
+      "header_type" : "ingress_metadata_t",
+      "metadata" : true,
+      "pi_omit" : true
+    },
+    {
+      "name" : "egress_metadata",
+      "id" : 10,
+      "header_type" : "egress_metadata_t",
+      "metadata" : true,
+      "pi_omit" : true
+    },
+    {
+      "name" : "intrinsic_metadata",
+      "id" : 11,
+      "header_type" : "intrinsic_metadata_t",
+      "metadata" : true,
+      "pi_omit" : true
+    },
+    {
+      "name" : "router_metadata",
+      "id" : 12,
+      "header_type" : "router_metadata_t",
+      "metadata" : true,
+      "pi_omit" : true
+    },
+    {
+      "name" : "l4_metadata",
+      "id" : 13,
+      "header_type" : "l4_metadata_t",
+      "metadata" : true,
+      "pi_omit" : true
+    }
+  ],
+  "header_stacks" : [],
+  "header_union_types" : [],
+  "header_unions" : [],
+  "header_union_stacks" : [],
+  "field_lists" : [],
+  "errors" : [
+    ["NoError", 1],
+    ["PacketTooShort", 2],
+    ["NoMatch", 3],
+    ["StackOutOfBounds", 4],
+    ["HeaderTooShort", 5],
+    ["ParserTimeout", 6]
+  ],
+  "enums" : [
+    {
+      "name" : "HashAlgorithm",
+      "entries" : [
+        ["crc16", 2],
+        ["crc16_custom", 3],
+        ["crc32", 0],
+        ["crc32_custom", 1],
+        ["identity", 5],
+        ["random", 4]
+      ]
+    },
+    {
+      "name" : "MeterType",
+      "entries" : [
+        ["bytes", 1],
+        ["packets", 0]
+      ]
+    },
+    {
+      "name" : "CounterType",
+      "entries" : [
+        ["bytes", 1],
+        ["packets", 0],
+        ["packets_and_bytes", 2]
+      ]
+    }
+  ],
+  "parsers" : [
+    {
+      "name" : "parser",
+      "id" : 0,
+      "init_state" : "start",
+      "parse_states" : [
+        {
+          "name" : "start",
+          "id" : 0,
+          "parser_ops" : [
+            {
+              "parameters" : [
+                {
+                  "type" : "regular",
+                  "value" : "ethernet"
+                }
+              ],
+              "op" : "extract"
+            }
+          ],
+          "transitions" : [
+            {
+              "value" : "0x8100",
+              "mask" : null,
+              "next_state" : "parse_vlan"
+            },
+            {
+              "value" : "0x0800",
+              "mask" : null,
+              "next_state" : "parse_ipv4"
+            },
+            {
+              "value" : "default",
+              "mask" : null,
+              "next_state" : null
+            }
+          ],
+          "transition_key" : [
+            {
+              "type" : "field",
+              "value" : ["ethernet", "etherType"]
+            }
+          ]
+        },
+        {
+          "name" : "parse_vlan",
+          "id" : 1,
+          "parser_ops" : [
+            {
+              "parameters" : [
+                {
+                  "type" : "regular",
+                  "value" : "vlan"
+                }
+              ],
+              "op" : "extract"
+            }
+          ],
+          "transitions" : [
+            {
+              "value" : "0x0800",
+              "mask" : null,
+              "next_state" : "parse_ipv4"
+            },
+            {
+              "value" : "default",
+              "mask" : null,
+              "next_state" : null
+            }
+          ],
+          "transition_key" : [
+            {
+              "type" : "field",
+              "value" : ["vlan", "etherType"]
+            }
+          ]
+        },
+        {
+          "name" : "parse_ipv4",
+          "id" : 2,
+          "parser_ops" : [
+            {
+              "parameters" : [
+                {
+                  "type" : "regular",
+                  "value" : "ipv4"
+                }
+              ],
+              "op" : "extract"
+            }
+          ],
+          "transitions" : [
+            {
+              "value" : "0x06",
+              "mask" : null,
+              "next_state" : "parse_tcp"
+            },
+            {
+              "value" : "0x11",
+              "mask" : null,
+              "next_state" : "parse_udp"
+            },
+            {
+              "value" : "default",
+              "mask" : null,
+              "next_state" : null
+            }
+          ],
+          "transition_key" : [
+            {
+              "type" : "field",
+              "value" : ["ipv4", "protocol"]
+            }
+          ]
+        },
+        {
+          "name" : "parse_udp",
+          "id" : 3,
+          "parser_ops" : [
+            {
+              "parameters" : [
+                {
+                  "type" : "regular",
+                  "value" : "udp"
+                }
+              ],
+              "op" : "extract"
+            }
+          ],
+          "transitions" : [
+            {
+              "value" : "default",
+              "mask" : null,
+              "next_state" : null
+            }
+          ],
+          "transition_key" : []
+        },
+        {
+          "name" : "parse_tcp",
+          "id" : 4,
+          "parser_ops" : [
+            {
+              "parameters" : [
+                {
+                  "type" : "regular",
+                  "value" : "tcp"
+                }
+              ],
+              "op" : "extract"
+            }
+          ],
+          "transitions" : [
+            {
+              "value" : "default",
+              "mask" : null,
+              "next_state" : null
+            }
+          ],
+          "transition_key" : []
+        }
+      ]
+    }
+  ],
+  "deparsers" : [
+    {
+      "name" : "deparser",
+      "id" : 0,
+      "source_info" : {
+        "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/inc/parser.p4",
+        "line" : 50,
+        "column" : 8,
+        "source_fragment" : "fixDeparser"
+      },
+      "order" : ["ethernet", "vlan", "ipv4", "udp", "tcp"]
+    }
+  ],
+  "meter_arrays" : [],
+  "counter_arrays" : [],
+  "register_arrays" : [],
+  "calculations" : [],
+  "learn_lists" : [],
+  "actions" : [
+    {
+      "name" : "NoAction",
+      "id" : 0,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "drop",
+      "id" : 1,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "drop",
+          "parameters" : [],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/inc/common_actions.p4",
+            "line" : 2,
+            "column" : 2,
+            "source_fragment" : "mark_to_drop()"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "nop",
+      "id" : 2,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "NoAction",
+      "id" : 3,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "drop",
+      "id" : 4,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "drop",
+          "parameters" : [],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/inc/common_actions.p4",
+            "line" : 2,
+            "column" : 2,
+            "source_fragment" : "mark_to_drop()"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "nop",
+      "id" : 5,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "NoAction",
+      "id" : 6,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "NoAction",
+      "id" : 7,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "NoAction",
+      "id" : 8,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "NoAction",
+      "id" : 9,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "NoAction",
+      "id" : 10,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "NoAction",
+      "id" : 11,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "NoAction",
+      "id" : 12,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "NoAction",
+      "id" : 13,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "NoAction",
+      "id" : 14,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "NoAction",
+      "id" : 15,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "drop",
+      "id" : 16,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "drop",
+          "parameters" : [],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/inc/common_actions.p4",
+            "line" : 2,
+            "column" : 2,
+            "source_fragment" : "mark_to_drop()"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "drop",
+      "id" : 17,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "drop",
+          "parameters" : [],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/inc/common_actions.p4",
+            "line" : 2,
+            "column" : 2,
+            "source_fragment" : "mark_to_drop()"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "drop",
+      "id" : 18,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "drop",
+          "parameters" : [],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/inc/common_actions.p4",
+            "line" : 2,
+            "column" : 2,
+            "source_fragment" : "mark_to_drop()"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "drop",
+      "id" : 19,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "drop",
+          "parameters" : [],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/inc/common_actions.p4",
+            "line" : 2,
+            "column" : 2,
+            "source_fragment" : "mark_to_drop()"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "drop",
+      "id" : 20,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "drop",
+          "parameters" : [],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/inc/common_actions.p4",
+            "line" : 2,
+            "column" : 2,
+            "source_fragment" : "mark_to_drop()"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "drop",
+      "id" : 21,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "drop",
+          "parameters" : [],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/inc/common_actions.p4",
+            "line" : 2,
+            "column" : 2,
+            "source_fragment" : "mark_to_drop()"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "drop",
+      "id" : 22,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "drop",
+          "parameters" : [],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/inc/common_actions.p4",
+            "line" : 2,
+            "column" : 2,
+            "source_fragment" : "mark_to_drop()"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "drop",
+      "id" : 23,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "drop",
+          "parameters" : [],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/inc/common_actions.p4",
+            "line" : 2,
+            "column" : 2,
+            "source_fragment" : "mark_to_drop()"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "nop",
+      "id" : 24,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "action_set_trap_id",
+      "id" : 25,
+      "runtime_data" : [
+        {
+          "name" : "trap_id",
+          "bitwidth" : 16
+        }
+      ],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["ingress_metadata", "trap_id"]
+            },
+            {
+              "type" : "runtime_data",
+              "value" : 0
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/inc/common_actions.p4",
+            "line" : 8,
+            "column" : 1,
+            "source_fragment" : "meta.ingress_metadata.trap_id = trap_id"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "action_set_trap_id",
+      "id" : 26,
+      "runtime_data" : [
+        {
+          "name" : "trap_id",
+          "bitwidth" : 16
+        }
+      ],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["ingress_metadata", "trap_id"]
+            },
+            {
+              "type" : "runtime_data",
+              "value" : 0
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/inc/common_actions.p4",
+            "line" : 8,
+            "column" : 1,
+            "source_fragment" : "meta.ingress_metadata.trap_id = trap_id"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "action_set_irif",
+      "id" : 27,
+      "runtime_data" : [
+        {
+          "name" : "ingress_rif",
+          "bitwidth" : 8
+        }
+      ],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["router_metadata", "ingress_rif"]
+            },
+            {
+              "type" : "runtime_data",
+              "value" : 0
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 5,
+            "column" : 8,
+            "source_fragment" : "meta.router_metadata.ingress_rif = ingress_rif"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "action_set_vrf",
+      "id" : 28,
+      "runtime_data" : [
+        {
+          "name" : "vrf",
+          "bitwidth" : 8
+        }
+      ],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["router_metadata", "ingress_vrf"]
+            },
+            {
+              "type" : "runtime_data",
+              "value" : 0
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 18,
+            "column" : 8,
+            "source_fragment" : "meta.router_metadata.ingress_vrf = vrf"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "action_copy_to_cpu",
+      "id" : 29,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "action_trap_to_cpu",
+      "id" : 30,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "drop",
+          "parameters" : [],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/inc/common_actions.p4",
+            "line" : 2,
+            "column" : 2,
+            "source_fragment" : "mark_to_drop()"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "action_set_nhop_grp_id",
+      "id" : 31,
+      "runtime_data" : [
+        {
+          "name" : "next_hop_group_id",
+          "bitwidth" : 3
+        }
+      ],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["router_metadata", "next_hop_group_id"]
+            },
+            {
+              "type" : "runtime_data",
+              "value" : 0
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 65,
+            "column" : 8,
+            "source_fragment" : "meta.router_metadata.next_hop_group_id = next_hop_group_id"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "action_set_nhop_id",
+      "id" : 32,
+      "runtime_data" : [
+        {
+          "name" : "next_hop_id",
+          "bitwidth" : 8
+        }
+      ],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["router_metadata", "next_hop_id"]
+            },
+            {
+              "type" : "runtime_data",
+              "value" : 0
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 70,
+            "column" : 8,
+            "source_fragment" : "meta.router_metadata.next_hop_id = next_hop_id"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["router_metadata", "nhop_table"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x01"
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 71,
+            "column" : 8,
+            "source_fragment" : "meta.router_metadata.nhop_table = 1"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "action_set_nhop_id",
+      "id" : 33,
+      "runtime_data" : [
+        {
+          "name" : "next_hop_id",
+          "bitwidth" : 8
+        }
+      ],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["router_metadata", "next_hop_id"]
+            },
+            {
+              "type" : "runtime_data",
+              "value" : 0
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 70,
+            "column" : 8,
+            "source_fragment" : "meta.router_metadata.next_hop_id = next_hop_id"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["router_metadata", "nhop_table"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x01"
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 71,
+            "column" : 8,
+            "source_fragment" : "meta.router_metadata.nhop_table = 1"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "action_set_erif_set_nh_dstip_from_pkt",
+      "id" : 34,
+      "runtime_data" : [
+        {
+          "name" : "egress_rif",
+          "bitwidth" : 8
+        }
+      ],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["router_metadata", "next_hop_dst_ip"]
+            },
+            {
+              "type" : "field",
+              "value" : ["ipv4", "dstAddr"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 75,
+            "column" : 8,
+            "source_fragment" : "meta.router_metadata.next_hop_dst_ip = headers.ipv4.dstAddr"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["router_metadata", "egress_rif"]
+            },
+            {
+              "type" : "runtime_data",
+              "value" : 0
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 76,
+            "column" : 8,
+            "source_fragment" : "meta.router_metadata.egress_rif = egress_rif"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "action_set_erif_set_nh_dstip",
+      "id" : 35,
+      "runtime_data" : [
+        {
+          "name" : "next_hop_dst_ip",
+          "bitwidth" : 32
+        },
+        {
+          "name" : "egress_rif",
+          "bitwidth" : 8
+        }
+      ],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["router_metadata", "next_hop_dst_ip"]
+            },
+            {
+              "type" : "runtime_data",
+              "value" : 0
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 80,
+            "column" : 8,
+            "source_fragment" : "meta.router_metadata.next_hop_dst_ip = next_hop_dst_ip"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["router_metadata", "egress_rif"]
+            },
+            {
+              "type" : "runtime_data",
+              "value" : 1
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 81,
+            "column" : 8,
+            "source_fragment" : "meta.router_metadata.egress_rif = egress_rif"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "action_set_ip2me",
+      "id" : 36,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "act",
+      "id" : 37,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_1"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "b2d",
+                  "left" : null,
+                  "right" : {
+                    "type" : "bool",
+                    "value" : true
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "act_0",
+      "id" : 38,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_1"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "b2d",
+                  "left" : null,
+                  "right" : {
+                    "type" : "bool",
+                    "value" : false
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "NoAction",
+      "id" : 39,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "NoAction",
+      "id" : 40,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "NoAction",
+      "id" : 41,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "NoAction",
+      "id" : 42,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "drop",
+      "id" : 43,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "drop",
+          "parameters" : [],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/inc/common_actions.p4",
+            "line" : 2,
+            "column" : 2,
+            "source_fragment" : "mark_to_drop()"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "drop",
+      "id" : 44,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "drop",
+          "parameters" : [],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/inc/common_actions.p4",
+            "line" : 2,
+            "column" : 2,
+            "source_fragment" : "mark_to_drop()"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "drop",
+      "id" : 45,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "drop",
+          "parameters" : [],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/inc/common_actions.p4",
+            "line" : 2,
+            "column" : 2,
+            "source_fragment" : "mark_to_drop()"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "nop",
+      "id" : 46,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "action_dec_ttl",
+      "id" : 47,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["ipv4", "ttl"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "+",
+                      "left" : {
+                        "type" : "field",
+                        "value" : ["ipv4", "ttl"]
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0xff"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 142,
+            "column" : 8,
+            "source_fragment" : "headers.ipv4.ttl = headers.ipv4.ttl - 1"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "action_egress_trap_to_cpu",
+      "id" : 48,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["standard_metadata", "egress_spec"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x00fa"
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 156,
+            "column" : 8,
+            "source_fragment" : "standard_metadata.egress_spec = 250"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "action_set_packet_dmac",
+      "id" : 49,
+      "runtime_data" : [
+        {
+          "name" : "dmac",
+          "bitwidth" : 48
+        }
+      ],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["ethernet", "dstAddr"]
+            },
+            {
+              "type" : "runtime_data",
+              "value" : 0
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 160,
+            "column" : 8,
+            "source_fragment" : "headers.ethernet.dstAddr = dmac"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "action_set_smac_vid",
+      "id" : 50,
+      "runtime_data" : [
+        {
+          "name" : "smac",
+          "bitwidth" : 48
+        },
+        {
+          "name" : "vid",
+          "bitwidth" : 12
+        }
+      ],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["ethernet", "srcAddr"]
+            },
+            {
+              "type" : "runtime_data",
+              "value" : 0
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 174,
+            "column" : 8,
+            "source_fragment" : "headers.ethernet.srcAddr = smac"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["vlan", "vid"]
+            },
+            {
+              "type" : "runtime_data",
+              "value" : 1
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 178,
+            "column" : 8,
+            "source_fragment" : "headers.vlan.vid = vid"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["standard_metadata", "egress_spec"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x0000"
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 179,
+            "column" : 8,
+            "source_fragment" : "standard_metadata.egress_spec = 0"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "action_cpu_encap",
+      "id" : 51,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "add_header",
+          "parameters" : [
+            {
+              "type" : "header",
+              "value" : "cpu_header"
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 192,
+            "column" : 8,
+            "source_fragment" : "headers.cpu_header.setValid()"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["cpu_header", "dst"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "field",
+                    "value" : ["vlan", "vid"]
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xffff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 193,
+            "column" : 8,
+            "source_fragment" : "headers.cpu_header.dst = (bit<16>) headers.vlan.vid"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["cpu_header", "netdev_type"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x02"
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/inc/constants.p4",
+            "line" : 5,
+            "column" : 32,
+            "source_fragment" : "2; ..."
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["ethernet", "etherType"]
+            },
+            {
+              "type" : "field",
+              "value" : ["vlan", "etherType"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 195,
+            "column" : 8,
+            "source_fragment" : "headers.ethernet.etherType = headers.vlan.etherType"
+          }
+        },
+        {
+          "op" : "remove_header",
+          "parameters" : [
+            {
+              "type" : "header",
+              "value" : "vlan"
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 197,
+            "column" : 8,
+            "source_fragment" : "headers.vlan.setInvalid()"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["cpu_header", "trap_id"]
+            },
+            {
+              "type" : "field",
+              "value" : ["ingress_metadata", "trap_id"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 198,
+            "column" : 8,
+            "source_fragment" : "headers.cpu_header.trap_id = meta.ingress_metadata.trap_id"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["standard_metadata", "egress_spec"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x00fa"
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/inc/constants.p4",
+            "line" : 2,
+            "column" : 37,
+            "source_fragment" : "250; ..."
+          }
+        }
+      ]
+    },
+    {
+      "name" : "act_1",
+      "id" : 52,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_2"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "b2d",
+                  "left" : null,
+                  "right" : {
+                    "type" : "bool",
+                    "value" : true
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "act_2",
+      "id" : 53,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_2"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "b2d",
+                  "left" : null,
+                  "right" : {
+                    "type" : "bool",
+                    "value" : false
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "pipelines" : [
+    {
+      "name" : "ingress",
+      "id" : 0,
+      "source_info" : {
+        "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/port.p4",
+        "line" : 1,
+        "column" : 8,
+        "source_fragment" : "ingress"
+      },
+      "init_table" : "table_in_port",
+      "tables" : [
+        {
+          "name" : "table_in_port",
+          "id" : 0,
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/port.p4",
+            "line" : 3,
+            "column" : 10,
+            "source_fragment" : "table_in_port"
+          },
+          "key" : [
+            {
+              "match_type" : "exact",
+              "target" : ["standard_metadata", "ingress_port"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [1, 2, 0],
+          "actions" : ["drop", "nop", "NoAction"],
+          "base_default_next" : null,
+          "next_tables" : {
+            "drop" : null,
+            "nop" : null,
+            "NoAction" : null
+          },
+          "default_entry" : {
+            "action_id" : 0,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        }
+      ],
+      "action_profiles" : [],
+      "conditionals" : []
+    },
+    {
+      "name" : "egress",
+      "id" : 1,
+      "source_info" : {
+        "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/port.p4",
+        "line" : 14,
+        "column" : 8,
+        "source_fragment" : "egress"
+      },
+      "init_table" : "table_out_port",
+      "tables" : [
+        {
+          "name" : "table_out_port",
+          "id" : 1,
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/port.p4",
+            "line" : 16,
+            "column" : 10,
+            "source_fragment" : "table_out_port"
+          },
+          "key" : [
+            {
+              "match_type" : "exact",
+              "target" : ["standard_metadata", "egress_spec"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [4, 5, 3],
+          "actions" : ["drop", "nop", "NoAction"],
+          "base_default_next" : null,
+          "next_tables" : {
+            "drop" : null,
+            "nop" : null,
+            "NoAction" : null
+          },
+          "default_entry" : {
+            "action_id" : 3,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        }
+      ],
+      "action_profiles" : [],
+      "conditionals" : []
+    },
+    {
+      "name" : "ingress_bridge",
+      "id" : 2,
+      "source_info" : {
+        "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
+        "line" : 1,
+        "column" : 8,
+        "source_fragment" : "ingress_bridge"
+      },
+      "init_table" : "table_in_bridge",
+      "tables" : [
+        {
+          "name" : "table_in_bridge",
+          "id" : 2,
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
+            "line" : 3,
+            "column" : 10,
+            "source_fragment" : "table_in_bridge"
+          },
+          "key" : [
+            {
+              "match_type" : "exact",
+              "target" : ["ipv4", "dstAddr"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [6],
+          "actions" : ["NoAction"],
+          "base_default_next" : null,
+          "next_tables" : {
+            "NoAction" : null
+          },
+          "default_entry" : {
+            "action_id" : 6,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        }
+      ],
+      "action_profiles" : [],
+      "conditionals" : []
+    },
+    {
+      "name" : "egress_bridge",
+      "id" : 3,
+      "source_info" : {
+        "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
+        "line" : 15,
+        "column" : 8,
+        "source_fragment" : "egress_bridge"
+      },
+      "init_table" : "table_out_bridge",
+      "tables" : [
+        {
+          "name" : "table_out_bridge",
+          "id" : 3,
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
+            "line" : 17,
+            "column" : 10,
+            "source_fragment" : "table_out_bridge"
+          },
+          "key" : [
+            {
+              "match_type" : "ternary",
+              "target" : ["ethernet", "dstAddr"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "ternary",
+          "type" : "simple",
+          "max_size" : 1,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [7],
+          "actions" : ["NoAction"],
+          "base_default_next" : null,
+          "next_tables" : {
+            "NoAction" : null
+          },
+          "default_entry" : {
+            "action_id" : 7,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        }
+      ],
+      "action_profiles" : [],
+      "conditionals" : []
+    },
+    {
+      "name" : "ingress_router",
+      "id" : 4,
+      "source_info" : {
+        "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+        "line" : 1,
+        "column" : 8,
+        "source_fragment" : "ingress_router"
+      },
+      "init_table" : "table_ingress_l3_if",
+      "tables" : [
+        {
+          "name" : "table_ingress_l3_if",
+          "id" : 4,
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 8,
+            "column" : 10,
+            "source_fragment" : "table_ingress_l3_if"
+          },
+          "key" : [
+            {
+              "match_type" : "exact",
+              "target" : ["standard_metadata", "ingress_port"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "target" : ["vlan", "vid"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [27, 16, 8],
+          "actions" : ["action_set_irif", "drop", "NoAction"],
+          "base_default_next" : "table_ingress_vrf",
+          "next_tables" : {
+            "action_set_irif" : "table_ingress_vrf",
+            "drop" : "table_ingress_vrf",
+            "NoAction" : "table_ingress_vrf"
+          },
+          "default_entry" : {
+            "action_id" : 8,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        },
+        {
+          "name" : "table_ingress_vrf",
+          "id" : 5,
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 22,
+            "column" : 10,
+            "source_fragment" : "table_ingress_vrf"
+          },
+          "key" : [
+            {
+              "match_type" : "exact",
+              "target" : ["router_metadata", "ingress_rif"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [28, 17, 9],
+          "actions" : ["action_set_vrf", "drop", "NoAction"],
+          "base_default_next" : "table_pre_l3_trap",
+          "next_tables" : {
+            "action_set_vrf" : "table_pre_l3_trap",
+            "drop" : "table_pre_l3_trap",
+            "NoAction" : "table_pre_l3_trap"
+          },
+          "default_entry" : {
+            "action_id" : 9,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        },
+        {
+          "name" : "table_pre_l3_trap",
+          "id" : 6,
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 30,
+            "column" : 10,
+            "source_fragment" : "table_pre_l3_trap"
+          },
+          "key" : [
+            {
+              "match_type" : "ternary",
+              "target" : ["vlan", "etherType"],
+              "mask" : null
+            },
+            {
+              "match_type" : "lpm",
+              "target" : ["ipv4", "dstAddr"],
+              "mask" : null
+            },
+            {
+              "match_type" : "ternary",
+              "target" : ["arp_ipv4", "opcode"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "ternary",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [25, 18, 10],
+          "actions" : ["action_set_trap_id", "drop", "NoAction"],
+          "base_default_next" : null,
+          "next_tables" : {
+            "__HIT__" : "tbl_act",
+            "__MISS__" : "tbl_act_0"
+          },
+          "default_entry" : {
+            "action_id" : 10,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        },
+        {
+          "name" : "tbl_act",
+          "id" : 7,
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [37],
+          "actions" : ["act"],
+          "base_default_next" : "node_19",
+          "next_tables" : {
+            "act" : "node_19"
+          },
+          "default_entry" : {
+            "action_id" : 37,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "tbl_act_0",
+          "id" : 8,
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [38],
+          "actions" : ["act_0"],
+          "base_default_next" : "node_19",
+          "next_tables" : {
+            "act_0" : "node_19"
+          },
+          "default_entry" : {
+            "action_id" : 38,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "table_router",
+          "id" : 9,
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 86,
+            "column" : 10,
+            "source_fragment" : "table_router"
+          },
+          "key" : [
+            {
+              "match_type" : "exact",
+              "target" : ["router_metadata", "ingress_vrf"],
+              "mask" : null
+            },
+            {
+              "match_type" : "lpm",
+              "target" : ["ipv4", "dstAddr"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "lpm",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [32, 31, 36, 34, 21, 13],
+          "actions" : ["action_set_nhop_id", "action_set_nhop_grp_id", "action_set_ip2me", "action_set_erif_set_nh_dstip_from_pkt", "drop", "NoAction"],
+          "base_default_next" : "node_23",
+          "next_tables" : {
+            "action_set_nhop_grp_id" : "table_next_hop_group",
+            "action_set_ip2me" : "table_ip2me_trap",
+            "action_set_nhop_id" : "node_23",
+            "action_set_erif_set_nh_dstip_from_pkt" : "node_23",
+            "drop" : "node_23",
+            "NoAction" : "node_23"
+          },
+          "default_entry" : {
+            "action_id" : 13,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        },
+        {
+          "name" : "table_next_hop_group",
+          "id" : 10,
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 96,
+            "column" : 10,
+            "source_fragment" : "table_next_hop_group"
+          },
+          "key" : [
+            {
+              "match_type" : "exact",
+              "target" : ["router_metadata", "next_hop_group_id"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [33, 22, 14],
+          "actions" : ["action_set_nhop_id", "drop", "NoAction"],
+          "base_default_next" : "node_23",
+          "next_tables" : {
+            "action_set_nhop_id" : "node_23",
+            "drop" : "node_23",
+            "NoAction" : "node_23"
+          },
+          "default_entry" : {
+            "action_id" : 14,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        },
+        {
+          "name" : "table_ip2me_trap",
+          "id" : 11,
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 39,
+            "column" : 10,
+            "source_fragment" : "table_ip2me_trap"
+          },
+          "key" : [
+            {
+              "match_type" : "exact",
+              "target" : ["l4_metadata", "srcPort"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "target" : ["l4_metadata", "dstPort"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "target" : ["ipv4", "protocol"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [26, 19, 11],
+          "actions" : ["action_set_trap_id", "drop", "NoAction"],
+          "base_default_next" : "node_23",
+          "next_tables" : {
+            "action_set_trap_id" : "node_23",
+            "drop" : "node_23",
+            "NoAction" : "node_23"
+          },
+          "default_entry" : {
+            "action_id" : 11,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        },
+        {
+          "name" : "table_next_hop",
+          "id" : 12,
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 106,
+            "column" : 10,
+            "source_fragment" : "table_next_hop"
+          },
+          "key" : [
+            {
+              "match_type" : "exact",
+              "target" : ["router_metadata", "next_hop_id"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [35, 23, 15],
+          "actions" : ["action_set_erif_set_nh_dstip", "drop", "NoAction"],
+          "base_default_next" : "table_l3_trap_id",
+          "next_tables" : {
+            "action_set_erif_set_nh_dstip" : "table_l3_trap_id",
+            "drop" : "table_l3_trap_id",
+            "NoAction" : "table_l3_trap_id"
+          },
+          "default_entry" : {
+            "action_id" : 15,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        },
+        {
+          "name" : "table_l3_trap_id",
+          "id" : 13,
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 57,
+            "column" : 10,
+            "source_fragment" : "table_l3_trap_id"
+          },
+          "key" : [
+            {
+              "match_type" : "exact",
+              "target" : ["ingress_metadata", "trap_id"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [29, 30, 24, 20, 12],
+          "actions" : ["action_copy_to_cpu", "action_trap_to_cpu", "nop", "drop", "NoAction"],
+          "base_default_next" : null,
+          "next_tables" : {
+            "action_copy_to_cpu" : null,
+            "action_trap_to_cpu" : null,
+            "nop" : null,
+            "drop" : null,
+            "NoAction" : null
+          },
+          "default_entry" : {
+            "action_id" : 12,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        }
+      ],
+      "action_profiles" : [],
+      "conditionals" : [
+        {
+          "name" : "node_19",
+          "id" : 0,
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 118,
+            "column" : 12,
+            "source_fragment" : "!(table_pre_l3_trap.apply().hit)"
+          },
+          "expression" : {
+            "type" : "expression",
+            "value" : {
+              "op" : "not",
+              "left" : null,
+              "right" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "d2b",
+                  "left" : null,
+                  "right" : {
+                    "type" : "field",
+                    "value" : ["scalars", "tmp_1"]
+                  }
+                }
+              }
+            }
+          },
+          "true_next" : "table_router",
+          "false_next" : "table_l3_trap_id"
+        },
+        {
+          "name" : "node_23",
+          "id" : 1,
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 123,
+            "column" : 16,
+            "source_fragment" : "meta.router_metadata.nhop_table == 1"
+          },
+          "expression" : {
+            "type" : "expression",
+            "value" : {
+              "op" : "==",
+              "left" : {
+                "type" : "field",
+                "value" : ["router_metadata", "nhop_table"]
+              },
+              "right" : {
+                "type" : "hexstr",
+                "value" : "0x01"
+              }
+            }
+          },
+          "true_next" : "table_next_hop",
+          "false_next" : "table_l3_trap_id"
+        }
+      ]
+    },
+    {
+      "name" : "egress_router",
+      "id" : 5,
+      "source_info" : {
+        "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+        "line" : 131,
+        "column" : 8,
+        "source_fragment" : "egress_router"
+      },
+      "init_table" : "table_egress_clone_internal",
+      "tables" : [
+        {
+          "name" : "table_egress_clone_internal",
+          "id" : 14,
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 202,
+            "column" : 10,
+            "source_fragment" : "table_egress_clone_internal"
+          },
+          "key" : [
+            {
+              "match_type" : "exact",
+              "target" : ["standard_metadata", "instance_type"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [46, 51, 42],
+          "actions" : ["nop", "action_cpu_encap", "NoAction"],
+          "base_default_next" : null,
+          "next_tables" : {
+            "__HIT__" : "tbl_act_1",
+            "__MISS__" : "tbl_act_2"
+          },
+          "default_entry" : {
+            "action_id" : 42,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        },
+        {
+          "name" : "tbl_act_1",
+          "id" : 15,
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [52],
+          "actions" : ["act_1"],
+          "base_default_next" : "node_31",
+          "next_tables" : {
+            "act_1" : "node_31"
+          },
+          "default_entry" : {
+            "action_id" : 52,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "tbl_act_2",
+          "id" : 16,
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [53],
+          "actions" : ["act_2"],
+          "base_default_next" : "node_31",
+          "next_tables" : {
+            "act_2" : "node_31"
+          },
+          "default_entry" : {
+            "action_id" : 53,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "table_ttl",
+          "id" : 17,
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 145,
+            "column" : 10,
+            "source_fragment" : "table_ttl"
+          },
+          "key" : [
+            {
+              "match_type" : "exact",
+              "target" : ["ipv4", "ttl"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [47, 43, 39],
+          "actions" : ["action_dec_ttl", "drop", "NoAction"],
+          "base_default_next" : "table_neighbor",
+          "next_tables" : {
+            "action_dec_ttl" : "table_neighbor",
+            "drop" : "table_neighbor",
+            "NoAction" : "table_neighbor"
+          },
+          "default_entry" : {
+            "action_id" : 39,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        },
+        {
+          "name" : "table_neighbor",
+          "id" : 18,
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 163,
+            "column" : 10,
+            "source_fragment" : "table_neighbor"
+          },
+          "key" : [
+            {
+              "match_type" : "exact",
+              "target" : ["router_metadata", "egress_rif"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "target" : ["router_metadata", "next_hop_dst_ip"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [49, 48, 44, 40],
+          "actions" : ["action_set_packet_dmac", "action_egress_trap_to_cpu", "drop", "NoAction"],
+          "base_default_next" : "table_egress_L3_if",
+          "next_tables" : {
+            "action_set_packet_dmac" : "table_egress_L3_if",
+            "action_egress_trap_to_cpu" : "table_egress_L3_if",
+            "drop" : "table_egress_L3_if",
+            "NoAction" : "table_egress_L3_if"
+          },
+          "default_entry" : {
+            "action_id" : 40,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        },
+        {
+          "name" : "table_egress_L3_if",
+          "id" : 19,
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 182,
+            "column" : 10,
+            "source_fragment" : "table_egress_L3_if"
+          },
+          "key" : [
+            {
+              "match_type" : "exact",
+              "target" : ["router_metadata", "egress_rif"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [50, 45, 41],
+          "actions" : ["action_set_smac_vid", "drop", "NoAction"],
+          "base_default_next" : null,
+          "next_tables" : {
+            "action_set_smac_vid" : null,
+            "drop" : null,
+            "NoAction" : null
+          },
+          "default_entry" : {
+            "action_id" : 41,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        }
+      ],
+      "action_profiles" : [],
+      "conditionals" : [
+        {
+          "name" : "node_31",
+          "id" : 2,
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/router.p4",
+            "line" : 230,
+            "column" : 12,
+            "source_fragment" : "!(table_egress_clone_internal.apply().hit)"
+          },
+          "expression" : {
+            "type" : "expression",
+            "value" : {
+              "op" : "not",
+              "left" : null,
+              "right" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "d2b",
+                  "left" : null,
+                  "right" : {
+                    "type" : "field",
+                    "value" : ["scalars", "tmp_2"]
+                  }
+                }
+              }
+            }
+          },
+          "false_next" : null,
+          "true_next" : "table_ttl"
+        }
+      ]
+    }
+  ],
+  "checksums" : [],
+  "force_arith" : [],
+  "extern_instances" : [],
+  "field_aliases" : [
+    [
+      "queueing_metadata.enq_timestamp",
+      ["standard_metadata", "enq_timestamp"]
+    ],
+    [
+      "queueing_metadata.enq_qdepth",
+      ["standard_metadata", "enq_qdepth"]
+    ],
+    [
+      "queueing_metadata.deq_timedelta",
+      ["standard_metadata", "deq_timedelta"]
+    ],
+    [
+      "queueing_metadata.deq_qdepth",
+      ["standard_metadata", "deq_qdepth"]
+    ],
+    [
+      "intrinsic_metadata.ingress_global_timestamp",
+      ["standard_metadata", "ingress_global_timestamp"]
+    ],
+    [
+      "intrinsic_metadata.lf_field_list",
+      ["standard_metadata", "lf_field_list"]
+    ],
+    [
+      "intrinsic_metadata.mcast_grp",
+      ["standard_metadata", "mcast_grp"]
+    ],
+    [
+      "intrinsic_metadata.resubmit_flag",
+      ["standard_metadata", "resubmit_flag"]
+    ],
+    [
+      "intrinsic_metadata.egress_rid",
+      ["standard_metadata", "egress_rid"]
+    ]
+  ]
+}
