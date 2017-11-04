@@ -24,4 +24,4 @@ The installation should be in the following order:
 
 ## Architecture
 The following image describes the architecture of the SAI bm:
-![](sai_p4_bm_arch.png)
+![](docs/sai_p4_bm_arch.png)
