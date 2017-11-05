@@ -45,15 +45,6 @@ control ingress_router(inout hdr headers, inout metadata meta, inout standard_me
         actions = { action_set_trap_id; drop;}
     }
 
-    action action_copy_to_cpu() {
-        // clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_router_FL);
-    }
-
-    action action_trap_to_cpu() {
-        // clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_router_FL);
-        drop();
-    }
-
     table table_l3_trap_id {
         key = {
             meta.ingress_metadata.trap_id : exact;

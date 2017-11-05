@@ -113,6 +113,7 @@ enum HashAlgorithm {
     crc32_custom,
     crc16,
     crc16_custom,
+    xor8,
     random,
     identity
 }

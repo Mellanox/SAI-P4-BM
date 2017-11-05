@@ -42,6 +42,14 @@ class modify_field : public ActionPrimitive<Data &, const Data &> {
 
 REGISTER_PRIMITIVE(modify_field);
 
+class assign : public ActionPrimitive<Data &, const Data &> {
+  void operator ()(Data &dst, const Data &src) {
+    dst.set(src);
+  }
+};
+
+REGISTER_PRIMITIVE(assign);
+
 class modify_field_rng_uniform
   : public ActionPrimitive<Data &, const Data &, const Data &> {
   void operator ()(Data &f, const Data &b, const Data &e) {

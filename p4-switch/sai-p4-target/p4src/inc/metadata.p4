@@ -8,7 +8,7 @@ struct ingress_metadata_t {
 	bit<2> 	l2_if_type;
 	bit<8> 	bridge_port; //L2_BRIDGE_PORT_WDT
 	bit<12> bridge_id;	 //L2_BRIDGE_NUM_WDT
-	bit<2> 	stp_state;
+	bit<3> 	stp_state;
 	bit<3>	stp_id; // TODO size?
 	bit<12> vid;
     bit<2>  mcast_mode;
@@ -24,7 +24,7 @@ struct ingress_metadata_t {
 }
 
 struct egress_metadata_t {
-	bit 	out_if_type; 
+	bit<2> 	out_if_type; 
     bit<8> 	out_if; // PHY_PORT_NUM_WDT TODO remove? same as standard_metadata.egress_spec?
     bit<2> 	stp_state; // same as ingress? duplication?
     bit  	tag_mode;
