@@ -99,7 +99,7 @@ sai_status_t sai_adapter::create_router_interface (sai_object_id_t *router_inter
     action_data.clear();
     match_params.push_back(parse_exact_match_param(l2_if, 1));
     match_params.push_back(parse_exact_match_param(vlan->vid, 2));
-    match_params.push_back(parse_valid_match_param(false));
+    match_params.push_back(parse_exact_match_param(0, 1));
     action_data.push_back(parse_param(vlan_pcp, 1));
     action_data.push_back(parse_param(vlan_cfi, 1));
     action_data.push_back(parse_param(vlan->vid, 2));

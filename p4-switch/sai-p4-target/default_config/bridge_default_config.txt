@@ -1,21 +1,21 @@
 table_set_default table_ingress_lag  action_set_l2if 
 table_set_default table_port_configurations action_set_port_configurations 1 0 1514 0 0
-table_set_default table_port_ingress_l2_interface_type _drop
-table_set_default table_subport_ingress_l2_interface_type _drop
+table_set_default table_port_ingress_l2_interface_type drop
+table_set_default table_subport_ingress_l2_interface_type drop
 table_set_default table_bridge_id_1q action_set_bridge_id_vid
-table_set_default table_ingress_vlan_filtering _drop
+table_set_default table_ingress_vlan_filtering drop
 table_set_default table_port_set_packet_vid_internal action_set_packet_vid
 table_set_default table_learn_fdb action_learn_mac
-table_set_default table_bridge_loopback_filter _drop
+table_set_default table_bridge_loopback_filter drop
 
-table_set_default table_drop_tagged_internal _nop
-table_set_default table_drop_untagged_internal _nop
-table_add table_drop_tagged_internal _drop 1 =>
-table_add table_drop_untagged_internal _drop 1 =>
+table_set_default table_drop_tagged_internal nop
+table_set_default table_drop_untagged_internal nop
+table_add table_drop_tagged_internal drop 1 =>
+table_add table_drop_untagged_internal drop 1 =>
 
 table_set_default table_l2_trap action_set_trap_id 0xff
-table_set_default table_trap_id _nop
-table_set_default table_egress_clone_internal _nop
+table_set_default table_trap_id nop
+table_set_default table_egress_clone_internal nop
 table_add table_egress_clone_internal action_cpu_encap 1 =>
 
 table_add table_port_ingress_interface_type action_set_l2_if_type 0 => 3 0
@@ -87,74 +87,74 @@ table_add table_egress_br_port_to_if action_forward_set_outIfType 31 => 31 0
 table_add table_egress_br_port_to_if action_forward_set_outIfType 251 => 251 2
 
 table_add table_port_set_packet_vid_internal action_set_packet_vid 1 =>
-table_add table_ingress_vlan_filtering _nop 0 1 =>
-table_add table_ingress_vlan_filtering _nop 1 1 =>
-table_add table_ingress_vlan_filtering _nop 2 1 =>
-table_add table_ingress_vlan_filtering _nop 3 1 =>
-table_add table_ingress_vlan_filtering _nop 4 1 =>
-table_add table_ingress_vlan_filtering _nop 5 1 =>
-table_add table_ingress_vlan_filtering _nop 6 1 =>
-table_add table_ingress_vlan_filtering _nop 7 1 =>
-table_add table_ingress_vlan_filtering _nop 8 1 =>
-table_add table_ingress_vlan_filtering _nop 9 1 =>
-table_add table_ingress_vlan_filtering _nop 10 1 =>
-table_add table_ingress_vlan_filtering _nop 11 1 =>
-table_add table_ingress_vlan_filtering _nop 12 1 =>
-table_add table_ingress_vlan_filtering _nop 13 1 =>
-table_add table_ingress_vlan_filtering _nop 14 1 =>
-table_add table_ingress_vlan_filtering _nop 15 1 =>
-table_add table_ingress_vlan_filtering _nop 16 1 =>
-table_add table_ingress_vlan_filtering _nop 17 1 =>
-table_add table_ingress_vlan_filtering _nop 18 1 =>
-table_add table_ingress_vlan_filtering _nop 19 1 =>
-table_add table_ingress_vlan_filtering _nop 20 1 =>
-table_add table_ingress_vlan_filtering _nop 21 1 =>
-table_add table_ingress_vlan_filtering _nop 22 1 =>
-table_add table_ingress_vlan_filtering _nop 23 1 =>
-table_add table_ingress_vlan_filtering _nop 24 1 =>
-table_add table_ingress_vlan_filtering _nop 25 1 =>
-table_add table_ingress_vlan_filtering _nop 26 1 =>
-table_add table_ingress_vlan_filtering _nop 27 1 =>
-table_add table_ingress_vlan_filtering _nop 28 1 =>
-table_add table_ingress_vlan_filtering _nop 29 1 =>
-table_add table_ingress_vlan_filtering _nop 30 1 =>
-table_add table_ingress_vlan_filtering _nop 31 1 =>
-table_add table_ingress_vlan_filtering _nop 251 1 =>
+table_add table_ingress_vlan_filtering nop 0 1 =>
+table_add table_ingress_vlan_filtering nop 1 1 =>
+table_add table_ingress_vlan_filtering nop 2 1 =>
+table_add table_ingress_vlan_filtering nop 3 1 =>
+table_add table_ingress_vlan_filtering nop 4 1 =>
+table_add table_ingress_vlan_filtering nop 5 1 =>
+table_add table_ingress_vlan_filtering nop 6 1 =>
+table_add table_ingress_vlan_filtering nop 7 1 =>
+table_add table_ingress_vlan_filtering nop 8 1 =>
+table_add table_ingress_vlan_filtering nop 9 1 =>
+table_add table_ingress_vlan_filtering nop 10 1 =>
+table_add table_ingress_vlan_filtering nop 11 1 =>
+table_add table_ingress_vlan_filtering nop 12 1 =>
+table_add table_ingress_vlan_filtering nop 13 1 =>
+table_add table_ingress_vlan_filtering nop 14 1 =>
+table_add table_ingress_vlan_filtering nop 15 1 =>
+table_add table_ingress_vlan_filtering nop 16 1 =>
+table_add table_ingress_vlan_filtering nop 17 1 =>
+table_add table_ingress_vlan_filtering nop 18 1 =>
+table_add table_ingress_vlan_filtering nop 19 1 =>
+table_add table_ingress_vlan_filtering nop 20 1 =>
+table_add table_ingress_vlan_filtering nop 21 1 =>
+table_add table_ingress_vlan_filtering nop 22 1 =>
+table_add table_ingress_vlan_filtering nop 23 1 =>
+table_add table_ingress_vlan_filtering nop 24 1 =>
+table_add table_ingress_vlan_filtering nop 25 1 =>
+table_add table_ingress_vlan_filtering nop 26 1 =>
+table_add table_ingress_vlan_filtering nop 27 1 =>
+table_add table_ingress_vlan_filtering nop 28 1 =>
+table_add table_ingress_vlan_filtering nop 29 1 =>
+table_add table_ingress_vlan_filtering nop 30 1 =>
+table_add table_ingress_vlan_filtering nop 31 1 =>
+table_add table_ingress_vlan_filtering nop 251 1 =>
 
-table_set_default table_egress_vlan_filtering _drop
-table_add table_egress_vlan_filtering _nop 0 1 =>
-table_add table_egress_vlan_filtering _nop 1 1 =>
-table_add table_egress_vlan_filtering _nop 2 1 =>
-table_add table_egress_vlan_filtering _nop 3 1 =>
-table_add table_egress_vlan_filtering _nop 4 1 =>
-table_add table_egress_vlan_filtering _nop 5 1 =>
-table_add table_egress_vlan_filtering _nop 6 1 =>
-table_add table_egress_vlan_filtering _nop 7 1 =>
-table_add table_egress_vlan_filtering _nop 8 1 =>
-table_add table_egress_vlan_filtering _nop 9 1 =>
-table_add table_egress_vlan_filtering _nop 10 1 =>
-table_add table_egress_vlan_filtering _nop 11 1 =>
-table_add table_egress_vlan_filtering _nop 12 1 =>
-table_add table_egress_vlan_filtering _nop 13 1 =>
-table_add table_egress_vlan_filtering _nop 14 1 =>
-table_add table_egress_vlan_filtering _nop 15 1 =>
-table_add table_egress_vlan_filtering _nop 16 1 =>
-table_add table_egress_vlan_filtering _nop 17 1 =>
-table_add table_egress_vlan_filtering _nop 18 1 =>
-table_add table_egress_vlan_filtering _nop 19 1 =>
-table_add table_egress_vlan_filtering _nop 20 1 =>
-table_add table_egress_vlan_filtering _nop 21 1 =>
-table_add table_egress_vlan_filtering _nop 22 1 =>
-table_add table_egress_vlan_filtering _nop 23 1 =>
-table_add table_egress_vlan_filtering _nop 24 1 =>
-table_add table_egress_vlan_filtering _nop 25 1 =>
-table_add table_egress_vlan_filtering _nop 26 1 =>
-table_add table_egress_vlan_filtering _nop 27 1 =>
-table_add table_egress_vlan_filtering _nop 28 1 =>
-table_add table_egress_vlan_filtering _nop 29 1 =>
-table_add table_egress_vlan_filtering _nop 30 1 =>
-table_add table_egress_vlan_filtering _nop 31 1 =>
-table_add table_egress_vlan_filtering _nop 251 1 =>
+table_set_default table_egress_vlan_filtering drop
+table_add table_egress_vlan_filtering nop 0 1 =>
+table_add table_egress_vlan_filtering nop 1 1 =>
+table_add table_egress_vlan_filtering nop 2 1 =>
+table_add table_egress_vlan_filtering nop 3 1 =>
+table_add table_egress_vlan_filtering nop 4 1 =>
+table_add table_egress_vlan_filtering nop 5 1 =>
+table_add table_egress_vlan_filtering nop 6 1 =>
+table_add table_egress_vlan_filtering nop 7 1 =>
+table_add table_egress_vlan_filtering nop 8 1 =>
+table_add table_egress_vlan_filtering nop 9 1 =>
+table_add table_egress_vlan_filtering nop 10 1 =>
+table_add table_egress_vlan_filtering nop 11 1 =>
+table_add table_egress_vlan_filtering nop 12 1 =>
+table_add table_egress_vlan_filtering nop 13 1 =>
+table_add table_egress_vlan_filtering nop 14 1 =>
+table_add table_egress_vlan_filtering nop 15 1 =>
+table_add table_egress_vlan_filtering nop 16 1 =>
+table_add table_egress_vlan_filtering nop 17 1 =>
+table_add table_egress_vlan_filtering nop 18 1 =>
+table_add table_egress_vlan_filtering nop 19 1 =>
+table_add table_egress_vlan_filtering nop 20 1 =>
+table_add table_egress_vlan_filtering nop 21 1 =>
+table_add table_egress_vlan_filtering nop 22 1 =>
+table_add table_egress_vlan_filtering nop 23 1 =>
+table_add table_egress_vlan_filtering nop 24 1 =>
+table_add table_egress_vlan_filtering nop 25 1 =>
+table_add table_egress_vlan_filtering nop 26 1 =>
+table_add table_egress_vlan_filtering nop 27 1 =>
+table_add table_egress_vlan_filtering nop 28 1 =>
+table_add table_egress_vlan_filtering nop 29 1 =>
+table_add table_egress_vlan_filtering nop 30 1 =>
+table_add table_egress_vlan_filtering nop 31 1 =>
+table_add table_egress_vlan_filtering nop 251 1 =>
 
 table_add table_egress_vlan_tag action_forward_vlan_untag 0 1 1 =>
 table_add table_egress_vlan_tag action_forward_vlan_untag 1 1 1 =>

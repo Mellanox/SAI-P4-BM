@@ -444,14 +444,25 @@ SimpleSwitch::ingress_thread() {
     }
 
     egress_port = egress_spec;
-    BMLOG_DEBUG_PKT(*packet, "Egress port is {}", egress_port);
 
     if (egress_port == 511) {  // drop packet
       BMLOG_DEBUG_PKT(*packet, "Dropping packet at the end of ingress");
       continue;
     }
-    packet->set_egress_port(egress_port);
-    ingress_bridge_buffer.push_front(std::move(packet));
+    int l2_if_type = phv->get_field("ingress_metadata.l2_if_type").get_int();
+    BMLOG_DEBUG_PKT(*packet, "Packet of L2_if_type {}.", l2_if_type);
+    switch(l2_if_type){
+      case 2:
+      case 3:
+        ingress_bridge_buffer.push_front(std::move(packet));
+        break;
+      case 1:
+        ingress_router_buffer.push_front(std::move(packet));
+        break;
+      default:
+        BMLOG_DEBUG_PKT(*packet, "Packet with invalid l2_if_type at end of ingress pipeline");
+        break;
+    }
   }
 }
 
@@ -474,13 +485,36 @@ SimpleSwitch::egress_bridge_thread() {
   while (1) {
     std::unique_ptr<Packet> packet;
     egress_bridge_buffer.pop_back(&packet);
+    phv = packet->get_phv();
     Pipeline *egress_bridge_mau = this->get_pipeline("egress_bridge");
     BMLOG_DEBUG_PKT(*packet, "packet received on egress bridge");
     egress_bridge_mau->apply(packet.get());
-    int egress_port = packet->get_egress_port();
-    ingress_router_buffer.push_front(std::move(packet));
+    BMLOG_DEBUG_PKT(*packet, "packet after egress bridge");
+    BMLOG_DEBUG_PKT(*packet, "debug 5");
+    int egress_spec = phv->get_field("standard_metadata.egress_spec").get_int();
+    BMLOG_DEBUG_PKT(*packet, "egress_spec");
+    BMLOG_DEBUG_PKT(*packet, "egress spec {}", egress_spec);
+    if (egress_spec == 511) {
+      BMLOG_DEBUG_PKT(*packet, "Dropping packet at the end of egress_bridge pipeline");
+      continue;
+    }
+    BMLOG_DEBUG_PKT(*packet, "debug 5");
+    int out_if_type = phv->get_field("egress_metadata.out_if_type").get_int();
+    BMLOG_DEBUG_PKT(*packet, "Packet of out_if_type {}.", out_if_type);
+    switch(out_if_type){
+      case 0:
+      case 1:
+        egress_buffers.push_front(0, std::move(packet));
+        break;
+      case 2:
+        ingress_router_buffer.push_front(std::move(packet));
+        break;
+      default:
+        BMLOG_DEBUG_PKT(*packet, "Packet with invalid out_if_type at end of ingress pipeline");
+        break;
     }
   }
+}
 
   void
 SimpleSwitch::ingress_router_thread() {

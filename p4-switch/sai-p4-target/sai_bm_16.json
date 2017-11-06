@@ -368,6 +368,19 @@
                 }
               ],
               "op" : "extract"
+            },
+            {
+              "parameters" : [
+                {
+                  "type" : "field",
+                  "value" : ["ingress_metadata", "is_tagged"]
+                },
+                {
+                  "type" : "hexstr",
+                  "value" : "0x00"
+                }
+              ],
+              "op" : "set"
             }
           ],
           "transitions" : [
@@ -406,6 +419,46 @@
                 }
               ],
               "op" : "extract"
+            },
+            {
+              "parameters" : [
+                {
+                  "type" : "field",
+                  "value" : ["ingress_metadata", "is_tagged"]
+                },
+                {
+                  "type" : "expression",
+                  "value" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "?",
+                      "left" : {
+                        "type" : "hexstr",
+                        "value" : "0x01"
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x00"
+                      },
+                      "cond" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : "!=",
+                          "left" : {
+                            "type" : "field",
+                            "value" : ["vlan", "vid"]
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0x0000"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ],
+              "op" : "set"
             }
           ],
           "transitions" : [
@@ -520,7 +573,7 @@
       "id" : 0,
       "source_info" : {
         "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/inc/parser.p4",
-        "line" : 50,
+        "line" : 52,
         "column" : 8,
         "source_fragment" : "fixDeparser"
       },

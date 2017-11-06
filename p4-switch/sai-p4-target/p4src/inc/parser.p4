@@ -13,6 +13,7 @@ parser fixParser(packet_in b,
 {
     state start{
         b.extract(p.ethernet);
+        meta.ingress_metadata.is_tagged = 0;
         transition select(p.ethernet.etherType){
             ETHERTYPE_VLAN : parse_vlan;
             ETHERTYPE_IPV4 : parse_ipv4;
@@ -21,6 +22,7 @@ parser fixParser(packet_in b,
     }
     state parse_vlan {
         b.extract(p.vlan);
+        meta.ingress_metadata.is_tagged = (bit) (p.vlan.vid != 0);
         transition select(p.vlan.etherType) {
             ETHERTYPE_IPV4 : parse_ipv4;
             default: accept;

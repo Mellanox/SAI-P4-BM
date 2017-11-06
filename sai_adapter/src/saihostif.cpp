@@ -473,7 +473,7 @@ sai_status_t sai_adapter::remove_hostif_trap(sai_object_id_t hostif_trap_id) {
       bm_router_client_ptr->bm_mt_delete_entry(cxt_id, "table_l3_trap_id",
                                            hostif_trap->handle_trap_id);
       bm_router_client_ptr->bm_mt_set_default_action(
-          cxt_id, "table_ip2me_trap", "_drop", action_data);
+          cxt_id, "table_ip2me_trap", "drop", action_data);
       break;
 
     // post-IP2Me traps

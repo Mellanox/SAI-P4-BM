@@ -54,7 +54,7 @@ sai_status_t sai_adapter::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
             action_data, options);
         action_data.clear();
         handle_learn_fdb = bm_bridge_client_ptr->bm_mt_add_entry(
-            cxt_id, "table_learn_fdb", match_params, "_nop", action_data,
+            cxt_id, "table_learn_fdb", match_params, "nop", action_data,
             options);
         bridge_port_obj->set_fdb_handle(handle_fdb, handle_learn_fdb,
                                         bridge_id, entry_type);

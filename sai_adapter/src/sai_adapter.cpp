@@ -46,11 +46,12 @@ sai_adapter::sai_adapter()
   switch_metadata_ptr = &switch_metadata;
   bm_bridge_client_ptr = &bm_bridge_client;
   bm_bridge_client_mc_ptr = &bm_bridge_client_mc;
-  bm_router_client_ptr = &bm_router_client;
+  // bm_router_client_ptr = &bm_router_client;
+  bm_router_client_ptr = nullptr;
   sai_id_map_ptr = &sai_id_map;
   wildcard_entry = NULL;
   transport->open();
-  router_transport->open();
+  // router_transport->open();
 
   // api set
   switch_api.create_switch = &sai_adapter::create_switch;
@@ -505,15 +506,6 @@ BmMatchParam parse_ternary_param(uint64_t param, uint32_t num_of_bytes, uint64_t
   match_param_ternary.__set_key(parse_param(param, num_of_bytes));
   match_param_ternary.__set_mask(parse_param(mask, num_of_bytes));
   match_param.__set_ternary(match_param_ternary);
-  return match_param;
-}
-
-BmMatchParam parse_valid_match_param(bool param) {
-  BmMatchParam match_param;
-  match_param.type = BmMatchParamType::type::VALID;
-  BmMatchParamValid match_param_valid;
-  match_param_valid.key = param;
-  match_param.__set_valid(match_param_valid);
   return match_param;
 }
 

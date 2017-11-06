@@ -133,7 +133,7 @@ sai_status_t sai_adapter::create_route_entry(const sai_route_entry_t *route_entr
   }
   if (action == SAI_PACKET_ACTION_DROP) {
     bm_router_client_ptr->bm_mt_add_entry(
-            cxt_id, "table_router", match_params, "_drop",
+            cxt_id, "table_router", match_params, "drop",
             action_data, options);
     return SAI_STATUS_SUCCESS;
   }
