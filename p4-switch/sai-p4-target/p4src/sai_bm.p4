@@ -1,5 +1,5 @@
 #include <core.p4>
-#include "inc/sai_model.p4"
+#include <sai_model.p4>
 #include "inc/constants.p4"
 #include "inc/headers.p4"
 #include "inc/metadata.p4"

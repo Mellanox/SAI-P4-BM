@@ -210,12 +210,12 @@ control egress_router(inout hdr headers, inout metadata meta, inout standard_met
         headers.cpu_header.setInvalid();
     }
 
-    table table_cpu_forward {
-        key = {
-            headers.cpu_header.isValid() : exact;
-        }
-        actions = {action_forward_cpu;}
-    }
+    // table table_cpu_forward {
+    //     key = {
+    //         headers.cpu_header.isValid() : exact;
+    //     }
+    //     actions = {action_forward_cpu;}
+    // }
 
     apply{
         if (!(table_egress_clone_internal.apply().hit)) {

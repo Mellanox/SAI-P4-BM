@@ -177,7 +177,8 @@ control ingress_bridge(inout hdr headers, inout metadata meta, inout standard_me
 
     action action_forward_mc_set_if_list(bit<16> mcast_grp){
         // TODO add set egress if list
-        meta.intrinsic_metadata.mcast_grp = mcast_grp;
+        // intrinsic_metadata.mcast_grp = mcast_grp;
+        standard_metadata.mcast_grp = mcast_grp;
         // modify_field(meta.ingress_metadata.go_to_router, go_to_router);
     }
 

@@ -147,14 +147,23 @@ control egress(inout hdr headers, inout metadata meta, inout standard_metadata_t
     }
 
     action action_set_lag_hash_size(bit<6> lag_size) {
-        // modify_field_with_hash_based_offset(meta.egress_metadata.hash_val, 0, lag_hash, lag_size);
-        // hash<O, T, D, M>(out O result, in HashAlgorithm algo, in T base, in D data, in M max);
-        // hash(meta.egress_metadata.hash_val, 
-        //      HashAlgorithm.crc16,
-        //      16w0,
-        //      {headers.ethernet.srcAddr, headers.ethernet.dstAddr, headers.ipv4.srcAddr, headers.ipv4.dstAddr},
-        //      lag_size);
+       hash(meta.egress_metadata.hash_val,
+             HashAlgorithm.crc16,
+             (bit<6>)0,
+             {headers.ethernet.srcAddr, headers.ethernet.dstAddr, headers.ipv4.srcAddr, headers.ipv4.dstAddr},
+             lag_size);
     }
+        // modify_field_with_hash_based_offset(meta.egress_metadata.hash_val, 0, HashAlgorithm.crc16, lag_size);
+        // hash(meta.egress_metadata.hash_val, 
+             // HashAlgorithm.crc16,
+             // 16w0,
+             // {headers.ethernet.srcAddr, headers.ethernet.dstAddr, headers.ipv4.srcAddr, headers.ipv4.dstAddr},
+             // lag_size);
+             // lag_hash_calculate(meta.egress_metadata.hash_val, 
+             // 16w0,
+             // {headers.ethernet.srcAddr, headers.ethernet.dstAddr, headers.ipv4.srcAddr, headers.ipv4.dstAddr},
+             // lag_size);
+    // }
 
     table table_lag_hash {
         key = {

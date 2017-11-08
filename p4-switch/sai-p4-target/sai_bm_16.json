@@ -142,26 +142,13 @@
         ["stp_state", 2, false],
         ["tag_mode", 1, false],
         ["hash_val", 6, false],
-        ["mcast_grp", 4, false],
         ["bridge_port", 8, false],
-        ["_padding_0", 1, false]
-      ]
-    },
-    {
-      "name" : "intrinsic_metadata_t",
-      "id" : 10,
-      "fields" : [
-        ["ingress_global_timestamp", 48, false],
-        ["lf_field_list", 8, false],
-        ["mcast_grp", 16, false],
-        ["egress_rid", 16, false],
-        ["resubmit_flag", 8, false],
-        ["recirculate_flag", 8, false]
+        ["_padding_0", 5, false]
       ]
     },
     {
       "name" : "router_metadata_t",
-      "id" : 11,
+      "id" : 10,
       "fields" : [
         ["ingress_rif", 8, false],
         ["egress_rif", 8, false],
@@ -177,7 +164,7 @@
     },
     {
       "name" : "l4_metadata_t",
-      "id" : 12,
+      "id" : 11,
       "fields" : [
         ["srcPort", 16, false],
         ["dstPort", 16, false]
@@ -185,7 +172,7 @@
     },
     {
       "name" : "standard_metadata",
-      "id" : 13,
+      "id" : 12,
       "fields" : [
         ["ingress_port", 9, false],
         ["egress_spec", 9, false],
@@ -287,22 +274,15 @@
       "pi_omit" : true
     },
     {
-      "name" : "intrinsic_metadata",
-      "id" : 11,
-      "header_type" : "intrinsic_metadata_t",
-      "metadata" : true,
-      "pi_omit" : true
-    },
-    {
       "name" : "router_metadata",
-      "id" : 12,
+      "id" : 11,
       "header_type" : "router_metadata_t",
       "metadata" : true,
       "pi_omit" : true
     },
     {
       "name" : "l4_metadata",
-      "id" : 13,
+      "id" : 12,
       "header_type" : "l4_metadata_t",
       "metadata" : true,
       "pi_omit" : true
@@ -321,35 +301,7 @@
     ["HeaderTooShort", 5],
     ["ParserTimeout", 6]
   ],
-  "enums" : [
-    {
-      "name" : "HashAlgorithm",
-      "entries" : [
-        ["crc16", 2],
-        ["crc16_custom", 3],
-        ["crc32", 0],
-        ["crc32_custom", 1],
-        ["identity", 6],
-        ["random", 5],
-        ["xor8", 4]
-      ]
-    },
-    {
-      "name" : "MeterType",
-      "entries" : [
-        ["bytes", 1],
-        ["packets", 0]
-      ]
-    },
-    {
-      "name" : "CounterType",
-      "entries" : [
-        ["bytes", 1],
-        ["packets", 0],
-        ["packets_and_bytes", 2]
-      ]
-    }
-  ],
+  "enums" : [],
   "parsers" : [
     {
       "name" : "parser",
@@ -583,7 +535,31 @@
   "meter_arrays" : [],
   "counter_arrays" : [],
   "register_arrays" : [],
-  "calculations" : [],
+  "calculations" : [
+    {
+      "name" : "calc",
+      "id" : 0,
+      "algo" : "crc16",
+      "input" : [
+        {
+          "type" : "field",
+          "value" : ["ethernet", "srcAddr"]
+        },
+        {
+          "type" : "field",
+          "value" : ["ethernet", "dstAddr"]
+        },
+        {
+          "type" : "field",
+          "value" : ["ipv4", "srcAddr"]
+        },
+        {
+          "type" : "field",
+          "value" : ["ipv4", "dstAddr"]
+        }
+      ]
+    }
+  ],
   "learn_lists" : [],
   "actions" : [
     {
@@ -1397,7 +1373,35 @@
           "bitwidth" : 6
         }
       ],
-      "primitives" : []
+      "primitives" : [
+        {
+          "op" : "modify_field_with_hash_based_offset",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["egress_metadata", "hash_val"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x00"
+            },
+            {
+              "type" : "calculation",
+              "value" : "calc"
+            },
+            {
+              "type" : "runtime_data",
+              "value" : 0
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/port.p4",
+            "line" : 150,
+            "column" : 7,
+            "source_fragment" : "hash(meta.egress_metadata.hash_val, ..."
+          }
+        }
+      ]
     },
     {
       "name" : "action_set_out_port",
@@ -1436,7 +1440,7 @@
           ],
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/port.p4",
-            "line" : 167,
+            "line" : 176,
             "column" : 8,
             "source_fragment" : "standard_metadata.egress_spec = (bit<9>) port"
           }
@@ -1458,7 +1462,7 @@
           ],
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/port.p4",
-            "line" : 180,
+            "line" : 189,
             "column" : 8,
             "source_fragment" : "headers.cpu_header.setValid()"
           }
@@ -1509,7 +1513,7 @@
           ],
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/port.p4",
-            "line" : 182,
+            "line" : 191,
             "column" : 8,
             "source_fragment" : "headers.cpu_header.dst = (bit<16>) standard_metadata.ingress_port"
           }
@@ -1528,7 +1532,7 @@
           ],
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/port.p4",
-            "line" : 183,
+            "line" : 192,
             "column" : 8,
             "source_fragment" : "headers.cpu_header.trap_id = meta.ingress_metadata.trap_id"
           }
@@ -1948,7 +1952,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["intrinsic_metadata", "mcast_grp"]
+              "value" : ["standard_metadata", "mcast_grp"]
             },
             {
               "type" : "runtime_data",
@@ -1957,9 +1961,9 @@
           ],
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 180,
+            "line" : 181,
             "column" : 8,
-            "source_fragment" : "meta.intrinsic_metadata.mcast_grp = mcast_grp"
+            "source_fragment" : "standard_metadata.mcast_grp = mcast_grp"
           }
         }
       ]
@@ -1979,7 +1983,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["intrinsic_metadata", "mcast_grp"]
+              "value" : ["standard_metadata", "mcast_grp"]
             },
             {
               "type" : "runtime_data",
@@ -1988,9 +1992,9 @@
           ],
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 180,
+            "line" : 181,
             "column" : 8,
-            "source_fragment" : "meta.intrinsic_metadata.mcast_grp = mcast_grp"
+            "source_fragment" : "standard_metadata.mcast_grp = mcast_grp"
           }
         }
       ]
@@ -2276,7 +2280,7 @@
           ],
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 244,
+            "line" : 245,
             "column" : 8,
             "source_fragment" : "meta.egress_metadata.out_if = out_if"
           }
@@ -2295,7 +2299,7 @@
           ],
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 245,
+            "line" : 246,
             "column" : 8,
             "source_fragment" : "meta.egress_metadata.out_if_type = out_if_type"
           }
@@ -2327,7 +2331,7 @@
           ],
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 246,
+            "line" : 247,
             "column" : 8,
             "source_fragment" : "standard_metadata.egress_spec = (bit<9>) out_if"
           }
@@ -2358,7 +2362,7 @@
           ],
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 267,
+            "line" : 268,
             "column" : 8,
             "source_fragment" : "meta.egress_metadata.stp_state = stp_state"
           }
@@ -2389,7 +2393,7 @@
           ],
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 267,
+            "line" : 268,
             "column" : 8,
             "source_fragment" : "meta.egress_metadata.stp_state = stp_state"
           }
@@ -2420,7 +2424,7 @@
           ],
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 279,
+            "line" : 280,
             "column" : 8,
             "source_fragment" : "meta.ingress_metadata.vid = vid"
           }
@@ -4002,7 +4006,7 @@
           "id" : 10,
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/port.p4",
-            "line" : 159,
+            "line" : 168,
             "column" : 10,
             "source_fragment" : "table_lag_hash"
           },
@@ -4038,7 +4042,7 @@
           "id" : 11,
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/port.p4",
-            "line" : 170,
+            "line" : 179,
             "column" : 10,
             "source_fragment" : "table_egress_lag"
           },
@@ -4080,7 +4084,7 @@
           "id" : 12,
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/port.p4",
-            "line" : 186,
+            "line" : 195,
             "column" : 10,
             "source_fragment" : "table_egress_clone_internal"
           },
@@ -4120,7 +4124,7 @@
           "id" : 2,
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/port.p4",
-            "line" : 196,
+            "line" : 205,
             "column" : 12,
             "source_fragment" : "meta.egress_metadata.out_if_type == OUT_IF_LAG"
           },
@@ -4605,7 +4609,7 @@
           "id" : 26,
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 191,
+            "line" : 192,
             "column" : 10,
             "source_fragment" : "table_flood"
           },
@@ -4641,7 +4645,7 @@
           "id" : 27,
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 184,
+            "line" : 185,
             "column" : 10,
             "source_fragment" : "table_broadcast"
           },
@@ -4680,7 +4684,7 @@
           "id" : 3,
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 199,
+            "line" : 200,
             "column" : 11,
             "source_fragment" : "meta.ingress_metadata.l2_if_type == L2_IF_1D_BRIDGE"
           },
@@ -4706,7 +4710,7 @@
           "id" : 4,
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 208,
+            "line" : 209,
             "column" : 11,
             "source_fragment" : "(headers.ethernet.dstAddr&0x010000000000)==0x0"
           },
@@ -4742,7 +4746,7 @@
           "id" : 5,
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 210,
+            "line" : 211,
             "column" : 16,
             "source_fragment" : "!(table_l3_interface.apply().hit)"
           },
@@ -4772,7 +4776,7 @@
           "id" : 6,
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 211,
+            "line" : 212,
             "column" : 20,
             "source_fragment" : "!(table_fdb.apply().hit)"
           },
@@ -4802,7 +4806,7 @@
           "id" : 7,
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 215,
+            "line" : 216,
             "column" : 18,
             "source_fragment" : "headers.ethernet.dstAddr==0xffffffffffff"
           },
@@ -4830,7 +4834,7 @@
       "id" : 3,
       "source_info" : {
         "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-        "line" : 237,
+        "line" : 238,
         "column" : 8,
         "source_fragment" : "egress_bridge"
       },
@@ -4841,7 +4845,7 @@
           "id" : 28,
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 249,
+            "line" : 250,
             "column" : 10,
             "source_fragment" : "table_egress_br_port_to_if"
           },
@@ -4878,7 +4882,7 @@
           "id" : 29,
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 256,
+            "line" : 257,
             "column" : 10,
             "source_fragment" : "table_bridge_loopback_filter"
           },
@@ -4915,7 +4919,7 @@
           "id" : 30,
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 270,
+            "line" : 271,
             "column" : 10,
             "source_fragment" : "table_egress_vbridge_STP"
           },
@@ -4952,7 +4956,7 @@
           "id" : 31,
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 282,
+            "line" : 283,
             "column" : 10,
             "source_fragment" : "table_egress_set_vlan"
           },
@@ -4988,7 +4992,7 @@
           "id" : 32,
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 292,
+            "line" : 293,
             "column" : 10,
             "source_fragment" : "table_egress_xSTP"
           },
@@ -5030,7 +5034,7 @@
           "id" : 33,
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 300,
+            "line" : 301,
             "column" : 10,
             "source_fragment" : "table_egress_vlan_filtering"
           },
@@ -5075,7 +5079,7 @@
           "id" : 8,
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 310,
+            "line" : 311,
             "column" : 12,
             "source_fragment" : "(meta.ingress_metadata.bridge_port == meta.egress_metadata.bridge_port) && (standard_metadata.instance_type != 1)"
           },
@@ -5121,7 +5125,7 @@
           "id" : 9,
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 313,
+            "line" : 314,
             "column" : 11,
             "source_fragment" : "meta.ingress_metadata.l2_if_type == L2_IF_1D_BRIDGE"
           },
@@ -5147,7 +5151,7 @@
           "id" : 10,
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
-            "line" : 317,
+            "line" : 318,
             "column" : 11,
             "source_fragment" : "meta.ingress_metadata.l2_if_type == L2_IF_1Q_BRIDGE"
           },

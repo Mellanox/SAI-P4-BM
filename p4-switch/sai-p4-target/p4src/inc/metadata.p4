@@ -29,18 +29,17 @@ struct egress_metadata_t {
     bit<2> 	stp_state; // same as ingress? duplication?
     bit  	tag_mode;
     bit<6> 	hash_val;// TODO for egress lag table, when it is set?
-    bit<4> 	mcast_grp;
     bit<8>  bridge_port; //L2_BRIDGE_PORT_WDT 
 }
 
-struct intrinsic_metadata_t {
-    bit <48> ingress_global_timestamp;
-    bit <8> lf_field_list;
-    bit <16> mcast_grp;
-    bit <16> egress_rid;
-    bit <8> resubmit_flag;
-    bit <8> recirculate_flag;
-}
+// struct intrinsic_metadata_t {
+//     bit <48> ingress_global_timestamp;
+//     bit <8> lf_field_list;
+//     bit <16> mcast_grp;
+//     bit <16> egress_rid;
+//     bit <8> resubmit_flag;
+//     bit <8> recirculate_flag;
+// }
 
 struct router_metadata_t{
     bit<8> ingress_rif;
@@ -65,7 +64,7 @@ struct l4_metadata_t {
 struct metadata {
 	ingress_metadata_t   ingress_metadata;
 	egress_metadata_t    egress_metadata;
-	intrinsic_metadata_t intrinsic_metadata;
+	// intrinsic_metadata_t intrinsic_metadata;
 	router_metadata_t    router_metadata;
 	l4_metadata_t        l4_metadata;
 }

@@ -357,18 +357,9 @@ SimpleSwitch::ingress_thread() {
     unsigned int clone_spec = f_clone_spec.get_uint();
 
     int learn_id = 0;
-    unsigned int mgid = 0u;
-
     if (phv->has_field("intrinsic_metadata.lf_field_list")) {
       Field &f_learn_id = phv->get_field("intrinsic_metadata.lf_field_list");
       learn_id = f_learn_id.get_int();
-    }
-
-    // detect mcast support, if this is true we assume that other fields needed
-    // for mcast are also defined
-    if (phv->has_field("intrinsic_metadata.mcast_grp")) {
-      Field &f_mgid = phv->get_field("intrinsic_metadata.mcast_grp");
-      mgid = f_mgid.get_uint();
     }
 
     int egress_port;
@@ -419,30 +410,6 @@ SimpleSwitch::ingress_thread() {
 
     Field &f_instance_type = phv->get_field("standard_metadata.instance_type");
 
-    // MULTICAST
-    int instance_type = f_instance_type.get_int();
-    if (mgid != 0) {
-      BMLOG_DEBUG_PKT(*packet, "Multicast requested for packet");
-      Field &f_rid = phv->get_field("intrinsic_metadata.egress_rid");
-      const auto pre_out = pre->replicate({mgid});
-      auto packet_size = packet->get_register(PACKET_LENGTH_REG_IDX);
-      for (const auto &out : pre_out) {
-        egress_port = out.egress_port;
-        // if (ingress_port == egress_port) continue; // pruning
-        phv->get_field("egress_metadata.bridge_port").set(egress_port);
-        BMLOG_DEBUG_PKT(*packet, "Replicating packet on bridge port {}", egress_port);
-        f_rid.set(out.rid);
-        f_instance_type.set(PKT_INSTANCE_TYPE_REPLICATION);
-        std::unique_ptr<Packet> packet_copy = packet->clone_with_phv_ptr();
-        packet_copy->set_register(PACKET_LENGTH_REG_IDX, packet_size);
-        enqueue(egress_port, std::move(packet_copy));
-      }
-      f_instance_type.set(instance_type);
-
-      // when doing multicast, we discard the original packet
-      continue;
-    }
-
     egress_port = egress_spec;
 
     if (egress_port == 511) {  // drop packet
@@ -472,9 +439,49 @@ SimpleSwitch::ingress_bridge_thread() {
   while (1) {
     std::unique_ptr<Packet> packet;
     ingress_bridge_buffer.pop_back(&packet);
+    phv = packet->get_phv();
     Pipeline *ingress_bridge_mau = this->get_pipeline("ingress_bridge");
     BMLOG_DEBUG_PKT(*packet, "packet received on ingress bridge");
     ingress_bridge_mau->apply(packet.get());
+
+    Field &f_instance_type = phv->get_field("standard_metadata.instance_type");
+    int egress_bridge_port;
+
+    // L2 MULTICAST
+    unsigned int mgid = 0u;
+    // detect mcast support, if this is true we assume that other fields needed
+    // for mcast are also defined
+    if (phv->has_field("intrinsic_metadata.mcast_grp")) {
+      Field &f_mgid = phv->get_field("intrinsic_metadata.mcast_grp");
+      mgid = f_mgid.get_uint();
+    } else { 
+      BMLOG_DEBUG_PKT(*packet, "no support for mcast");
+    }
+    int instance_type = f_instance_type.get_int();
+    BMLOG_DEBUG_PKT(*packet, " mgid {}", mgid);
+    if (mgid != 0) {
+      BMLOG_DEBUG_PKT(*packet, "Multicast requested for packet");
+      Field &f_rid = phv->get_field("intrinsic_metadata.egress_rid");
+      const auto pre_out = pre->replicate({mgid});
+      auto packet_size = packet->get_register(PACKET_LENGTH_REG_IDX);
+      for (const auto &out : pre_out) {
+        BMLOG_DEBUG_PKT(*packet, "debug1");
+        egress_bridge_port = out.egress_port;
+        BMLOG_DEBUG_PKT(*packet, "debug2");
+        phv->get_field("egress_metadata.bridge_port").set(egress_bridge_port);
+        BMLOG_DEBUG_PKT(*packet, "Replicating packet on bridge port {}", egress_bridge_port);
+        f_rid.set(out.rid);
+        f_instance_type.set(PKT_INSTANCE_TYPE_REPLICATION);
+        std::unique_ptr<Packet> packet_copy = packet->clone_with_phv_ptr();
+        packet_copy->set_register(PACKET_LENGTH_REG_IDX, packet_size);
+        egress_bridge_buffer.push_front(std::move(packet_copy));
+      }
+      f_instance_type.set(instance_type);
+
+      // when doing multicast, we discard the original packet
+      continue;
+    }
+
     egress_bridge_buffer.push_front(std::move(packet));
     }
   }
@@ -489,16 +496,11 @@ SimpleSwitch::egress_bridge_thread() {
     Pipeline *egress_bridge_mau = this->get_pipeline("egress_bridge");
     BMLOG_DEBUG_PKT(*packet, "packet received on egress bridge");
     egress_bridge_mau->apply(packet.get());
-    BMLOG_DEBUG_PKT(*packet, "packet after egress bridge");
-    BMLOG_DEBUG_PKT(*packet, "debug 5");
     int egress_spec = phv->get_field("standard_metadata.egress_spec").get_int();
-    BMLOG_DEBUG_PKT(*packet, "egress_spec");
-    BMLOG_DEBUG_PKT(*packet, "egress spec {}", egress_spec);
     if (egress_spec == 511) {
       BMLOG_DEBUG_PKT(*packet, "Dropping packet at the end of egress_bridge pipeline");
       continue;
     }
-    BMLOG_DEBUG_PKT(*packet, "debug 5");
     int out_if_type = phv->get_field("egress_metadata.out_if_type").get_int();
     BMLOG_DEBUG_PKT(*packet, "Packet of out_if_type {}.", out_if_type);
     switch(out_if_type){
@@ -522,10 +524,10 @@ SimpleSwitch::ingress_router_thread() {
   while (1) {
     std::unique_ptr<Packet> packet;
     ingress_router_buffer.pop_back(&packet);
+    phv = packet->get_phv();
     Pipeline *ingress_router_mau = this->get_pipeline("ingress_router");
     BMLOG_DEBUG_PKT(*packet, "packet received on ingress router");
     ingress_router_mau->apply(packet.get());
-    int egress_port = packet->get_egress_port();
     egress_router_buffer.push_front(std::move(packet));
     }
   }
@@ -536,11 +538,12 @@ SimpleSwitch::egress_router_thread() {
   while (1) {
     std::unique_ptr<Packet> packet;
     egress_router_buffer.pop_back(&packet);
+    phv = packet->get_phv();
     Pipeline *egress_router_mau = this->get_pipeline("egress_router");
     BMLOG_DEBUG_PKT(*packet, "packet received on egress router");
     egress_router_mau->apply(packet.get());
-    int egress_port = packet->get_egress_port();
-    enqueue(egress_port, std::move(packet));
+    // int egress_port = packet->get_egress_port();
+    enqueue(0, std::move(packet));
     }
   }
 
