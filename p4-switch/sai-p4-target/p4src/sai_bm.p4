@@ -4,13 +4,10 @@
 #include "inc/headers.p4"
 #include "inc/metadata.p4"
 #include "inc/parser.p4"
+#include "inc/checksum.p4"
 
 control verifyChecksum(in hdr headers, inout metadata meta) {   
     apply {  }
-}
-
-control computeChecksum(inout hdr headers, inout metadata meta){
-    apply{}
 }
 
 #include "port.p4"

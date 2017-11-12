@@ -1,8 +1,7 @@
 #include "../inc/sai_adapter.h"
 
-StandardClient *sai_adapter::bm_bridge_client_ptr;
-SimplePreLAGClient *sai_adapter::bm_bridge_client_mc_ptr;
-StandardClient *sai_adapter::bm_router_client_ptr;
+StandardClient *sai_adapter::bm_client_ptr;
+SimplePreLAGClient *sai_adapter::bm_client_mc_ptr;
 sai_id_map_t *sai_adapter::sai_id_map_ptr;
 Switch_metadata *sai_adapter::switch_metadata_ptr;
 std::vector<sai_object_id_t> *sai_adapter::switch_list_ptr;
@@ -19,18 +18,13 @@ adapter_packet_handler_fn sai_adapter::wildcard_entry;
 
 sai_adapter::sai_adapter()
     : //  constructor pre initializations
-      socket(new TSocket("localhost", bm_port_bridge)),
+      socket(new TSocket("localhost", bm_port)),
       transport(new TBufferedTransport(socket)),
       bprotocol(new TBinaryProtocol(transport)),
       protocol(new TMultiplexedProtocol(bprotocol, "standard")),
-      bm_bridge_client(protocol),
+      bm_client(protocol),
       mc_protocol(new TMultiplexedProtocol(bprotocol, "simple_pre_lag")),
-      bm_bridge_client_mc(mc_protocol),
-      router_socket(new TSocket("localhost", bm_port_router)),
-      router_transport(new TBufferedTransport(router_socket)),
-      router_bprotocol(new TBinaryProtocol(router_transport)),
-      router_protocol(new TMultiplexedProtocol(router_bprotocol, "standard")),
-      bm_router_client(router_protocol)
+      bm_client_mc(mc_protocol)
        {
   // logger
   logger_o = spdlog::get("logger");
@@ -44,14 +38,11 @@ sai_adapter::sai_adapter()
   // start P4 link
   switch_list_ptr = &switch_list;
   switch_metadata_ptr = &switch_metadata;
-  bm_bridge_client_ptr = &bm_bridge_client;
-  bm_bridge_client_mc_ptr = &bm_bridge_client_mc;
-  // bm_router_client_ptr = &bm_router_client;
-  bm_router_client_ptr = nullptr;
+  bm_client_ptr = &bm_client;
+  bm_client_mc_ptr = &bm_client_mc;
   sai_id_map_ptr = &sai_id_map;
   wildcard_entry = NULL;
   transport->open();
-  // router_transport->open();
 
   // api set
   switch_api.create_switch = &sai_adapter::create_switch;
@@ -281,13 +272,12 @@ sai_adapter::sai_adapter()
   acl_api.get_acl_table_group_member_attribute = &sai_adapter::get_acl_table_group_member_attribute;
 
   startSaiAdapterMain();
-  (*logger)->info("BM connection started on port {}", bm_port_bridge);
+  (*logger)->info("BM connection started on port {}", bm_port);
 }
 
 sai_adapter::~sai_adapter() {
   endSaiAdapterMain();
   transport->close();
-  router_transport->close();
   (*logger)->info("BM clients closed\n");
 }
 

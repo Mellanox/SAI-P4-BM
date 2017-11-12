@@ -68,8 +68,8 @@ class L3IPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
-        rif_id0 = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan_id0, v4_enabled, v6_enabled, mac)
-        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan_id1, v4_enabled, v6_enabled, mac)
+        rif_id0 = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan_oid0, v4_enabled, v6_enabled, mac)
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan_oid1, v4_enabled, v6_enabled, mac)
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV4
         ip_addr1 = '10.10.10.1'

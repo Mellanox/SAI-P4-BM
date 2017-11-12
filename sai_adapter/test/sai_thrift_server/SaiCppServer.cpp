@@ -1108,6 +1108,7 @@ void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list
               case SAI_ROUTER_INTERFACE_ATTR_VIRTUAL_ROUTER_ID:
               case SAI_ROUTER_INTERFACE_ATTR_PORT_ID:
               case SAI_ROUTER_INTERFACE_ATTR_INGRESS_ACL:
+              case SAI_ROUTER_INTERFACE_ATTR_VLAN_ID:
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
               case SAI_ROUTER_INTERFACE_ATTR_TYPE:
@@ -1120,8 +1121,6 @@ void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list
               case SAI_ROUTER_INTERFACE_ATTR_ADMIN_V6_STATE:
                   attr_list[i].value.booldata = attribute.value.booldata;
                   break;
-              case SAI_ROUTER_INTERFACE_ATTR_VLAN_ID:
-                  attr_list[i].value.u16 = attribute.value.u16;
               default:
                   break;
           }

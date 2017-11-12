@@ -49,11 +49,11 @@ sai_status_t sai_adapter::create_fdb_entry(const sai_fdb_entry_t *fdb_entry,
       print_mac_to_log(fdb_entry->mac_address, *logger);
       action_data.push_back(parse_param(bridge_port, 1));
       try {
-        handle_fdb = bm_bridge_client_ptr->bm_mt_add_entry(
+        handle_fdb = bm_client_ptr->bm_mt_add_entry(
             cxt_id, "table_fdb", match_params, "action_set_egress_br_port",
             action_data, options);
         action_data.clear();
-        handle_learn_fdb = bm_bridge_client_ptr->bm_mt_add_entry(
+        handle_learn_fdb = bm_client_ptr->bm_mt_add_entry(
             cxt_id, "table_learn_fdb", match_params, "nop", action_data,
             options);
         bridge_port_obj->set_fdb_handle(handle_fdb, handle_learn_fdb,
@@ -79,7 +79,7 @@ sai_status_t sai_adapter::remove_fdb_entry(const sai_fdb_entry_t *fdb_entry) {
   uint32_t bridge_id = get_bridge_id_from_fdb_entry(fdb_entry);
   match_params.push_back(parse_exact_match_param(bridge_id, 2));
   BmMtEntry bm_entry;
-  bm_bridge_client_ptr->bm_mt_get_entry_from_key(bm_entry, cxt_id, "table_fdb",
+  bm_client_ptr->bm_mt_get_entry_from_key(bm_entry, cxt_id, "table_fdb",
                                           match_params, options);
 
   std::string bridge_port_str = bm_entry.action_entry.action_data.back();
@@ -89,11 +89,11 @@ sai_status_t sai_adapter::remove_fdb_entry(const sai_fdb_entry_t *fdb_entry) {
   (*logger)->info("removing fdb from bridge_port: {}. sai_id {}",
                   bridge_port_obj->bridge_port, bridge_port_obj->sai_object_id);
   bridge_port_obj->remove_fdb_handle(bridge_id);
-  bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb", bm_entry.entry_handle);
-  bm_bridge_client_ptr->bm_mt_get_entry_from_key(bm_entry, cxt_id, "table_learn_fdb",
+  bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb", bm_entry.entry_handle);
+  bm_client_ptr->bm_mt_get_entry_from_key(bm_entry, cxt_id, "table_learn_fdb",
                                           match_params, options);
 
-  bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_learn_fdb",
+  bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_learn_fdb",
                                     bm_entry.entry_handle);
 
   return status;
@@ -150,9 +150,9 @@ sai_status_t sai_adapter::flush_fdb_entries(sai_object_id_t switch_id,
                       bridge_port_obj->sai_object_id);
       if (bridge_port_obj->bridge_port_type == SAI_BRIDGE_PORT_TYPE_SUB_PORT) {
         if ((mode == 1) or (bridge_port_obj->fdb_entry_type_sub_port == entry_type)) {
-          bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb",
+          bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb",
                                             bridge_port_obj->handle_fdb_sub_port);
-          bm_bridge_client_ptr->bm_mt_delete_entry(
+          bm_client_ptr->bm_mt_delete_entry(
               cxt_id, "table_learn_fdb",
               bridge_port_obj->handle_fdb_learn_sub_port);
           bridge_port_obj->handle_fdb_sub_port = NULL_HANDLE;
@@ -163,8 +163,8 @@ sai_status_t sai_adapter::flush_fdb_entries(sai_object_id_t switch_id,
                  bridge_port_obj->handle_fdb_port.begin();
              it != bridge_port_obj->handle_fdb_port.end(); ++it) {
           if ((mode == 1) or (bridge_port_obj->fdb_entry_type_port[it->first] == entry_type)) {
-            bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb", it->second);
-            bm_bridge_client_ptr->bm_mt_delete_entry(
+            bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb", it->second);
+            bm_client_ptr->bm_mt_delete_entry(
               cxt_id, "table_learn_fdb",
               bridge_port_obj->handle_fdb_learn_port[it->first]);
             bridge_port_obj->handle_fdb_port.erase(it->first);
@@ -180,9 +180,9 @@ sai_status_t sai_adapter::flush_fdb_entries(sai_object_id_t switch_id,
         if (it->second->does_fdb_exist(bridge_id)) {
           if ((mode == 2) or (entry_type == it->second->fdb_entry_type_port[bridge_id])) {
             (*logger)->info("removing bridge_port {}", it->first);
-            bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb",
+            bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb",
                                               it->second->handle_fdb_port[bridge_id]);
-            bm_bridge_client_ptr->bm_mt_delete_entry(
+            bm_client_ptr->bm_mt_delete_entry(
                 cxt_id, "table_learn_fdb",
                 it->second->handle_fdb_learn_port[bridge_id]);
                 it->second->handle_fdb_learn_port.erase(bridge_id);
@@ -196,9 +196,9 @@ sai_status_t sai_adapter::flush_fdb_entries(sai_object_id_t switch_id,
       (*logger)->info("flushing entries by vlan id {} and bridge_port id {}", vid, bridge_port_obj->sai_object_id);
       if (bridge_port_obj->does_fdb_exist(bridge_id)) {
         if ((mode == 3) or (entry_type == bridge_port_obj->fdb_entry_type_port[bridge_id])) {
-          bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb",
+          bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb",
                                             bridge_port_obj->handle_fdb_port[bridge_id]);
-          bm_bridge_client_ptr->bm_mt_delete_entry(
+          bm_client_ptr->bm_mt_delete_entry(
               cxt_id, "table_learn_fdb",
               bridge_port_obj->handle_fdb_learn_port[bridge_id]);
 
@@ -215,8 +215,8 @@ sai_status_t sai_adapter::flush_fdb_entries(sai_object_id_t switch_id,
                    it_bp->second->handle_fdb_port.begin();
                it != it_bp->second->handle_fdb_port.end(); ++it) {
             if ((it_bp->second->does_fdb_exist(it->first)) and (it_bp->second->fdb_entry_type_port[it->first] == entry_type)) {
-              bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb", it->second);
-              bm_bridge_client_ptr->bm_mt_delete_entry(
+              bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb", it->second);
+              bm_client_ptr->bm_mt_delete_entry(
               cxt_id, "table_learn_fdb",
               it_bp->second->handle_fdb_learn_port[it->first]);
               it_bp->second->handle_fdb_port.erase(it->first);
@@ -225,9 +225,9 @@ sai_status_t sai_adapter::flush_fdb_entries(sai_object_id_t switch_id,
           }
         } else if (it_bp->second->bridge_port_type == SAI_BRIDGE_PORT_TYPE_SUB_PORT) {
           if (it_bp->second->does_fdb_exist(0)) {
-            bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb",
+            bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_fdb",
                                             it_bp->second->handle_fdb_sub_port);
-            bm_bridge_client_ptr->bm_mt_delete_entry(
+            bm_client_ptr->bm_mt_delete_entry(
                 cxt_id, "table_learn_fdb",
                 it_bp->second->handle_fdb_learn_sub_port);
             it_bp->second->handle_fdb_sub_port = NULL_HANDLE;

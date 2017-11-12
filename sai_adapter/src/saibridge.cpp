@@ -121,12 +121,12 @@ sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
     match_params.push_back(
         parse_exact_match_param(bridge_port->bridge_port, 1));
     action_data.push_back(parse_param(bridge_id, 2));
-    bridge_port->handle_id_1d = bm_bridge_client_ptr->bm_mt_add_entry(
+    bridge_port->handle_id_1d = bm_client_ptr->bm_mt_add_entry(
         cxt_id, "table_bridge_id_1d", match_params, "action_set_bridge_id",
         action_data, options);
     action_data.clear();
     action_data.push_back(parse_param(bridge_port->vlan_id, 2));
-    bridge_port->handle_egress_set_vlan = bm_bridge_client_ptr->bm_mt_add_entry(
+    bridge_port->handle_egress_set_vlan = bm_client_ptr->bm_mt_add_entry(
         cxt_id, "table_egress_set_vlan", match_params, "action_set_vlan",
         action_data, options);
     l2_if_type = 2;
@@ -161,7 +161,7 @@ sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
   action_data.clear();
   action_data.push_back(parse_param(l2_if, 1));
   action_data.push_back(parse_param(is_lag, 1));
-  bridge_port->handle_egress_br_port_to_if = bm_bridge_client_ptr->bm_mt_add_entry(
+  bridge_port->handle_egress_br_port_to_if = bm_client_ptr->bm_mt_add_entry(
       cxt_id, "table_egress_br_port_to_if", match_params,
       "action_forward_set_outIfType", action_data, options);
   if (bind_mode == SAI_PORT_BIND_MODE_SUB_PORT) {
@@ -173,7 +173,7 @@ sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
     action_data.push_back(parse_param(l2_if_type, 1));
     action_data.push_back(parse_param(bridge_port->bridge_port, 1));
     bridge_port->handle_subport_ingress_interface_type =
-        bm_bridge_client_ptr->bm_mt_add_entry(
+        bm_client_ptr->bm_mt_add_entry(
             cxt_id, "table_subport_ingress_interface_type", match_params,
             "action_set_l2_if_type", action_data, options);
   } else {
@@ -183,7 +183,7 @@ sai_status_t sai_adapter::create_bridge_port(sai_object_id_t *bridge_port_id,
     action_data.push_back(parse_param(l2_if_type, 1));
     action_data.push_back(parse_param(bridge_port->bridge_port, 1));
     bridge_port->handle_port_ingress_interface_type =
-        bm_bridge_client_ptr->bm_mt_add_entry(
+        bm_client_ptr->bm_mt_add_entry(
             cxt_id, "table_port_ingress_interface_type", match_params,
             "action_set_l2_if_type", action_data, options);
   }
@@ -199,7 +199,7 @@ sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
 
   if (bridge_port->handle_id_1d != NULL_HANDLE) {
     try {
-      bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_bridge_id_1d",
+      bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_bridge_id_1d",
                                         bridge_port->handle_id_1d);
     } catch (...) {
       (*logger)->debug("--> Unable to remove table_bridge_id_1d entry, "
@@ -208,7 +208,7 @@ sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
   }
   if (bridge_port->handle_egress_set_vlan != NULL_HANDLE) {
     try {
-      bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_egress_set_vlan",
+      bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_egress_set_vlan",
                                         bridge_port->handle_egress_set_vlan);
     } catch (...) {
       (*logger)->debug("--> Unable to remove table_egress_set_vlan entry, "
@@ -217,7 +217,7 @@ sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
   }
   if (bridge_port->handle_egress_br_port_to_if != NULL_HANDLE) {
     try {
-      bm_bridge_client_ptr->bm_mt_delete_entry(
+      bm_client_ptr->bm_mt_delete_entry(
           cxt_id, "table_egress_br_port_to_if",
           bridge_port->handle_egress_br_port_to_if);
     } catch (...) {
@@ -227,7 +227,7 @@ sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
   }
   if (bridge_port->handle_subport_ingress_interface_type != NULL_HANDLE) {
     try {
-      bm_bridge_client_ptr->bm_mt_delete_entry(
+      bm_client_ptr->bm_mt_delete_entry(
           cxt_id, "table_subport_ingress_interface_type",
           bridge_port->handle_subport_ingress_interface_type);
     } catch (...) {
@@ -238,7 +238,7 @@ sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
   }
   if (bridge_port->handle_port_ingress_interface_type != NULL_HANDLE) {
     try {
-      bm_bridge_client_ptr->bm_mt_delete_entry(
+      bm_client_ptr->bm_mt_delete_entry(
           cxt_id, "table_port_ingress_interface_type",
           bridge_port->handle_port_ingress_interface_type);
     } catch (...) {

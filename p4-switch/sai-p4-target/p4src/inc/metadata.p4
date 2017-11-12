@@ -44,7 +44,7 @@ struct egress_metadata_t {
 struct router_metadata_t{
     bit<8> ingress_rif;
     bit<8> egress_rif;
-    bit<2> erif_type;
+    bit<3> erif_type;
     bit<8> ingress_vrf;
     bit<32> next_hop_dst_ip;
     bit<8> next_hop_id;

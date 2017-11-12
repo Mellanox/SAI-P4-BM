@@ -112,19 +112,20 @@ sai_status_t sai_adapter::create_route_entry(const sai_route_entry_t *route_entr
     switch (nhop_obj_type) {
       case SAI_OBJECT_TYPE_NEXT_HOP:
         action_data.push_back(parse_param(nhop->nhop_id, 1));
-        bm_router_client_ptr->bm_mt_add_entry(
+        bm_client_ptr->bm_mt_add_entry(
             cxt_id, "table_router", match_params, "action_set_nhop_id",
             action_data, options);
         break;
       // case SAI_OBJECT_TYPE_NEXT_HOP_GROUP
       case SAI_OBJECT_TYPE_ROUTER_INTERFACE:
         action_data.push_back(parse_param(rif->rif_id, 1));
-        bm_router_client_ptr->bm_mt_add_entry(
+        action_data.push_back(parse_param(rif->type, 1));
+        bm_client_ptr->bm_mt_add_entry(
             cxt_id, "table_router", match_params, "action_set_erif_set_nh_dstip_from_pkt",
             action_data, options);
         break;
       case SAI_OBJECT_TYPE_PORT:
-        bm_router_client_ptr->bm_mt_add_entry(
+        bm_client_ptr->bm_mt_add_entry(
             cxt_id, "table_router", match_params, "action_set_ip2me",
             action_data, options);
         break;
@@ -132,7 +133,7 @@ sai_status_t sai_adapter::create_route_entry(const sai_route_entry_t *route_entr
     return SAI_STATUS_SUCCESS;
   }
   if (action == SAI_PACKET_ACTION_DROP) {
-    bm_router_client_ptr->bm_mt_add_entry(
+    bm_client_ptr->bm_mt_add_entry(
             cxt_id, "table_router", match_params, "drop",
             action_data, options);
     return SAI_STATUS_SUCCESS;
@@ -146,10 +147,10 @@ sai_status_t sai_adapter::remove_route_entry(const sai_route_entry_t *route_entr
   BmMtEntry bm_entry;
   BmAddEntryOptions options;
   BmMatchParams match_params = get_match_param_from_route_entry(route_entry, switch_metadata_ptr);
-  bm_router_client_ptr->bm_mt_get_entry_from_key(bm_entry, cxt_id, "table_router",
+  bm_client_ptr->bm_mt_get_entry_from_key(bm_entry, cxt_id, "table_router",
                                           match_params, options);
   (*logger)->info("trying to remove table_router entry handle {}", bm_entry.entry_handle);
-  bm_router_client_ptr->bm_mt_delete_entry(cxt_id, "table_router",
+  bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_router",
                                     bm_entry.entry_handle);
   return SAI_STATUS_SUCCESS;
 }

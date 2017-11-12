@@ -539,13 +539,24 @@ SimpleSwitch::egress_router_thread() {
     std::unique_ptr<Packet> packet;
     egress_router_buffer.pop_back(&packet);
     phv = packet->get_phv();
-    Pipeline *egress_router_mau = this->get_pipeline("egress_router");
     BMLOG_DEBUG_PKT(*packet, "packet received on egress router");
+    Pipeline *egress_router_mau = this->get_pipeline("egress_router");
     egress_router_mau->apply(packet.get());
-    // int egress_port = packet->get_egress_port();
-    enqueue(0, std::move(packet));
+    int erif_type = phv->get_field("router_metadata.erif_type").get_int();
+    BMLOG_DEBUG_PKT(*packet, "packet with egress rif type {}", erif_type);
+    switch (erif_type) {
+      case 0:
+        enqueue(0, std::move(packet));
+        break;
+      case 1:
+        ingress_bridge_buffer.push_front(std::move(packet));
+        break;
+      default:
+        BMLOG_DEBUG_PKT(*packet, "Packet with invalid erif_type at end of egress router pipeline");
+        break;
     }
   }
+}
 
 void
 SimpleSwitch::egress_thread(size_t worker_id) {

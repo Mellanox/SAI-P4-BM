@@ -130,14 +130,14 @@ sai_status_t sai_adapter::init_switch() {
       // Store default table entries
       match_params.clear();
       match_params.push_back(parse_exact_match_param(port->l2_if, 1));
-      bm_bridge_client_ptr->bm_mt_get_entry_from_key(
+      bm_client_ptr->bm_mt_get_entry_from_key(
           entry, cxt_id, "table_port_ingress_interface_type", match_params,
           options);
       bridge_port->handle_port_ingress_interface_type = entry.entry_handle;
       match_params.clear();
       match_params.push_back(
           parse_exact_match_param(bridge_port->bridge_port, 1));
-      bm_bridge_client_ptr->bm_mt_get_entry_from_key(
+      bm_client_ptr->bm_mt_get_entry_from_key(
           entry, cxt_id, "table_egress_br_port_to_if", match_params, options);
       bridge_port->handle_egress_br_port_to_if = entry.entry_handle;
 
@@ -145,17 +145,17 @@ sai_status_t sai_adapter::init_switch() {
       match_params.push_back(parse_exact_match_param(port->l2_if, 1));
       match_params.push_back(parse_exact_match_param(vlan_member->vid, 2));
       match_params.push_back(parse_exact_match_param(1, 1));
-      bm_bridge_client_ptr->bm_mt_get_entry_from_key(
+      bm_client_ptr->bm_mt_get_entry_from_key(
           entry, cxt_id, "table_egress_vlan_tag", match_params, options);
       vlan_member->handle_egress_vlan_tag = entry.entry_handle;
       match_params.clear();
       match_params.push_back(
           parse_exact_match_param(bridge_port->bridge_port, 1));
       match_params.push_back(parse_exact_match_param(vlan_member->vid, 2));
-      bm_bridge_client_ptr->bm_mt_get_entry_from_key(
+      bm_client_ptr->bm_mt_get_entry_from_key(
           entry, cxt_id, "table_egress_vlan_filtering", match_params, options);
       vlan_member->handle_egress_vlan_filtering = entry.entry_handle;
-      bm_bridge_client_ptr->bm_mt_get_entry_from_key(
+      bm_client_ptr->bm_mt_get_entry_from_key(
           entry, cxt_id, "table_ingress_vlan_filtering", match_params, options);
       vlan_member->handle_ingress_vlan_filtering = entry.entry_handle;
     }
@@ -193,7 +193,7 @@ sai_status_t sai_adapter::init_switch() {
     match_params.push_back(
         parse_exact_match_param(bridge_port->bridge_port, 1));
 
-    bm_bridge_client_ptr->bm_mt_get_entry_from_key(
+    bm_client_ptr->bm_mt_get_entry_from_key(
         entry, cxt_id, "table_egress_br_port_to_if", match_params, options);
     bridge_port->handle_egress_br_port_to_if = entry.entry_handle;
 
@@ -213,17 +213,17 @@ sai_status_t sai_adapter::init_switch() {
     match_params.clear();
     match_params.push_back(parse_exact_match_param(0, 2)); //default port 0
     match_params.push_back(parse_exact_match_param(1, 2)); //dfeault vid 1
-    // bm_router_client_ptr->bm_mt_get_entry_from_key(
-        // entry, cxt_id, "table_ingress_l3_if", match_params, options);
+    // bm_client_ptr->bm_mt_get_entry_from_key(
+        // entry, cxt_id, "table_ingress_l3_vlan_if", match_params, options);
     // rif->handle_ingress_l3 = entry.entry_handle;
 
     match_params.clear();
     match_params.push_back(parse_exact_match_param(rif->rif_id, 1));
-    // bm_router_client_ptr->bm_mt_get_entry_from_key(
+    // bm_client_ptr->bm_mt_get_entry_from_key(
         // entry, cxt_id, "table_egress_L3_if", match_params, options);
     // rif->handle_egress_l3 = entry.entry_handle;
 
-    // bm_router_client_ptr->bm_mt_get_entry_from_key(
+    // bm_client_ptr->bm_mt_get_entry_from_key(
         // entry, cxt_id, "table_ingress_vrf", match_params, options);
     // rif->handle_ingress_vrf = entry.entry_handle;
 

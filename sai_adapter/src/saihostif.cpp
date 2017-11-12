@@ -267,7 +267,7 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
       match_params.push_back(
           parse_exact_match_param(1652522221570, 6)); // dmac : 01-80-c2-00-00-02
       action_data.push_back(parse_param(hostif_trap->trap_id, 2));
-      hostif_trap->handle_trap = bm_bridge_client_ptr->bm_mt_add_entry(
+      hostif_trap->handle_trap = bm_client_ptr->bm_mt_add_entry(
           cxt_id, "table_l2_trap", match_params, "action_set_trap_id",
           action_data, options);
 
@@ -276,13 +276,13 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
       match_params.push_back(parse_exact_match_param(hostif_trap->trap_id, 2));
       switch (hostif_trap->trap_action) {
         case SAI_PACKET_ACTION_TRAP:
-          hostif_trap->handle_trap_id = bm_bridge_client_ptr->bm_mt_add_entry(
+          hostif_trap->handle_trap_id = bm_client_ptr->bm_mt_add_entry(
               cxt_id, "table_trap_id", match_params, "action_trap_to_cpu",
               action_data, options);
           break;
         case SAI_PACKET_ACTION_LOG:
         case SAI_PACKET_ACTION_COPY:
-          hostif_trap->handle_trap_id = bm_bridge_client_ptr->bm_mt_add_entry(
+          hostif_trap->handle_trap_id = bm_client_ptr->bm_mt_add_entry(
               cxt_id, "table_trap_id", match_params, "action_copy_to_cpu",
               action_data, options);
           break;
@@ -298,7 +298,7 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
       match_params.push_back(parse_lpm_param(0, 4, 0));
       match_params.push_back(parse_ternary_param(1, 2, 0xffff));
       action_data.push_back(parse_param(hostif_trap->trap_id, 2));
-      hostif_trap->handle_trap = bm_router_client_ptr->bm_mt_add_entry(
+      hostif_trap->handle_trap = bm_client_ptr->bm_mt_add_entry(
           cxt_id, "table_pre_l3_trap", match_params, "action_set_trap_id",
           action_data, options);
 
@@ -307,13 +307,13 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
       match_params.push_back(parse_exact_match_param(hostif_trap->trap_id, 2));
       switch (hostif_trap->trap_action) {
         case SAI_PACKET_ACTION_TRAP:
-          hostif_trap->handle_trap_id = bm_router_client_ptr->bm_mt_add_entry(
+          hostif_trap->handle_trap_id = bm_client_ptr->bm_mt_add_entry(
               cxt_id, "table_l3_trap_id", match_params, "action_trap_to_cpu",
               action_data, options);
           break;
         case SAI_PACKET_ACTION_LOG:
         case SAI_PACKET_ACTION_COPY:
-          hostif_trap->handle_trap_id = bm_router_client_ptr->bm_mt_add_entry(
+          hostif_trap->handle_trap_id = bm_client_ptr->bm_mt_add_entry(
               cxt_id, "table_l3_trap_id", match_params, "action_copy_to_cpu",
               action_data, options);
           break;
@@ -328,7 +328,7 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
       match_params.push_back(parse_lpm_param(0, 4, 0));
       match_params.push_back(parse_ternary_param(2, 2, 0xffff));
       action_data.push_back(parse_param(hostif_trap->trap_id, 2));
-      hostif_trap->handle_trap = bm_router_client_ptr->bm_mt_add_entry(
+      hostif_trap->handle_trap = bm_client_ptr->bm_mt_add_entry(
           cxt_id, "table_pre_l3_trap", match_params, "action_set_trap_id",
           action_data, options);
 
@@ -337,13 +337,13 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
       match_params.push_back(parse_exact_match_param(hostif_trap->trap_id, 2));
       switch (hostif_trap->trap_action) {
         case SAI_PACKET_ACTION_TRAP:
-          hostif_trap->handle_trap_id = bm_router_client_ptr->bm_mt_add_entry(
+          hostif_trap->handle_trap_id = bm_client_ptr->bm_mt_add_entry(
               cxt_id, "table_l3_trap_id", match_params, "action_trap_to_cpu",
               action_data, options);
           break;
         case SAI_PACKET_ACTION_LOG:
         case SAI_PACKET_ACTION_COPY:
-          hostif_trap->handle_trap_id = bm_router_client_ptr->bm_mt_add_entry(
+          hostif_trap->handle_trap_id = bm_client_ptr->bm_mt_add_entry(
               cxt_id, "table_l3_trap_id", match_params, "action_copy_to_cpu",
               action_data, options);
           break;
@@ -358,7 +358,7 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
     // Router traps
     case SAI_HOSTIF_TRAP_TYPE_IP2ME:
       action_data.push_back(parse_param(hostif_trap->trap_id, 2));
-      bm_router_client_ptr->bm_mt_set_default_action(
+      bm_client_ptr->bm_mt_set_default_action(
           cxt_id, "table_ip2me_trap", "action_set_trap_id",
           action_data);
 
@@ -367,13 +367,13 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
       match_params.push_back(parse_exact_match_param(hostif_trap->trap_id, 2));
       switch (hostif_trap->trap_action) {
         case SAI_PACKET_ACTION_TRAP:
-          hostif_trap->handle_trap_id = bm_router_client_ptr->bm_mt_add_entry(
+          hostif_trap->handle_trap_id = bm_client_ptr->bm_mt_add_entry(
               cxt_id, "table_l3_trap_id", match_params, "action_trap_to_cpu",
               action_data, options);
           break;
         case SAI_PACKET_ACTION_LOG:
         case SAI_PACKET_ACTION_COPY:
-          hostif_trap->handle_trap_id = bm_router_client_ptr->bm_mt_add_entry(
+          hostif_trap->handle_trap_id = bm_client_ptr->bm_mt_add_entry(
               cxt_id, "table_l3_trap_id", match_params, "action_copy_to_cpu",
               action_data, options);
           break;
@@ -389,7 +389,7 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
       match_params.push_back(parse_exact_match_param(179, 2));
       match_params.push_back(parse_exact_match_param(6, 1));
       action_data.push_back(parse_param(hostif_trap->trap_id, 2));
-      hostif_trap->handle_trap = bm_router_client_ptr->bm_mt_add_entry(
+      hostif_trap->handle_trap = bm_client_ptr->bm_mt_add_entry(
           cxt_id, "table_ip2me_trap", match_params, "action_set_trap_id",
           action_data, options);
 
@@ -398,13 +398,13 @@ sai_status_t sai_adapter::create_hostif_trap(sai_object_id_t *hostif_trap_id,
       match_params.push_back(parse_exact_match_param(hostif_trap->trap_id, 2));
       switch (hostif_trap->trap_action) {
         case SAI_PACKET_ACTION_TRAP:
-          hostif_trap->handle_trap_id = bm_router_client_ptr->bm_mt_add_entry(
+          hostif_trap->handle_trap_id = bm_client_ptr->bm_mt_add_entry(
               cxt_id, "table_l3_trap_id", match_params, "action_trap_to_cpu",
               action_data, options);
           break;
         case SAI_PACKET_ACTION_LOG:
         case SAI_PACKET_ACTION_COPY:
-          hostif_trap->handle_trap_id = bm_router_client_ptr->bm_mt_add_entry(
+          hostif_trap->handle_trap_id = bm_client_ptr->bm_mt_add_entry(
               cxt_id, "table_l3_trap_id", match_params, "action_copy_to_cpu",
               action_data, options);
           break;
@@ -452,9 +452,9 @@ sai_status_t sai_adapter::remove_hostif_trap(sai_object_id_t hostif_trap_id) {
   switch (hostif_trap->trap_type) {
     // l2 traps
     case SAI_HOSTIF_TRAP_TYPE_LACP:
-      bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_trap_id",
+      bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_trap_id",
                                            hostif_trap->handle_trap_id);
-      bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_l2_trap",
+      bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_l2_trap",
                                            hostif_trap->handle_trap);
       break;
 
@@ -462,25 +462,25 @@ sai_status_t sai_adapter::remove_hostif_trap(sai_object_id_t hostif_trap_id) {
     // pre-l3 traps
     case SAI_HOSTIF_TRAP_TYPE_ARP_RESPONSE:
     case SAI_HOSTIF_TRAP_TYPE_ARP_REQUEST:
-      bm_router_client_ptr->bm_mt_delete_entry(cxt_id, "table_l3_trap_id",
+      bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_l3_trap_id",
                                            hostif_trap->handle_trap_id);
-      bm_router_client_ptr->bm_mt_delete_entry(cxt_id, "table_pre_l3_trap",
+      bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_pre_l3_trap",
                                            hostif_trap->handle_trap);
       break;
 
     // IP2ME trap
     case SAI_HOSTIF_TRAP_TYPE_IP2ME:
-      bm_router_client_ptr->bm_mt_delete_entry(cxt_id, "table_l3_trap_id",
+      bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_l3_trap_id",
                                            hostif_trap->handle_trap_id);
-      bm_router_client_ptr->bm_mt_set_default_action(
+      bm_client_ptr->bm_mt_set_default_action(
           cxt_id, "table_ip2me_trap", "drop", action_data);
       break;
 
     // post-IP2Me traps
     case SAI_HOSTIF_TRAP_TYPE_BGP:
-      bm_router_client_ptr->bm_mt_delete_entry(cxt_id, "table_l3_trap_id",
+      bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_l3_trap_id",
                                            hostif_trap->handle_trap_id);
-      bm_router_client_ptr->bm_mt_delete_entry(cxt_id, "table_ip2me_trap",
+      bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_ip2me_trap",
                                            hostif_trap->handle_trap);
       break;
   }

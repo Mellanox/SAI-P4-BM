@@ -206,6 +206,6 @@ control egress(inout hdr headers, inout metadata meta, inout standard_metadata_t
             table_lag_hash.apply();
             table_egress_lag.apply();
         }
-        table_egress_clone_internal.apply();
+        // table_egress_clone_internal_.apply();
     }
 }

@@ -45,7 +45,7 @@ sai_status_t sai_adapter::create_neighbor_entry (const sai_neighbor_entry_t *nei
   (*logger)->info("neighbor enrty: rif id {}, ip family {}, ip {}", neighbor_entry->rif_id, neighbor_entry->ip_address.addr_family, neighbor_entry->ip_address.addr.ip4);
   get_match_params_from_neighbor_entry(neighbor_entry, match_params, switch_metadata_ptr);
   action_data.push_back(parse_param(parse_mac_64(mac), 6)); 
-  bm_router_client_ptr->bm_mt_add_entry(cxt_id, "table_neighbor",
+  bm_client_ptr->bm_mt_add_entry(cxt_id, "table_neighbor",
         match_params, "action_set_packet_dmac",
         action_data, options);
   return SAI_STATUS_SUCCESS;
@@ -58,9 +58,9 @@ sai_status_t sai_adapter::remove_neighbor_entry(const sai_neighbor_entry_t *neig
   BmAddEntryOptions options;
   BmMatchParams match_params;
   get_match_params_from_neighbor_entry(neighbor_entry, match_params, switch_metadata_ptr);
-  bm_router_client_ptr->bm_mt_get_entry_from_key(bm_entry, cxt_id, "table_neighbor",
+  bm_client_ptr->bm_mt_get_entry_from_key(bm_entry, cxt_id, "table_neighbor",
                                           match_params, options);
-  bm_router_client_ptr->bm_mt_delete_entry(cxt_id, "table_neighbor",
+  bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_neighbor",
                                     bm_entry.entry_handle);
   return SAI_STATUS_SUCCESS;
 }

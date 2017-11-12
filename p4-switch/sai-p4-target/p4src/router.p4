@@ -5,10 +5,9 @@ control ingress_router(inout hdr headers, inout metadata meta, inout standard_me
         meta.router_metadata.ingress_rif = ingress_rif;
     }
 
-    table table_ingress_l3_if {
+    table table_ingress_l3_vlan_if {
         key = {
-            standard_metadata.ingress_port : exact;
-            headers.vlan.vid : exact;
+            meta.ingress_metadata.vid : exact;
         }
         actions = {action_set_irif; drop;}
         //size: L3_EGRESS_IF_TABLE_SIZE;
@@ -62,14 +61,16 @@ control ingress_router(inout hdr headers, inout metadata meta, inout standard_me
         meta.router_metadata.nhop_table = 1;
     }
 
-    action action_set_erif_set_nh_dstip_from_pkt(bit<8> egress_rif){
+    action action_set_erif_set_nh_dstip_from_pkt(bit<8> egress_rif, bit<3> erif_type){
         meta.router_metadata.next_hop_dst_ip = headers.ipv4.dstAddr;
         meta.router_metadata.egress_rif = egress_rif;
+        meta.router_metadata.erif_type = erif_type;
     }
 
-    action action_set_erif_set_nh_dstip(bit<32> next_hop_dst_ip , bit<8> egress_rif){
+    action action_set_erif_set_nh_dstip(bit<32> next_hop_dst_ip , bit<8> egress_rif, bit<3> erif_type){
         meta.router_metadata.next_hop_dst_ip = next_hop_dst_ip;
-        meta.router_metadata.egress_rif = egress_rif;    
+        meta.router_metadata.egress_rif = egress_rif;
+        meta.router_metadata.erif_type = erif_type;    
     }
 
     action action_set_ip2me() {}
@@ -103,7 +104,7 @@ control ingress_router(inout hdr headers, inout metadata meta, inout standard_me
     }
 
     apply{
-        table_ingress_l3_if.apply();
+        table_ingress_l3_vlan_if.apply();
         table_ingress_vrf.apply();
         // table_L3_ingress_acl.apply(); TODO
         if (!(table_pre_l3_trap.apply().hit)) {
@@ -161,16 +162,16 @@ control egress_router(inout hdr headers, inout metadata meta, inout standard_met
         //size: NEIGH_TABLE_SIZE;
     }
 
-    action action_set_smac_vid(bit<48> smac, bit<12> vid){
+    action action_set_smac_vid(bit<48> smac, bit<12> vid, bit<8> bridge_port) {
         headers.ethernet.srcAddr = smac;
         // add_header(vlan);
         // headers.vlan.etherType = IPV4_TYPE;
         // headers.ethernet.etherType = VLAN_TYPE;
-        headers.vlan.vid = vid;
-        standard_metadata.egress_spec = 0;
+        meta.ingress_metadata.vid = vid;
+        meta.ingress_metadata.bridge_port = bridge_port;
     }
 
-    table table_egress_L3_if {
+    table table_egress_L3_vlan_if {
         key = {
             meta.router_metadata.egress_rif : exact;
         }
@@ -183,9 +184,9 @@ control egress_router(inout hdr headers, inout metadata meta, inout standard_met
         headers.cpu_header.setValid();
         headers.cpu_header.dst = (bit<16>) headers.vlan.vid;
         headers.cpu_header.netdev_type = NETDEV_TYPE_VLAN;
-        headers.ethernet.etherType = headers.vlan.etherType;
+        // headers.ethernet.etherType = headers.vlan.etherType;
         // remove_header(vlan);
-        headers.vlan.setInvalid();
+        // headers.vlan.setInvalid();
         headers.cpu_header.trap_id = meta.ingress_metadata.trap_id;
         standard_metadata.egress_spec = COPY_TO_CPU_MIRROR_ID;
     }
@@ -221,7 +222,7 @@ control egress_router(inout hdr headers, inout metadata meta, inout standard_met
         if (!(table_egress_clone_internal.apply().hit)) {
             table_ttl.apply();
             table_neighbor.apply();
-            table_egress_L3_if.apply();
+            table_egress_L3_vlan_if.apply();
         }
     }
 }

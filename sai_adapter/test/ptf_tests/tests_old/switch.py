@@ -243,7 +243,7 @@ def sai_thrift_create_router_interface(client, vr_id, is_port, port_id, vlan_id,
         rif_attribute2 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_TYPE,
                                                 value=rif_attribute2_value)
         rif_attr_list.append(rif_attribute2)
-        rif_attribute3_value = sai_thrift_attribute_value_t(u16=vlan_id)
+        rif_attribute3_value = sai_thrift_attribute_value_t(oid=vlan_id)
         rif_attribute3 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_VLAN_ID,
                                                 value=rif_attribute3_value)
         rif_attr_list.append(rif_attribute3)
@@ -260,7 +260,7 @@ def sai_thrift_create_router_interface(client, vr_id, is_port, port_id, vlan_id,
     rif_attr_list.append(rif_attribute5)
 
     if mac:
-        rif_attribute6_value = sai_thrift_attribute_value_t(mac=mac)
+        rif_attribute6_value = sai_thrift_attribute_value_t(mac=mac[::-1])
         rif_attribute6 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_SRC_MAC_ADDRESS,
                                                 value=rif_attribute6_value)
         rif_attr_list.append(rif_attribute6)
@@ -331,7 +331,7 @@ def sai_thrift_create_neighbor(client, addr_family, rif_id, ip_addr, dmac):
     else:
         addr = sai_thrift_ip_t(ip6=ip_addr)
         ipaddr = sai_thrift_ip_address_t(addr_family=SAI_IP_ADDR_FAMILY_IPV6, addr=addr)
-    neighbor_attribute1_value = sai_thrift_attribute_value_t(mac=dmac)
+    neighbor_attribute1_value = sai_thrift_attribute_value_t(mac=dmac[::-1])
     neighbor_attribute1 = sai_thrift_attribute_t(id=SAI_NEIGHBOR_ENTRY_ATTR_DST_MAC_ADDRESS,
                                                  value=neighbor_attribute1_value)
     neighbor_attr_list = [neighbor_attribute1]

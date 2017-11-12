@@ -98,8 +98,7 @@ typedef struct netdev_fd {
 typedef void (*adapter_packet_handler_fn)(u_char *, cpu_hdr_t *, int);
 typedef std::map<uint16_t, adapter_packet_handler_fn> hostif_trap_id_table_t;
 
-const int bm_port_bridge = 9090;
-const int bm_port_router = 9091;
+const int bm_port = 9090;
 const int32_t cxt_id = 0;
 
 string parse_param(uint64_t param, uint32_t num_of_bytes);
@@ -117,13 +116,8 @@ public:
   boost::shared_ptr<TProtocol> bprotocol;
   boost::shared_ptr<TProtocol> protocol;
   boost::shared_ptr<TProtocol> mc_protocol;
-  boost::shared_ptr<TTransport> router_socket;
-  boost::shared_ptr<TTransport> router_transport;
-  boost::shared_ptr<TProtocol> router_bprotocol;
-  boost::shared_ptr<TProtocol> router_protocol;
-  StandardClient bm_bridge_client;
-  StandardClient bm_router_client;
-  SimplePreLAGClient bm_bridge_client_mc;
+  StandardClient bm_client;
+  SimplePreLAGClient bm_client_mc;
   // generals
   sai_id_map_t sai_id_map;
   Switch_metadata switch_metadata;
@@ -132,9 +126,8 @@ public:
   std::shared_ptr<spdlog::logger> logger_o;
   static vector<sai_object_id_t> *switch_list_ptr;
   static sai_id_map_t *sai_id_map_ptr;
-  static StandardClient *bm_bridge_client_ptr;
-  static StandardClient *bm_router_client_ptr;
-  static SimplePreLAGClient *bm_bridge_client_mc_ptr;
+  static StandardClient *bm_client_ptr;
+  static SimplePreLAGClient *bm_client_mc_ptr;
   static Switch_metadata *switch_metadata_ptr;
   static std::shared_ptr<spdlog::logger> *logger;
 
