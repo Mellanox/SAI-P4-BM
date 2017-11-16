@@ -223,7 +223,7 @@ REGISTER_PRIMITIVE(copy_header);
 
 /* standard_metadata.clone_spec will contain the mirror id (16 LSB) and the
    field list id to copy (16 MSB) */
-class clone_ingress_pkt_to_egress
+class clone_ingress_bridge_pkt_to_egress
   : public ActionPrimitive<const Data &, const Data &> {
   void operator ()(const Data &clone_spec, const Data &field_list_id) {
     Field &f_clone_spec = get_field("standard_metadata.clone_spec");
@@ -232,9 +232,9 @@ class clone_ingress_pkt_to_egress
   }
 };
 
-REGISTER_PRIMITIVE(clone_ingress_pkt_to_egress);
+REGISTER_PRIMITIVE(clone_ingress_bridge_pkt_to_egress);
 
-class clone_egress_pkt_to_egress
+class clone_egress_bridge_pkt_to_egress
   : public ActionPrimitive<const Data &, const Data &> {
   void operator ()(const Data &clone_spec, const Data &field_list_id) {
     Field &f_clone_spec = get_field("standard_metadata.clone_spec");
@@ -243,7 +243,7 @@ class clone_egress_pkt_to_egress
   }
 };
 
-REGISTER_PRIMITIVE(clone_egress_pkt_to_egress);
+REGISTER_PRIMITIVE(clone_egress_bridge_pkt_to_egress);
 
 class resubmit : public ActionPrimitive<const Data &> {
   void operator ()(const Data &field_list_id) {

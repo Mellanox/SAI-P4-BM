@@ -51,6 +51,7 @@ parser fixParser(packet_in b,
 
 control fixDeparser(packet_out b,in hdr p) {
     apply {
+        b.emit(p.cpu_header);
         b.emit(p.ethernet);
         b.emit(p.vlan);
         b.emit(p.ipv4);

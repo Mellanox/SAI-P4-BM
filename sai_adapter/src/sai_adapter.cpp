@@ -10,7 +10,7 @@ bool sai_adapter::pcap_loop_started;
 std::mutex sai_adapter::m;
 std::condition_variable sai_adapter::cv;
 hostif_trap_id_table_t sai_adapter::hostif_trap_id_table;
-pcap_fd_t sai_adapter::cpu_port[2];
+pcap_fd_t sai_adapter::cpu_port[1];
 int sai_adapter::sniff_pipe_fd[2];
 int sai_adapter::nl_fd;
 std::vector<netdev_fd_t> sai_adapter::active_netdevs;

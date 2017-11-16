@@ -188,13 +188,15 @@ control egress(inout hdr headers, inout metadata meta, inout standard_metadata_t
     action action_cpu_encap() { 
         headers.cpu_header.setValid();
         headers.cpu_header.netdev_type = NETDEV_TYPE_PORT;
-        headers.cpu_header.dst = (bit<16>) standard_metadata.ingress_port;
+        headers.cpu_header.dst = (bit<16>) meta.ingress_metadata.bridge_port;
         headers.cpu_header.trap_id = meta.ingress_metadata.trap_id;
     }
 
     table table_egress_clone_internal {
         key = {
             standard_metadata.instance_type : exact;
+            meta.ingress_metadata.trap_id : exact;
+            headers.ethernet.dstAddr : ternary;
         }
         actions = {nop; action_cpu_encap;} 
         // size: 16;
@@ -206,6 +208,6 @@ control egress(inout hdr headers, inout metadata meta, inout standard_metadata_t
             table_lag_hash.apply();
             table_egress_lag.apply();
         }
-        // table_egress_clone_internal_.apply();
+        table_egress_clone_internal.apply();
     }
 }

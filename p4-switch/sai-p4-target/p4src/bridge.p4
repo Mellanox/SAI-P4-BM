@@ -1,12 +1,3 @@
-control control_1d_bridge_flow(inout hdr headers, inout metadata meta, inout standard_metadata_t standard_metadata){
-    #include "inc/common_actions.p4"
-
-
-    apply {
-        
-    }
-}
-
 control ingress_bridge(inout hdr headers, inout metadata meta, inout standard_metadata_t standard_metadata){
     #include "inc/common_actions.p4"
     
@@ -84,6 +75,10 @@ control ingress_bridge(inout hdr headers, inout metadata meta, inout standard_me
     //-----------
     action action_learn_mac() {
         meta.ingress_metadata.trap_id = MAC_LEARN_TRAP_ID;   //TODO, should this be configurable to support hostif interface(?)
+        // clone3(CloneType.IB2E, standard_metadata.clone_spec, meta.ingress_metadata.trap_id);
+        // standard_metadata.clone_spec = 250;
+        clone3(CloneType.IB2E, 32w250, {meta.ingress_metadata.trap_id, meta.ingress_metadata.bridge_port});
+        // clone3(CloneType.IB2E, 32w250, {meta.ingress_metadata.trap_id, standard_metadata, meta.ingress_metadata.trap_id, meta.ingress_metadata.bridge_id, meta.ingress_metadata.bridge_port});
         // clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_bridge_FL);
     }
 

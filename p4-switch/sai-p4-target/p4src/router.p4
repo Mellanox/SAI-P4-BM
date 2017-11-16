@@ -191,7 +191,7 @@ control egress_router(inout hdr headers, inout metadata meta, inout standard_met
         standard_metadata.egress_spec = COPY_TO_CPU_MIRROR_ID;
     }
 
-    table table_egress_clone_internal {
+    table table_egress_router_clone_internal {
         key = {
             standard_metadata.instance_type : exact;
         }
@@ -219,7 +219,7 @@ control egress_router(inout hdr headers, inout metadata meta, inout standard_met
     // }
 
     apply{
-        if (!(table_egress_clone_internal.apply().hit)) {
+        if (!(table_egress_router_clone_internal.apply().hit)) {
             table_ttl.apply();
             table_neighbor.apply();
             table_egress_L3_vlan_if.apply();

@@ -104,7 +104,7 @@ class L3IPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
             
             # sai_thrift_delete_fdb(self.client, dmac1, vlan_id1, bridge_type, None)
             sai_thrift_flush_fdb_by_vlan(self.client, vlan_id0)
-            sai_thrift_flush_fdb_by_vlan(self.client, 1)
+            # sai_thrift_flush_fdb_by_vlan(self.client, 1)
             self.client.sai_thrift_remove_vlan_member(vlan_member0)
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan(vlan_oid0)

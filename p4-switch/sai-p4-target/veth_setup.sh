@@ -22,22 +22,3 @@ ip netns exec $sw_net ip link set dev $intf0 up
 ip link set dev $intf1 up
 ip netns exec $sw_net sysctl net.ipv6.conf.$intf0.disable_ipv6=1
 sysctl net.ipv6.conf.$intf1.disable_ipv6=1
-
-intf0="router_port0"
-intf1="router_port1"
-ip link add name $intf0 type veth peer name $intf1
-ip link set dev $intf0 netns $sw_net
-ip link set dev $intf1 netns $sw_net
-ip netns exec $sw_net ip link set dev $intf0 up
-ip netns exec $sw_net ip link set dev $intf1 up
-ip netns exec $sw_net sysctl net.ipv6.conf.$intf0.disable_ipv6=1
-ip netns exec $sw_net sysctl net.ipv6.conf.$intf1.disable_ipv6=1
-
-intf0="router_cpu_port"
-intf1="router_port"
-ip link add name $intf0 type veth peer name $intf1
-ip link set dev $intf0 netns $sw_net
-ip netns exec $sw_net ip link set dev $intf0 up
-ip link set dev $intf1 up
-ip netns exec $sw_net sysctl net.ipv6.conf.$intf0.disable_ipv6=1
-sysctl net.ipv6.conf.$intf1.disable_ipv6=1

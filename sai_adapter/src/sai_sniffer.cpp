@@ -141,9 +141,9 @@ void sai_adapter::PacketSniffer() {
   nl_fd = create_nl_socket(*logger);
   fd_set sniff_set;
   int i;
-  int num_of_devs = 2; //TODO: vector?
+  int num_of_devs = 1; //TODO: vector?
   cpu_port[0].dev = "switch_port";
-  cpu_port[1].dev = "router_port";
+  // cpu_port[1].dev = "router_port";
 
   for (i = 0; i < num_of_devs; i++) {
     cpu_port[i].pcap = pcap_open_live(cpu_port[i].dev, BUFSIZ, 0, -1, errstr);
@@ -168,7 +168,7 @@ void sai_adapter::PacketSniffer() {
   }
   struct pcap_pkthdr *pcap_header;
   const u_char *pcap_packet;
-  (*logger)->info("start sniffing on {}, {} and Netlink", cpu_port[0].dev, cpu_port[1].dev);
+  (*logger)->info("start sniffing on {} and Netlink", cpu_port[0].dev);
   release_pcap_lock();
   while (break_sniff_loop == 0) {
     FD_ZERO(&sniff_set);
@@ -322,8 +322,8 @@ void sai_adapter::cpu_port_packetHandler(u_char *userData,
 }
 
 void sai_adapter::learn_mac(u_char *packet, cpu_hdr_t *cpu, int pkt_len) {
-  uint32_t ingress_port =  cpu->dst;
-  (*logger)->info("learn_mac from port {}", ingress_port);
+  uint32_t ingress_bridge_port =  cpu->dst;
+  (*logger)->info("learn_mac from bridge port {}", ingress_bridge_port);
   ethernet_hdr_t *ether = (ethernet_hdr_t *)packet;
   ether->ether_type = ntohs(ether->ether_type);
   ReverseBytes(ether->dst_addr, 6);
@@ -332,42 +332,50 @@ void sai_adapter::learn_mac(u_char *packet, cpu_hdr_t *cpu, int pkt_len) {
   print_mac_to_log(src_mac, *logger);
   BridgePort_obj *bridge_port;
   Bridge_obj *bridge;
-  sai_object_id_t port_id;
-  uint16_t vlan_id;
-  for (port_id_map_t::iterator it = switch_metadata_ptr->ports.begin();
-       it != switch_metadata_ptr->ports.end(); ++it) {
-    if (it->second->hw_port == ingress_port) {
-      port_id = it->first;
-      vlan_id = it->second->pvid;
-      (*logger)->info("MAC learning from ingress port {} (sai_object_id)",
-                      port_id);
-      break;
-    }
-  }
-  for (lag_id_map_t::iterator it = switch_metadata_ptr->lags.begin();
-       it != switch_metadata_ptr->lags.end(); ++it) {
-    for (std::vector<sai_object_id_t>::iterator mem_it =
-             it->second->lag_members.begin();
-         mem_it != it->second->lag_members.end(); ++mem_it) {
-      if (switch_metadata_ptr->lag_members[*mem_it]->port->hw_port ==
-          ingress_port) {
-        (*logger)->info("MAC learning from ingress lag {} (sai_object_id)",
-                        it->first);
-        port_id = it->first;
-        break;
-      }
-    }
-  }
+  // sai_object_id_t port_id;
+  // for (port_id_map_t::iterator it = switch_metadata_ptr->ports.begin();
+  //      it != switch_metadata_ptr->ports.end(); ++it) {
+  //   if (it->second->hw_port == ingress_port) {
+  //     port_id = it->first;
+  //     vlan_id = it->second->pvid;
+  //     (*logger)->info("MAC learning from ingress port {} (sai_object_id)",
+  //                     port_id);
+  //     break;
+  //   }
+  // }
+  // for (lag_id_map_t::iterator it = switch_metadata_ptr->lags.begin();
+  //      it != switch_metadata_ptr->lags.end(); ++it) {
+  //   for (std::vector<sai_object_id_t>::iterator mem_it =
+  //            it->second->lag_members.begin();
+  //        mem_it != it->second->lag_members.end(); ++mem_it) {
+  //     if (switch_metadata_ptr->lag_members[*mem_it]->port->hw_port ==
+  //         ingress_port) {
+  //       (*logger)->info("MAC learning from ingress lag {} (sai_object_id)",
+  //                       it->first);
+  //       port_id = it->first;
+  //       break;
+  //     }
+  //   }
+  // }
+  
   for (bridge_port_id_map_t::iterator it =
            switch_metadata_ptr->bridge_ports.begin();
        it != switch_metadata_ptr->bridge_ports.end(); ++it) {
-    if (it->second->port_id == port_id) {
+    if (it->second->bridge_port == ingress_bridge_port) {
       bridge_port = it->second;
       bridge = switch_metadata_ptr->bridges[it->second->bridge_id];
       (*logger)->info("bridge_port_id {}", bridge_port->sai_object_id);
       break;
     }
   }
+
+  uint16_t vid;
+  if (switch_metadata_ptr->ports.find(bridge_port->port_id) != switch_metadata_ptr->ports.end()) {
+    vid = switch_metadata_ptr->ports[bridge_port->port_id]->pvid;
+  } else {
+    vid = switch_metadata_ptr->lags[bridge_port->port_id]->port_obj->pvid;
+  }
+  
   // TODO Add here a check on bridge_port learning mode!
   (*logger)->info("MAC learned (bridge sai_object_id {}):",
                   bridge->sai_object_id);
@@ -377,13 +385,13 @@ void sai_adapter::learn_mac(u_char *packet, cpu_hdr_t *cpu, int pkt_len) {
     bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1Q;
   } else {
     bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1D;
-    vlan_id = bridge_port->vlan_id;
+    vid = bridge_port->vlan_id;
   }
   // if (ether->ether_type == 0x8100) {
   // TODO: get vlan from packet
   // }
   sai_fdb_entry_t fdb_entry;
-  build_fdb_entry(src_mac, bridge_type, vlan_id, bridge->sai_object_id, &fdb_entry);
+  build_fdb_entry(src_mac, bridge_type, vid, bridge->sai_object_id, &fdb_entry);
 
   // sai_attribute_t flush_attr[3];
   // flush_attr[0].id = SAI_FDB_FLUSH_ATTR_ENTRY_TYPE;

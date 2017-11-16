@@ -126,10 +126,8 @@ bin_SCRIPTS = run_bm.sh \
 
 P4_JSON_FILES = sai_bridge.json sai_router.json
 
-DEFAULT_CONFIG_FILES = default_config/bridge_default_config_mirror.txt \
-					   default_config/bridge_default_config.txt \
-					   default_config/router_default_config_mirror.txt \
-					   default_config/router_default_config.txt
+DEFAULT_CONFIG_FILES = default_config/default_config_mirror.txt \
+					   default_config/default_config.txt
 
 dist_pkgdata_DATA = ${P4_JSON_FILES} ${DEFAULT_CONFIG_FILES}
 

@@ -342,6 +342,7 @@ public:
   BmEntryHandle handle_egress_l3;
   BmEntryHandle handle_ingress_l3;
   BmEntryHandle handle_ingress_vrf;
+  BmEntryHandle handle_learn_mac;
   RouterInterface_obj(sai_id_map_t *sai_id_map_ptr)
       : Sai_obj(sai_id_map_ptr) {
         this->vid = 1;
@@ -354,6 +355,7 @@ public:
         this->handle_egress_l3 = NULL_HANDLE;
         this->handle_ingress_l3 = NULL_HANDLE;
         this->handle_ingress_vrf = NULL_HANDLE;
+        this->handle_learn_mac = NULL_HANDLE;
       }
 };
 

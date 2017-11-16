@@ -158,8 +158,13 @@ class SimpleSwitch : public Switch {
   void check_queueing_metadata();
 
  private:
+
   int max_port;
   Queue<std::unique_ptr<Packet> > input_buffer;
+  // Queue<std::pair<std::unique_ptr<Packet>, Packet::buffer_state_t>> ingress_bridge_buffer;
+  // Queue<std::pair<std::unique_ptr<Packet>, Packet::buffer_state_t>> egress_bridge_buffer;
+  // Queue<std::pair<std::unique_ptr<Packet>, Packet::buffer_state_t>> ingress_router_buffer;
+  // Queue<std::pair<std::unique_ptr<Packet>, Packet::buffer_state_t>> egress_router_buffer;
   Queue<std::unique_ptr<Packet> > ingress_bridge_buffer;
   Queue<std::unique_ptr<Packet> > egress_bridge_buffer;
   Queue<std::unique_ptr<Packet> > ingress_router_buffer;

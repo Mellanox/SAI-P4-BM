@@ -476,7 +476,7 @@ static sai_status_t remove_vlan_members(uint32_t object_count,const sai_object_i
 private:
   // sai_object_id_t switch_id;
   // sai adapter threading handlers
-  static pcap_fd_t cpu_port[2];
+  static pcap_fd_t cpu_port[1];
   static std::vector<netdev_fd_t> active_netdevs;
   std::thread SaiAdapterThread;
   static bool pcap_loop_started;
