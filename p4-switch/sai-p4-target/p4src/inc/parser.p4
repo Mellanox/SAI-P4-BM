@@ -12,14 +12,34 @@ parser fixParser(packet_in b,
                 inout standard_metadata_t standard_metadata)
 {
     state start{
+        meta.ingress_metadata.cpu_port = (bit) (standard_metadata.ingress_port == (bit<9>) COPY_TO_CPU_MIRROR_ID);
+        transition select(meta.ingress_metadata.cpu_port){
+            1 : parse_cpu;
+            default: parse_ethernet;
+        }
+    }
+
+    state parse_cpu {
+        b.extract(p.cpu_header);
+        transition parse_ethernet;
+    }
+
+    state parse_ethernet {
         b.extract(p.ethernet);
         meta.ingress_metadata.is_tagged = 0;
         transition select(p.ethernet.etherType){
             ETHERTYPE_VLAN : parse_vlan;
             ETHERTYPE_IPV4 : parse_ipv4;
+            ETHERTYPE_ARP  : parse_arp_ipv4;
             default: accept;
         }
     }
+
+    state parse_arp_ipv4 {
+        b.extract(p.arp_ipv4);
+        transition accept;
+    }
+
     state parse_vlan {
         b.extract(p.vlan);
         meta.ingress_metadata.is_tagged = (bit) (p.vlan.vid != 0);
@@ -40,11 +60,15 @@ parser fixParser(packet_in b,
 
     state parse_udp {
     	b.extract(p.udp);
+        meta.l4_metadata.srcPort = p.udp.srcPort;
+        meta.l4_metadata.dstPort = p.udp.dstPort;
         transition accept;
     }
 
     state parse_tcp {
     	b.extract(p.tcp);
+        meta.l4_metadata.srcPort = p.tcp.srcPort;
+        meta.l4_metadata.dstPort = p.tcp.dstPort;
         transition accept;
     }
 }
@@ -54,6 +78,7 @@ control fixDeparser(packet_out b,in hdr p) {
         b.emit(p.cpu_header);
         b.emit(p.ethernet);
         b.emit(p.vlan);
+        b.emit(p.arp_ipv4);
         b.emit(p.ipv4);
         b.emit(p.udp);
         b.emit(p.tcp);

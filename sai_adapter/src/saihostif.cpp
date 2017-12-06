@@ -594,8 +594,8 @@ void sai_adapter::vlan_netdev_packet_handler(uint16_t vlan_id, int length,
   //       currently not sure how to do it
 
   // sai_adapter *adapter = (sai_adapter*) arg_array[1];
-  if (pcap_inject(cpu_port[1].pcap, encaped_packet, length + CPU_HDR_LEN) == -1) {
-    (*logger)->debug("error on injecting packet [%s]\n", pcap_geterr(cpu_port[1].pcap));
+  if (pcap_inject(cpu_port[0].pcap, encaped_packet, length + CPU_HDR_LEN) == -1) {
+    (*logger)->debug("error on injecting packet [%s]\n", pcap_geterr(cpu_port[0].pcap));
   }
   free(encaped_packet);
 }

@@ -120,13 +120,15 @@ class ArpTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         default_bridge, default_vlan_oid, cpu_port = switch_init2(self.client)
         # port1 = port_list[1]
-        src_mac = '00:11:22:33:44:55'
+        # src_mac = '00:11:22:33:44:55'
+        src_mac = '3e:33:17:ed:64:6c'
         src_ip = '192.168.45.50'
         dst_ip = '192.168.45.45'
         hostif = sai_thrift_create_hostif(client=self.client,
                                           obj_id=default_vlan_oid,
                                           intf_name="vlan1")
-        print "\nhostif vlan1 created"
+        print "\nhostif vlan1 created sleeping for 15 seconds"
+        time.sleep(15)
         trap_group = sai_thrift_create_hostif_trap_group(self.client, 0, 0)
         trap1 = sai_thrift_create_hostif_trap(client=self.client,
                                               trap_type=SAI_HOSTIF_TRAP_TYPE_ARP_REQUEST,
@@ -165,8 +167,8 @@ class ArpTest(sai_base_test.ThriftInterfaceDataPlane):
             # time.sleep(20)
             print "Sending arp request packet to port 1"
             send_packet(self, 1, str(rq_pkt))
-            print "Sending arp reply packet to port 1"
-            send_packet(self, 1, str(rp_pkt))
+            # print "Sending arp reply packet to port 1"
+            # send_packet(self, 1, str(rp_pkt))
             time.sleep(2)
             # verify_packets(self, exp_pkt, [1])
         finally:
@@ -208,7 +210,7 @@ class IP2METest(sai_base_test.ThriftInterfaceDataPlane):
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
         addr_family = SAI_IP_ADDR_FAMILY_IPV4
-        rif_id0 = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vid, v4_enabled, v6_enabled, router_mac)
+        rif_id0 = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan_oid, v4_enabled, v6_enabled, router_mac)
         sai_thrift_create_route(self.client, vr_id, addr_family, router_ip, router_ip_mask, cpu_port)
 
 

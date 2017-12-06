@@ -28,7 +28,7 @@ control ingress_router(inout hdr headers, inout metadata meta, inout standard_me
 
     table table_pre_l3_trap {
         key = {
-            headers.vlan.etherType : ternary;
+            headers.ethernet.etherType : ternary; //TODO: take inner ethertype (ethernet \ vlan \ vlan2)
             headers.ipv4.dstAddr   : lpm;
             headers.arp_ipv4.opcode     : ternary;
         }
@@ -42,6 +42,18 @@ control ingress_router(inout hdr headers, inout metadata meta, inout standard_me
             headers.ipv4.protocol       : exact;
         }
         actions = { action_set_trap_id; drop;}
+    }
+
+    action action_trap_to_cpu() {
+        meta.egress_metadata.netdev_type = NETDEV_TYPE_VLAN; 
+        meta.egress_metadata.clone_dst = (bit<16>) meta.ingress_metadata.vid;
+        action_trap_to_cpu_common();
+    }
+
+    action action_copy_to_cpu() {
+        meta.egress_metadata.netdev_type = NETDEV_TYPE_VLAN; 
+        meta.egress_metadata.clone_dst = (bit<16>) meta.ingress_metadata.vid;
+        action_copy_to_cpu_common();
     }
 
     table table_l3_trap_id {
@@ -145,7 +157,7 @@ control egress_router(inout hdr headers, inout metadata meta, inout standard_met
         // clone_egress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_router_FL);
         // drop();
         // standard_metadata.egress_spec = COPY_TO_CPU_MIRROR_ID;
-        standard_metadata.egress_spec = 250;
+        // standard_metadata.egress_spec = 250;
     }
 
     action action_set_packet_dmac(bit<48> dmac){
@@ -188,7 +200,7 @@ control egress_router(inout hdr headers, inout metadata meta, inout standard_met
         // remove_header(vlan);
         // headers.vlan.setInvalid();
         headers.cpu_header.trap_id = meta.ingress_metadata.trap_id;
-        standard_metadata.egress_spec = COPY_TO_CPU_MIRROR_ID;
+        standard_metadata.egress_spec = (bit<9>) COPY_TO_CPU_MIRROR_ID;
     }
 
     table table_egress_router_clone_internal {

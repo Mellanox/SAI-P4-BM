@@ -218,17 +218,21 @@ void sai_adapter::PacketSniffer() {
       if (FD_ISSET(it->fd, &sniff_set)) {
         u_char buffer[MAX_PCAP_BUFFER_LEN];
         int length = read(it->fd, &buffer, MAX_PCAP_BUFFER_LEN);
-        (*logger)->info("packet recieved of length {}", length);
         switch (it->type) {
           case SAI_OBJECT_TYPE_VLAN:
+          (*logger)->info("packet of length {} recieved in vlan {} netdev", length, (it->data).vid);
             vlan_netdev_packet_handler((it->data).vid, length, buffer);
             break;
           case SAI_OBJECT_TYPE_PORT:
+            (*logger)->info("packet of length {} recieved in port {} netdev", length, (it->data).hw_port);
             phys_netdev_packet_handler((it->data).hw_port, length, buffer);
             break;
           // case SAI_OBJECT_TYPE_LAG:
             // vlan_netdev_packet_handler(it->vid, length, buffer);
             // break;
+          default:
+            (*logger)->warn("packet of length {} recieved unknown netdev type", length);
+            break;
         }
       }
     }

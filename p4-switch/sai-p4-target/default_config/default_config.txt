@@ -7,17 +7,12 @@ table_set_default table_ingress_vlan_filtering drop
 table_set_default table_port_set_packet_vid_internal action_set_packet_vid
 table_set_default table_learn_fdb action_learn_mac
 table_set_default table_bridge_loopback_filter drop
-
 table_set_default table_drop_tagged_internal nop
 table_set_default table_drop_untagged_internal nop
 table_add table_drop_tagged_internal drop 1 =>
 table_add table_drop_untagged_internal drop 1 =>
-
 table_set_default table_l2_trap action_set_trap_id 0xff
 table_set_default table_trap_id nop
-table_set_default table_egress_clone_internal nop
-table_add table_egress_clone_internal action_cpu_encap 1 512 0x000000000000&&&0x000000000000 => 1
-
 table_add table_port_ingress_interface_type action_set_l2_if_type 0 => 3 0
 table_add table_port_ingress_interface_type action_set_l2_if_type 1 => 3 1
 table_add table_port_ingress_interface_type action_set_l2_if_type 2 => 3 2
@@ -51,7 +46,6 @@ table_add table_port_ingress_interface_type action_set_l2_if_type 29 => 3 29
 table_add table_port_ingress_interface_type action_set_l2_if_type 30 => 3 30
 table_add table_port_ingress_interface_type action_set_l2_if_type 31 => 3 31
 table_add table_port_ingress_interface_type action_set_l2_if_type 251 => 3 251
-
 table_add table_egress_br_port_to_if action_forward_set_outIfType 0 => 0 0
 table_add table_egress_br_port_to_if action_forward_set_outIfType 1 => 1 0 
 table_add table_egress_br_port_to_if action_forward_set_outIfType 2 => 2 0
@@ -85,7 +79,6 @@ table_add table_egress_br_port_to_if action_forward_set_outIfType 29 => 29 0
 table_add table_egress_br_port_to_if action_forward_set_outIfType 30 => 30 0
 table_add table_egress_br_port_to_if action_forward_set_outIfType 31 => 31 0
 table_add table_egress_br_port_to_if action_forward_set_outIfType 251 => 251 2
-
 table_add table_port_set_packet_vid_internal action_set_packet_vid 1 =>
 table_add table_ingress_vlan_filtering nop 0 1 =>
 table_add table_ingress_vlan_filtering nop 1 1 =>
@@ -120,7 +113,6 @@ table_add table_ingress_vlan_filtering nop 29 1 =>
 table_add table_ingress_vlan_filtering nop 30 1 =>
 table_add table_ingress_vlan_filtering nop 31 1 =>
 table_add table_ingress_vlan_filtering nop 251 1 =>
-
 table_set_default table_egress_vlan_filtering drop
 table_add table_egress_vlan_filtering nop 0 1 =>
 table_add table_egress_vlan_filtering nop 1 1 =>
@@ -155,7 +147,6 @@ table_add table_egress_vlan_filtering nop 29 1 =>
 table_add table_egress_vlan_filtering nop 30 1 =>
 table_add table_egress_vlan_filtering nop 31 1 =>
 table_add table_egress_vlan_filtering nop 251 1 =>
-
 table_add table_egress_vlan_tag action_forward_vlan_untag 0 1 1 =>
 table_add table_egress_vlan_tag action_forward_vlan_untag 1 1 1 =>
 table_add table_egress_vlan_tag action_forward_vlan_untag 2 1 1 =>
@@ -188,26 +179,16 @@ table_add table_egress_vlan_tag action_forward_vlan_untag 28 1 1 =>
 table_add table_egress_vlan_tag action_forward_vlan_untag 29 1 1 =>
 table_add table_egress_vlan_tag action_forward_vlan_untag 30 1 1 =>
 table_add table_egress_vlan_tag action_forward_vlan_untag 31 1 1 =>
-table_add table_egress_vlan_tag action_forward_vlan_tag 251 1 0 => 0 0 1
 table_set_default table_xSTP_instance action_set_stp_id 1
-
 table_set_default table_mc_lookup_mode action_set_mcast_lookup_mode 0 
 table_set_default table_mc_fdb action_set_mc_fdb_miss
 table_set_default table_mc_l2_sg_g  action_set_mc_fdb_miss
-
-
 table_set_default table_broadcast action_forward_mc_set_if_list 1
 table_set_default table_flood action_forward_mc_set_if_list 1
-table_add table_cpu_forward action_forward_cpu 1  =>
-
+table_add table_cpu_forward action_cpu_forward_to_vlan 2  =>
 mc_node_create 1 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 251
 mc_mgrp_create 1
 mc_node_associate 1 0
-
-
-
-
-
 table_set_default table_ingress_l3_vlan_if drop
 table_add table_ingress_vrf action_set_vrf 0 => 0
 table_add table_ingress_l3_vlan_if action_set_irif 1 => 0
@@ -219,10 +200,5 @@ table_set_default table_next_hop drop
 table_set_default table_ip2me_trap drop 
 table_set_default table_l3_trap_id drop
 table_add table_l3_trap_id nop 0xff =>
-# table_set_default table_egress_clone_internal nop
-# table_add table_egress_clone_internal action_cpu_encap 1 =>
-# table_add table_egress_clone_internal nop 2 =>
-table_add table_cpu_forward action_forward_cpu 1  =>
 table_add table_egress_L3_vlan_if action_set_smac_vid 0 => 00:00:00:00:00:00 1 251
-# table_set_default table_neighbor action_egress_trap_to_cpu
-# table_set_default table_neighbor drop
+mirroring_add 250 250

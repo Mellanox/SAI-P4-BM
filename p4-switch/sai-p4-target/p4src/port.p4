@@ -40,6 +40,19 @@ control ingress(inout hdr headers, inout metadata meta, inout standard_metadata_
         actions = {action_set_trap_id;}
     }
 
+    action action_trap_to_cpu() {
+        meta.egress_metadata.netdev_type = NETDEV_TYPE_PORT;
+        meta.egress_metadata.clone_dst = (bit<16>) standard_metadata.ingress_port;
+        // meta.egress_metadata.netdev_type = NETDEV_TYPE_PORT;
+        action_trap_to_cpu_common();
+    }
+
+    action action_copy_to_cpu() {
+        meta.egress_metadata.netdev_type = NETDEV_TYPE_PORT;
+        meta.egress_metadata.clone_dst = (bit<16>) standard_metadata.ingress_port;
+        action_copy_to_cpu_common();
+    }
+
     table table_trap_id { //TODO: move this?
         key = {
             meta.ingress_metadata.trap_id : exact;
@@ -94,27 +107,49 @@ control ingress(inout hdr headers, inout metadata meta, inout standard_metadata_
         }
         actions = {action_set_l2_if_type; drop;}
     }
-    apply { 
-        table_ingress_lag.apply(); //TODO: rename table?
-        table_port_configurations.apply();
-        // table_accepted_frame_type.apply();
-        if (meta.ingress_metadata.is_tagged==1) { 
-            // table_port_PVID.apply();
-        // } else {
-            table_port_set_packet_vid_internal.apply();
-            table_drop_tagged_internal.apply();
-        } else {
-            table_drop_untagged_internal.apply();
+
+    action action_cpu_forward_to_vlan() { //forward to ingress 1Q bridge after setting vid
+        meta.ingress_metadata.l2_if_type = L2_IF_1Q_BRIDGE;
+        meta.ingress_metadata.vid = (bit<12>) headers.cpu_header.dst;
+        meta.ingress_metadata.bridge_port = ROUTER_BRIDGE_PORT;
+        headers.cpu_header.setInvalid();
+    }
+
+    table table_cpu_forward {
+        key = {
+            headers.cpu_header.netdev_type : exact;
         }
-        // table_port_mode.apply();
-        table_l2_trap.apply();
-        table_trap_id.apply(); //TODO: move this
-        // table_check_port_mtu.apply(; //TODO
-        //table_ingress_acl.apply(); // TODO
-        if(meta.ingress_metadata.bind_mode == PORT_MODE_PORT) 
-            table_port_ingress_interface_type.apply();
-        else
-            table_subport_ingress_interface_type.apply();
+        actions = {action_cpu_forward_to_vlan;}
+        const entries = {
+            (NETDEV_TYPE_VLAN) : action_cpu_forward_to_vlan();
+        }
+    }
+
+    apply { 
+        if (meta.ingress_metadata.cpu_port == 0) {
+            table_ingress_lag.apply(); //TODO: rename table?
+            table_port_configurations.apply();
+            // table_accepted_frame_type.apply();
+            if (meta.ingress_metadata.is_tagged==1) { 
+                // table_port_PVID.apply();
+            // } else {
+                table_port_set_packet_vid_internal.apply();
+                table_drop_tagged_internal.apply();
+            } else {
+                table_drop_untagged_internal.apply();
+            }
+            // table_port_mode.apply();
+            table_l2_trap.apply();
+            table_trap_id.apply();
+            // table_check_port_mtu.apply(; //TODO
+            //table_ingress_acl.apply(); // TODO
+            if(meta.ingress_metadata.bind_mode == PORT_MODE_PORT) 
+                table_port_ingress_interface_type.apply();
+            else
+                table_subport_ingress_interface_type.apply();
+        } else {
+            table_cpu_forward.apply();
+        }
     }
 }
 
@@ -187,19 +222,9 @@ control egress(inout hdr headers, inout metadata meta, inout standard_metadata_t
 
     action action_cpu_encap() { 
         headers.cpu_header.setValid();
-        headers.cpu_header.netdev_type = NETDEV_TYPE_PORT;
-        headers.cpu_header.dst = (bit<16>) meta.ingress_metadata.bridge_port;
+        headers.cpu_header.netdev_type = meta.egress_metadata.netdev_type;//NETDEV_TYPE_PORT;
+        headers.cpu_header.dst = meta.egress_metadata.clone_dst;//(bit<16>) meta.ingress_metadata.bridge_port;
         headers.cpu_header.trap_id = meta.ingress_metadata.trap_id;
-    }
-
-    table table_egress_clone_internal {
-        key = {
-            standard_metadata.instance_type : exact;
-            meta.ingress_metadata.trap_id : exact;
-            headers.ethernet.dstAddr : ternary;
-        }
-        actions = {nop; action_cpu_encap;} 
-        // size: 16;
     }
 
     apply { 
@@ -208,6 +233,8 @@ control egress(inout hdr headers, inout metadata meta, inout standard_metadata_t
             table_lag_hash.apply();
             table_egress_lag.apply();
         }
-        table_egress_clone_internal.apply();
+        if (standard_metadata.instance_type == 1) {
+            action_cpu_encap();
+        }
     }
 }

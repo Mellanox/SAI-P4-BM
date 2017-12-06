@@ -350,17 +350,6 @@ SimpleSwitch::ingress_thread() {
     Field &f_egress_spec = phv->get_field("standard_metadata.egress_spec");
     int egress_spec = f_egress_spec.get_int();
 
-
-    // LEARNING
-    // int learn_id = 0;
-    // if (phv->has_field("intrinsic_metadata.lf_field_list")) {
-    //   Field &f_learn_id = phv->get_field("intrinsic_metadata.lf_field_list");
-    //   learn_id = f_learn_id.get_int();
-    // }
-    // if (learn_id > 0) {
-    //   get_learn_engine()->learn(learn_id, *packet.get());
-    // }
-
     // RESUBMIT
     // if (phv->has_field("intrinsic_metadata.resubmit_flag")) {
     //   Field &f_resubmit = phv->get_field("intrinsic_metadata.resubmit_flag");
@@ -407,11 +396,6 @@ void
 SimpleSwitch::ingress_bridge_thread() {
   PHV *phv;
   while (1) {
-    // std::pair<std::unique_ptr<Packet>, Packet::buffer_state_t> packet_pair;
-    // ingress_bridge_buffer.pop_back(&packet_pair);
-    // std::unique_ptr<Packet> packet = std::move(packet_pair.first);
-    // const Packet::buffer_state_t packet_in_state = packet_pair.second;
-
     std::unique_ptr<Packet> packet;
     ingress_bridge_buffer.pop_back(&packet);
     phv = packet->get_phv();
@@ -423,50 +407,26 @@ SimpleSwitch::ingress_bridge_thread() {
     Field &f_instance_type = phv->get_field("standard_metadata.instance_type");
     
     //  CLONING
-     /* This looks like it comes out of the blue. However this is needed for
-    ingress cloning. The parser updates the buffer state (pops the parsed
-    headers) to make the deparser's job easier (the same buffer is
-    re-used). But for ingress cloning, the original packet is needed. This
-    kind of looks hacky though. Maybe a better solution would be to have the
-    parser leave the buffer unchanged, and move the pop logic to the
-    deparser. TODO? */
-    // const Packet::buffer_state_t packet_in_state = packet->save_buffer_state();
     Field &f_clone_spec = phv->get_field("standard_metadata.clone_spec");
     unsigned int clone_spec = f_clone_spec.get_uint();
-    // if (clone_spec) {
-    //   int egress_port = get_mirroring_mapping(clone_spec & 0xFFFF);
-    //   BMLOG_DEBUG_PKT(*packet, "Cloning packet at ingress bridge to port {} (clone_spec {})", egress_port, clone_spec);
-    //   f_clone_spec.set(0);
-    //   if (egress_port >= 0) {
-    //     const Packet::buffer_state_t packet_out_state =
-    //         packet->save_buffer_state();
-    //     packet->restore_buffer_state(packet_in_state);
-    //     p4object_id_t field_list_id = clone_spec >> 16;
-    //     auto packet_copy = copy_ingress_pkt(
-    //         packet, PKT_INSTANCE_TYPE_INGRESS_CLONE, field_list_id);
-    //     // we need to parse again
-    //     // the alternative would be to pay the (huge) price of PHV copy for
-    //     // every ingress packet
-    //     parser->parse(packet_copy.get());
-    //     enqueue(egress_port, std::move(packet_copy));
-    //     // egress_bridge_buffer.push_front(std::move(packet_copy));
-    //     packet->restore_buffer_state(packet_out_state);
-    //   }
-    // }
     if (clone_spec) {
       int egress_port = get_mirroring_mapping(clone_spec & 0xFFFF);
       BMLOG_DEBUG_PKT(*packet, "Cloning packet at ingress bridge to port {} (clone_spec {})", egress_port, clone_spec);
       if (egress_port >= 0) {
         f_clone_spec.set(0);
         p4object_id_t field_list_id = clone_spec >> 16;
+        // std::unique_ptr<Packet> packet_copy =
+        //     packet->clone_with_phv_reset_metadata_ptr();
+        // PHV *phv_copy = packet_copy->get_phv();
+        // FieldList *field_list = this->get_field_list(field_list_id);
+        // for (const auto &p : *field_list) {
+        //   phv_copy->get_field(p.header, p.offset)
+        //     .set(phv->get_field(p.header, p.offset));
+        // }
         std::unique_ptr<Packet> packet_copy =
-            packet->clone_with_phv_reset_metadata_ptr();
+            packet->clone_with_phv_ptr();
         PHV *phv_copy = packet_copy->get_phv();
-        FieldList *field_list = this->get_field_list(field_list_id);
-        for (const auto &p : *field_list) {
-          phv_copy->get_field(p.header, p.offset)
-            .set(phv->get_field(p.header, p.offset));
-        }
+        phv_copy->get_field("standard_metadata.egress_spec").set(egress_port);
         phv_copy->get_field("standard_metadata.instance_type")
             .set(PKT_INSTANCE_TYPE_INGRESS_CLONE);
         enqueue(egress_port, std::move(packet_copy));
@@ -506,7 +466,11 @@ SimpleSwitch::ingress_bridge_thread() {
       // when doing multicast, we discard the original packet
       continue;
     }
-
+    int egress_spec = phv->get_field("standard_metadata.egress_spec").get_int();
+    if (egress_spec == 511) {
+      BMLOG_DEBUG_PKT(*packet, "Dropping packet at the end of ingress_bridge pipeline");
+      continue;
+    }
     egress_bridge_buffer.push_front(std::move(packet));
     }
   }
@@ -563,6 +527,36 @@ SimpleSwitch::ingress_router_thread() {
     Pipeline *ingress_router_mau = this->get_pipeline("ingress_router");
     BMLOG_DEBUG_PKT(*packet, "packet received on ingress router");
     ingress_router_mau->apply(packet.get());
+
+    // CLONE to egress port
+    Field &f_clone_spec = phv->get_field("standard_metadata.clone_spec");
+    unsigned int clone_spec = f_clone_spec.get_uint();
+    if (clone_spec) {
+      int egress_port = get_mirroring_mapping(clone_spec & 0xFFFF);
+      BMLOG_DEBUG_PKT(*packet, "Cloning packet at ingress bridge to port {} (clone_spec {})", egress_port, clone_spec);
+      if (egress_port >= 0) {
+        f_clone_spec.set(0);
+        p4object_id_t field_list_id = clone_spec >> 16;
+        std::unique_ptr<Packet> packet_copy =
+            packet->clone_with_phv_ptr();
+        PHV *phv_copy = packet_copy->get_phv();
+        phv_copy->get_field("standard_metadata.egress_spec").set(egress_port);
+        // FieldList *field_list = this->get_field_list(field_list_id);
+        // for (const auto &p : *field_list) {
+          // phv_copy->get_field(p.header, p.offset)
+            // .set(phv->get_field(p.header, p.offset));
+        // }
+        phv_copy->get_field("standard_metadata.instance_type")
+            .set(PKT_INSTANCE_TYPE_INGRESS_CLONE);
+        enqueue(egress_port, std::move(packet_copy));
+      }
+    }
+
+    int egress_spec = phv->get_field("standard_metadata.egress_spec").get_int();
+    if (egress_spec == 511) {
+      BMLOG_DEBUG_PKT(*packet, "Dropping packet at the end of ingress_router pipeline");
+      continue;
+    }
     egress_router_buffer.push_front(std::move(packet));
     }
   }
@@ -582,6 +576,11 @@ SimpleSwitch::egress_router_thread() {
     BMLOG_DEBUG_PKT(*packet, "packet received on egress router");
     Pipeline *egress_router_mau = this->get_pipeline("egress_router");
     egress_router_mau->apply(packet.get());
+    int egress_spec = phv->get_field("standard_metadata.egress_spec").get_int();
+    if (egress_spec == 511) {
+      BMLOG_DEBUG_PKT(*packet, "Dropping packet at the end of egress_bridge pipeline");
+      continue;
+    }
     int erif_type = phv->get_field("router_metadata.erif_type").get_int();
     BMLOG_DEBUG_PKT(*packet, "packet with egress rif type {}", erif_type);
     switch (erif_type) {
@@ -660,8 +659,8 @@ SimpleSwitch::egress_thread(size_t worker_id) {
       continue;
     }
 
-    // yonatanp. since cloned packet get passed egress_spec, they will update their egress_spec. in order to bypass it and allow I2E clonnig, I've added a
-    // P4 flag, to know if this is a cloned packet or not. There probably exists a better solution, Hopefully after changing to P4_16 this won't be needed.
+    // // yonatanp. since cloned packet get passed egress_spec, they will update their egress_spec. in order to bypass it and allow I2E clonnig, I've added a
+    // // P4 flag, to know if this is a cloned packet or not. There probably exists a better solution, Hopefully after changing to P4_16 this won't be needed.
     if (phv->get_field("standard_metadata.instance_type").get_int() != PKT_INSTANCE_TYPE_INGRESS_CLONE) {
       packet->set_egress_port(egress_spec);
       BMLOG_DEBUG_PKT(*packet, "Changed egress port at egress pipeline to {}", egress_spec);

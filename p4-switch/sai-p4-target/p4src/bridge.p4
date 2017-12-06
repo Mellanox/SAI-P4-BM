@@ -75,11 +75,10 @@ control ingress_bridge(inout hdr headers, inout metadata meta, inout standard_me
     //-----------
     action action_learn_mac() {
         meta.ingress_metadata.trap_id = MAC_LEARN_TRAP_ID;   //TODO, should this be configurable to support hostif interface(?)
-        // clone3(CloneType.IB2E, standard_metadata.clone_spec, meta.ingress_metadata.trap_id);
-        // standard_metadata.clone_spec = 250;
-        clone3(CloneType.IB2E, 32w250, {meta.ingress_metadata.trap_id, meta.ingress_metadata.bridge_port});
-        // clone3(CloneType.IB2E, 32w250, {meta.ingress_metadata.trap_id, standard_metadata, meta.ingress_metadata.trap_id, meta.ingress_metadata.bridge_id, meta.ingress_metadata.bridge_port});
-        // clone_ingress_pkt_to_egress(COPY_TO_CPU_MIRROR_ID, redirect_bridge_FL);
+        meta.egress_metadata.netdev_type = NETDEV_TYPE_PORT; 
+        meta.egress_metadata.clone_dst = (bit<16>) meta.ingress_metadata.bridge_port;
+        action_copy_to_cpu_common();
+        // clone3(CloneType.IB2E, COPY_TO_CPU_MIRROR_ID, {meta.ingress_metadata.trap_id, meta.egress_metadata.netdev_type, meta.egress_metadata.clone_dst});
     }
 
     table table_learn_fdb {
@@ -171,10 +170,7 @@ control ingress_bridge(inout hdr headers, inout metadata meta, inout standard_me
     //---------
 
     action action_forward_mc_set_if_list(bit<16> mcast_grp){
-        // TODO add set egress if list
-        // intrinsic_metadata.mcast_grp = mcast_grp;
         standard_metadata.mcast_grp = mcast_grp;
-        // modify_field(meta.ingress_metadata.go_to_router, go_to_router);
     }
 
     table table_broadcast {
@@ -201,8 +197,8 @@ control ingress_bridge(inout hdr headers, inout metadata meta, inout standard_me
             table_xSTP_instance.apply();
             table_xSTP.apply();
         }
+        table_learn_fdb.apply();
         if((headers.ethernet.dstAddr&0x010000000000)==0x0){   //unicast 
-            table_learn_fdb.apply();
             if (!(table_l3_interface.apply().hit)){ //should be for unicast only TDB
                 if (!(table_fdb.apply().hit)) {
                     table_flood.apply();

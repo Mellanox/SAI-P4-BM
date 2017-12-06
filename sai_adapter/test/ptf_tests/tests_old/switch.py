@@ -260,7 +260,7 @@ def sai_thrift_create_router_interface(client, vr_id, is_port, port_id, vlan_id,
     rif_attr_list.append(rif_attribute5)
 
     if mac:
-        rif_attribute6_value = sai_thrift_attribute_value_t(mac=mac[::-1])
+        rif_attribute6_value = sai_thrift_attribute_value_t(mac=mac)
         rif_attribute6 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_SRC_MAC_ADDRESS,
                                                 value=rif_attribute6_value)
         rif_attr_list.append(rif_attribute6)

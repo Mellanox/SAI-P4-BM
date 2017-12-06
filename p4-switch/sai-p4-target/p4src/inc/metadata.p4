@@ -30,6 +30,8 @@ struct egress_metadata_t {
     bit  	tag_mode;
     bit<6> 	hash_val;// TODO for egress lag table, when it is set?
     bit<8>  bridge_port; //L2_BRIDGE_PORT_WDT 
+    bit<16> clone_dst;
+    bit<2>  netdev_type;
 }
 
 // struct intrinsic_metadata_t {
