@@ -197,9 +197,10 @@ control ingress_bridge(inout hdr headers, inout metadata meta, inout standard_me
             table_xSTP_instance.apply();
             table_xSTP.apply();
         }
-        table_learn_fdb.apply();
+        if ((meta.ingress_metadata.bridge_port != (bit<8>) COPY_TO_CPU_MIRROR_ID) && (meta.ingress_metadata.bridge_port != ROUTER_BRIDGE_PORT))
+            table_learn_fdb.apply();
         if((headers.ethernet.dstAddr&0x010000000000)==0x0){   //unicast 
-            if (!(table_l3_interface.apply().hit)){ //should be for unicast only TDB
+            if (!(table_l3_interface.apply().hit)) {
                 if (!(table_fdb.apply().hit)) {
                     table_flood.apply();
                 }
