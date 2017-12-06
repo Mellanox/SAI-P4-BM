@@ -111,7 +111,7 @@ control ingress(inout hdr headers, inout metadata meta, inout standard_metadata_
     action action_cpu_forward_to_vlan() { //forward to ingress 1Q bridge after setting vid
         meta.ingress_metadata.l2_if_type = L2_IF_1Q_BRIDGE;
         meta.ingress_metadata.vid = (bit<12>) headers.cpu_header.dst;
-        meta.ingress_metadata.bridge_port = ROUTER_BRIDGE_PORT;
+        meta.ingress_metadata.bridge_port = (bit<8>) COPY_TO_CPU_MIRROR_ID;//ROUTER_BRIDGE_PORT;
         headers.cpu_header.setInvalid();
     }
 

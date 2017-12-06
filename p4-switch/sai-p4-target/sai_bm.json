@@ -1575,14 +1575,14 @@
             },
             {
               "type" : "hexstr",
-              "value" : "0xfb"
+              "value" : "0xfa"
             }
           ],
           "source_info" : {
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/inc/constants.p4",
-            "line" : 3,
-            "column" : 34,
-            "source_fragment" : "251; ..."
+            "line" : 2,
+            "column" : 38,
+            "source_fragment" : "250; ..."
           }
         },
         {
@@ -5444,39 +5444,19 @@
             "filename" : "/home/yonatanp/SAI-P4-BM/p4-switch/sai-p4-target/p4src/bridge.p4",
             "line" : 200,
             "column" : 12,
-            "source_fragment" : "(meta.ingress_metadata.bridge_port != (bit<8>) COPY_TO_CPU_MIRROR_ID) && (meta.ingress_metadata.bridge_port != ROUTER_BRIDGE_PORT)"
+            "source_fragment" : "meta.ingress_metadata.bridge_port != (bit<8>) COPY_TO_CPU_MIRROR_ID"
           },
           "expression" : {
             "type" : "expression",
             "value" : {
-              "op" : "and",
+              "op" : "!=",
               "left" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "!=",
-                  "left" : {
-                    "type" : "field",
-                    "value" : ["ingress_metadata", "bridge_port"]
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0xfa"
-                  }
-                }
+                "type" : "field",
+                "value" : ["ingress_metadata", "bridge_port"]
               },
               "right" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "!=",
-                  "left" : {
-                    "type" : "field",
-                    "value" : ["ingress_metadata", "bridge_port"]
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0xfb"
-                  }
-                }
+                "type" : "hexstr",
+                "value" : "0xfa"
               }
             }
           },
