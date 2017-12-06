@@ -1,1 +1,0 @@
-python ../../tools/runtime_CLI.py --thrift-port 9091

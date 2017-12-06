@@ -120,8 +120,8 @@ class ArpTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         default_bridge, default_vlan_oid, cpu_port = switch_init2(self.client)
         # port1 = port_list[1]
-        # src_mac = '00:11:22:33:44:55'
-        src_mac = '3e:33:17:ed:64:6c'
+        src_mac = '00:11:22:33:44:55'
+        # src_mac = '3e:33:17:ed:64:6c'
         src_ip = '192.168.45.50'
         dst_ip = '192.168.45.45'
         hostif = sai_thrift_create_hostif(client=self.client,
@@ -167,8 +167,8 @@ class ArpTest(sai_base_test.ThriftInterfaceDataPlane):
             # time.sleep(20)
             print "Sending arp request packet to port 1"
             send_packet(self, 1, str(rq_pkt))
-            # print "Sending arp reply packet to port 1"
-            # send_packet(self, 1, str(rp_pkt))
+            print "Sending arp reply packet to port 1"
+            send_packet(self, 1, str(rp_pkt))
             time.sleep(2)
             # verify_packets(self, exp_pkt, [1])
         finally:

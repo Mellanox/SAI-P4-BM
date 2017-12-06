@@ -1,2 +1,2 @@
-sudo p4c-bmv2 --p4-v1.1 --json sai_bridge.json p4src/bridge/sai_bridge.p4
-sudo p4c-bmv2 --p4-v1.1 --json sai_router.json p4src/router/sai_router.p4
+cd ~/p4_16/p4c/build/
+p4c-mlnx-spc ~/SAI-P4-BM/p4-switch/sai-p4-target/p4src/sai_bm.p4 -o ~/SAI-P4-BM/p4-switch/sai-p4-target/sai_bm.json
