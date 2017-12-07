@@ -115,14 +115,27 @@ control ingress(inout hdr headers, inout metadata meta, inout standard_metadata_
         headers.cpu_header.setInvalid();
     }
 
+    action action_cpu_forward_to_port() { //forward to egress pipepline as port
+        meta.ingress_metadata.l2_if_type = L2_IF_PORT_LAG;
+        meta.egress_metadata.out_if        = (bit<8>) headers.cpu_header.dst;
+        meta.egress_metadata.out_if_type   = OUT_IF_PORT;
+        standard_metadata.egress_spec = (bit<9>) headers.cpu_header.dst;
+        headers.cpu_header.setInvalid();
+    }
+
+    action action_cpu_forward_to_lag() { //forward to egress pipepline as lag
+        meta.ingress_metadata.l2_if_type = L2_IF_PORT_LAG;
+        meta.egress_metadata.out_if        = (bit<8>) headers.cpu_header.dst;
+        meta.egress_metadata.out_if_type   = OUT_IF_LAG;
+        standard_metadata.egress_spec = (bit<9>) headers.cpu_header.dst;
+        headers.cpu_header.setInvalid();
+    }
+
     table table_cpu_forward {
         key = {
             headers.cpu_header.netdev_type : exact;
         }
-        actions = {action_cpu_forward_to_vlan;}
-        const entries = {
-            (NETDEV_TYPE_VLAN) : action_cpu_forward_to_vlan();
-        }
+        actions = {action_cpu_forward_to_vlan;action_cpu_forward_to_port;action_cpu_forward_to_lag;}
     }
 
     apply { 
@@ -188,17 +201,6 @@ control egress(inout hdr headers, inout metadata meta, inout standard_metadata_t
              {headers.ethernet.srcAddr, headers.ethernet.dstAddr, headers.ipv4.srcAddr, headers.ipv4.dstAddr},
              lag_size);
     }
-        // modify_field_with_hash_based_offset(meta.egress_metadata.hash_val, 0, HashAlgorithm.crc16, lag_size);
-        // hash(meta.egress_metadata.hash_val, 
-             // HashAlgorithm.crc16,
-             // 16w0,
-             // {headers.ethernet.srcAddr, headers.ethernet.dstAddr, headers.ipv4.srcAddr, headers.ipv4.dstAddr},
-             // lag_size);
-             // lag_hash_calculate(meta.egress_metadata.hash_val, 
-             // 16w0,
-             // {headers.ethernet.srcAddr, headers.ethernet.dstAddr, headers.ipv4.srcAddr, headers.ipv4.dstAddr},
-             // lag_size);
-    // }
 
     table table_lag_hash {
         key = {

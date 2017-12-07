@@ -9,6 +9,7 @@ const bit     PORT_MODE_PORT    = 0x0;
 const bit<2>  OUT_IF_PORT = 0;
 const bit<2>  OUT_IF_LAG = 1;
 const bit<2>  OUT_IF_ROUTER = 2;
+const bit<2>  L2_IF_PORT_LAG = 0;
 const bit<2>  L2_IF_ROUTER_TYPE = 1;
 const bit<2>  L2_IF_1D_BRIDGE = 2;
 const bit<2>  L2_IF_1Q_BRIDGE = 3;

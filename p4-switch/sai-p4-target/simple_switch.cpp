@@ -350,6 +350,24 @@ SimpleSwitch::ingress_thread() {
     Field &f_egress_spec = phv->get_field("standard_metadata.egress_spec");
     int egress_spec = f_egress_spec.get_int();
 
+    //  CLONING
+    Field &f_clone_spec = phv->get_field("standard_metadata.clone_spec");
+    unsigned int clone_spec = f_clone_spec.get_uint();
+    if (clone_spec) {
+      int egress_port = get_mirroring_mapping(clone_spec & 0xFFFF);
+      BMLOG_DEBUG_PKT(*packet, "Cloning packet at ingress bridge to port {} (clone_spec {})", egress_port, clone_spec);
+      if (egress_port >= 0) {
+        f_clone_spec.set(0);
+        p4object_id_t field_list_id = clone_spec >> 16;
+        std::unique_ptr<Packet> packet_copy =
+            packet->clone_with_phv_ptr();
+        PHV *phv_copy = packet_copy->get_phv();
+        phv_copy->get_field("standard_metadata.egress_spec").set(egress_port);
+        phv_copy->get_field("standard_metadata.instance_type")
+            .set(PKT_INSTANCE_TYPE_INGRESS_CLONE);
+        enqueue(egress_port, std::move(packet_copy));
+      }
+    }
     // RESUBMIT
     // if (phv->has_field("intrinsic_metadata.resubmit_flag")) {
     //   Field &f_resubmit = phv->get_field("intrinsic_metadata.resubmit_flag");
@@ -385,6 +403,9 @@ SimpleSwitch::ingress_thread() {
       case 1:
         ingress_router_buffer.push_front(std::move(packet));
         break;
+      case 0:
+        egress_buffers.push_front(0, std::move(packet));
+        break;
       default:
         BMLOG_DEBUG_PKT(*packet, "Packet with invalid l2_if_type at end of ingress pipeline");
         break;
@@ -415,14 +436,6 @@ SimpleSwitch::ingress_bridge_thread() {
       if (egress_port >= 0) {
         f_clone_spec.set(0);
         p4object_id_t field_list_id = clone_spec >> 16;
-        // std::unique_ptr<Packet> packet_copy =
-        //     packet->clone_with_phv_reset_metadata_ptr();
-        // PHV *phv_copy = packet_copy->get_phv();
-        // FieldList *field_list = this->get_field_list(field_list_id);
-        // for (const auto &p : *field_list) {
-        //   phv_copy->get_field(p.header, p.offset)
-        //     .set(phv->get_field(p.header, p.offset));
-        // }
         std::unique_ptr<Packet> packet_copy =
             packet->clone_with_phv_ptr();
         PHV *phv_copy = packet_copy->get_phv();

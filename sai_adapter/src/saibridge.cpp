@@ -202,7 +202,7 @@ sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
       bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_bridge_id_1d",
                                         bridge_port->handle_id_1d);
     } catch (...) {
-      (*logger)->debug("--> Unable to remove table_bridge_id_1d entry, "
+      (*logger)->info("--> Unable to remove table_bridge_id_1d entry, "
                        "possible entry override");
     }
   }
@@ -211,7 +211,7 @@ sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
       bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_egress_set_vlan",
                                         bridge_port->handle_egress_set_vlan);
     } catch (...) {
-      (*logger)->debug("--> Unable to remove table_egress_set_vlan entry, "
+      (*logger)->info("--> Unable to remove table_egress_set_vlan entry, "
                        "possible entry override");
     }
   }
@@ -221,7 +221,7 @@ sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
           cxt_id, "table_egress_br_port_to_if",
           bridge_port->handle_egress_br_port_to_if);
     } catch (...) {
-      (*logger)->debug("--> Unable to remove table_egress_br_port_to_if entry, "
+      (*logger)->info("--> Unable to remove table_egress_br_port_to_if entry, "
                        "possible entry override");
     }
   }
@@ -231,7 +231,7 @@ sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
           cxt_id, "table_subport_ingress_interface_type",
           bridge_port->handle_subport_ingress_interface_type);
     } catch (...) {
-      (*logger)->debug("--> Unable to remove "
+      (*logger)->info("--> Unable to remove "
                        "table_subport_ingress_interface_type entry, possible "
                        "entry override");
     }
@@ -242,11 +242,11 @@ sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
           cxt_id, "table_port_ingress_interface_type",
           bridge_port->handle_port_ingress_interface_type);
     } catch (...) {
-      (*logger)->debug("--> Unable to remove table_port_ingress_interface_type "
+      (*logger)->info("--> Unable to remove table_port_ingress_interface_type "
                        "entry, possible entry override");
     }
   }
-  (*logger)->debug("deleted bridge port {} bm_entries",
+  (*logger)->info("deleted bridge port {} bm_entries",
                    bridge_port->sai_object_id);
   switch_metadata_ptr->bridge_ports.erase(bridge_port->sai_object_id);
   std::vector<sai_object_id_t> *vec =
@@ -255,8 +255,6 @@ sai_status_t sai_adapter::remove_bridge_port(sai_object_id_t bridge_port_id) {
              vec->end());
 
   sai_id_map_ptr->free_id(bridge_port->sai_object_id);
-  (*logger)->debug("deleted bridge port {} bm_entries",
-                   bridge_port->sai_object_id);
   return status;
 }
 

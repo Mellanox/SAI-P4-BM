@@ -114,7 +114,7 @@ sai_object_id_t sai_get_bridge_port_id_by_port_id(sai_object_id_t port_id) {
   sai_bridge_api_t *bridge_api;
   sai_api_query(SAI_API_BRIDGE, (void **)&bridge_api);
   sai_attribute_t attr, bridge_attr;
-  int max_ports = 10;
+  int max_ports = 32;
   attr.value.objlist.list = (sai_object_id_t*) malloc(sizeof(sai_object_id_t) * max_ports);
   sai_object_id_t bridge_port_id;
   attr.id = SAI_BRIDGE_ATTR_PORT_LIST;
@@ -125,6 +125,7 @@ sai_object_id_t sai_get_bridge_port_id_by_port_id(sai_object_id_t port_id) {
     bridge_port_id = attr.value.objlist.list[i];
     bridge_api->get_bridge_port_attribute(bridge_port_id, 1, &bridge_attr);
     if (port_id == bridge_attr.value.oid) {
+      printf("brdige_port 0x%x\n", bridge_port_id);
       free(attr.value.objlist.list);
       return bridge_port_id;
     }
@@ -134,7 +135,10 @@ sai_object_id_t sai_get_bridge_port_id_by_port_id(sai_object_id_t port_id) {
   return -1;
 }
 
+
+
 sai_object_id_t sai_get_port_id_by_front_port(uint32_t hw_port) {
+  sai_object_id_t new_objlist[32]; //TODO change back to getting from switch
   sai_switch_api_t *switch_api;
   sai_port_api_t *port_api;
   sai_api_query(SAI_API_SWITCH, (void **)&switch_api);
@@ -143,31 +147,32 @@ sai_object_id_t sai_get_port_id_by_front_port(uint32_t hw_port) {
   sai_attribute_t sai_attr;
   sai_attr.id = SAI_SWITCH_ATTR_PORT_NUMBER;
   sai_object_id_t switch_id = 1;
-  switch_api->get_switch_attribute(switch_id, 1, &sai_attr);
-  uint32_t max_ports = sai_attr.value.u32;
+  // switch_api->get_switch_attribute(switch_id, 1, &sai_attr);
+  uint32_t max_ports = 32;//sai_attr.value.u32;
 
   sai_attr.id = SAI_SWITCH_ATTR_PORT_LIST;
-  sai_attr.value.objlist.list =
-      (sai_object_id_t *)malloc(sizeof(sai_object_id_t) * max_ports);
+  //sai_attr.value.objlist.list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * max_ports);
   sai_attr.value.objlist.count = max_ports;
+  sai_attr.value.objlist.list = &new_objlist[0];
   switch_api->get_switch_attribute(switch_id, 1, &sai_attr);
+  printf("port list\n");
 
   sai_attribute_t hw_lane_list_attr;
 
   for (int i = 0; i < max_ports; i++) {
+    uint32_t hw_port_list[1]; // hw_lane list with only 1 lane
     hw_lane_list_attr.id = SAI_PORT_ATTR_HW_LANE_LIST;
-    hw_lane_list_attr.value.u32list.list = (uint32_t *)malloc(
-        sizeof(uint32_t));  // hw_lane list with only 1 lane (TODO??)
+    hw_lane_list_attr.value.u32list.list = &hw_port_list[0];
     port_api->get_port_attribute(sai_attr.value.objlist.list[i], 1,
                                  &hw_lane_list_attr);
     if (hw_lane_list_attr.value.u32list.list[0] == hw_port) {
-      free(hw_lane_list_attr.value.u32list.list);
-      free(sai_attr.value.objlist.list);
+      // free(hw_lane_list_attr.value.u32list.list);
+      // free(sai_attr.value.objlist.list);
       return sai_attr.value.objlist.list[i];
     }
-    free(hw_lane_list_attr.value.u32list.list);
+    // free(hw_lane_list_attr.value.u32list.list);
   }
-  free(sai_attr.value.objlist.list);
+  // free(sai_attr.value.objlist.list);
   printf("didn't find port");
   return -1;
 }
@@ -361,8 +366,11 @@ int main(int argc, char **argv) {
   int i;
 
   for (i = 0; i < num_of_ports; ++i) {
+    printf("get port_if for front port(%d):\n", atoi(argv[i + 2]));
     ports[i].port_id = sai_get_port_id_by_front_port(atoi(argv[i + 2]));
+    printf("port_id = %d\n", ports[i].port_id);
     ports[i].bridge_port_id = sai_get_bridge_port_id_by_port_id(ports[i].port_id);
+    printf("bridge_port_id = %d\n", ports[i].bridge_port_id);
   }
   // create trap group (currently only 1.)
   sai_object_id_t prio_group;
