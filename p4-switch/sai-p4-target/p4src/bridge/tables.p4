@@ -247,6 +247,15 @@ table table_egress_vlan_tag {
     //size : 1; // TODO
 }
 
+table table_hostif_vlan_tag {
+    reads {
+        cpu_header.dst : exact;
+        vlan : valid;
+    }
+    actions {action_forward_vlan_tag; action_forward_vlan_untag; _drop;_nop;}
+    //size : 1; // TODO
+}
+
 //-----------
 // egress 1q bridge
 //-----------

@@ -274,6 +274,8 @@ public:
   std::string netdev_name;
   int netdev_fd;
   bool oper_status;
+  sai_hostif_vlan_tag_t vlan_tag;
+  BmEntryHandle handle_vlan_tag;
   // std::thread netdev_thread;
   // netdev_fd_t netdev;
   HostIF_obj(sai_id_map_t *sai_id_map_ptr) : Sai_obj(sai_id_map_ptr) {
@@ -281,6 +283,8 @@ public:
     this->hostif_type = SAI_HOSTIF_TYPE_NETDEV;
     this->netdev_name = "";
     this->oper_status = true;
+    this->vlan_tag = SAI_HOSTIF_VLAN_TAG_STRIP;
+    this->handle_vlan_tag = NULL_HANDLE;
   }
 };
 
