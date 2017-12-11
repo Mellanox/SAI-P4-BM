@@ -519,6 +519,13 @@ BmMatchParam parse_valid_match_param(bool param) {
 
 uint64_t parse_mac_64(uint8_t const mac_8[6]) {
   uint64_t mac_64 = 0;
-  memcpy(&mac_64, mac_8, 6);
+  uint8_t mac_8_reversed[6];
+  mac_8_reversed[0] = mac_8[5];
+  mac_8_reversed[1] = mac_8[4];
+  mac_8_reversed[2] = mac_8[3];
+  mac_8_reversed[3] = mac_8[2];
+  mac_8_reversed[4] = mac_8[1];
+  mac_8_reversed[5] = mac_8[0];
+  memcpy(&mac_64, mac_8_reversed, 6);
   return mac_64;
 }

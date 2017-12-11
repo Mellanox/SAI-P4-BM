@@ -28,9 +28,10 @@ control control_bridge {
 	} else{
 		control_1q_bridge_flow();
 	}
-	
-	if((ethernet.dstAddr&0x010000000000)==0x0){   //unicast 
+	if (standard_metadata.ingress_port != PORT_BRIDGE_ROUTER) {
 		apply(table_learn_fdb); 
+	}
+	if((ethernet.dstAddr&0x010000000000)==0x0){   //unicast 
 		control_unicast_fdb();
 	} else if(ethernet.dstAddr==0xffffffffffff){  //broadcast
 		control_bc_fdb();
