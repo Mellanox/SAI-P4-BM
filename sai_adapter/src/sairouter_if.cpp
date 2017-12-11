@@ -25,6 +25,9 @@ sai_status_t sai_adapter::create_router_interface (sai_object_id_t *router_inter
       vlan = switch_metadata_ptr->vlans[attribute.value.oid];
       rif->vid = vlan->vid;
       break;
+    case SAI_ROUTER_INTERFACE_ATTR_PORT_ID:
+      rif->port_id = attribute.value.oid;
+      break;
     case SAI_ROUTER_INTERFACE_ATTR_SRC_MAC_ADDRESS:
       memcpy(rif->mac,attribute.value.mac, 6);
       rif->mac_valid = true;
@@ -63,8 +66,6 @@ sai_status_t sai_adapter::create_router_interface (sai_object_id_t *router_inter
 
   switch(rif->type) {
     case SAI_ROUTER_INTERFACE_TYPE_VLAN:  //Vlan interface
-      // Vlan_obj *vlan = switch_metadata_ptr->vlans[switch_metadata_ptr->GetVlanObjIdFromVid(rif->vid)];
-      
       match_params.push_back(parse_exact_match_param(vlan->vid, 2)); 
       action_data.push_back(parse_param(rif->rif_id, 1));
       rif->handle_ingress_l3 = bm_client_ptr->bm_mt_add_entry(
@@ -94,8 +95,52 @@ sai_status_t sai_adapter::create_router_interface (sai_object_id_t *router_inter
       action_data.push_back(parse_param(vlan->vid, 2));
       action_data.push_back(parse_param(switch_metadata_ptr->router_bridge_port->bridge_port, 1));
       rif->handle_egress_l3 = bm_client_ptr->bm_mt_add_entry(
-                cxt_id, "table_egress_L3_vlan_if", match_params, "action_set_smac_vid",
+                cxt_id, "table_egress_L3_if", match_params, "action_set_smac_vid",
                 action_data, options);
+      break;
+
+  case SAI_ROUTER_INTERFACE_TYPE_PORT: { //Port interface
+      int l2_if_type = 1; //Router port
+      sai_object_type_t port_object_type = sai_object_type_query(rif->port_id);
+      int l2_if;
+      int out_if_type;
+      if (port_object_type == SAI_OBJECT_TYPE_PORT) {
+        l2_if = switch_metadata_ptr->ports[rif->port_id]->l2_if;
+        out_if_type = 0;
+        (*logger)->info("router interface of type port added with PORT oid {} , l2_if {}", rif->port_id, l2_if);
+      } else {
+        l2_if = switch_metadata_ptr->lags[rif->port_id]->l2_if;
+        out_if_type =1 ;
+        (*logger)->info("router interface of type port added with LAG oid {} , l2_if {}", rif->port_id, l2_if);
+      }
+
+      sai_object_id_t bridge_port = SAI_NULL_OBJECT_ID;
+      for (bridge_port_id_map_t::iterator it = switch_metadata_ptr->bridge_ports.begin(); it != switch_metadata_ptr->bridge_ports.end(); ++it) {
+        if (it->second->port_id == rif->port_id) {
+          remove_bridge_port(it->first);
+        }
+      }
+
+      match_params.push_back(parse_exact_match_param(l2_if, 1));
+      action_data.push_back(parse_param(rif->rif_id, 1));
+      rif->handle_port_ingress_if_type = bm_client_ptr->bm_mt_add_entry(
+                cxt_id, "table_port_ingress_interface_type", match_params, "action_set_l2_if_type_rif",
+                action_data, options);
+
+      match_params.clear();
+      action_data.clear();
+      match_params.push_back(parse_exact_match_param(rif->rif_id, 1));
+      action_data.push_back(parse_param(mac_address_64, 6));
+      action_data.push_back(parse_param(l2_if, 1));
+      action_data.push_back(parse_param(out_if_type, 1));
+      rif->handle_egress_l3 = bm_client_ptr->bm_mt_add_entry(
+                cxt_id, "table_egress_L3_if", match_params, "action_set_smac_out_if",
+                action_data, options);
+    }
+    break;
+  default:
+      (*logger)->error("Unsupported rif type {}", rif->type);
+      break;
   }
 
   *router_interface_id = rif->sai_object_id;
@@ -106,6 +151,9 @@ sai_status_t sai_adapter::create_router_interface (sai_object_id_t *router_inter
 sai_status_t sai_adapter::remove_router_interface (sai_object_id_t router_interface_id) {
   (*logger)->info("remove_router_interface");
   RouterInterface_obj *rif = switch_metadata_ptr->rifs[router_interface_id];
+  if (rif->handle_port_ingress_if_type != NULL_HANDLE) {
+    bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_port_ingress_interface_type", rif->handle_port_ingress_if_type);
+  }
   if (rif->handle_l3_interface != NULL_HANDLE) {
     bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_l3_interface", rif->handle_l3_interface);
   }
@@ -113,13 +161,16 @@ sai_status_t sai_adapter::remove_router_interface (sai_object_id_t router_interf
     bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_learn_fdb", rif->handle_learn_mac);
   }
   if (rif->handle_egress_l3 != NULL_HANDLE) {
-    bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_egress_L3_vlan_if", rif->handle_egress_l3);
+    bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_egress_L3_if", rif->handle_egress_l3);
   }
   if (rif->handle_ingress_l3 != NULL_HANDLE) {
     bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_ingress_l3_vlan_if", rif->handle_ingress_l3);
   }
   if (rif->handle_ingress_vrf != NULL_HANDLE) {
     bm_client_ptr->bm_mt_delete_entry(cxt_id, "table_ingress_vrf", rif->handle_ingress_vrf);
+  }
+  if (rif->type == SAI_ROUTER_INTERFACE_TYPE_PORT) {
+    // create_bridge_port(); TODO
   }
   switch_metadata_ptr->rifs.erase(router_interface_id);
   sai_id_map_ptr->free_id(router_interface_id);

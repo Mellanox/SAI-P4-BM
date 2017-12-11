@@ -87,6 +87,11 @@ control ingress(inout hdr headers, inout metadata meta, inout standard_metadata_
         size = 1; 
     }
 
+    action action_set_l2_if_type_rif(bit<8> ingress_rif) {
+        meta.ingress_metadata.l2_if_type = L2_IF_ROUTER;
+        meta.router_metadata.ingress_rif = ingress_rif;
+    }
+
     action action_set_l2_if_type(bit<2> l2_if_type, bit<8> bridge_port){
         // L2_BRIDGE_PORT_WDT
         meta.ingress_metadata.l2_if_type = l2_if_type;
@@ -97,7 +102,7 @@ control ingress(inout hdr headers, inout metadata meta, inout standard_metadata_
         key = {
             meta.ingress_metadata.l2_if: exact;
         }
-        actions = {action_set_l2_if_type; drop;}
+        actions = {action_set_l2_if_type; action_set_l2_if_type_rif; drop;}
     }
 
     table table_subport_ingress_interface_type {
@@ -105,7 +110,7 @@ control ingress(inout hdr headers, inout metadata meta, inout standard_metadata_
             meta.ingress_metadata.l2_if : exact;
             meta.ingress_metadata.vid   : exact;
         }
-        actions = {action_set_l2_if_type; drop;}
+        actions = {action_set_l2_if_type; action_set_l2_if_type_rif; drop;}
     }
 
     action action_cpu_forward_to_vlan() { //forward to ingress 1Q bridge after setting vid

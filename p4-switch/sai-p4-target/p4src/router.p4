@@ -1,17 +1,5 @@
 control ingress_router(inout hdr headers, inout metadata meta, inout standard_metadata_t standard_metadata){
     #include "inc/common_actions.p4"
-    
-    action action_set_irif(bit<8> ingress_rif) {
-        meta.router_metadata.ingress_rif = ingress_rif;
-    }
-
-    table table_ingress_l3_vlan_if {
-        key = {
-            meta.ingress_metadata.vid : exact;
-        }
-        actions = {action_set_irif; drop;}
-        //size: L3_EGRESS_IF_TABLE_SIZE;
-    }
 
     action action_set_vrf(bit<8> vrf) {
         meta.router_metadata.ingress_vrf = vrf;
@@ -116,7 +104,6 @@ control ingress_router(inout hdr headers, inout metadata meta, inout standard_me
     }
 
     apply{
-        table_ingress_l3_vlan_if.apply();
         table_ingress_vrf.apply();
         // table_L3_ingress_acl.apply(); TODO
         if (!(table_pre_l3_trap.apply().hit)) {
@@ -176,18 +163,22 @@ control egress_router(inout hdr headers, inout metadata meta, inout standard_met
 
     action action_set_smac_vid(bit<48> smac, bit<12> vid, bit<8> bridge_port) {
         headers.ethernet.srcAddr = smac;
-        // add_header(vlan);
-        // headers.vlan.etherType = IPV4_TYPE;
-        // headers.ethernet.etherType = VLAN_TYPE;
         meta.ingress_metadata.vid = vid;
         meta.ingress_metadata.bridge_port = bridge_port;
     }
 
-    table table_egress_L3_vlan_if {
+    action action_set_smac_out_if(bit<48> smac, bit<8> out_if, bit<2> out_if_type) {
+        headers.ethernet.srcAddr = smac;
+        meta.egress_metadata.out_if        = out_if;
+        meta.egress_metadata.out_if_type   = out_if_type;
+        standard_metadata.egress_spec = (bit<9>) out_if; 
+    }
+
+    table table_egress_L3_if {
         key = {
             meta.router_metadata.egress_rif : exact;
         }
-        actions = {action_set_smac_vid; drop; } // TODO check if type is ok here - not mentioned in visio
+        actions = {action_set_smac_vid; action_set_smac_out_if; drop; } // TODO check if type is ok here - not mentioned in visio
         //size: L3_EGRESS_IF_TABLE_SIZE;
     }
 
@@ -234,7 +225,7 @@ control egress_router(inout hdr headers, inout metadata meta, inout standard_met
         if (!(table_egress_router_clone_internal.apply().hit)) {
             table_ttl.apply();
             table_neighbor.apply();
-            table_egress_L3_vlan_if.apply();
+            table_egress_L3_if.apply();
         }
     }
 }

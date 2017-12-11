@@ -298,6 +298,18 @@ control egress_bridge(inout hdr headers, inout metadata meta, inout standard_met
         actions = {drop; nop; } 
     }
 
+    action action_set_irif(bit<8> ingress_rif) {
+        meta.router_metadata.ingress_rif = ingress_rif;
+    }
+    
+    table table_ingress_l3_vlan_if {
+        key = {
+            meta.ingress_metadata.vid : exact;
+        }
+        actions = {action_set_irif; drop;}
+        //size: L3_EGRESS_IF_TABLE_SIZE;
+    }
+
     apply{
        table_egress_br_port_to_if.apply();
         if ((meta.ingress_metadata.bridge_port == meta.egress_metadata.bridge_port) && (standard_metadata.instance_type != 1)) { // not cpu, TODO: better?
@@ -310,6 +322,9 @@ control egress_bridge(inout hdr headers, inout metadata meta, inout standard_met
         if(meta.ingress_metadata.l2_if_type == L2_IF_1Q_BRIDGE){
             table_egress_xSTP.apply();
             table_egress_vlan_filtering.apply();
+        }
+        if(meta.egress_metadata.out_if_type == OUT_IF_ROUTER){
+            table_ingress_l3_vlan_if.apply();
         }
     }
 }

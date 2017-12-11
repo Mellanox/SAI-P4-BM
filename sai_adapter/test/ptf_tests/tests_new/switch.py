@@ -347,7 +347,7 @@ def sai_thrift_create_neighbor(client, addr_family, rif_id, ip_addr, dmac):
     else:
         addr = sai_thrift_ip_t(ip6=ip_addr)
         ipaddr = sai_thrift_ip_address_t(addr_family=SAI_IP_ADDR_FAMILY_IPV6, addr=addr)
-    neighbor_attribute1_value = sai_thrift_attribute_value_t(mac=dmac)
+    neighbor_attribute1_value = sai_thrift_attribute_value_t(mac=dmac[::-1])
     neighbor_attribute1 = sai_thrift_attribute_t(id=SAI_NEIGHBOR_ENTRY_ATTR_DST_MAC_ADDRESS,
                                                  value=neighbor_attribute1_value)
     neighbor_attr_list = [neighbor_attribute1]

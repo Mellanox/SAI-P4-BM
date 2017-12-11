@@ -335,8 +335,10 @@ public:
   bool mac_valid;
   uint16_t vid;
   uint32_t rif_id;
+  sai_object_id_t port_id;
   VirtualRouter_obj* vr;
   sai_router_interface_type_t type;
+  BmEntryHandle handle_port_ingress_if_type;
   BmEntryHandle handle_l3_interface;
   BmEntryHandle handle_egress_l3;
   BmEntryHandle handle_ingress_l3;
@@ -354,6 +356,7 @@ public:
         this->handle_ingress_l3 = NULL_HANDLE;
         this->handle_ingress_vrf = NULL_HANDLE;
         this->handle_learn_mac = NULL_HANDLE;
+        this->handle_port_ingress_if_type = NULL_HANDLE;
       }
 };
 
