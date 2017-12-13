@@ -259,6 +259,9 @@ sai_status_t sai_adapter::get_vlan_attribute(sai_object_id_t vlan_id,
         std::copy(vlan->vlan_members.begin(), vlan->vlan_members.end(), attr_list[i].value.objlist.list);
         attr_list[i].value.objlist.count = vlan->vlan_members.size();
         break;
+      case SAI_VLAN_ATTR_STP_INSTANCE: // TODO: add support
+        attr_list[i].value.oid  = SAI_NULL_OBJECT_ID;
+        break;
     }
   }
   return SAI_STATUS_SUCCESS;

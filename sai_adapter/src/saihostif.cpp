@@ -47,19 +47,48 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
       hostif->netdev_name = string(attribute.value.chardata);
       netdev_name = attribute.value.chardata;
       break;
+    case SAI_HOSTIF_ATTR_VLAN_TAG:
+      hostif->vlan_tag = (sai_hostif_vlan_tag_t)attribute.value.s32;
+      break;
     }
   }
+
+  BmAddEntryOptions options;
+  BmMatchParams match_params;
+  BmActionData action_data; 
   if (hostif->hostif_type == SAI_HOSTIF_TYPE_NETDEV) {
     if (hostif->netdev_name == "") {
       (*logger)->error("trying to create netdev wihout any name");
     }
     (*logger)->info("creating netdev {}", hostif->netdev_name);
     hostif->netdev_fd = tun_alloc(netdev_name, 1);
-    // hostif->netdev.type = hostif->netdev_obj_type;
     switch (hostif->netdev_obj_type) {
         case SAI_OBJECT_TYPE_PORT:
           phys_netdev_sniffer(hostif->netdev_fd, hostif->netdev_obj.port->hw_port);
+          switch (hostif->vlan_tag) {
+            case SAI_HOSTIF_VLAN_TAG_STRIP:
+              match_params.push_back(parse_exact_match_param(hostif->netdev_obj.port->hw_port, 2));
+              match_params.push_back(parse_valid_match_param(true));
+              hostif->handle_vlan_tag = bm_bridge_client_ptr->bm_mt_add_entry(
+                cxt_id, "table_hostif_vlan_tag", match_params, "action_forward_vlan_untag",
+                action_data, options);
+              break;
+            case SAI_HOSTIF_VLAN_TAG_KEEP:
+              match_params.push_back(parse_exact_match_param(hostif->netdev_obj.port->hw_port, 2));
+              match_params.push_back(parse_valid_match_param(false));
+              action_data.push_back(parse_param(0, 1));  //pcp
+              action_data.push_back(parse_param(0, 1));  // cfi
+              action_data.push_back(parse_param(hostif->netdev_obj.port->pvid, 2));  //vid
+              hostif->handle_vlan_tag = bm_bridge_client_ptr->bm_mt_add_entry(
+                cxt_id, "table_hostif_vlan_tag", match_params, "action_forward_vlan_untag",
+                action_data, options);
+              break;
+            default:
+              (*logger)->error("unsupported vlan tag in hostif creation");
+              break;
+          }
           break;
+
         case SAI_OBJECT_TYPE_LAG:
           // hostif->netdev_thread = std::thread(, hostif->netdev_fd,);
           break;
@@ -68,6 +97,7 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
           break;
     }
   }
+
   *hif_id = hostif->sai_object_id;
   return SAI_STATUS_SUCCESS;
 }
@@ -89,13 +119,39 @@ sai_status_t sai_adapter::remove_hostif(sai_object_id_t hif_id) {
 sai_status_t sai_adapter::set_hostif_attribute(sai_object_id_t hif_id, const sai_attribute_t *attr) {
   (*logger)->info("set_hostif_attribute ({})", attr->id);
   HostIF_obj *hostif = switch_metadata_ptr->hostifs[hif_id];
+  BmAddEntryOptions options;
+  BmMatchParams match_params;
+  BmActionData action_data;
   switch (attr->id) {
     case SAI_HOSTIF_ATTR_OPER_STATUS:
       hostif->oper_status = attr->value.booldata;
       break;
-    default:
-      (*logger)->info("unsupported hostif attribute {}", attr->id);
-      return SAI_STATUS_NOT_IMPLEMENTED;
+     case SAI_HOSTIF_ATTR_VLAN_TAG:
+      hostif->vlan_tag = (sai_hostif_vlan_tag_t)attr->value.s32;
+      bm_bridge_client_ptr->bm_mt_delete_entry(cxt_id, "table_hostif_vlan_tag",
+                                               hostif->handle_vlan_tag);
+      switch (hostif->vlan_tag) {
+          case SAI_HOSTIF_VLAN_TAG_STRIP:
+            match_params.push_back(parse_exact_match_param(hostif->netdev_obj.port->hw_port, 2));
+            match_params.push_back(parse_valid_match_param(true));
+            hostif->handle_vlan_tag = bm_bridge_client_ptr->bm_mt_add_entry(
+              cxt_id, "table_hostif_vlan_tag", match_params, "action_forward_vlan_untag",
+              action_data, options);
+            break;
+          case SAI_HOSTIF_VLAN_TAG_KEEP:
+            match_params.push_back(parse_exact_match_param(hostif->netdev_obj.port->hw_port, 2));
+            match_params.push_back(parse_valid_match_param(false));
+            action_data.push_back(parse_param(0, 1));  //pcp
+            action_data.push_back(parse_param(0, 1));  // cfi
+            action_data.push_back(parse_param(hostif->netdev_obj.port->pvid, 2));  //vid
+            hostif->handle_vlan_tag = bm_bridge_client_ptr->bm_mt_add_entry(
+              cxt_id, "table_hostif_vlan_tag", match_params, "action_forward_vlan_untag",
+              action_data, options);
+            break;
+          default:
+            (*logger)->error("unsupported vlan tag in hostif creation");
+            break;
+      }
   }
   return SAI_STATUS_SUCCESS;
 }

@@ -501,6 +501,13 @@ BmMatchParam parse_ternary_param(uint64_t param, uint32_t num_of_bytes, uint64_t
 
 uint64_t parse_mac_64(uint8_t const mac_8[6]) {
   uint64_t mac_64 = 0;
-  memcpy(&mac_64, mac_8, 6);
+  uint8_t mac_8_reversed[6];
+  mac_8_reversed[0] = mac_8[5];
+  mac_8_reversed[1] = mac_8[4];
+  mac_8_reversed[2] = mac_8[3];
+  mac_8_reversed[3] = mac_8[2];
+  mac_8_reversed[4] = mac_8[1];
+  mac_8_reversed[5] = mac_8[0];
+  memcpy(&mac_64, mac_8_reversed, 6);
   return mac_64;
 }

@@ -7,6 +7,7 @@
 
 //  Mirroring and traps
 #define COPY_TO_CPU_MIRROR_ID 250
+#define PORT_BRIDGE_ROUTER  251
 
 // header/metadata fields width
 #define LAG_WDT				16

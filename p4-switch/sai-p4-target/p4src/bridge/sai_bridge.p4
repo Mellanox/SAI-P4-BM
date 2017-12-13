@@ -28,7 +28,9 @@ control control_bridge {
 	} else{
 		control_1q_bridge_flow();
 	}
-	apply(table_learn_fdb); 
+	if (standard_metadata.ingress_port != PORT_BRIDGE_ROUTER) {
+		apply(table_learn_fdb); 
+	}
 	if((ethernet.dstAddr&0x010000000000)==0x0){   //unicast 
 		control_unicast_fdb();
 	} else if(ethernet.dstAddr==0xffffffffffff){  //broadcast
@@ -150,7 +152,11 @@ control egress{
 		//if((egress_metadata.stp_state == STP_FORWARDING) and (egress_metadata.tag_mode == TAG) ){
 			// TODO: go to egress
 		//}
-		apply(table_egress_clone_internal);
+		apply(table_egress_clone_internal) {
+			hit {
+				apply(table_hostif_vlan_tag);
+			}
+		}
 	}
 }
 

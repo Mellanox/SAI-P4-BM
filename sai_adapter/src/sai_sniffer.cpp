@@ -22,8 +22,8 @@ void ReverseBytes(uint8_t *byte_arr, int size) {
 
 void print_mac_to_log(const uint8_t *mac,
                       std::shared_ptr<spdlog::logger> logger) {
-  logger->info("{0:02X}:{1:02X}:{2:02X}:{3:02X}:{4:02X}:{5:02X}", mac[5],
-               mac[4], mac[3], mac[2], mac[1], mac[0]);
+  logger->info("{0:02X}:{1:02X}:{2:02X}:{3:02X}:{4:02X}:{5:02X}", mac[0],
+               mac[1], mac[2], mac[3], mac[4], mac[5]);
 }
 
 void sai_adapter::release_pcap_lock() {
@@ -330,8 +330,8 @@ void sai_adapter::learn_mac(u_char *packet, cpu_hdr_t *cpu, int pkt_len) {
   (*logger)->info("learn_mac from bridge port {}", ingress_bridge_port);
   ethernet_hdr_t *ether = (ethernet_hdr_t *)packet;
   ether->ether_type = ntohs(ether->ether_type);
-  ReverseBytes(ether->dst_addr, 6);
-  ReverseBytes(ether->src_addr, 6);
+  // ReverseBytes(ether->dst_addr, 6);
+  // ReverseBytes(ether->src_addr, 6);
   uint8_t *src_mac = ether->src_addr;
   print_mac_to_log(src_mac, *logger);
   BridgePort_obj *bridge_port;
@@ -397,14 +397,14 @@ void sai_adapter::learn_mac(u_char *packet, cpu_hdr_t *cpu, int pkt_len) {
   sai_fdb_entry_t fdb_entry;
   build_fdb_entry(src_mac, bridge_type, vid, bridge->sai_object_id, &fdb_entry);
 
-  // sai_attribute_t flush_attr[3];
-  // flush_attr[0].id = SAI_FDB_FLUSH_ATTR_ENTRY_TYPE;
-  // flush_attr[0].value.s32 = SAI_FDB_ENTRY_TYPE_DYNAMIC;
-  // flush_attr[1].id = SAI_FDB_FLUSH_ATTR_VLAN_ID;
-  // flush_attr[1].value.u16 = fdb_entry.vlan_id;
-  // flush_attr[2].id = SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID;
-  // flush_attr[2].value.oid = bridge_port->sai_object_id;
-  // flush_fdb_entries(switch_metadata_ptr->switch_id, 3, flush_attr);
+  sai_attribute_t flush_attr[3];
+  flush_attr[0].id = SAI_FDB_FLUSH_ATTR_ENTRY_TYPE;
+  flush_attr[0].value.s32 = SAI_FDB_ENTRY_TYPE_DYNAMIC;
+  flush_attr[1].id = SAI_FDB_FLUSH_ATTR_VLAN_ID;
+  flush_attr[1].value.u16 = fdb_entry.vlan_id;
+  flush_attr[2].id = SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID;
+  flush_attr[2].value.oid = bridge_port->sai_object_id;
+  flush_fdb_entries(switch_metadata_ptr->switch_id, 3, flush_attr);
 
   sai_attribute_t attr[3];
   attr[0].id = SAI_FDB_ENTRY_ATTR_TYPE;
