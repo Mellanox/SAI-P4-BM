@@ -67,6 +67,7 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
           phys_netdev_sniffer(hostif->netdev_fd, hostif->netdev_obj.port->hw_port);
           switch (hostif->vlan_tag) {
             case SAI_HOSTIF_VLAN_TAG_STRIP:
+              match_params.push_back(parse_exact_match_param(0, 1)); //netdev type
               match_params.push_back(parse_exact_match_param(hostif->netdev_obj.port->hw_port, 2));
               match_params.push_back(parse_valid_match_param(true));
               hostif->handle_vlan_tag = bm_bridge_client_ptr->bm_mt_add_entry(
@@ -74,6 +75,7 @@ sai_status_t sai_adapter::create_hostif(sai_object_id_t *hif_id,
                 action_data, options);
               break;
             case SAI_HOSTIF_VLAN_TAG_KEEP:
+              match_params.push_back(parse_exact_match_param(0, 1)); //netdev type
               match_params.push_back(parse_exact_match_param(hostif->netdev_obj.port->hw_port, 2));
               match_params.push_back(parse_valid_match_param(false));
               action_data.push_back(parse_param(0, 1));  //pcp
@@ -132,6 +134,7 @@ sai_status_t sai_adapter::set_hostif_attribute(sai_object_id_t hif_id, const sai
                                                hostif->handle_vlan_tag);
       switch (hostif->vlan_tag) {
           case SAI_HOSTIF_VLAN_TAG_STRIP:
+            match_params.push_back(parse_exact_match_param(0, 1)); //netdev type
             match_params.push_back(parse_exact_match_param(hostif->netdev_obj.port->hw_port, 2));
             match_params.push_back(parse_valid_match_param(true));
             hostif->handle_vlan_tag = bm_bridge_client_ptr->bm_mt_add_entry(
@@ -139,6 +142,7 @@ sai_status_t sai_adapter::set_hostif_attribute(sai_object_id_t hif_id, const sai
               action_data, options);
             break;
           case SAI_HOSTIF_VLAN_TAG_KEEP:
+            match_params.push_back(parse_exact_match_param(0, 1)); //netdev type
             match_params.push_back(parse_exact_match_param(hostif->netdev_obj.port->hw_port, 2));
             match_params.push_back(parse_valid_match_param(false));
             action_data.push_back(parse_param(0, 1));  //pcp

@@ -147,6 +147,7 @@ table_add table_egress_vlan_filtering nop 29 1 =>
 table_add table_egress_vlan_filtering nop 30 1 =>
 table_add table_egress_vlan_filtering nop 31 1 =>
 table_add table_egress_vlan_filtering nop 251 1 =>
+table_set_default table_hostif_vlan_tag nop
 table_add table_egress_vlan_tag action_forward_vlan_untag 0 1 1 =>
 table_add table_egress_vlan_tag action_forward_vlan_untag 1 1 1 =>
 table_add table_egress_vlan_tag action_forward_vlan_untag 2 1 1 =>

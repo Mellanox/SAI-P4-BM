@@ -234,6 +234,15 @@ control egress(inout hdr headers, inout metadata meta, inout standard_metadata_t
         headers.cpu_header.trap_id = meta.ingress_metadata.trap_id;
     }
 
+    table table_hostif_vlan_tag {
+        key = {
+            headers.cpu_header.netdev_type : exact;
+            headers.cpu_header.dst : exact;
+            headers.vlan.isValid() : exact;
+        }
+        actions = {action_forward_vlan_tag; action_forward_vlan_untag; drop; nop;}
+    }
+
     apply { 
         table_egress_vlan_tag.apply();
         if (meta.egress_metadata.out_if_type == OUT_IF_LAG) { 
@@ -242,6 +251,7 @@ control egress(inout hdr headers, inout metadata meta, inout standard_metadata_t
         }
         if (standard_metadata.instance_type == 1) {
             action_cpu_encap();
+            table_hostif_vlan_tag.apply();
         }
     }
 }
