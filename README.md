@@ -18,6 +18,9 @@ Tests frameworks: PTF, unittests.
 Example applications built on top of SAI api. Currently only teamd based lacp app exists.
 
 ## Insatllation Instructions
+Clone this repository recuresively with its submodules:  
+```git clone --recursive https://github.com/Mellanox/SAI-P4-BM```
+
 The installation should be in the following order:
 1) Enter `p4-switch/` dir, and follow the readme instructions.
 2) Enter `sai_adapter/` dir, and follow the readme instructions.
